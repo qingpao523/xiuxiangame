@@ -1,0 +1,69 @@
+{
+  "schema_version": "0.1.0",
+  "table": "breakthrough_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 两次破劫数据：炼气士到真人、真人到地仙。",
+  "rows": [
+    {
+      "breakthrough_id": "bt_001",
+      "from_realm": "rq_10",
+      "to_realm": "zr_01",
+      "display_name": "破真人劫",
+      "base_success_rate": 0.75,
+      "min_success_rate": 0.95,
+      "max_success_rate": 1.0,
+      "required_daoxing": 800,
+      "merit_bonus_cap": 0.2,
+      "calamity_penalty_cap": 0.15,
+      "fail_bonus": 0.1,
+      "guarantee_after_fail": 2,
+      "pressure_label": "榜文微照",
+      "newbie_protection": true,
+      "breakthrough_lore": "天边榜文只是远远闪现。若能稳住灵台，便可洗去凡尘浊气，炼成真人道体。",
+      "success_text": "榜文碎光自天边掠过，未能照出你的真灵。你炼气入骨，终于踏入真人之境。",
+      "fail_text": "榜文碎光一闪，你的道心微震。但这一劫并未毁去道行，反而让你窥见破劫之法。",
+      "success_rewards": {
+        "unlock_ids": [
+          "treasure_system",
+          "map_002_preview"
+        ],
+        "force_event_or_choice": "first_treasure_choice"
+      },
+      "fail_rewards": {
+        "fail_bonus_next": 0.1,
+        "mana_percent": 0.05
+      }
+    },
+    {
+      "breakthrough_id": "bt_002",
+      "from_realm": "zr_10",
+      "to_realm": "dx_01",
+      "display_name": "破地仙劫",
+      "base_success_rate": 0.6,
+      "min_success_rate": 0.4,
+      "max_success_rate": 1.0,
+      "required_daoxing": 22000,
+      "merit_bonus_cap": 0.2,
+      "calamity_penalty_cap": 0.15,
+      "fail_bonus": 0.1,
+      "guarantee_after_fail": 2,
+      "pressure_label": "榜文牵引",
+      "newbie_protection": false,
+      "breakthrough_lore": "封神榜文照身，真灵受到牵引。若能以道行、功德与法宝护住灵台，便可破劫成地仙。",
+      "success_text": "榜文照身而过，未能留名。你道体初成，灵台清明，已可称地上之仙。",
+      "fail_text": "榜文金光照入泥丸宫，你的真灵一瞬震荡，幸而本命法宝护住灵台，道行未散。",
+      "success_rewards": {
+        "unlock_ids": [
+          "earth_pulse",
+          "treasure_refine",
+          "map_003"
+        ],
+        "title": "榜外散修"
+      },
+      "fail_rewards": {
+        "fail_bonus_next": 0.1,
+        "mana_percent": 0.05
+      }
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "schema_version": "0.1.0",
+  "table": "chapter_goal_table",
+  "description": "MVP 前 30 分钟与前 2 天目标链（依据 design/1.8 §20.3/§21/§22）",
+  "rows": [
+    {
+      "goal_id": "goal_001",
+      "goal_name": "吐纳一轮周天",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "action_complete", "action_id": "breath_cycle", "count": 1 },
+      "display_text": "当前目标：吐纳一轮周天",
+      "reward_preview": "奖励：获得第一缕道行",
+      "complete_text": "你完成了第一次吐纳，体内已有一缕道行流转。",
+      "reward": { "resources": { "daoxing": 5 } },
+      "next_goal_id": "goal_002"
+    },
+    {
+      "goal_id": "goal_002",
+      "goal_name": "升至炼气士二重",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "realm_reached", "realm_id": "rq_02" },
+      "display_text": "当前目标：升至炼气士二重",
+      "reward_preview": "奖励：解锁入定一轮",
+      "complete_text": "你已突破至炼气士二重，可以进行更长时间的入定。",
+      "reward": {},
+      "next_goal_id": "goal_003"
+    },
+    {
+      "goal_id": "goal_003",
+      "goal_name": "升至炼气士三重",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "realm_reached", "realm_id": "rq_03" },
+      "display_text": "当前目标：升至炼气士三重",
+      "reward_preview": "奖励：解锁山野游历",
+      "complete_text": "你已能短暂离开洞府，在山野边缘游历。",
+      "reward": {},
+      "next_goal_id": "goal_004"
+    },
+    {
+      "goal_id": "goal_004",
+      "goal_name": "完成一次山野游历",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "action_complete", "action_id": "wild_travel", "count": 1 },
+      "display_text": "当前目标：完成一次山野游历",
+      "reward_preview": "奖励：术法残页 ×5",
+      "complete_text": "你第一次踏出洞府，见到了被劫气惊扰的山野。",
+      "reward": { "resources": { "spell_page": 5 } },
+      "next_goal_id": "goal_005"
+    },
+    {
+      "goal_id": "goal_005",
+      "goal_name": "解锁第一门术法",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "spell_unlocked_any", "count": 1 },
+      "display_text": "当前目标：参悟第一门术法",
+      "reward_preview": "奖励：术法残页 ×5",
+      "complete_text": "你终于悟得第一门护道术法。",
+      "reward": { "resources": { "spell_page": 5 } },
+      "next_goal_id": "goal_006"
+    },
+    {
+      "goal_id": "goal_006",
+      "goal_name": "触发榜文碎光",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "event_completed", "event_id": "event_001" },
+      "display_text": "当前目标：观榜悟道，触发榜文碎光",
+      "reward_preview": "奖励：道行 +50",
+      "complete_text": "封神榜碎光第一次照入山中，你知道大劫已经开始。",
+      "reward": {},
+      "next_goal_id": "goal_007"
+    },
+    {
+      "goal_id": "goal_007",
+      "goal_name": "获得法器碎片",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "resource_reached", "resource_id": "artifact_shard", "amount": 1 },
+      "display_text": "当前目标：获得第一块法器碎片",
+      "reward_preview": "奖励：法器碎片 ×5",
+      "complete_text": "大劫震落旧器残片，你第一次触碰到护道法器的气息。",
+      "reward": { "resources": { "artifact_shard": 5 } },
+      "next_goal_id": "goal_008"
+    },
+    {
+      "goal_id": "goal_008",
+      "goal_name": "击败山野妖首",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "boss_cleared", "boss_id": "boss_001" },
+      "display_text": "当前目标：击败山野妖首",
+      "reward_preview": "奖励：道行、法器碎片、术法残页",
+      "complete_text": "山中妖首已伏，黑雾暂散。",
+      "reward": {},
+      "next_goal_id": "goal_009"
+    },
+    {
+      "goal_id": "goal_009",
+      "goal_name": "修至炼气士十重",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "realm_reached", "realm_id": "rq_10" },
+      "display_text": "当前目标：修至炼气士十重",
+      "reward_preview": "奖励：开启破真人劫",
+      "complete_text": "炼气圆满，真人劫已在眼前。",
+      "reward": {},
+      "next_goal_id": "goal_010"
+    },
+    {
+      "goal_id": "goal_010",
+      "goal_name": "破真人劫",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "realm_reached", "realm_id": "zr_01" },
+      "display_text": "当前目标：破真人劫",
+      "reward_preview": "奖励：本命法宝择主",
+      "complete_text": "你破开真人劫，洗去凡尘浊气，炼成真人道体。",
+      "reward": {},
+      "next_goal_id": "goal_011"
+    },
+    {
+      "goal_id": "goal_011",
+      "goal_name": "选择本命法宝",
+      "stage": "前30分钟",
+      "complete_condition": { "type": "treasure_equipped_any", "count": 1 },
+      "display_text": "当前目标：选择第一件本命法宝",
+      "reward_preview": "奖励：战力大幅提升",
+      "complete_text": "本命法宝与你气机相合，你不再是空手施术的山野小修。",
+      "reward": {},
+      "next_goal_id": "goal_012"
+    },
+    {
+      "goal_id": "goal_012",
+      "goal_name": "强化一次本命法宝",
+      "stage": "第1天",
+      "complete_condition": { "type": "treasure_level_reached", "level": 2 },
+      "display_text": "当前目标：强化一次本命法宝",
+      "reward_preview": "奖励：法宝威力提升",
+      "complete_text": "法宝灵光更盛，悬于身侧。你能明显感觉到，术法运转比从前更顺。",
+      "reward": {},
+      "next_goal_id": "goal_013"
+    },
+    {
+      "goal_id": "goal_013",
+      "goal_name": "进入陈塘关外围",
+      "stage": "第1天",
+      "complete_condition": { "type": "realm_reached", "realm_id": "zr_03" },
+      "display_text": "当前目标：修至真人三重，进入陈塘关外围",
+      "reward_preview": "奖励：开启封神大劫边缘地图",
+      "complete_text": "你离开山野洞府，向东南行去。越近陈塘关，雷声越重，海风越腥。",
+      "reward": {},
+      "next_goal_id": "goal_014"
+    },
+    {
+      "goal_id": "goal_014",
+      "goal_name": "完成一次陈塘巡行",
+      "stage": "第1天",
+      "complete_condition": { "type": "action_complete", "action_id": "chentang_patrol", "count": 1 },
+      "display_text": "当前目标：完成一次陈塘巡行",
+      "reward_preview": "奖励：法宝碎片 ×5",
+      "complete_text": "你第一次巡行陈塘关外围，见到了怨潮翻涌的东海。",
+      "reward": { "resources": { "treasure_shard": 5 } },
+      "next_goal_id": "goal_015"
+    },
+    {
+      "goal_id": "goal_015",
+      "goal_name": "升至真人五重",
+      "stage": "第1天",
+      "complete_condition": { "type": "realm_reached", "realm_id": "zr_05" },
+      "display_text": "当前目标：升至真人五重",
+      "reward_preview": "奖励：开放功德与劫气",
+      "complete_text": "陈塘劫气入境，功德与劫气的选择第一次摆在眼前。",
+      "reward": {},
+      "next_goal_id": "goal_016"
+    },
+    {
+      "goal_id": "goal_016",
+      "goal_name": "完成一次功德/劫气选择",
+      "stage": "第1天",
+      "complete_condition": { "type": "merit_or_calamity_any" },
+      "display_text": "当前目标：完成一次功德/劫气选择",
+      "reward_preview": "奖励：理解稳健与高收益路线",
+      "complete_text": "你在功德与劫气之间做出了第一次选择。大劫之中，每一步都算数。",
+      "reward": {},
+      "next_goal_id": "goal_017"
+    },
+    {
+      "goal_id": "goal_017",
+      "goal_name": "击败巡海妖将",
+      "stage": "第1天",
+      "complete_condition": { "type": "boss_cleared", "boss_id": "boss_002" },
+      "display_text": "当前目标：击败巡海妖将",
+      "reward_preview": "奖励：法宝碎片、护关功德",
+      "complete_text": "雷火落入潮中，巡海妖将残影崩散。",
+      "reward": {},
+      "next_goal_id": "goal_018"
+    },
+    {
+      "goal_id": "goal_018",
+      "goal_name": "升至真人八重",
+      "stage": "第1天",
+      "complete_condition": { "type": "realm_reached", "realm_id": "zr_08" },
+      "display_text": "当前目标：升至真人八重",
+      "reward_preview": "奖励：榜文第一次感应",
+      "complete_text": "封神榜第一次隐隐感应，你需准备护劫之物。",
+      "reward": {},
+      "next_goal_id": "goal_019"
+    },
+    {
+      "goal_id": "goal_019",
+      "goal_name": "直面榜文压顶",
+      "stage": "第2天",
+      "complete_condition": { "type": "event_completed", "event_id": "event_017" },
+      "display_text": "当前目标：升重时直面榜文压顶",
+      "reward_preview": "奖励：看清榜文牵引之法",
+      "complete_text": "封神榜第一次照见你的真灵。",
+      "reward": {},
+      "next_goal_id": "goal_020"
+    },
+    {
+      "goal_id": "goal_020",
+      "goal_name": "升至真人十重",
+      "stage": "第2天",
+      "complete_condition": { "type": "realm_reached", "realm_id": "zr_10" },
+      "display_text": "当前目标：升至真人十重",
+      "reward_preview": "奖励：开启破地仙劫",
+      "complete_text": "真人圆满，若能避过榜文牵引，便可称地上之仙。",
+      "reward": {},
+      "next_goal_id": "goal_021"
+    },
+    {
+      "goal_id": "goal_021",
+      "goal_name": "感应地脉初鸣",
+      "stage": "第2天",
+      "complete_condition": { "type": "event_completed", "event_id": "event_020" },
+      "display_text": "当前目标：破劫前感应地脉初鸣",
+      "reward_preview": "奖励：地脉之力护持破劫",
+      "complete_text": "地脉深处传来声音，为你抵住一缕榜文牵引。",
+      "reward": {},
+      "next_goal_id": "goal_022"
+    },
+    {
+      "goal_id": "goal_022",
+      "goal_name": "破地仙劫",
+      "stage": "第2天",
+      "complete_condition": { "type": "realm_reached", "realm_id": "dx_01" },
+      "display_text": "当前目标：破地仙劫",
+      "reward_preview": "奖励：称号「榜外散修」",
+      "complete_text": "榜文照身而过，未能留名。你已可称地上之仙。",
+      "reward": {},
+      "next_goal_id": "goal_023"
+    },
+    {
+      "goal_id": "goal_023",
+      "goal_name": "进入骷髅山边界",
+      "stage": "第2天",
+      "complete_condition": { "type": "action_complete", "action_id": "kulou_explore", "count": 1 },
+      "display_text": "当前目标：完成一次骷髅山探幽",
+      "reward_preview": "奖励：祭炼材料 ×5",
+      "complete_text": "你初成地仙，第一次踏入骷髅山边界的阴云之下。",
+      "reward": { "resources": { "refine_material": 5 } },
+      "next_goal_id": "goal_024"
+    },
+    {
+      "goal_id": "goal_024",
+      "goal_name": "查看天仙篇预告",
+      "stage": "第2天",
+      "complete_condition": { "type": "cap_notice_seen" },
+      "display_text": "当前目标：查看天仙篇预告",
+      "reward_preview": "奖励：知晓大劫后续",
+      "complete_text": "当前版本修行暂至地仙一重。天仙篇尚未开启，但封神大劫，才刚刚开始。",
+      "reward": {},
+      "next_goal_id": ""
+    }
+  ]
+}

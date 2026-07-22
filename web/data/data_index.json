@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "recommended_path": "res://data/",
+  "tables": [
+    "realm_table.json",
+    "resource_table.json",
+    "map_table.json",
+    "spell_table.json",
+    "treasure_table.json",
+    "event_table.json",
+    "breakthrough_table.json",
+    "boss_table.json",
+    "offline_config.json",
+    "unlock_table.json",
+    "action_table.json",
+    "chapter_goal_table.json",
+    "encounter_table.json"
+  ],
+  "notes": [
+    "MVP 范围：炼气士一重到地仙一重。",
+    "真仙前不使用神通，统一称术法。",
+    "封神榜不做完整系统，但通过榜文碎光、榜文牵引、机缘和破劫文案存在。",
+    "Godot 建议使用 DataManager 按 table 字段加载 rows/config。"
+  ]
+}

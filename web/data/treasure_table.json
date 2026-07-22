@@ -1,0 +1,482 @@
+{
+  "schema_version": "0.1.0",
+  "table": "treasure_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 八件本命法宝表，包含封神来源与成长数据。",
+  "rows": [
+    {
+      "treasure_id": "treasure_001",
+      "treasure_name": "雷纹木剑",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "thunder",
+      "base_power_bonus": 0.8,
+      "main_effect": {
+        "combat_power_bonus": 0.8,
+        "thunder_damage_bonus": 0.2,
+        "travel_speed_bonus": 0.05
+      },
+      "skill_name": "雷纹斩",
+      "skill_desc": "结算战斗时，对首领额外造成一次雷击伤害。",
+      "origin_desc": "一截被天雷劈中的枯木，内部留有雷部残纹，被玩家炼成护道木剑。",
+      "fengshen_relation": "雷部残纹、五雷术前置",
+      "visual_keywords": [
+        "雷纹",
+        "焦木",
+        "蓝白电光",
+        "符箓刻痕"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_001",
+      "card_asset_key": "card_treasure_001",
+      "obtain_text": "获得本命法宝：雷纹木剑\n一截被天雷劈中的枯木，内部留有雷部残纹，被玩家炼成护道木剑。\n战力大幅提升，解锁法宝技：雷纹斩。"
+    },
+    {
+      "treasure_id": "treasure_002",
+      "treasure_name": "聚灵葫芦",
+      "treasure_type": "cultivation",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "neutral",
+      "base_power_bonus": 0.2,
+      "main_effect": {
+        "offline_daoxing_bonus": 0.15,
+        "mana_reward_bonus": 0.1,
+        "offline_limit_bonus_minutes": 60
+      },
+      "skill_name": "聚灵",
+      "skill_desc": "每次闭关结算时，额外获得一笔道行。",
+      "origin_desc": "榜外散修遗留的闭关葫芦，内有聚灵小阵。",
+      "fengshen_relation": "炼气聚灵类法宝",
+      "visual_keywords": [
+        "青玉葫芦",
+        "金色灵气",
+        "小型聚灵阵"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_002",
+      "card_asset_key": "card_treasure_002",
+      "obtain_text": "获得本命法宝：聚灵葫芦\n榜外散修遗留的闭关葫芦，内有聚灵小阵。\n战力大幅提升，解锁法宝技：聚灵。"
+    },
+    {
+      "treasure_id": "treasure_003",
+      "treasure_name": "玄黄护符",
+      "treasure_type": "protect",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "merit",
+      "base_power_bonus": 0.25,
+      "main_effect": {
+        "breakthrough_success_bonus": 0.08,
+        "merit_reward_bonus": 0.1,
+        "fail_compensation_bonus": 0.2
+      },
+      "skill_name": "护劫",
+      "skill_desc": "破劫失败时，额外提高下次成功率。",
+      "origin_desc": "玉虚护身残符仿制物，可在榜文照身时护住灵台。",
+      "fengshen_relation": "玄黄护体、功德护身",
+      "visual_keywords": [
+        "黄玉符牌",
+        "玄黄云纹",
+        "护体金光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_003",
+      "card_asset_key": "card_treasure_003",
+      "obtain_text": "获得本命法宝：玄黄护符\n玉虚护身残符仿制物，可在榜文照身时护住灵台。\n战力大幅提升，解锁法宝技：护劫。"
+    },
+    {
+      "treasure_id": "treasure_004",
+      "treasure_name": "镇妖铃",
+      "treasure_type": "control",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "boss",
+      "base_power_bonus": 0.3,
+      "main_effect": {
+        "boss_success_bonus": 0.1,
+        "monster_map_reward_bonus": 0.1,
+        "spell_page_drop_bonus": 0.05
+      },
+      "skill_name": "镇妖",
+      "skill_desc": "挑战妖物首领时，降低敌方战力。",
+      "origin_desc": "陈塘旧庙镇妖铃，被劫气侵蚀后失灵，重新祭起后仍有镇妖敕纹。",
+      "fengshen_relation": "天庭镇妖敕令前置",
+      "visual_keywords": [
+        "青铜铃",
+        "红绳",
+        "镇妖符纹",
+        "旧庙锈痕"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_004",
+      "card_asset_key": "card_treasure_004",
+      "obtain_text": "获得本命法宝：镇妖铃\n陈塘旧庙镇妖铃，被劫气侵蚀后失灵，重新祭起后仍有镇妖敕纹。\n战力大幅提升，解锁法宝技：镇妖。"
+    },
+    {
+      "treasure_id": "treasure_005",
+      "treasure_name": "风火蒲团",
+      "treasure_type": "cultivation",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "fire",
+      "base_power_bonus": 0.2,
+      "main_effect": {
+        "offline_daoxing_bonus": 0.1,
+        "spell_page_drop_bonus": 0.1,
+        "mana_reward_bonus": 0.15
+      },
+      "skill_name": "风火参玄",
+      "skill_desc": "闭关时有概率额外触发一次法术机缘。",
+      "origin_desc": "陈塘风火余气浸染的破蒲团，适合闭关参玄。",
+      "fengshen_relation": "风火轮因果边缘",
+      "visual_keywords": [
+        "破旧蒲团",
+        "风火纹",
+        "赤金火光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_005",
+      "card_asset_key": "card_treasure_005",
+      "obtain_text": "获得本命法宝：风火蒲团\n陈塘风火余气浸染的破蒲团，适合闭关参玄。\n战力大幅提升，解锁法宝技：风火参玄。"
+    },
+    {
+      "treasure_id": "treasure_006",
+      "treasure_name": "青铜照魂镜",
+      "treasure_type": "control",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "soul",
+      "base_power_bonus": 0.35,
+      "main_effect": {
+        "soul_map_reward_bonus": 0.15,
+        "boss_power_reduce": 0.05,
+        "mana_reward_bonus": 0.2
+      },
+      "skill_name": "照魂",
+      "skill_desc": "结算时有概率额外获得魂系材料。",
+      "origin_desc": "半面残镜映不出人脸，却能照见魂影，似与骷髅山旧法有关。",
+      "fengshen_relation": "石矶、照魂、魂法",
+      "visual_keywords": [
+        "半面破镜",
+        "白骨纹",
+        "幽蓝魂光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_006",
+      "card_asset_key": "card_treasure_006",
+      "obtain_text": "获得本命法宝：青铜照魂镜\n半面残镜映不出人脸，却能照见魂影，似与骷髅山旧法有关。\n战力大幅提升，解锁法宝技：照魂。"
+    },
+    {
+      "treasure_id": "treasure_007",
+      "treasure_name": "金光小印",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "boss",
+      "base_power_bonus": 1.0,
+      "main_effect": {
+        "combat_power_bonus": 1.0,
+        "boss_damage_bonus": 0.15,
+        "treasure_shard_drop_bonus": 0.05
+      },
+      "skill_name": "金印镇山",
+      "skill_desc": "挑战首领时，造成一次额外镇压伤害。",
+      "origin_desc": "寸许小印沉重如山，隐有阐教镇压之意，是印类法宝宝胚。",
+      "fengshen_relation": "番天印路线前置",
+      "visual_keywords": [
+        "金印",
+        "山纹",
+        "金色镇压纹"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_007",
+      "card_asset_key": "card_treasure_007",
+      "obtain_text": "获得本命法宝：金光小印\n寸许小印沉重如山，隐有阐教镇压之意，是印类法宝宝胚。\n战力大幅提升，解锁法宝技：金印镇山。"
+    },
+    {
+      "treasure_id": "treasure_008",
+      "treasure_name": "清心玉佩",
+      "treasure_type": "protect_cultivation",
+      "unlock_realm": "zr_01",
+      "related_spell_type": "merit",
+      "base_power_bonus": 0.15,
+      "main_effect": {
+        "merit_reward_bonus": 0.1,
+        "calamity_pressure_reduce": 0.05,
+        "offline_daoxing_bonus": 0.08
+      },
+      "skill_name": "清心",
+      "skill_desc": "降低劫气带来的破劫压力。",
+      "origin_desc": "榜外散修用于遮掩真灵的玉佩，可使榜文照身时不易留名。",
+      "fengshen_relation": "避榜、护真灵、功德路线",
+      "visual_keywords": [
+        "青白玉佩",
+        "清光",
+        "细小榜文纹"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_008",
+      "card_asset_key": "card_treasure_008",
+      "obtain_text": "获得本命法宝：清心玉佩\n榜外散修用于遮掩真灵的玉佩，可使榜文照身时不易留名。\n战力大幅提升，解锁法宝技：清心。"
+    }
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "schema_version": "0.1.0",
+  "table": "spell_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 术法表：真仙前只称术法，不称神通。",
+  "rows": [
+    {
+      "spell_id": "spell_thunder_01",
+      "spell_name": "掌心雷",
+      "advanced_names": {
+        "真人": "五雷术",
+        "真仙_后续": "五雷正法"
+      },
+      "spell_type": "thunder",
+      "unlock_realm": "rq_04",
+      "max_level_by_realm": {
+        "炼气士": 5,
+        "真人": 10,
+        "地仙": 15
+      },
+      "effect_type": "burst_boss",
+      "base_effect": {
+        "combat_reward_bonus": 0.05,
+        "boss_damage_bonus": 0.05,
+        "thunder_damage_bonus": 0.05
+      },
+      "bonus_per_level": {
+        "combat_reward_bonus": 0.01,
+        "boss_damage_bonus": 0.02,
+        "thunder_damage_bonus": 0.03
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 3,
+          "mana_cost": 500
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 5,
+          "mana_cost": 1200
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 8,
+          "mana_cost": 2500
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 12,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 18,
+          "mana_cost": 9000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 25,
+          "mana_cost": 15000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 35,
+          "mana_cost": 24000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 48,
+          "mana_cost": 36000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 65,
+          "mana_cost": 52000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 85,
+          "mana_cost": 75000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 110,
+          "mana_cost": 105000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 140,
+          "mana_cost": 145000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 180,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 230,
+          "mana_cost": 280000
+        }
+      ],
+      "lore_text": "引雷入掌，破邪斩妖。此时只是术法，未成神通。",
+      "visual_keywords": [
+        "掌心",
+        "雷光",
+        "符印",
+        "蓝白电弧"
+      ],
+      "icon_key": "icon_spell_thunder"
+    },
+    {
+      "spell_id": "spell_fire_01",
+      "spell_name": "灵火术",
+      "advanced_names": {
+        "真人": "赤火术",
+        "真仙_后续": "三昧真火"
+      },
+      "spell_type": "fire",
+      "unlock_realm": "rq_04",
+      "max_level_by_realm": {
+        "炼气士": 5,
+        "真人": 10,
+        "地仙": 15
+      },
+      "effect_type": "idle_farming",
+      "base_effect": {
+        "map_reward_bonus": 0.05,
+        "mana_reward_bonus": 0.05,
+        "fire_damage_bonus": 0.05
+      },
+      "bonus_per_level": {
+        "map_reward_bonus": 0.012,
+        "mana_reward_bonus": 0.012,
+        "fire_damage_bonus": 0.025
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 3,
+          "mana_cost": 500
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 5,
+          "mana_cost": 1200
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 8,
+          "mana_cost": 2500
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 12,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 18,
+          "mana_cost": 9000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 25,
+          "mana_cost": 15000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 35,
+          "mana_cost": 24000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 48,
+          "mana_cost": 36000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 65,
+          "mana_cost": 52000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 85,
+          "mana_cost": 75000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 110,
+          "mana_cost": 105000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 140,
+          "mana_cost": 145000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 180,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 230,
+          "mana_cost": 280000
+        }
+      ],
+      "lore_text": "符火入掌，长于持续焚妖与炼化灵气。真仙前仍为术法。",
+      "visual_keywords": [
+        "符火",
+        "赤火",
+        "朱砂符纹"
+      ],
+      "icon_key": "icon_spell_fire"
+    },
+    {
+      "spell_id": "spell_weapon_01",
+      "spell_name": "御器术",
+      "advanced_names": {
+        "真人": "御剑术",
+        "真仙_后续": "斩妖剑气"
+      },
+      "spell_type": "weapon",
+      "unlock_realm": "rq_04",
+      "max_level_by_realm": {
+        "炼气士": 5,
+        "真人": 10,
+        "地仙": 15
+      },
+      "effect_type": "treasure_link",
+      "base_effect": {
+        "artifact_drop_bonus": 0.05,
+        "treasure_drop_bonus": 0.03,
+        "combat_power_bonus": 0.05
+      },
+      "bonus_per_level": {
+        "artifact_drop_bonus": 0.01,
+        "treasure_drop_bonus": 0.01,
+        "combat_power_bonus": 0.02
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 3,
+          "mana_cost": 500
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 5,
+          "mana_cost": 1200
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 8,
+          "mana_cost": 2500
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 12,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 18,
+          "mana_cost": 9000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 25,
+          "mana_cost": 15000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 35,
+          "mana_cost": 24000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 48,
+          "mana_cost": 36000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 65,
+          "mana_cost": 52000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 85,
+          "mana_cost": 75000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 110,
+          "mana_cost": 105000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 140,
+          "mana_cost": 145000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 180,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 230,
+          "mana_cost": 280000
+        }
+      ],
+      "lore_text": "以法力御使小器，真人后可称御剑术。真仙前不称剑诀神通。",
+      "visual_keywords": [
+        "飞剑",
+        "法器",
+        "金色轨迹",
+        "御器符文"
+      ],
+      "icon_key": "icon_spell_weapon"
+    }
+  ]
+}

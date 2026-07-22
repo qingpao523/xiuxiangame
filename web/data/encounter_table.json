@@ -1,0 +1,207 @@
+{
+  "schema_version": "0.1.0",
+  "table": "encounter_table",
+  "description": "R0 凡境好玩化：游历途中遭遇事件。每次游历随机 2 个遭遇，选项类型 battle=斗法 / check=判定 / safe=稳妥。",
+  "rows": [
+    {
+      "encounter_id": "enc_wild_01",
+      "map_id": "map_001",
+      "name": "拦路小妖",
+      "narrative": "一头受劫气驱使的独角小妖自黑雾中窜出，双目赤红，拦住去路。",
+      "options": [
+        {
+          "text": "斗法镇杀",
+          "kind": "battle",
+          "enemy_name": "独角小妖",
+          "enemy_power_ratio": 0.25,
+          "success": { "resources": { "daoxing": 12, "mana": 600 }, "chance_extra": { "chance": 0.4, "resources": { "spell_page": 2 } }, "text": "小妖化作黑烟散去，你在原地拾得残符与灵气。" },
+          "fail": { "text": "小妖凶性大发，你且战且退，未有所获。" }
+        },
+        {
+          "text": "绕行避让",
+          "kind": "check",
+          "chance": 0.8,
+          "success": { "resources": { "daoxing": 4 }, "text": "你借山石掩身悄然绕过，途中顺手采得几缕灵气。" },
+          "fail": { "resources": { "mana": -200 }, "text": "脚下枯枝一响，小妖追来，你仓皇施法脱身，耗了些法力。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_wild_02",
+      "map_id": "map_001",
+      "name": "荒庙残符",
+      "narrative": "半塌的荒庙里，神龛下压着几张焦黑残符，符纹隐有微光。",
+      "options": [
+        {
+          "text": "冒险探查",
+          "kind": "check",
+          "chance": 0.65,
+          "bonus_spell_type": "weapon",
+          "bonus_per_level": 0.05,
+          "success": { "resources": { "spell_page": 3 }, "text": "你以法力隔空摄符，残页入袖，庙中尘埃未惊。" },
+          "fail": { "resources": { "mana": -300 }, "text": "残符触手即燃，一缕劫火烧上袖口，你急忙以法力扑灭。" }
+        },
+        {
+          "text": "拜庙而去",
+          "kind": "safe",
+          "success": { "resources": { "daoxing": 6 }, "text": "你整衣一拜，转身离去。心境澄明，道行反有所进。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_wild_03",
+      "map_id": "map_001",
+      "name": "山民求救",
+      "narrative": "山道旁一名樵夫跌坐在地——他的柴担被一头黑毛野妖掀翻，妖物正龇牙逼近。",
+      "options": [
+        {
+          "text": "出手相助",
+          "kind": "battle",
+          "enemy_name": "黑毛野妖",
+          "enemy_power_ratio": 0.2,
+          "success": { "resources": { "daoxing": 15, "mana": 400 }, "text": "野妖遁走，樵夫连连叩谢。你心头微暖，道行更稳。" },
+          "fail": { "text": "野妖悍不畏死，你护着樵夫且战且退，总算保他无恙。" }
+        },
+        {
+          "text": "隔崖喝止",
+          "kind": "check",
+          "chance": 0.6,
+          "bonus_spell_type": "thunder",
+          "bonus_per_level": 0.06,
+          "success": { "resources": { "daoxing": 10 }, "text": "你一声雷喝震落崖上碎石，野妖夹尾而逃。" },
+          "fail": { "text": "妖物毫不理会，你只得亲自下场驱赶，费了番手脚。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_chen_01",
+      "map_id": "map_002",
+      "name": "巡海残兵拦路",
+      "narrative": "潮雾中浮出几具巡海妖兵残影，鱼鳞甲上还挂着海藻，长戟指向你。",
+      "options": [
+        {
+          "text": "斗法破阵",
+          "kind": "battle",
+          "enemy_name": "巡海残兵",
+          "enemy_power_ratio": 0.3,
+          "success": { "resources": { "daoxing": 40, "mana": 2000, "treasure_shard": 2 }, "text": "雷火落处残影俱碎，浪花里翻出几枚陈塘遗宝碎片。" },
+          "fail": { "text": "残兵结阵而进，你退回礁石之上，暂避锋芒。" }
+        },
+        {
+          "text": "施礼借道",
+          "kind": "check",
+          "chance": 0.75,
+          "success": { "resources": { "daoxing": 15 }, "text": "你执礼甚恭，残影迟疑片刻，让开一条水路。" },
+          "fail": { "resources": { "mana": -1000 }, "text": "残影不辨礼数，长戟横扫，你破费法力护身而退。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_chen_02",
+      "map_id": "map_002",
+      "name": "风雷残机",
+      "narrative": "陈塘关方向一道雷光落入滩涂，坑中雷气游走不散，隐有风火之意。",
+      "options": [
+        {
+          "text": "引雷淬体",
+          "kind": "check",
+          "chance": 0.55,
+          "bonus_spell_type": "thunder",
+          "bonus_per_level": 0.08,
+          "success": { "resources": { "daoxing": 60, "mana": 1500 }, "text": "雷气入体走了一个周天，你浑身酥麻，道行大进。" },
+          "fail": { "resources": { "mana": -1500 }, "text": "雷气暴烈难驯，你强行压下，气机紊乱，损了法力。" }
+        },
+        {
+          "text": "拓印雷纹",
+          "kind": "safe",
+          "success": { "resources": { "spell_page": 3 }, "text": "你以符纸拓下坑中雷纹，得残页数张。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_chen_03",
+      "map_id": "map_002",
+      "name": "东海怨魂",
+      "narrative": "浪头里浮着几缕不散的怨魂，随潮哭嚎。怨气与劫气交缠，稍有不慎便牵动榜文。",
+      "options": [
+        {
+          "text": "诵咒超度",
+          "kind": "check",
+          "chance": 0.7,
+          "success": { "resources": { "merit": 80, "daoxing": 20 }, "text": "怨魂随咒声散入月光，一缕功德金光落入灵台。" },
+          "fail": { "text": "怨魂执念太深，咒声难渡，你只得退开。" }
+        },
+        {
+          "text": "炼化怨潮",
+          "kind": "safe",
+          "success": { "resources": { "calamity": 60, "mana": 2500 }, "text": "你张手引怨潮入体炼化，法力暴涨，一丝劫气也随之入了命门。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_kul_01",
+      "map_id": "map_003",
+      "name": "白骨阴火",
+      "narrative": "山道两侧的白骨间燃着幽幽阴火，火中隐见符纹流转。",
+      "options": [
+        {
+          "text": "以法采火",
+          "kind": "check",
+          "chance": 0.6,
+          "bonus_spell_type": "fire",
+          "bonus_per_level": 0.07,
+          "success": { "resources": { "refine_material": 3, "mana": 3000 }, "text": "阴火乖顺入瓶，正是上好的祭炼之材。" },
+          "fail": { "resources": { "mana": -3000 }, "text": "阴火忽然反噬，你以法力强压，方才无恙。" }
+        },
+        {
+          "text": "绕火而行",
+          "kind": "safe",
+          "success": { "resources": { "daoxing": 40 }, "text": "你避开阴火细观其性，于火中悟得几分地脉之理。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_kul_02",
+      "map_id": "map_003",
+      "name": "照魂残影",
+      "narrative": "一面残破铜镜自阴云下缓缓转出，镜光扫处，山石上映出你的魂影。",
+      "options": [
+        {
+          "text": "斗法碎镜",
+          "kind": "battle",
+          "enemy_name": "照魂残影",
+          "enemy_power_ratio": 0.3,
+          "success": { "resources": { "refine_material": 4, "treasure_shard": 3, "daoxing": 80 }, "text": "镜光崩碎，散作漫天照魂碎玉。" },
+          "fail": { "text": "镜光森寒难敌，你以法宝护住魂影，退出山道。" }
+        },
+        {
+          "text": "闭目静守",
+          "kind": "check",
+          "chance": 0.7,
+          "success": { "resources": { "daoxing": 60 }, "text": "你灵台不动，镜光照身而过，反照见自身道行深浅。" },
+          "fail": { "resources": { "mana": -4000 }, "text": "镜光勾动神魂，你急运法力守住灵台，出了一身冷汗。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_kul_03",
+      "map_id": "map_003",
+      "name": "地脉裂隙",
+      "narrative": "脚下山岩裂开一道细缝，地脉灵气自缝中蒸腾而上，深处隐有搏动之声。",
+      "options": [
+        {
+          "text": "探身深入",
+          "kind": "check",
+          "chance": 0.55,
+          "success": { "resources": { "daoxing": 120, "mana": 6000 }, "text": "你顺裂隙下探数十丈，饱饮地脉灵机而返。" },
+          "fail": { "text": "裂隙深处阴风骤起，你不敢再进，原路退出。" }
+        },
+        {
+          "text": "标记而去",
+          "kind": "safe",
+          "success": { "resources": { "refine_material": 2 }, "text": "你在裂隙旁堆石为记，顺手采了些溢出的祭炼之材。" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>封神修道录</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="bg"></div>
+  <div id="fx-seal"></div>
+  <div id="dim"></div>
+
+  <main id="app">
+    <!-- 顶部封神天象条 -->
+    <header id="top-banner">
+      <div id="game-title">封神修道录</div>
+      <div id="identity-line"></div>
+      <div id="weather-line"></div>
+      <div id="omen-line"></div>
+    </header>
+
+    <!-- 资源浮层 -->
+    <div id="resource-strip"></div>
+
+    <!-- 主角舞台 -->
+    <section id="stage">
+      <div id="char-aura"></div>
+      <img id="char-img" alt="修行者" />
+      <div id="treasure-orb" class="hidden"></div>
+    </section>
+
+    <!-- 当前目标 -->
+    <section id="goal-panel">
+      <div id="goal-text"></div>
+      <div id="goal-reward"></div>
+    </section>
+
+    <!-- 道行进度 -->
+    <section id="progress-zone">
+      <div id="progress-label"></div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+    </section>
+
+    <!-- 修行日志（最新一条） -->
+    <div id="status-line"></div>
+
+    <!-- 可操作提示条 -->
+    <button id="hint-bar" class="hidden"></button>
+
+    <!-- 唯一主行动按钮 -->
+    <button id="main-btn">
+      <div id="main-btn-progress"></div>
+      <span id="main-btn-label">吐纳周天</span>
+    </button>
+    <div id="auto-row">
+      <button id="auto-toggle">连续修行：关</button>
+    </div>
+
+    <!-- 底部功能导航 -->
+    <nav id="bottom-nav">
+      <button class="nav-btn" data-panel="realm"><span class="nav-glyph">境</span><span class="nav-name">境界</span></button>
+      <button class="nav-btn" data-panel="map"><span class="nav-glyph">游</span><span class="nav-name">游历</span></button>
+      <button class="nav-btn" data-panel="spell"><span class="nav-glyph">术</span><span class="nav-name">术法</span></button>
+      <button class="nav-btn" data-panel="treasure"><span class="nav-glyph">宝</span><span class="nav-name">法宝</span></button>
+      <button class="nav-btn" data-panel="chance"><span class="nav-glyph">缘</span><span class="nav-name">机缘</span></button>
+      <button class="nav-btn" data-panel="log"><span class="nav-glyph">志</span><span class="nav-name">洞府</span></button>
+    </nav>
+
+    <div id="debug-bar" class="hidden">
+      <span>调试模式：当前节奏不代表正式体验</span>
+      <button id="debug-ff">快进6时辰</button>
+      <button id="debug-res">资源+5000</button>
+    </div>
+  </main>
+
+  <!-- 功能面板（半屏抽屉） -->
+  <div id="panel-layer" class="hidden">
+    <div id="panel-sheet">
+      <div id="panel-title"></div>
+      <div id="panel-body"></div>
+      <button id="panel-close">收起</button>
+    </div>
+  </div>
+
+  <!-- 天象有变前奏 -->
+  <div id="prelude" class="hidden">天象有变……</div>
+
+  <!-- 弹窗层 -->
+  <div id="popup-layer" class="hidden">
+    <div id="popup-panel">
+      <div id="popup-title"></div>
+      <div id="popup-body"></div>
+      <div id="popup-buttons"></div>
+    </div>
+  </div>
+
+  <!-- 破劫演出 -->
+  <div id="tribulation-fx" class="hidden"><span>劫云压顶</span></div>
+
+  <script src="game.js"></script>
+  <script src="ui.js"></script>
+</body>
+</html>
