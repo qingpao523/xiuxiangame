@@ -1,0 +1,186 @@
+{
+  "schema_version": "0.1.0",
+  "table": "map_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 地图表，已接入封神锚点与叙事包装。",
+  "rows": [
+    {
+      "map_id": "map_001",
+      "sort_order": 1,
+      "map_name": "山野妖患",
+      "unlock_realm": "rq_03",
+      "recommended_power": 300,
+      "daoxing_per_min": 1.5,
+      "mana_per_min": 100,
+      "drop_roll_interval_minutes": 10,
+      "drop_table": [
+        {
+          "resource_id": "spell_page",
+          "min": 1,
+          "max": 3,
+          "chance": 0.45,
+          "unlock_condition": "rq_04"
+        },
+        {
+          "resource_id": "artifact_shard",
+          "min": 1,
+          "max": 2,
+          "chance": 0.25,
+          "unlock_condition": "rq_07"
+        },
+        {
+          "resource_id": "mana",
+          "min": 100,
+          "max": 300,
+          "chance": 0.65,
+          "unlock_condition": "open"
+        }
+      ],
+      "event_weight": 1.0,
+      "boss_id": "boss_001",
+      "lore_anchor": "大劫外溢，妖物受劫气驱使",
+      "narrative_desc": "此地原是无名山野。自从天边金榜初现，山中黑雾游走，草木妖灵受劫气惊扰，频频伤人。",
+      "entry_text": "你避开大劫核心，只在山野边缘清理受劫气驱使的小妖。",
+      "visual_keywords": [
+        "山野",
+        "黑雾",
+        "妖患",
+        "榜文碎光",
+        "残符",
+        "荒庙"
+      ],
+      "background_asset_key": "bg_mountain_cave",
+      "drop_lore_map": {
+        "spell_page": "残符碎页",
+        "artifact_shard": "破损护道法器",
+        "mana": "游离灵气"
+      }
+    },
+    {
+      "map_id": "map_002",
+      "sort_order": 2,
+      "map_name": "陈塘关外围",
+      "unlock_realm": "zr_03",
+      "recommended_power": 19000,
+      "daoxing_per_min": 7.0,
+      "mana_per_min": 800,
+      "drop_roll_interval_minutes": 10,
+      "drop_table": [
+        {
+          "resource_id": "treasure_shard",
+          "min": 2,
+          "max": 5,
+          "chance": 0.45,
+          "unlock_condition": "zr_01"
+        },
+        {
+          "resource_id": "spell_page",
+          "min": 2,
+          "max": 5,
+          "chance": 0.35,
+          "unlock_condition": "rq_04"
+        },
+        {
+          "resource_id": "merit",
+          "min": 30,
+          "max": 80,
+          "chance": 0.35,
+          "unlock_condition": "zr_05"
+        },
+        {
+          "resource_id": "calamity",
+          "min": 30,
+          "max": 80,
+          "chance": 0.35,
+          "unlock_condition": "zr_05"
+        },
+        {
+          "resource_id": "mana",
+          "min": 500,
+          "max": 1200,
+          "chance": 0.75,
+          "unlock_condition": "open"
+        }
+      ],
+      "event_weight": 1.2,
+      "boss_id": "boss_002",
+      "lore_anchor": "哪吒因果余波、东海水族异动",
+      "narrative_desc": "陈塘关外雷声不绝，东海怨潮涌动，巡海妖兵频频上岸。城中似有风火之气冲天。",
+      "entry_text": "你不入陈塘关城，只在外围拾取风雷残机与东海劫息。",
+      "visual_keywords": [
+        "陈塘关",
+        "东海",
+        "风雷",
+        "巡海妖兵",
+        "哪吒战痕",
+        "榜文残光"
+      ],
+      "background_asset_key": "bg_chentang_far",
+      "drop_lore_map": {
+        "treasure_shard": "陈塘遗宝",
+        "merit": "护关功德",
+        "calamity": "东海怨劫",
+        "spell_page": "风雷术页"
+      }
+    },
+    {
+      "map_id": "map_003",
+      "sort_order": 3,
+      "map_name": "骷髅山边界",
+      "unlock_realm": "dx_01",
+      "recommended_power": 450000,
+      "daoxing_per_min": 25.0,
+      "mana_per_min": 3000,
+      "drop_roll_interval_minutes": 10,
+      "drop_table": [
+        {
+          "resource_id": "refine_material",
+          "min": 2,
+          "max": 6,
+          "chance": 0.55,
+          "unlock_condition": "dx_01"
+        },
+        {
+          "resource_id": "treasure_shard",
+          "min": 3,
+          "max": 8,
+          "chance": 0.35,
+          "unlock_condition": "zr_01"
+        },
+        {
+          "resource_id": "spell_page",
+          "min": 3,
+          "max": 8,
+          "chance": 0.35,
+          "unlock_condition": "rq_04"
+        },
+        {
+          "resource_id": "mana",
+          "min": 1500,
+          "max": 4000,
+          "chance": 0.85,
+          "unlock_condition": "open"
+        }
+      ],
+      "event_weight": 1.5,
+      "boss_id": "boss_003",
+      "lore_anchor": "石矶余阴、白骨阴火、截教残痕",
+      "narrative_desc": "骷髅山边界阴云不散，白骨洞旧影若隐若现。此地曾有截教仙人修行，阴火焚山，白骨成阵。",
+      "entry_text": "你初成地仙，尚不敢深入白骨洞，只能在山界之外采集残火、照魂碎玉与地脉阴灵。",
+      "visual_keywords": [
+        "骷髅山",
+        "白骨洞",
+        "石矶余阴",
+        "截教残痕",
+        "白骨阴火",
+        "照魂镜"
+      ],
+      "background_asset_key": "bg_kulou_edge",
+      "drop_lore_map": {
+        "refine_material": "白骨阴火",
+        "treasure_shard": "白骨洞遗宝",
+        "spell_page": "截教残韵"
+      }
+    }
+  ]
+}

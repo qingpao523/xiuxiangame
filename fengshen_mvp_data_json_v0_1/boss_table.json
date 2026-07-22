@@ -1,0 +1,74 @@
+{
+  "schema_version": "0.1.0",
+  "table": "boss_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 三个 Boss 结算挑战。",
+  "rows": [
+    {
+      "boss_id": "boss_001",
+      "boss_name": "山野妖首",
+      "unlock_condition": "rq_08",
+      "map_id": "map_001",
+      "recommended_power": 3000,
+      "reward_daoxing": 80,
+      "reward_mana": 3000,
+      "reward_items": {
+        "artifact_shard": 6,
+        "spell_page": 4
+      },
+      "first_clear_event": "event_005",
+      "lore_text": "受劫气驱使的山野妖首，双目赤红，巢中藏有破损护道法器。",
+      "victory_text": "你以术法镇杀妖首，山中黑雾暂散。",
+      "visual_keywords": [
+        "山妖",
+        "黑雾",
+        "残符",
+        "劫气"
+      ]
+    },
+    {
+      "boss_id": "boss_002",
+      "boss_name": "巡海妖将",
+      "unlock_condition": "zr_07",
+      "map_id": "map_002",
+      "recommended_power": 70000,
+      "reward_daoxing": 120,
+      "reward_mana": 8000,
+      "reward_items": {
+        "treasure_shard": 8,
+        "merit": 200
+      },
+      "first_clear_event": "event_008",
+      "lore_text": "东海怨潮中浮现的巡海妖将残影，受封神劫气驱使而来。",
+      "victory_text": "雷火落入潮中，巡海妖将残影崩散，留下一缕东海怨劫。",
+      "visual_keywords": [
+        "巡海妖将",
+        "东海",
+        "风雷",
+        "怨潮"
+      ]
+    },
+    {
+      "boss_id": "boss_003",
+      "boss_name": "白骨残影",
+      "unlock_condition": "dx_01",
+      "map_id": "map_003",
+      "recommended_power": 450000,
+      "reward_daoxing": 500,
+      "reward_mana": 30000,
+      "reward_items": {
+        "refine_material": 10,
+        "treasure_shard": 10
+      },
+      "first_clear_event": "event_020",
+      "lore_text": "骷髅山边界游荡的白骨残影，似由石矶余阴与白骨阴火凝成。",
+      "victory_text": "照魂残光掠过白骨，阴火一散，地脉灵气重新上涌。",
+      "visual_keywords": [
+        "白骨残影",
+        "阴火",
+        "照魂镜",
+        "截教残痕"
+      ]
+    }
+  ]
+}

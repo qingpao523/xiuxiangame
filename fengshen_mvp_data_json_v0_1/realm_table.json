@@ -1,0 +1,695 @@
+{
+  "schema_version": "0.1.0",
+  "table": "realm_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 境界数据表：炼气士一重到地仙一重，共 21 个节点。",
+  "rows": [
+    {
+      "realm_id": "rq_01",
+      "sort_order": 1,
+      "realm_name": "炼气士1重",
+      "major_realm": "炼气士",
+      "minor_level": 1,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 10,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1.0,
+      "base_mana_per_min": 80,
+      "combat_power_base": 100,
+      "unlock_ids": [
+        "closed_cultivation",
+        "resource_daoxing",
+        "resource_mana"
+      ],
+      "feature_tips": [
+        "开始闭关",
+        "获得道行"
+      ],
+      "lore_text": "初窥大道，开始吐纳山中灵气。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "山野洞府，远天隐现金榜碎光。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_02",
+      "sort_order": 2,
+      "realm_name": "炼气士2重",
+      "major_realm": "炼气士",
+      "minor_level": 2,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 25,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1.2,
+      "base_mana_per_min": 95,
+      "combat_power_base": 180,
+      "unlock_ids": [
+        "one_click_claim"
+      ],
+      "feature_tips": [
+        "第一次离线收益"
+      ],
+      "lore_text": "炼气入体，周天初转，已能主动归纳灵气。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "山野洞府灵气微亮。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_03",
+      "sort_order": 3,
+      "realm_name": "炼气士3重",
+      "major_realm": "炼气士",
+      "minor_level": 3,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 45,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1.5,
+      "base_mana_per_min": 120,
+      "combat_power_base": 300,
+      "unlock_ids": [
+        "travel",
+        "map_001"
+      ],
+      "feature_tips": [
+        "开启山野妖患"
+      ],
+      "lore_text": "可离开洞府，在山野边缘游历。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "山野黑雾初现。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_04",
+      "sort_order": 4,
+      "realm_name": "炼气士4重",
+      "major_realm": "炼气士",
+      "minor_level": 4,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 75,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1.8,
+      "base_mana_per_min": 160,
+      "combat_power_base": 500,
+      "unlock_ids": [
+        "spell_system",
+        "spell_choose_first"
+      ],
+      "feature_tips": [
+        "选择第一门术法"
+      ],
+      "lore_text": "观残符而悟小术，开始拥有护道之法。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "符纸与微光。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_05",
+      "sort_order": 5,
+      "realm_name": "炼气士5重",
+      "major_realm": "炼气士",
+      "minor_level": 5,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 120,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2.0,
+      "base_mana_per_min": 220,
+      "combat_power_base": 800,
+      "unlock_ids": [
+        "spell_upgrade"
+      ],
+      "feature_tips": [
+        "升级术法"
+      ],
+      "lore_text": "术法渐熟，斩妖已不再全靠蛮力。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "术法光效增强。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_06",
+      "sort_order": 6,
+      "realm_name": "炼气士6重",
+      "major_realm": "炼气士",
+      "minor_level": 6,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 180,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2.4,
+      "base_mana_per_min": 300,
+      "combat_power_base": 1200,
+      "unlock_ids": [
+        "event_system",
+        "fengshen_intro"
+      ],
+      "feature_tips": [
+        "开启机缘"
+      ],
+      "lore_text": "天边榜文碎光初现，山野机缘开始浮动。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "封神榜碎光。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_07",
+      "sort_order": 7,
+      "realm_name": "炼气士7重",
+      "major_realm": "炼气士",
+      "minor_level": 7,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 260,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2.8,
+      "base_mana_per_min": 420,
+      "combat_power_base": 1800,
+      "unlock_ids": [
+        "artifact_shard_drop"
+      ],
+      "feature_tips": [
+        "掉落法器碎片"
+      ],
+      "lore_text": "大劫余波震落旧器残片，法器机缘初现。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "破损法器碎光。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_08",
+      "sort_order": 8,
+      "realm_name": "炼气士8重",
+      "major_realm": "炼气士",
+      "minor_level": 8,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 360,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 3.2,
+      "base_mana_per_min": 560,
+      "combat_power_base": 2600,
+      "unlock_ids": [
+        "boss_001"
+      ],
+      "feature_tips": [
+        "开启小Boss"
+      ],
+      "lore_text": "山野妖患渐重，可试斩妖首。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "山妖黑雾。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_09",
+      "sort_order": 9,
+      "realm_name": "炼气士9重",
+      "major_realm": "炼气士",
+      "minor_level": 9,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 500,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 3.6,
+      "base_mana_per_min": 720,
+      "combat_power_base": 3800,
+      "unlock_ids": [
+        "breakthrough_preview_bt_001"
+      ],
+      "feature_tips": [
+        "真人破劫预告"
+      ],
+      "lore_text": "炼气将满，榜文虽远，却已能照见一丝真灵。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "榜文远照。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "rq_10",
+      "sort_order": 10,
+      "realm_name": "炼气士10重",
+      "major_realm": "炼气士",
+      "minor_level": 10,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 800,
+      "breakthrough_id_to_next": "bt_001",
+      "base_daoxing_per_min": 4.0,
+      "base_mana_per_min": 900,
+      "combat_power_base": 5500,
+      "unlock_ids": [
+        "breakthrough_bt_001"
+      ],
+      "feature_tips": [
+        "真人破劫入口"
+      ],
+      "lore_text": "炼气圆满，只差破开第一重劫数，便可称真人。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "破劫金光压顶。",
+      "ui": {
+        "badge_color_key": "qing_gold",
+        "background_phase": "mountain_cave",
+        "character_phase": "炼气士"
+      },
+      "tags": [
+        "炼气士",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_01",
+      "sort_order": 11,
+      "realm_name": "真人1重",
+      "major_realm": "真人",
+      "minor_level": 1,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 1200,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 5.0,
+      "base_mana_per_min": 1200,
+      "combat_power_base": 9000,
+      "unlock_ids": [
+        "treasure_system",
+        "first_treasure_choice",
+        "map_002_preview"
+      ],
+      "feature_tips": [
+        "获得本命法宝"
+      ],
+      "lore_text": "炼成道体，可称真人。本命法宝开始与气机相合。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "陈塘关远影初现。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_02",
+      "sort_order": 12,
+      "realm_name": "真人2重",
+      "major_realm": "真人",
+      "minor_level": 2,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 1800,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 5.8,
+      "base_mana_per_min": 1450,
+      "combat_power_base": 13000,
+      "unlock_ids": [
+        "treasure_upgrade"
+      ],
+      "feature_tips": [
+        "法宝强化"
+      ],
+      "lore_text": "法宝温养入体，护道之器开始成长。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "法宝悬光。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_03",
+      "sort_order": 13,
+      "realm_name": "真人3重",
+      "major_realm": "真人",
+      "minor_level": 3,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 2600,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 6.5,
+      "base_mana_per_min": 1700,
+      "combat_power_base": 19000,
+      "unlock_ids": [
+        "map_002"
+      ],
+      "feature_tips": [
+        "进入陈塘关外围"
+      ],
+      "lore_text": "可至陈塘关外围，拾取风雷与东海余机。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "陈塘雷云。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_04",
+      "sort_order": 14,
+      "realm_name": "真人4重",
+      "major_realm": "真人",
+      "minor_level": 4,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 3600,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 7.2,
+      "base_mana_per_min": 2050,
+      "combat_power_base": 27000,
+      "unlock_ids": [
+        "auto_cast_bonus"
+      ],
+      "feature_tips": [
+        "自动施法强化"
+      ],
+      "lore_text": "术法运转渐稳，可在结算中自动循环。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "术法环绕。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_05",
+      "sort_order": 15,
+      "realm_name": "真人5重",
+      "major_realm": "真人",
+      "minor_level": 5,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 5000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 8.0,
+      "base_mana_per_min": 2500,
+      "combat_power_base": 38000,
+      "unlock_ids": [
+        "merit_calamity",
+        "day3_chentang_event"
+      ],
+      "feature_tips": [
+        "开放功德/劫气"
+      ],
+      "lore_text": "陈塘劫气入境，功德与劫气的选择第一次摆在眼前。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "金光与黑雾并现。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_06",
+      "sort_order": 16,
+      "realm_name": "真人6重",
+      "major_realm": "真人",
+      "minor_level": 6,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 6800,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 9.0,
+      "base_mana_per_min": 3100,
+      "combat_power_base": 52000,
+      "unlock_ids": [
+        "spell_branch_bonus"
+      ],
+      "feature_tips": [
+        "术法倾向强化"
+      ],
+      "lore_text": "术法倾向明确，雷、火、御器各有偏向。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "术法分支光效。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_07",
+      "sort_order": 17,
+      "realm_name": "真人7重",
+      "major_realm": "真人",
+      "minor_level": 7,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 9000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 10.0,
+      "base_mana_per_min": 3800,
+      "combat_power_base": 70000,
+      "unlock_ids": [
+        "boss_002"
+      ],
+      "feature_tips": [
+        "陈塘Boss挑战"
+      ],
+      "lore_text": "可挑战陈塘外围巡海妖将残影。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "东海妖影。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_08",
+      "sort_order": 18,
+      "realm_name": "真人8重",
+      "major_realm": "真人",
+      "minor_level": 8,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 12000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 11.0,
+      "base_mana_per_min": 4600,
+      "combat_power_base": 95000,
+      "unlock_ids": [
+        "protect_breakthrough_treasure",
+        "day5榜文感应"
+      ],
+      "feature_tips": [
+        "榜文第一次感应"
+      ],
+      "lore_text": "封神榜第一次隐隐感应，你需准备护劫之物。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "榜文照身。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_09",
+      "sort_order": 19,
+      "realm_name": "真人9重",
+      "major_realm": "真人",
+      "minor_level": 9,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 16000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 12.0,
+      "base_mana_per_min": 5600,
+      "combat_power_base": 130000,
+      "unlock_ids": [
+        "breakthrough_preview_bt_002"
+      ],
+      "feature_tips": [
+        "地仙破劫预告"
+      ],
+      "lore_text": "地仙劫将至，地脉深处似有灵机震动。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "地脉微光。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "zr_10",
+      "sort_order": 20,
+      "realm_name": "真人10重",
+      "major_realm": "真人",
+      "minor_level": 10,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 22000,
+      "breakthrough_id_to_next": "bt_002",
+      "base_daoxing_per_min": 14.0,
+      "base_mana_per_min": 7000,
+      "combat_power_base": 180000,
+      "unlock_ids": [
+        "breakthrough_bt_002"
+      ],
+      "feature_tips": [
+        "地仙破劫入口"
+      ],
+      "lore_text": "真人圆满，若能避过榜文牵引，便可称地上之仙。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "榜文金光压顶。",
+      "ui": {
+        "badge_color_key": "gold",
+        "background_phase": "chentang_far",
+        "character_phase": "真人"
+      },
+      "tags": [
+        "真人",
+        "MVP",
+        "前七天"
+      ]
+    },
+    {
+      "realm_id": "dx_01",
+      "sort_order": 21,
+      "realm_name": "地仙1重",
+      "major_realm": "地仙",
+      "minor_level": 1,
+      "stage": "凡修成道",
+      "required_daoxing_to_next": 30000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 25.0,
+      "base_mana_per_min": 15000,
+      "combat_power_base": 450000,
+      "unlock_ids": [
+        "earth_pulse",
+        "treasure_refine",
+        "map_003",
+        "title_榜外散修"
+      ],
+      "feature_tips": [
+        "解锁地脉感应",
+        "法宝祭炼",
+        "骷髅山边界"
+      ],
+      "lore_text": "破地仙劫后，榜文照身而未留名。你已脱离凡俗寿数，可称地上之仙。",
+      "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
+      "visual_state": "地脉灵光上涌，远处骷髅山阴火。",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "MVP",
+        "前七天"
+      ]
+    }
+  ]
+}

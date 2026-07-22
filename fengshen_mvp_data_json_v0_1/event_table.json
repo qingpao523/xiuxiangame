@@ -1,0 +1,781 @@
+{
+  "schema_version": "0.1.0",
+  "table": "event_table",
+  "generated_at": "2026-06-30T00:22:16.000128Z",
+  "description": "MVP 20 个封神化机缘事件，含二选一奖励、压力与叙事文本。",
+  "rows": [
+    {
+      "event_id": "event_001",
+      "event_name": "榜文碎光",
+      "rarity": "common",
+      "unlock_condition": "rq_02",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "封神榜初现",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "天边金榜虚影一闪而没，一缕碎光落入山中。你闭目感应，似有大道残音在耳边回响。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "参悟榜文碎光",
+          "reward": {
+            "resources": {
+              "daoxing": 50
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "引光入体",
+          "reward": {
+            "resources": {
+              "mana": 5000
+            }
+          }
+        }
+      ],
+      "weight": 120,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_002",
+      "event_name": "截教残符",
+      "rarity": "common",
+      "unlock_condition": "rq_04",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "截教散落符纹",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "你在荒山石壁上发现半张残符。符纸焦黑，仍有截教符纹未散。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "参悟符纹",
+          "reward": {
+            "resources": {
+              "spell_page": 5
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "炼入法力",
+          "reward": {
+            "resources": {
+              "mana": 3000
+            }
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 2
+    },
+    {
+      "event_id": "event_003",
+      "event_name": "陈塘风雷",
+      "rarity": "common",
+      "unlock_condition": "rq_05",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "哪吒因果余波",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "陈塘关方向雷声不绝，风火之气隐隐传至山中。你于夜雨中静坐，心有所悟。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "悟风雷之意",
+          "reward": {
+            "resources": {
+              "spell_page": 3
+            },
+            "buffs": [
+              {
+                "buff_id": "temp_thunder_damage",
+                "value": 0.05,
+                "duration": "daily"
+              }
+            ]
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "稳住灵台",
+          "reward": {
+            "breakthrough_bonus": 0.02
+          }
+        }
+      ],
+      "weight": 90,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_004",
+      "event_name": "旧庙法器",
+      "rarity": "rare",
+      "unlock_condition": "rq_07",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "陈塘旧庙遗物",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "一座倒塌旧庙中，你在神龛下找到几块破损法器残片。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "拆解材料",
+          "reward": {
+            "resources": {
+              "artifact_shard": 8
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "尝试修复",
+          "reward": {
+            "resources": {
+              "artifact_shard": 3
+            },
+            "random_bonus": {
+              "chance": 0.2,
+              "resources": {
+                "treasure_shard": 5
+              }
+            }
+          }
+        }
+      ],
+      "weight": 70,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_005",
+      "event_name": "劫气驱妖",
+      "rarity": "common",
+      "unlock_condition": "rq_08",
+      "trigger_source": [
+        "boss"
+      ],
+      "fengshen_tag": "大劫外溢",
+      "pressure_type": "劫气外溢",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "山中妖首并非天生凶戾，而是被一缕黑色劫气驱使，双目赤红。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "镇杀妖首",
+          "reward": {
+            "resources": {
+              "daoxing": 80
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "搜检妖巢",
+          "reward": {
+            "resources": {
+              "spell_page": 6
+            }
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_006",
+      "event_name": "阐教清光",
+      "rarity": "epic",
+      "unlock_condition": "day_3",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "玉虚道韵边缘",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "你闭关时，一缕清光自西方天际垂落，照入泥丸宫。那光不属于你，却可洗去几分凡尘浊气。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "顺势洗身",
+          "reward": {
+            "root_progress": 20
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "留住清光",
+          "reward": {
+            "resources": {
+              "merit": 500
+            }
+          }
+        }
+      ],
+      "weight": 15,
+      "daily_limit": 1,
+      "pity_rule": "第3到第5天保底出现一次"
+    },
+    {
+      "event_id": "event_007",
+      "event_name": "商周兵煞",
+      "rarity": "rare",
+      "unlock_condition": "zr_05",
+      "trigger_source": [
+        "offline",
+        "travel"
+      ],
+      "fengshen_tag": "人间兵火",
+      "pressure_type": "榜文牵引",
+      "merit_or_calamity": "choice",
+      "narrative_text": "陈塘关方向雷声不绝，东海潮水倒灌三夜。黑色劫气与金色功德同时浮现。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "护民避劫",
+          "reward": {
+            "resources": {
+              "merit": 300
+            },
+            "breakthrough_bonus": 0.03
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "炼劫入体",
+          "reward": {
+            "resources": {
+              "calamity": 300
+            },
+            "buffs": [
+              {
+                "buff_id": "temp_travel_bonus",
+                "value": 0.05,
+                "duration": "daily"
+              }
+            ]
+          },
+          "cost": {
+            "breakthrough_pressure": 0.01
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_008",
+      "event_name": "东海怨潮",
+      "rarity": "rare",
+      "unlock_condition": "zr_01",
+      "trigger_source": [
+        "boss",
+        "travel"
+      ],
+      "fengshen_tag": "龙宫怨气",
+      "pressure_type": "榜文牵引",
+      "merit_or_calamity": "choice",
+      "narrative_text": "东海潮声如怨，巡海妖兵残魂在浪中游荡。怨气与劫气交缠，稍有不慎便会牵动榜文。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "超度残魂",
+          "reward": {
+            "resources": {
+              "merit": 200
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "炼化怨潮",
+          "reward": {
+            "resources": {
+              "calamity": 250
+            },
+            "buffs": [
+              {
+                "buff_id": "temp_attack_bonus",
+                "value": 0.03,
+                "duration": "daily"
+              }
+            ]
+          }
+        }
+      ],
+      "weight": 90,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_009",
+      "event_name": "散仙遗刻",
+      "rarity": "common",
+      "unlock_condition": "zr_03",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "榜外散修前辈",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "荒庙梁柱上刻着前人留下的御器心得，字迹虽浅，道意未散。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "细读心得",
+          "reward": {
+            "spell_pages_by_type": {
+              "weapon": 8
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "取其道意",
+          "reward": {
+            "resources": {
+              "daoxing": 120
+            }
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 2
+    },
+    {
+      "event_id": "event_010",
+      "event_name": "东海残潮",
+      "rarity": "common",
+      "unlock_condition": "map_002",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "东海水族异动",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "海风送来残潮灵气，带着一丝腥咸，也带着陈塘关外未散的风雷。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "引潮炼法",
+          "reward": {
+            "resources": {
+              "mana": 12000
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "静观潮息",
+          "reward": {
+            "resources": {
+              "daoxing": 100
+            }
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 2
+    },
+    {
+      "event_id": "event_011",
+      "event_name": "玉虚护符",
+      "rarity": "rare",
+      "unlock_condition": "zr_02",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "阐教护身残玉",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "你在乱石中找到一枚碎玉护符，符面残留玉虚清光，可暂护灵台。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "收取护符碎片",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_003": 5
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "化为功德",
+          "reward": {
+            "resources": {
+              "merit": 300
+            }
+          }
+        }
+      ],
+      "weight": 70,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_012",
+      "event_name": "雷部残纹",
+      "rarity": "rare",
+      "unlock_condition": "zr_01",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "雷部神职余影",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "一截枯木被夜雷劈开，木心中竟有细密雷纹，似是雷部残意落入凡木。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "收取雷纹木心",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_001": 6
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "参悟雷纹",
+          "reward": {
+            "spell_pages_by_type": {
+              "thunder": 8
+            }
+          }
+        }
+      ],
+      "weight": 80,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_013",
+      "event_name": "风火残梦",
+      "rarity": "rare",
+      "unlock_condition": "zr_01",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "风火轮因果余温",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "你梦见陈塘关外风火交缠，醒来时蒲团边残留一圈赤色火纹。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "参悟火纹",
+          "reward": {
+            "spell_pages_by_type": {
+              "fire": 8
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "收取蒲团残纹",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_005": 5
+            }
+          }
+        }
+      ],
+      "weight": 80,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_014",
+      "event_name": "巡海残兵",
+      "rarity": "common",
+      "unlock_condition": "map_002",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "东海巡海夜叉余部",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "几名巡海残兵受怨潮驱动，沿河上岸，被你以术法击退。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "追击残兵",
+          "reward": {
+            "resources": {
+              "daoxing": 150
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "搜取遗物",
+          "reward": {
+            "resources": {
+              "treasure_shard": 5
+            }
+          }
+        }
+      ],
+      "weight": 100,
+      "daily_limit": 2
+    },
+    {
+      "event_id": "event_015",
+      "event_name": "石矶照魂镜",
+      "rarity": "epic",
+      "unlock_condition": "zr_04",
+      "trigger_source": [
+        "travel"
+      ],
+      "fengshen_tag": "骷髅山魂法前置",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "半面青铜古镜埋在荒坡下，镜面残裂，却能映出魂影。传闻骷髅山一脉曾有照魂之术。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "收取古镜碎片",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_006": 8
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "照见自身魂魄",
+          "reward": {
+            "resources": {
+              "mana": 30000
+            }
+          }
+        }
+      ],
+      "weight": 25,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_016",
+      "event_name": "护民功德",
+      "rarity": "rare",
+      "unlock_condition": "zr_05",
+      "trigger_source": [
+        "offline",
+        "travel"
+      ],
+      "fengshen_tag": "顺天护生",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "几户山民受劫气惊扰，你以术法护住村中灯火，金色功德微光落入灵台。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "护民避灾",
+          "reward": {
+            "resources": {
+              "merit": 600
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "稳住真灵",
+          "reward": {
+            "breakthrough_pressure_reduce": 0.02
+          }
+        }
+      ],
+      "weight": 70,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_017",
+      "event_name": "榜文压顶",
+      "rarity": "rare",
+      "unlock_condition": "zr_06",
+      "trigger_source": [
+        "level_up"
+      ],
+      "fengshen_tag": "封神榜感应",
+      "pressure_type": "榜文牵引",
+      "merit_or_calamity": "choice",
+      "narrative_text": "你升重之时，天边金榜忽然震动。一道模糊榜文似要照见你的真灵。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "以功德遮掩",
+          "reward": {
+            "resources": {
+              "merit": 400
+            },
+            "breakthrough_bonus": 0.04
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "借榜文炼劫",
+          "reward": {
+            "resources": {
+              "calamity": 500
+            },
+            "buffs": [
+              {
+                "buff_id": "temp_travel_bonus",
+                "value": 0.08,
+                "duration": "daily"
+              }
+            ]
+          },
+          "cost": {
+            "breakthrough_pressure": 0.02
+          }
+        }
+      ],
+      "weight": 80,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_018",
+      "event_name": "番天印宝胚",
+      "rarity": "epic",
+      "unlock_condition": "zr_07",
+      "trigger_source": [
+        "boss"
+      ],
+      "fengshen_tag": "阐教印类法宝影子",
+      "pressure_type": "none",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "妖将溃散后，一枚寸许小印从其巢穴深处滚落，沉重如山，隐有镇压之意。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "收取小印碎纹",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_007": 10
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "借印镇妖",
+          "reward": {
+            "buffs": [
+              {
+                "buff_id": "temp_boss_reward_bonus",
+                "value": 0.15,
+                "duration": "daily"
+              }
+            ]
+          }
+        }
+      ],
+      "weight": 20,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_019",
+      "event_name": "清心避榜",
+      "rarity": "epic",
+      "unlock_condition": "zr_08",
+      "trigger_source": [
+        "offline"
+      ],
+      "fengshen_tag": "避免真灵牵引",
+      "pressure_type": "榜文牵引",
+      "merit_or_calamity": "merit",
+      "narrative_text": "你闭关至深处，榜文金光微照泥丸宫。胸前一枚清心玉佩忽然发亮，替你遮去一缕真灵气息。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "收取玉佩灵光",
+          "reward": {
+            "treasure_shards_by_id": {
+              "treasure_008": 10
+            }
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "遮掩真灵",
+          "reward": {
+            "breakthrough_pressure_reduce": 0.05
+          }
+        }
+      ],
+      "weight": 25,
+      "daily_limit": 1
+    },
+    {
+      "event_id": "event_020",
+      "event_name": "榜外地脉",
+      "rarity": "fate",
+      "unlock_condition": "zr_10",
+      "trigger_source": [
+        "breakthrough_prepare"
+      ],
+      "fengshen_tag": "地仙破劫前兆",
+      "pressure_type": "榜文牵引",
+      "merit_or_calamity": "neutral",
+      "narrative_text": "你准备破地仙劫时，脚下山脉微微震动。地脉深处似有声音传来，为你抵住一缕榜文牵引。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "借地脉破劫",
+          "reward": {
+            "breakthrough_bonus": 0.1
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "藏气于地脉",
+          "reward": {
+            "buffs": [
+              {
+                "buff_id": "post_dx_offline_bonus",
+                "value": 0.1,
+                "duration": "permanent_after_dx"
+              }
+            ]
+          }
+        }
+      ],
+      "weight": 5,
+      "daily_limit": 1,
+      "pity_rule": "真人十重破劫前保底触发一次"
+    }
+  ],
+  "rarity_config": {
+    "common": {
+      "base_rate": 0.7
+    },
+    "rare": {
+      "base_rate": 0.25
+    },
+    "epic": {
+      "base_rate": 0.045
+    },
+    "fate": {
+      "base_rate": 0.005
+    }
+  },
+  "daily_limit_rule": {
+    "day_1": 3,
+    "day_2": 4,
+    "day_3_plus": 5
+  },
+  "pity_rule": {
+    "first_daily_claim_guaranteed": true,
+    "rare_pity_days": 3,
+    "first_root_event_day_range": [
+      3,
+      5
+    ],
+    "first_treasure_event_story_guaranteed": true
+  }
+}
