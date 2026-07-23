@@ -275,8 +275,9 @@ function rollSparkleType() {
 
 function tickSparkle(actionId) {
   if (sparkleEl || nowMs() < nextSparkleAt) return;
+  // 残留灵光兜底清理（理论上不该存在）
+  document.querySelectorAll("#stage .sparkle").forEach((el) => el.remove());
   const firstTime = !Game.state.flags.sparkle_guide_seen;
-  if (firstTime) Game.sparkleGuide();
 
   const stage = $("stage");
   const t = firstTime ? SPARKLE_TYPES[0] : rollSparkleType();
@@ -308,11 +309,14 @@ function tickSparkle(actionId) {
       stage.appendChild(float);
       setTimeout(() => float.remove(), 1300);
     }
+    orb.remove();
     clearSparkle();
     nextSparkleAt = nowMs() + sparkleDelay();
   });
   stage.appendChild(orb);
   sparkleEl = orb;
+  // 引导弹窗必须在注册 sparkleEl 之后触发，避免重入渲染再次生成灵光
+  if (firstTime) Game.sparkleGuide();
   // 3.5 秒不点自动散去（首次引导灵光不消失，断连拾）
   if (!firstTime) {
     setTimeout(() => {
@@ -326,10 +330,8 @@ function tickSparkle(actionId) {
 }
 
 function clearSparkle() {
-  if (sparkleEl) {
-    sparkleEl.remove();
-    sparkleEl = null;
-  }
+  document.querySelectorAll("#stage .sparkle").forEach((el) => el.remove());
+  sparkleEl = null;
 }
 
 // ---------------- 修行心得流 ----------------
