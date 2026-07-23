@@ -911,26 +911,11 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ------- 可操作提示条 ------- */
-
-#hint-bar {
-  appearance: none;
-  border: 1px solid rgba(255, 214, 120, 0.55);
-  border-radius: 8px;
-  background: linear-gradient(90deg, rgba(80, 62, 22, 0.92), rgba(52, 42, 18, 0.92));
-  color: #ffe3a1;
-  font-family: inherit;
-  font-size: 13px;
-  letter-spacing: 1px;
-  padding: 7px 12px;
-  cursor: pointer;
-  text-align: center;
-  animation: hintBlink 2s ease-in-out infinite;
-}
-
-@keyframes hintBlink {
-  0%, 100% { box-shadow: 0 0 6px rgba(255, 210, 120, 0.15); }
-  50% { box-shadow: 0 0 16px rgba(255, 210, 120, 0.45); }
+/* 升重演出：破劫演出的金色变体 */
+#tribulation-fx.gold {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 55%, rgba(255, 224, 143, 0.55), transparent 65%),
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(120, 84, 20, 0.5), rgba(10, 8, 4, 0.88) 80%);
 }
 
 /* ------- 底部导航强提醒 ------- */

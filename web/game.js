@@ -348,6 +348,8 @@ const RewardManager = {
     }
     let mult = this._effectiveMultiplier(state);
     mult *= includeMap ? num(omen.journeyMult, 1) : num(omen.gainMult, 1);
+    // 新手护持：凡境（炼气士）收益 +50%，入真人境后消退（黄金开局节奏）
+    if (String(realm.major_realm || "") === "炼气士") mult *= 1.5;
     // R2-B：五庄观被动——闭关/离线收益 +10%
     if (str(state.faction_id, "") === "wuzhuang") mult *= 1.1;
     // R1-A：人族天赋——道行类收益 +5%
@@ -422,11 +424,12 @@ const RewardManager = {
 
 // 境界段落：1-3重 前期 / 4-6重 中期 / 7-9重 后期 / 10重 圆满。
 // 炼气士阶段按段落放缓道行需求（目标：第一天到真人劫）。
+// 黄金开局节奏：乘区整体下调，前 6 重升重间隔压到约 1 分钟，破真人劫落进 20-25 分钟
 const PHASE_TIERS = [
   { maxMinor: 3, label: "前期", qiMult: 1 },
-  { maxMinor: 6, label: "中期", qiMult: 2 },
-  { maxMinor: 9, label: "后期", qiMult: 2.5 },
-  { maxMinor: 99, label: "圆满", qiMult: 3 },
+  { maxMinor: 6, label: "中期", qiMult: 1.5 },
+  { maxMinor: 9, label: "后期", qiMult: 2 },
+  { maxMinor: 99, label: "圆满", qiMult: 2.5 },
 ];
 
 function getPhase(realm) {
@@ -1403,6 +1406,34 @@ const BattleEngine = {
   },
 };
 
+// ---------------- 修行心得（行动完成三选一，黄金开局微决策密度） ----------------
+
+const INSIGHT_CHOICES = [
+  { id: "gain", name: "灵气归元", desc: "本轮修行收益再添两成", weight: 3 },
+  { id: "event", name: "神识外放", desc: "下一次行动更易遭遇机缘（几率翻倍）", weight: 3 },
+  { id: "battle", name: "筋骨淬炼", desc: "下一场斗法开局罡气 +10%、圣盾 1 层", weight: 2 },
+  { id: "daoxing", name: "明心见性", desc: "立即获得 3 分钟闭关道行", weight: 3 },
+  { id: "mana", name: "引气入体", desc: "立即获得 5 分钟闭关法力", weight: 3 },
+];
+
+// 按权重抽 n 个不同心得
+function rollInsights(n = 3) {
+  const copy = [...INSIGHT_CHOICES];
+  const picks = [];
+  while (copy.length && picks.length < n) {
+    let total = 0;
+    for (const c of copy) total += num(c.weight, 1);
+    let pick = Math.random() * total;
+    let idx = 0;
+    for (; idx < copy.length; idx++) {
+      pick -= num(copy[idx].weight, 1);
+      if (pick <= 0) break;
+    }
+    picks.push(copy.splice(Math.min(idx, copy.length - 1), 1)[0]);
+  }
+  return picks;
+}
+
 // ---------------- 解锁/资源出现说明文案（design/1.8 §6.2 §24.4） ----------------
 
 const RESOURCE_UNLOCK_TEXT = {
@@ -1458,6 +1489,7 @@ const Game = {
   popupQueue: [],
   onChange: null,
   debug: false,
+  eventPopupActive: false,
 
   init() {
     this.debug = new URLSearchParams(location.search).get("debug") === "1";
@@ -1475,6 +1507,14 @@ const Game = {
         title: "封神修道录",
         body: "商周兵火尚远，封神榜未显。\n你只是山野洞府中一名无名炼气士。\n若想在将来的大劫中活下去，先从吐纳一轮周天开始。",
         buttons: [{ label: "开始修行" }],
+      });
+      // 封神钩子前置：开场即远眺榜文，立住大劫叙事
+      this.queuePopup({
+        kind: "text",
+        style: "chance",
+        title: "榜文远眺",
+        body: "吐纳之余，你登岩远眺——\n极东天际，悬着一页残破的金色榜文，日月之光都要绕它而行。\n\n哪吒尚未闹海，姜子牙尚未下山，但那页榜文已开始收拢天下的气数。\n山中妖物一日比一日躁动，像是被什么东西催着赶路。\n\n你不知道那是什么。\n只知道从今往后，修行不只是为了长生——是为了在榜文照到你之前，有护住自己的本钱。",
+        buttons: [{ label: "回洞修行" }],
       });
     } else if (!str(this.state.race_id, "") && !this.state.flags.race_choice_done) {
       // R1-A：择跟脚途中离开，补弹种族四选一
@@ -1581,6 +1621,7 @@ const Game = {
 
     let rewardText = "";
     let blessText = "";
+    let rewardSnapshot = {};
     const minutes = int(row.reward_minutes_equivalent);
     if (minutes > 0) {
       const reward = RewardManager.calculateRewardForMinutes(this.state, minutes, {
@@ -1602,6 +1643,7 @@ const Game = {
       }
       this._applyResourceDelta(reward.resources);
       rewardText = this._formatResourceDelta(reward.resources);
+      rewardSnapshot = { ...reward.resources };
     }
 
     // 师门任务等固定赏赐（reward_resources 字段）
@@ -1615,10 +1657,14 @@ const Game = {
       extraRewardText = this._formatResourceDelta(fixed);
     }
 
-    // 机缘：强制或概率（R1-A：麒麟行动机缘概率 ×1.3）
+    // 机缘：强制或概率（R1-A：麒麟行动机缘概率 ×1.3；心得·神识外放下一次 ×2）
     let eventTriggered = false;
     if (!this.state.pending_event_id) {
-      const eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
+      let eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
+      if (this.state.flags.insight_event_boost) {
+        eventChance *= 2;
+        delete this.state.flags.insight_event_boost;
+      }
       if (row.force_event && EventManager.canOffer(this.state, String(row.force_event))) {
         this._setPendingEvent(String(row.force_event));
         eventTriggered = true;
@@ -1634,7 +1680,7 @@ const Game = {
 
     this._log(String(row.complete_text || `${row.action_name}结束。`));
 
-    // 连续修行：静默续做同一动作（有机缘则停下）
+    // 连续修行：静默续做同一动作（有机缘则停下），静默链中心得随机应用一缕
     const autoOn = !!this.state.flags.auto_repeat && int(row.duration_sec) > 0;
     let chained = false;
     if (autoOn && !eventTriggered) {
@@ -1651,19 +1697,69 @@ const Game = {
       }
     }
 
-    if (!chained) {
-      const allRewardText = [rewardText, extraRewardText].filter(Boolean).join("\n");
+    const allRewardText = [rewardText, extraRewardText].filter(Boolean).join("\n");
+    mergeResources(rewardSnapshot, row.reward_resources || {});
+
+    if (chained) {
+      const pick = rollInsights(1)[0];
+      this.applyInsight(pick.id, { rewardSnapshot, silent: true });
+    } else {
+      // 修行心得三选一：把每次行动完成变成一次微决策
       this.queuePopup({
-        kind: "text",
-        style: "seal",
-        title: `${row.action_name}完成！`,
-        body: `${row.complete_text || ""}${allRewardText ? `\n\n获得：\n${allRewardText}` : ""}${blessText}${
-          RealmManager.canLevelUp(this.state) ? "\n\n道行已满，可提升境界。" : ""
-        }`,
-        buttons: [{ label: "收功" }],
+        kind: "insight",
+        payload: {
+          title: `${row.action_name}完成！`,
+          body: `${row.complete_text || ""}${allRewardText ? `\n\n获得：\n${allRewardText}` : ""}${blessText}${
+            RealmManager.canLevelUp(this.state) ? "\n\n道行已满，可提升境界。" : ""
+          }`,
+          choices: rollInsights(3),
+          rewardSnapshot,
+        },
       });
     }
     if (eventTriggered) this._queueEventPopup();
+  },
+
+  // ---------- 修行心得（行动完成三选一） ----------
+
+  applyInsight(choiceId, payload = {}) {
+    const snap = payload.rewardSnapshot || {};
+    switch (choiceId) {
+      case "gain": {
+        const bonus = {};
+        for (const id of Object.keys(snap)) bonus[id] = Math.max(1, Math.round(num(snap[id]) * 0.2));
+        if (Object.keys(bonus).length) {
+          this._applyResourceDelta(bonus);
+          this._log(`心得·灵气归元：收益再添两成（${this._formatResourceDelta(bonus)}）。`);
+        } else {
+          this._log("心得·灵气归元：本轮本无所得，心法默运一周天。");
+        }
+        break;
+      }
+      case "event":
+        this.state.flags.insight_event_boost = true;
+        this._log("心得·神识外放：你凝神感应天地，下一次行动更易遭遇机缘。");
+        break;
+      case "battle":
+        this.state.battle_blessing = { block_ratio: 0.1, shield: 1, battles: 1 };
+        this._log("心得·筋骨淬炼：下一场斗法开局罡气 +10%、圣盾 1 层。");
+        break;
+      case "daoxing": {
+        const gain = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, 3, { includeMap: false }).resources.daoxing) };
+        this._applyResourceDelta(gain);
+        this._log(`心得·明心见性：道行 +${formatInt(gain.daoxing)}。`);
+        break;
+      }
+      case "mana": {
+        const gain = { mana: num(RewardManager.calculateRewardForMinutes(this.state, 5, { includeMap: false }).resources.mana) };
+        this._applyResourceDelta(gain);
+        this._log(`心得·引气入体：法力 +${formatInt(gain.mana)}。`);
+        break;
+      }
+      default:
+        return;
+    }
+    this._afterMutated();
   },
 
   toggleAutoRepeat() {
@@ -2067,6 +2163,16 @@ const Game = {
       buttons: [{ label: "继续修行" }],
     });
     this._queueNewUnlockPopups(before);
+    // 破境顿悟：升重即得一次三选一心得（突破的即时反馈）
+    this.queuePopup({
+      kind: "insight",
+      payload: {
+        title: "破境顿悟",
+        body: `${getPhaseRealmName(to)}的气机在你体内奔涌，灵台一片空明。\n趁此顿悟之机，择一缕心得。`,
+        choices: rollInsights(3),
+        rewardSnapshot: {},
+      },
+    });
     // 升重可能触发 level_up 机缘（榜文压顶）
     if (!this.state.pending_event_id) {
       const eventId = EventManager.rollEvent(this.state, "level_up");
@@ -2153,6 +2259,7 @@ const Game = {
     const reward = this._applyEventReward(option.reward || {});
     EventManager.markSeen(this.state, eventId);
     this.state.pending_event_id = "";
+    this.eventPopupActive = false;
     const deltaText = this._formatResourceDelta(reward.resources || {});
     this._log(`机缘「${eventRow.event_name}」：${option.text}。`);
     this.queuePopup({
@@ -2419,6 +2526,18 @@ const Game = {
     if (RealmManager.canLevelUp(state)) {
       return { type: "level_up", label: "道行已满，可升重" };
     }
+    // 待办决策：可参悟/可温养/可挑战（目标链关键动作不能只靠弱引导）
+    if (this._hasAffordableSpell(state)) {
+      const anyLearned = Object.values(state.spells).some((s) => int(s.level) > 0);
+      return { type: "spell_up", label: anyLearned ? "残页已足，精进术法" : "参悟第一门术法" };
+    }
+    if (this._hasAffordableTreasure(state)) {
+      return { type: "treasure_up", label: "材料已备，温养法宝" };
+    }
+    const boss = this._challengeableBoss(state);
+    if (boss) {
+      return { type: "boss_fight", label: `${boss.boss_name}现身，前往斗法` };
+    }
     if (int(this.pendingOfflineReward.minutes) >= 5) {
       return { type: "claim", label: `出关领取\n闭关 ${formatDuration(int(this.pendingOfflineReward.minutes))}` };
     }
@@ -2430,6 +2549,41 @@ const Game = {
       return { type: "action", label: "骷髅山探幽", actionId: "kulou_explore" };
     }
     return { type: "idle", label: "继续闭关" };
+  },
+
+  _hasAffordableSpell(state) {
+    return UnlockManager.getAvailableSpells(state).some((spell) => {
+      const level = int(this.getSpellState(String(spell.spell_id)).level);
+      const nextLevel = level + 1;
+      if (nextLevel > this.getSpellMaxLevel(spell)) return false;
+      const cost = this.getSpellUpgradeCost(spell, nextLevel);
+      return (
+        cost &&
+        num(state.resources.spell_page) >= num(cost.spell_page_cost) &&
+        num(state.resources.mana) >= num(cost.mana_cost)
+      );
+    });
+  },
+
+  _hasAffordableTreasure(state) {
+    if (this.hasPendingTreasureChoice()) return false;
+    return UnlockManager.getAvailableTreasures(state).some((treasure) => {
+      const level = int(this.getTreasureState(String(treasure.treasure_id)).level);
+      const nextLevel = level + 1;
+      if (nextLevel > int(treasure.max_level_mvp, 5)) return false;
+      const cost = this.getTreasureUpgradeCost(treasure, nextLevel);
+      return (
+        cost &&
+        num(state.resources.treasure_shard) >= num(cost.treasure_shard_cost) &&
+        num(state.resources.mana) >= num(cost.mana_cost)
+      );
+    });
+  },
+
+  _challengeableBoss(state) {
+    return BossManager.getBosses(state).find(
+      (boss) => BossManager.canChallenge(state, String(boss.boss_id)) && BossManager.getWinRate(state, boss) >= 0.5
+    );
   },
 
   _recommendedAction() {
@@ -2500,8 +2654,11 @@ const Game = {
 
   _queueEventPopup() {
     if (!this.state.pending_event_id) return;
+    if (this.eventPopupActive) return;
     const alreadyQueued = this.popupQueue.some((p) => p.kind === "event");
     if (alreadyQueued) return;
+    // 置位覆盖「已出队但还在天象前奏中」的空窗，防止主按钮重复入队
+    this.eventPopupActive = true;
     this.queuePopup({ kind: "event", prelude: this.state.pending_event_prelude });
     this.state.pending_event_prelude = false;
   },

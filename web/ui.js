@@ -170,7 +170,6 @@ function render() {
 
   renderMainButton(state);
   renderNav(state);
-  renderHintBar(state);
 
   // 连续修行开关
   const autoBtn = $("auto-toggle");
@@ -375,38 +374,6 @@ function renderNav(state) {
   });
 }
 
-// 可操作提示条：比红点更强的引导，点击直达面板
-function getSuggestion(state) {
-  if (hasAffordableSpell(state)) {
-    const anyLearned = Object.values(state.spells).some((s) => int(s.level) > 0);
-    return { panel: "spell", text: anyLearned ? "残页已足，可精进术法 ›" : "残页已足，可参悟第一门术法 ›" };
-  }
-  if (!Game.hasPendingTreasureChoice() && hasAffordableTreasure(state)) {
-    return { panel: "treasure", text: "材料已备，可温养本命法宝 ›" };
-  }
-  if (hasChallengeableBoss(state)) {
-    const boss = BossManager.getBosses(state).find(
-      (b) => BossManager.canChallenge(state, String(b.boss_id)) && BossManager.getWinRate(state, b) >= 0.5
-    );
-    return { panel: "map", text: `${boss.boss_name}现身，可前往斗法 ›` };
-  }
-  return null;
-}
-
-let currentSuggestion = null;
-
-function renderHintBar(state) {
-  const bar = $("hint-bar");
-  const suggestion = getSuggestion(state);
-  currentSuggestion = suggestion;
-  if (!suggestion) {
-    bar.classList.add("hidden");
-    return;
-  }
-  bar.classList.remove("hidden");
-  if (bar.textContent !== suggestion.text) bar.textContent = suggestion.text;
-}
-
 function hasAffordableSpell(state) {
   return UnlockManager.getAvailableSpells(state).some((spell) => {
     const level = int(Game.getSpellState(String(spell.spell_id)).level);
@@ -444,6 +411,8 @@ function hasChallengeableBoss(state) {
 // ---------------- 主按钮点击 ----------------
 
 function onMainButtonClick() {
+  // 演出期间（天象前奏/升重金光/破劫劫云）忽略点击，防止连点穿透
+  if (preludeActive) return;
   const btn = $("main-btn");
   const type = btn.dataset.type;
   switch (type) {
@@ -461,6 +430,8 @@ function onMainButtonClick() {
       break;
     }
     case "event":
+      // 机缘弹窗显示中重复点击主按钮会重复入队
+      if (currentPopup && currentPopup.kind === "event") break;
       Game.openPendingEvent();
       break;
     case "treasure_choice":
@@ -475,7 +446,16 @@ function onMainButtonClick() {
       Game.requestBreakthrough();
       break;
     case "level_up":
-      Game.levelUp();
+      playLevelUpFx(() => Game.levelUp());
+      break;
+    case "spell_up":
+      openPanelSheet("spell");
+      break;
+    case "treasure_up":
+      openPanelSheet("treasure");
+      break;
+    case "boss_fight":
+      openPanelSheet("map");
       break;
     case "claim":
       Game.claimOfflineReward();
@@ -550,6 +530,8 @@ function showPopup(popup) {
     renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
   } else if (popup.kind === "rest") {
     renderRestPopup(panel, title, body, buttons, popup.payload || {});
+  } else if (popup.kind === "insight") {
+    renderInsightPopup(panel, title, body, buttons, popup.payload || {});
   }
 
   layer.classList.remove("hidden");
@@ -1085,6 +1067,47 @@ function renderRestPopup(panel, title, body, buttons, payload) {
   makeOption("敛气而去", "不取分毫，径自回山", () => Game.applyRestChoice("skip"), true);
 }
 
+// ---------------- 修行心得三选一（行动完成/破境顿悟） ----------------
+
+function renderInsightPopup(panel, title, body, buttons, payload) {
+  panel.classList.add("style-goal");
+  title.textContent = payload.title || "修行心得";
+  body.textContent = `${payload.body || ""}\n\n——择一缕心得——`;
+  for (const choice of payload.choices || []) {
+    const btn = document.createElement("button");
+    btn.className = "popup-btn";
+    const main = document.createElement("span");
+    main.textContent = choice.name;
+    const sub = document.createElement("span");
+    sub.className = "popup-option-sub";
+    sub.textContent = choice.desc;
+    btn.append(main, sub);
+    btn.addEventListener("click", () => {
+      closePopup();
+      Game.applyInsight(choice.id, payload);
+    });
+    buttons.appendChild(btn);
+  }
+}
+
+// 升重金光演出：复用破劫演出元素，切金色变体
+function playLevelUpFx(done) {
+  const fx = $("tribulation-fx");
+  const span = fx.querySelector("span");
+  const oldText = span.textContent;
+  fx.classList.add("gold");
+  span.textContent = "金光灌顶";
+  fx.classList.remove("hidden");
+  preludeActive = true;
+  setTimeout(() => {
+    fx.classList.add("hidden");
+    fx.classList.remove("gold");
+    span.textContent = oldText;
+    preludeActive = false;
+    done();
+  }, 900);
+}
+
 function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroughId) {
   const data = DataManager.getById("breakthrough_table", breakthroughId);
   if (!Object.keys(data).length) {
@@ -1236,7 +1259,7 @@ function renderRealmPanel(body, state) {
     body.appendChild(
       popupButton("道行已满，升重", false, () => {
         closePanelSheet();
-        Game.levelUp();
+        playLevelUpFx(() => Game.levelUp());
       })
     );
   } else if (RealmManager.isCapped(state)) {
@@ -1298,25 +1321,7 @@ function renderMapPanel(body, state) {
       selectBtn.addEventListener("click", () => Game.selectMap(id));
       btnBox.appendChild(selectBtn);
     }
-    const actionId = MAP_ACTION[id];
-    if (actionId) {
-      const actionRow = DataManager.getById("action_table", actionId);
-      if (Object.keys(actionRow).length && UnlockManager.conditionMet(state, String(actionRow.unlock_realm))) {
-        const goBtn = document.createElement("button");
-        goBtn.className = "card-btn";
-        goBtn.textContent = `${actionRow.action_name}（${actionRow.duration_sec}息）`;
-        goBtn.disabled = !ActionManager.getAvailability(state, actionRow).ok;
-        goBtn.addEventListener("click", () => {
-          closePanelSheet();
-          Game.startAction(actionId);
-        });
-        btnBox.appendChild(goBtn);
-      }
-    }
-    card.appendChild(btnBox);
-    body.appendChild(card);
-
-    // Boss 卡
+    // Boss 卡前置：主按钮「前往斗法」引导进来第一眼看到挑战入口
     const bossId = String(map.boss_id || "");
     const boss = DataManager.getById("boss_table", bossId);
     if (Object.keys(boss).length && UnlockManager.conditionMet(state, String(boss.unlock_condition || ""))) {
@@ -1349,6 +1354,24 @@ function renderMapPanel(body, state) {
       bossCard.appendChild(fightBtn);
       body.appendChild(bossCard);
     }
+
+    const actionId = MAP_ACTION[id];
+    if (actionId) {
+      const actionRow = DataManager.getById("action_table", actionId);
+      if (Object.keys(actionRow).length && UnlockManager.conditionMet(state, String(actionRow.unlock_realm))) {
+        const goBtn = document.createElement("button");
+        goBtn.className = "card-btn";
+        goBtn.textContent = `${actionRow.action_name}（${actionRow.duration_sec}息）`;
+        goBtn.disabled = !ActionManager.getAvailability(state, actionRow).ok;
+        goBtn.addEventListener("click", () => {
+          closePanelSheet();
+          Game.startAction(actionId);
+        });
+        btnBox.appendChild(goBtn);
+      }
+    }
+    card.appendChild(btnBox);
+    body.appendChild(card);
   }
 }
 
@@ -1575,9 +1598,6 @@ async function boot() {
 
   $("main-btn").addEventListener("click", onMainButtonClick);
   $("auto-toggle").addEventListener("click", () => Game.toggleAutoRepeat());
-  $("hint-bar").addEventListener("click", () => {
-    if (currentSuggestion) openPanelSheet(currentSuggestion.panel);
-  });
   document.querySelectorAll(".nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel));
   });

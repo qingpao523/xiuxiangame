@@ -7,9 +7,9 @@
     {
       "boss_id": "boss_001",
       "boss_name": "山野妖首",
-      "unlock_condition": "rq_08",
+      "unlock_condition": "rq_05",
       "map_id": "map_001",
-      "recommended_power": 3000,
+      "recommended_power": 900,
       "reward_daoxing": 80,
       "reward_mana": 3000,
       "reward_items": {

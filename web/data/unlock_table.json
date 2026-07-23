@@ -103,7 +103,7 @@
     {
       "unlock_id": "boss_001",
       "unlock_name": "山野妖首",
-      "unlock_realm": "rq_08",
+      "unlock_realm": "rq_05",
       "feature_type": "boss",
       "ui_target": "MapPage",
       "description": "开启山野妖首挑战。"
