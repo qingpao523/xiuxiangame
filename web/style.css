@@ -1041,6 +1041,195 @@ body {
   animation: insightIn 0.4s ease;
 }
 
+/* ------- 卡牌斗法 v2 ------- */
+
+.battle-zone {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.enemy-zone {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.enemy-card {
+  flex: 1 1 45%;
+  min-width: 140px;
+  border: 1px solid rgba(180, 90, 80, 0.55);
+  border-radius: 10px;
+  background: rgba(30, 14, 12, 0.75);
+  padding: 8px 10px;
+}
+
+.enemy-card.targetable {
+  border-color: #ffd97a;
+  box-shadow: 0 0 12px rgba(255, 214, 120, 0.5);
+  cursor: pointer;
+  animation: navGlow 1.2s ease-in-out infinite;
+}
+
+.enemy-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.enemy-name {
+  font-size: 13px;
+  color: #f0c9c0;
+}
+
+.intent-icon {
+  font-size: 11px;
+  color: #ffb3a6;
+  border: 1px solid rgba(255, 150, 130, 0.5);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.enemy-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #cbb8b2;
+  margin-top: 5px;
+}
+
+.player-zone {
+  border: 1px solid rgba(90, 160, 130, 0.45);
+  border-radius: 10px;
+  background: rgba(12, 22, 18, 0.7);
+  padding: 8px 10px;
+}
+
+.player-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.ap-box {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.ap-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 214, 120, 0.6);
+  background: transparent;
+}
+
+.ap-dot.on {
+  background: #ffd97a;
+  box-shadow: 0 0 6px rgba(255, 214, 120, 0.8);
+}
+
+.block-chip {
+  font-size: 11px;
+  color: #a8d8f0;
+  border: 1px solid rgba(120, 180, 220, 0.5);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.turn-num {
+  font-size: 11px;
+  color: #9fb4a8;
+  margin-left: auto;
+}
+
+.status-chips {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.status-chip {
+  font-size: 10.5px;
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+
+.st-burn { color: #ff9c5b; border: 1px solid rgba(255, 156, 91, 0.5); }
+.st-weak { color: #b8c4c9; border: 1px solid rgba(184, 196, 201, 0.5); }
+.st-vuln { color: #ff7d92; border: 1px solid rgba(255, 125, 146, 0.5); }
+.st-mark { color: #6fb7ff; border: 1px solid rgba(111, 183, 255, 0.5); }
+.st-shield { color: #ffe08f; border: 1px solid rgba(255, 224, 143, 0.6); }
+
+.card-hand {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.battle-card {
+  border: 2px solid #888;
+  border-radius: 10px;
+  background: rgba(16, 20, 22, 0.9);
+  padding: 8px 8px 6px;
+  min-height: 74px;
+  position: relative;
+}
+
+.battle-card .bc-name {
+  font-size: 13px;
+  color: #f0ead0;
+  margin-bottom: 1px;
+}
+
+.battle-card .bc-lv {
+  font-size: 10px;
+  color: #9fb4a8;
+}
+
+.battle-card .bc-text {
+  font-size: 11px;
+  color: #c8d4cc;
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.battle-card.used {
+  opacity: 0.32;
+  filter: grayscale(0.8);
+}
+
+.battle-card.locked {
+  opacity: 0.45;
+}
+
+.battle-card.playable {
+  cursor: pointer;
+}
+
+.battle-card.playable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+.battle-card.targeting {
+  box-shadow: 0 0 14px rgba(255, 214, 120, 0.7);
+}
+
+.target-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #ffe3a1;
+  animation: labelBlink 1.2s ease-in-out infinite;
+}
+
 .hidden {
   display: none !important;
 }

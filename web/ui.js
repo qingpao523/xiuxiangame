@@ -612,75 +612,269 @@ function renderEncounterPopup(panel, title, body, buttons, encounterId) {
   });
 }
 
-// ---------------- 斗法弹窗（回合制） ----------------
+// ---------------- 斗法弹窗 v2（卡牌回合制） ----------------
 
 let battleTimer = null;
+let battleTargeting = null; // 手动模式下待选目标的手牌 index
+
+const ELEMENT_COLORS = {
+  thunder: "#6fb7ff",
+  fire: "#ff9c5b",
+  weapon: "#e8c96a",
+  charm: "#9fb4a8",
+  treasure: "#c89aff",
+};
+
+const STATUS_LABELS = {
+  burn: (v) => `燃烧${v}`,
+  weak: (v) => `虚弱${v}`,
+  vuln: (v) => `易伤${v}`,
+  mark: (v) => `雷殛${v}`,
+  shield: (v) => `圣盾${v}`,
+};
 
 function renderBattlePopup(panel, title, body, buttons, battle) {
   panel.classList.add("style-breakthrough");
-  title.textContent = `斗法：${battle.name}`;
+  battleTargeting = null;
 
-  const bars = document.createElement("div");
-  bars.className = "battle-bars";
-  const mkRow = (label, cls) => {
-    const row = document.createElement("div");
-    row.className = "hp-row";
-    const name = document.createElement("span");
-    name.className = "hp-name";
-    name.textContent = label;
-    const bar = document.createElement("div");
-    bar.className = "hp-bar";
-    const fill = document.createElement("div");
-    fill.className = `hp-fill ${cls}`;
-    bar.appendChild(fill);
-    const numEl = document.createElement("span");
-    numEl.className = "hp-num";
-    row.append(name, bar, numEl);
-    return { row, fill, numEl };
-  };
-  const playerRow = mkRow("你", "player");
-  const enemyRow = mkRow(battle.name, "enemy");
-  bars.append(playerRow.row, enemyRow.row);
+  const zone = document.createElement("div");
+  zone.className = "battle-zone";
+  body.appendChild(zone);
 
   const logBox = document.createElement("div");
   logBox.className = "battle-log";
-  body.append(bars, logBox);
-
-  const updateBars = () => {
-    playerRow.fill.style.width = `${Math.round((battle.playerHp / battle.playerHpMax) * 100)}%`;
-    enemyRow.fill.style.width = `${Math.round((battle.enemyHp / battle.enemyHpMax) * 100)}%`;
-    playerRow.numEl.textContent = formatInt(battle.playerHp);
-    enemyRow.numEl.textContent = formatInt(battle.enemyHp);
-  };
-  updateBars();
+  body.appendChild(logBox);
   appendBattleLine(logBox, `你与${battle.name}对上了气机，斗法开始！`);
 
-  const boostBtn = popupButton(`催法（余 ${3 - battle.boostsUsed} 次 · 耗法力 ${formatInt(BattleEngine.boostCost(Game.state))}）`, false, () => {
-    if (Game.battleBoost(battle)) {
-      appendBattleLine(logBox, "你咬破舌尖催动法力，下一击威能大增！");
-      boostBtn.textContent = `催法（余 ${3 - battle.boostsUsed} 次 · 耗法力 ${formatInt(BattleEngine.boostCost(Game.state))}）`;
-    } else {
-      appendBattleLine(logBox, "法力不济或次数已尽，催法未成。");
-    }
-  }, "calamity");
-  buttons.appendChild(boostBtn);
+  const intentText = (e) => {
+    if (e.charged) return { icon: "怒", text: "蓄势" };
+    const it = e.intent || {};
+    if (it.type === "attack") return { icon: "剑", text: `击 ${formatInt(it.value)}` };
+    if (it.type === "charge") return { icon: "怒", text: "蓄势" };
+    if (it.type === "block") return { icon: "盾", text: `守 ${formatInt(it.value)}` };
+    return { icon: "咒", text: "施咒" };
+  };
 
+  const statusChips = (statuses) => {
+    const frag = document.createElement("span");
+    frag.className = "status-chips";
+    for (const key of Object.keys(statuses)) {
+      const v = statuses[key];
+      if (v > 0 && STATUS_LABELS[key]) {
+        const chip = document.createElement("span");
+        chip.className = `status-chip st-${key}`;
+        chip.textContent = STATUS_LABELS[key](v);
+        frag.appendChild(chip);
+      }
+    }
+    return frag;
+  };
+
+  const render = () => {
+    zone.innerHTML = "";
+
+    // 敌方区
+    const enemyZone = document.createElement("div");
+    enemyZone.className = "enemy-zone";
+    battle.enemies.forEach((e) => {
+      if (e.hp <= 0) return;
+      const card = document.createElement("div");
+      card.className = "enemy-card" + (battleTargeting != null ? " targetable" : "");
+      const head = document.createElement("div");
+      head.className = "enemy-head";
+      const nm = document.createElement("span");
+      nm.className = "enemy-name";
+      nm.textContent = e.name;
+      const it = intentText(e);
+      const intent = document.createElement("span");
+      intent.className = "intent-icon";
+      intent.textContent = `${it.icon} ${it.text}`;
+      head.append(nm, intent);
+      const hpBar = document.createElement("div");
+      hpBar.className = "hp-bar";
+      const fill = document.createElement("div");
+      fill.className = "hp-fill enemy";
+      fill.style.width = `${Math.round((e.hp / e.hpMax) * 100)}%`;
+      hpBar.appendChild(fill);
+      const foot = document.createElement("div");
+      foot.className = "enemy-foot";
+      const hpNum = document.createElement("span");
+      hpNum.textContent = `${formatInt(e.hp)} / ${formatInt(e.hpMax)}`;
+      foot.appendChild(hpNum);
+      if (e.block > 0) {
+        const blk = document.createElement("span");
+        blk.className = "block-chip";
+        blk.textContent = `罡气 ${formatInt(e.block)}`;
+        foot.appendChild(blk);
+      }
+      foot.appendChild(statusChips(e.statuses));
+      card.append(head, hpBar, foot);
+      if (battleTargeting != null) {
+        card.addEventListener("click", () => {
+          const alive = battle.enemies.filter((x) => x.hp > 0);
+          const idx = alive.indexOf(e);
+          playManualCard(battleTargeting, Math.max(0, idx));
+        });
+      }
+      enemyZone.appendChild(card);
+    });
+    zone.appendChild(enemyZone);
+
+    // 玩家区
+    const playerRow = document.createElement("div");
+    playerRow.className = "player-zone";
+    const php = document.createElement("div");
+    php.className = "hp-row";
+    const pname = document.createElement("span");
+    pname.className = "hp-name";
+    pname.textContent = "你";
+    const pbar = document.createElement("div");
+    pbar.className = "hp-bar";
+    const pfill = document.createElement("div");
+    pfill.className = "hp-fill player";
+    pfill.style.width = `${Math.round((battle.playerHp / battle.playerHpMax) * 100)}%`;
+    pbar.appendChild(pfill);
+    const pnum = document.createElement("span");
+    pnum.className = "hp-num";
+    pnum.textContent = formatInt(battle.playerHp);
+    php.append(pname, pbar, pnum);
+    const pmeta = document.createElement("div");
+    pmeta.className = "player-meta";
+    const apBox = document.createElement("span");
+    apBox.className = "ap-box";
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement("span");
+      dot.className = "ap-dot" + (i < battle.ap ? " on" : "");
+      apBox.appendChild(dot);
+    }
+    pmeta.appendChild(apBox);
+    if (battle.playerBlock > 0) {
+      const blk = document.createElement("span");
+      blk.className = "block-chip";
+      blk.textContent = `罡气 ${formatInt(battle.playerBlock)}`;
+      pmeta.appendChild(blk);
+    }
+    pmeta.appendChild(statusChips(battle.playerStatuses));
+    const turnNum = document.createElement("span");
+    turnNum.className = "turn-num";
+    turnNum.textContent = `第 ${battle.turn} 回合`;
+    pmeta.appendChild(turnNum);
+    playerRow.append(php, pmeta);
+    zone.appendChild(playerRow);
+
+    // 手牌区（每回合 6 张，3 点行动力）
+    const hand = document.createElement("div");
+    hand.className = "card-hand";
+    battle.hand.forEach((card, i) => {
+      const def = CARD_DEFS[card.id];
+      const locked = def.kind === "treasure" && battle.treasureUsed;
+      const el = document.createElement("div");
+      el.className = `battle-card element-${def.element}${card.used ? " used" : ""}${locked ? " locked" : ""}${battleTargeting === i ? " targeting" : ""}`;
+      el.style.borderColor = ELEMENT_COLORS[def.element] || "#888";
+      const nm = document.createElement("div");
+      nm.className = "bc-name";
+      nm.textContent = def.kind === "treasure" ? `${TREASURE_SKILLS[Game.state.first_treasure_id]?.name || def.name}` : def.name;
+      const lv = document.createElement("div");
+      lv.className = "bc-lv";
+      lv.textContent = card.level > 1 ? `Lv.${card.level}` : "1 真气";
+      const txt = document.createElement("div");
+      txt.className = "bc-text";
+      const skill = def.kind === "treasure" ? TREASURE_SKILLS[Game.state.first_treasure_id] : null;
+      const mult = BattleEngine._powerMult(battle);
+      txt.textContent = skill ? skill.text(card.level, mult) : def.text(card.level, mult);
+      el.append(nm, lv, txt);
+      if (battle.manual && !battle.done && !card.used && !locked && battle.ap > 0) {
+        el.classList.add("playable");
+        el.addEventListener("click", () => onCardClick(i));
+      }
+      hand.appendChild(el);
+    });
+    zone.appendChild(hand);
+
+    if (battleTargeting != null) {
+      const hint = document.createElement("div");
+      hint.className = "target-hint";
+      hint.textContent = "点选一个目标（再点卡牌可取消）";
+      zone.appendChild(hint);
+    }
+  };
+
+  const onCardClick = (handIndex) => {
+    if (!battle.manual || battle.done) return;
+    const card = battle.hand[handIndex];
+    const def = CARD_DEFS[card.id];
+    if (def.target === "enemy") {
+      battleTargeting = battleTargeting === handIndex ? null : handIndex;
+      render();
+      return;
+    }
+    playManualCard(handIndex, 0);
+  };
+
+  const playManualCard = (handIndex, targetIndex) => {
+    battleTargeting = null;
+    const events = Game.battlePlayCard(battle, handIndex, targetIndex);
+    for (const t of events) appendBattleLine(logBox, t);
+    render();
+    if (battle.done) finishUp();
+  };
+
+  const finishUp = () => {
+    if (battleTimer) {
+      clearInterval(battleTimer);
+      battleTimer = null;
+    }
+    endTurnBtn.disabled = true;
+    toggleBtn.disabled = true;
+    const endBtn = popupButton(battle.win ? "收取战果" : "退出战圈", false, () => {
+      closePopup();
+      Game.finishBattle(battle);
+    });
+    buttons.appendChild(endBtn);
+    appendBattleLine(logBox, battle.win ? `${battle.name}溃散！` : "你护住灵台，且战且退。");
+  };
+
+  const endTurnBtn = popupButton("结束回合", false, () => {
+    if (battle.done) return;
+    const events = Game.battleEndTurn(battle);
+    for (const t of events) appendBattleLine(logBox, t);
+    battleTargeting = null;
+    render();
+    if (battle.done) finishUp();
+  }, "secondary");
+
+  const toggleBtn = popupButton(battle.manual ? "回到自动" : "手动接管", false, () => {
+    const manual = Game.battleToggleManual(battle);
+    toggleBtn.textContent = manual ? "回到自动" : "手动接管";
+    battleTargeting = null;
+    render();
+  });
+
+  buttons.append(endTurnBtn, toggleBtn);
+  render();
+
+  // 自动模式：按顺序从前往后出牌
   if (battleTimer) clearInterval(battleTimer);
   battleTimer = setInterval(() => {
-    const events = Game.battleRound(battle);
-    for (const e of events) appendBattleLine(logBox, e.text);
-    updateBars();
     if (battle.done) {
       clearInterval(battleTimer);
       battleTimer = null;
-      boostBtn.disabled = true;
-      const endBtn = popupButton(battle.win ? "收取战果" : "退出战圈", false, () => {
-        closePopup();
-        Game.finishBattle(battle);
-      });
-      buttons.appendChild(endBtn);
+      return;
     }
-  }, 900);
+    if (battle.manual) return;
+    const result = Game.battleAutoStep(battle);
+    if (result.acted) {
+      for (const t of result.events) appendBattleLine(logBox, t);
+      render();
+      if (battle.done) finishUp();
+      return;
+    }
+    // 无牌可出 → 结束回合
+    const events = Game.battleEndTurn(battle);
+    for (const t of events) appendBattleLine(logBox, t);
+    render();
+    if (battle.done) finishUp();
+  }, 850);
 }
 
 function appendBattleLine(logBox, text) {

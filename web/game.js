@@ -858,34 +858,142 @@ function getTodayOmen() {
   return OMENS[hashString(todayString()) % OMENS.length];
 }
 
-// ---------------- 斗法引擎（回合制） ----------------
+// ---------------- 斗法引擎 v2（卡牌回合制：6 手牌 3 行动力） ----------------
+
+const CARD_DEFS = {
+  spell_thunder_01: { name: "掌心雷", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(8 + 4 * lv) * m} 雷伤，附加雷殛标记` },
+  spell_fire_01: { name: "灵火术", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(5 + 2 * lv) * m} 伤害，燃烧 ${(3 + lv) * m}` },
+  spell_weapon_01: { name: "御器术", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(4 + lv) * m} 伤害，罡气 +${(6 + 2 * lv) * m}` },
+  charm_strike: { name: "符咒·镇妖", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${6 * m} 伤害` },
+  charm_guard: { name: "符咒·护体", kind: "defend", element: "charm", target: "none", text: (lv, m = 1) => `罡气 +${8 * m}` },
+  charm_focus: { name: "符咒·凝神", kind: "skill", element: "charm", target: "none", text: () => "真气 +2" },
+  treasure_skill: { name: "法宝技", kind: "treasure", element: "treasure", target: "enemy", text: () => "依本命法宝而定，每战 1 次" },
+};
+
+// 法宝被动（已持有即生效）
+const RELIC_EFFECTS = {
+  treasure_001: { firstThunderBonus: 3, desc: "雷纹：每回合第一张雷牌 +3 伤害" },
+  treasure_002: { turnHealRatio: 0.02, desc: "聚灵：每回合开始回复 2% 气血" },
+  treasure_003: { startShield: 1, desc: "玄黄：开局获得 1 层圣盾" },
+  treasure_004: { dmgBonus: 0.05, desc: "镇妖：全部伤害 +5%" },
+  treasure_005: { burnBonus: 1, desc: "风火：燃烧 +1 层" },
+  treasure_006: { dmgBonus: 0.05, desc: "照魂：全部伤害 +5%" },
+  treasure_007: { dmgBonus: 0.1, desc: "金印：全部伤害 +10%" },
+  treasure_008: { blockBonus: 2, desc: "清心：每张防御牌额外 +2 罡气" },
+};
+
+const TREASURE_SKILLS = {
+  treasure_001: { name: "雷纹斩", element: "thunder", text: (lv, m = 1) => `${(10 + 5 * lv) * m} 雷伤` },
+  treasure_002: { name: "聚灵", element: "treasure", text: (lv, m = 1) => `回复 ${(8 + 4 * lv) * m} 气血` },
+  treasure_003: { name: "护劫", element: "treasure", text: (lv, m = 1) => `圣盾 1 层，罡气 +${(3 + 2 * lv) * m}` },
+  treasure_004: { name: "镇妖", element: "treasure", text: (lv, m = 1) => `${(6 + 3 * lv) * m} 伤害，虚弱 2 回合` },
+  treasure_005: { name: "风火参玄", element: "fire", text: (lv, m = 1) => `全体燃烧 ${(3 + lv) * m}` },
+  treasure_006: { name: "照魂", element: "treasure", text: (lv, m = 1) => `易伤 2 回合，${(4 + 2 * lv) * m} 伤害` },
+  treasure_007: { name: "金印镇山", element: "treasure", text: (lv, m = 1) => `${(12 + 6 * lv) * m} 伤害` },
+  treasure_008: { name: "清心", element: "treasure", text: (lv, m = 1) => `回复 ${(5 + lv) * m} 气血，净化燃烧与虚弱` },
+};
 
 const BattleEngine = {
-  create(state, cfg) {
-    const omen = getTodayOmen();
-    const playerPower = RealmManager.getCombatPower(state);
-    const enemyPower = Math.round(num(cfg.enemy_power) * num(omen.enemyMult, 1));
+  buildDeck(state) {
+    const deck = [];
+    for (const row of DataManager.getRows("spell_table")) {
+      const lv = int(state.spells[String(row.spell_id)]?.level);
+      if (lv > 0) deck.push({ id: String(row.spell_id), level: lv });
+    }
+    const firstId = state.first_treasure_id;
+    if (firstId && int(state.treasures[firstId]?.level) > 0) {
+      deck.push({ id: "treasure_skill", level: int(state.treasures[firstId].level) });
+    }
+    deck.push(
+      { id: "charm_strike", level: 1 },
+      { id: "charm_strike", level: 1 },
+      { id: "charm_guard", level: 1 },
+      { id: "charm_guard", level: 1 },
+      { id: "charm_focus", level: 1 }
+    );
+    return deck;
+  },
+
+  relic(state, key) {
+    let total = 0;
+    for (const tid of Object.keys(state.treasures)) {
+      if (int(state.treasures[tid]?.level) > 0) total += num(RELIC_EFFECTS[tid]?.[key]);
+    }
+    return total;
+  },
+
+  _mkEnemy(name, power) {
     return {
-      name: String(cfg.name || "妖物"),
-      source: cfg.source,
-      payload: cfg.payload || {},
-      playerPower,
-      enemyPower,
-      playerHp: playerPower,
-      playerHpMax: playerPower,
-      enemyHp: enemyPower,
-      enemyHpMax: enemyPower,
-      round: 0,
-      maxRounds: 5,
-      boostsUsed: 0,
-      boostPending: 0,
-      done: false,
-      win: false,
+      name,
+      power,
+      hp: power,
+      hpMax: power,
+      block: 0,
+      charged: false,
+      statuses: { burn: 0, weak: 0, vuln: 0, mark: 0 },
+      intent: null,
     };
   },
 
-  // 玩家已修的术法中是否有异象加成的类型
-  _omenBattleBonus(state) {
+  create(state, cfg) {
+    const omen = getTodayOmen();
+    const playerPower = RealmManager.getCombatPower(state);
+    const enemies = [this._mkEnemy(String(cfg.name || "妖物"), Math.round(num(cfg.enemy_power) * num(omen.enemyMult, 1)))];
+    for (const add of cfg.adds || []) {
+      enemies.push(this._mkEnemy(String(add.name), Math.round(num(add.power) * num(omen.enemyMult, 1))));
+    }
+    const battle = {
+      name: String(cfg.name || "妖物"),
+      source: cfg.source,
+      payload: cfg.payload || {},
+      playerHp: playerPower,
+      playerHpMax: playerPower,
+      playerBlock: 0,
+      playerStatuses: { burn: 0, weak: 0, shield: 0 },
+      enemies,
+      deck: this.buildDeck(state),
+      ap: 3,
+      turn: 0,
+      maxTurns: 12,
+      hand: [],
+      treasureUsed: false,
+      relicThunderUsed: false,
+      manual: !!state.flags.battle_manual,
+      done: false,
+      win: false,
+    };
+    battle.playerStatuses.shield = this.relic(state, "startShield");
+    this._startPlayerTurn(state, battle);
+    return battle;
+  },
+
+  _startPlayerTurn(state, battle) {
+    battle.turn += 1;
+    battle.ap = 3;
+    battle.playerBlock = 0;
+    battle.relicThunderUsed = false;
+    const heal = Math.round(battle.playerHpMax * num(this.relic(state, "turnHealRatio")));
+    if (heal > 0) battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
+    // 每回合抽 6 张（牌库不足时允许重复）
+    battle.hand = [];
+    for (let i = 0; i < 6; i++) {
+      const pick = battle.deck[Math.floor(Math.random() * battle.deck.length)];
+      battle.hand.push({ ...pick, used: false });
+    }
+    for (const e of battle.enemies) {
+      if (e.hp > 0) e.intent = this._rollIntent(e);
+    }
+  },
+
+  _rollIntent(enemy) {
+    const r = Math.random();
+    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))) };
+    if (r < 0.75) return { type: "charge" };
+    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)) };
+    return { type: "curse" };
+  },
+
+  _omenThunderBonus(state) {
     const omen = getTodayOmen();
     if (!omen.battleSpellType) return 0;
     for (const row of DataManager.getRows("spell_table")) {
@@ -895,51 +1003,253 @@ const BattleEngine = {
     return 0;
   },
 
-  // 执行一个回合，返回本回合双方动作记录
-  playRound(state, battle) {
-    if (battle.done) return [];
-    battle.round += 1;
+  _powerMult(battle) {
+    return Math.max(1, Math.round(battle.playerHpMax / 200));
+  },
+
+  _dealDamage(state, battle, enemy, base, element) {
+    // 卡牌基础值很小，按玩家战力放大到与敌方血量同一量级
+    let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus"));
+    if (element === "thunder") {
+      mult += this._omenThunderBonus(state);
+      if (!battle.relicThunderUsed && this.relic(state, "firstThunderBonus") > 0) {
+        base += this.relic(state, "firstThunderBonus");
+        battle.relicThunderUsed = true;
+      }
+      if (enemy.statuses.mark > 0) {
+        mult += 0.25 * enemy.statuses.mark;
+        enemy.statuses.mark = 0;
+      }
+    }
+    if (enemy.statuses.vuln > 0) mult *= 1.5;
+    let dmg = Math.max(1, Math.round(base * mult));
+    if (enemy.block > 0) {
+      const absorbed = Math.min(enemy.block, dmg);
+      enemy.block -= absorbed;
+      dmg -= absorbed;
+    }
+    enemy.hp = Math.max(0, enemy.hp - dmg);
+    return dmg;
+  },
+
+  playCard(state, battle, handIndex, targetIndex = 0) {
+    if (battle.done || battle.ap <= 0) return [];
+    const card = battle.hand[handIndex];
+    if (!card || card.used) return [];
+    const def = CARD_DEFS[card.id];
+    if (!def) return [];
+    if (def.kind === "treasure" && battle.treasureUsed) return [];
+    const target = battle.enemies.filter((e) => e.hp > 0)[targetIndex] || battle.enemies.find((e) => e.hp > 0);
+    if (def.target === "enemy" && !target) return [];
+
+    battle.ap -= 1;
+    card.used = true;
+    if (def.kind === "treasure") battle.treasureUsed = true;
+    const lv = int(card.level, 1);
     const events = [];
-    const bonus = this._omenBattleBonus(state);
-    let mult = 1 + bonus;
-    if (battle.boostPending > 0) {
-      mult *= 1 + 0.4 * battle.boostPending;
-      events.push({ actor: "player", type: "boost", text: `你催动法力，术法威能大涨！` });
-      battle.boostPending = 0;
+
+    const hit = (enemy, base, element, label) => {
+      const dmg = this._dealDamage(state, battle, enemy, base, element);
+      events.push(`${label}对${enemy.name}造成 ${dmg} 伤害。`);
+    };
+
+    switch (card.id) {
+      case "spell_thunder_01":
+        hit(target, 8 + 4 * lv, "thunder", "掌心雷");
+        if (target.hp > 0) {
+          target.statuses.mark += 1;
+          events.push(`${target.name}身上烙下雷殛标记。`);
+        }
+        break;
+      case "spell_fire_01":
+        hit(target, 5 + 2 * lv, "fire", "灵火术");
+        if (target.hp > 0) {
+          target.statuses.burn += (3 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+          events.push(`${target.name}被灵火缠绕（燃烧 ${target.statuses.burn}）。`);
+        }
+        break;
+      case "spell_weapon_01": {
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) hit(e, 4 + lv, "weapon", "御器术");
+        const block = (6 + 2 * lv + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        battle.playerBlock += block;
+        events.push(`你获得罡气 +${block}。`);
+        break;
+      }
+      case "charm_strike":
+        hit(target, 6, "charm", "符咒·镇妖");
+        break;
+      case "charm_guard": {
+        const block = (8 + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        battle.playerBlock += block;
+        events.push(`你获得罡气 +${block}。`);
+        break;
+      }
+      case "charm_focus":
+        battle.ap += 2;
+        events.push("你凝神运气，真气 +2。");
+        break;
+      case "treasure_skill": {
+        const tid = state.first_treasure_id;
+        const skill = TREASURE_SKILLS[tid];
+        if (!skill) break;
+        const tname = String(DataManager.getById("treasure_table", tid).treasure_name || "法宝");
+        events.push(`你祭出${tname}——${skill.name}！`);
+        switch (tid) {
+          case "treasure_001": hit(target, 10 + 5 * lv, "thunder", skill.name); break;
+          case "treasure_002": {
+            const heal = (8 + 4 * lv) * this._powerMult(battle);
+            battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
+            events.push(`你回复 ${heal} 气血。`);
+            break;
+          }
+          case "treasure_003": {
+            battle.playerStatuses.shield += 1;
+            const blk = (3 + 2 * lv) * this._powerMult(battle);
+            battle.playerBlock += blk;
+            events.push(`圣盾 1 层，罡气 +${blk}。`);
+            break;
+          }
+            break;
+          case "treasure_004":
+            hit(target, 6 + 3 * lv, "treasure", skill.name);
+            if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 2); events.push(`${target.name}攻势一滞（虚弱 2 回合）。`); }
+            break;
+          case "treasure_005":
+            for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+              e.statuses.burn += (3 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+              events.push(`${e.name}被风火缠身（燃烧 ${e.statuses.burn}）。`);
+            }
+            break;
+          case "treasure_006":
+            hit(target, 4 + 2 * lv, "treasure", skill.name);
+            if (target.hp > 0) { target.statuses.vuln = Math.max(target.statuses.vuln, 2); events.push(`${target.name}魂影毕露（易伤 2 回合）。`); }
+            break;
+          case "treasure_007": hit(target, 12 + 6 * lv, "treasure", skill.name); break;
+          case "treasure_008": {
+            const heal = (5 + lv) * this._powerMult(battle);
+            battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
+            battle.playerStatuses.burn = 0;
+            battle.playerStatuses.weak = 0;
+            events.push(`你回复 ${heal} 气血，邪火与滞涩尽去。`);
+            break;
+          }
+        }
+        break;
+      }
     }
-    const playerDmg = Math.max(1, Math.round(battle.playerPower * (0.28 + Math.random() * 0.12) * mult));
-    battle.enemyHp = Math.max(0, battle.enemyHp - playerDmg);
-    events.push({ actor: "player", type: "hit", dmg: playerDmg, text: `你施术击中${battle.name}，造成 ${formatInt(playerDmg)} 伤害。` });
-    if (battle.enemyHp <= 0) {
-      battle.done = true;
-      battle.win = true;
-      events.push({ actor: "system", type: "end", text: `${battle.name}溃散！` });
-      return events;
-    }
-    const enemyDmg = Math.max(1, Math.round(battle.enemyPower * (0.2 + Math.random() * 0.1)));
-    battle.playerHp = Math.max(0, battle.playerHp - enemyDmg);
-    events.push({ actor: "enemy", type: "hit", dmg: enemyDmg, text: `${battle.name}反扑，你气血震荡 ${formatInt(enemyDmg)}。` });
-    if (battle.playerHp <= 0 || battle.round >= battle.maxRounds) {
-      battle.done = true;
-      battle.win = false;
-      events.push({ actor: "system", type: "end", text: battle.playerHp <= 0 ? "你护住灵台，且战且退。" : "妖气未衰，你见好便收，退出战圈。" });
-    }
+    this._checkEnd(state, battle);
     return events;
   },
 
-  boostCost(state) {
-    const realm = RealmManager.getCurrentRealm(state);
-    return Math.max(100, Math.round(num(realm.base_mana_per_min) * 5));
+  endPlayerTurn(state, battle) {
+    if (battle.done) return [];
+    const events = [];
+    // 敌方阶段：执行意图
+    for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+      if (e.charged) {
+        const dmg = this._damagePlayer(state, battle, Math.max(1, Math.round(e.power * 0.35)));
+        e.charged = false;
+        events.push(`${e.name}蓄势重击！你受 ${dmg} 伤害。`);
+        continue;
+      }
+      const intent = e.intent || { type: "attack", value: Math.max(1, Math.round(e.power * 0.2)) };
+      if (intent.type === "attack") {
+        let value = intent.value;
+        if (e.statuses.weak > 0) value = Math.max(1, Math.round(value * 0.75));
+        const dmg = this._damagePlayer(state, battle, value);
+        events.push(`${e.name}扑击，你受 ${dmg} 伤害。`);
+      } else if (intent.type === "charge") {
+        e.charged = true;
+        events.push(`${e.name}凶光大盛，蓄势待发！`);
+      } else if (intent.type === "block") {
+        e.block += intent.value;
+        events.push(`${e.name}鳞甲收紧，罡气 +${intent.value}。`);
+      } else if (intent.type === "curse") {
+        if (battle.turn % 2 === 0) {
+          battle.playerStatuses.burn += Math.max(2, Math.round(e.power * 0.03));
+          events.push(`${e.name}喷吐邪火，你被燃烧缠身。`);
+        } else {
+          battle.playerStatuses.weak = 2;
+          events.push(`${e.name}嘶吼震魂，你手足发软（虚弱 2 回合）。`);
+        }
+      }
+      e.intent = null;
+    }
+    // 燃烧结算（双方）
+    if (battle.playerStatuses.burn > 0) {
+      battle.playerHp = Math.max(0, battle.playerHp - battle.playerStatuses.burn);
+      events.push(`邪火焚身，你受 ${battle.playerStatuses.burn} 燃烧伤害。`);
+      battle.playerStatuses.burn = Math.max(0, battle.playerStatuses.burn - 1);
+    }
+    for (const e of battle.enemies.filter((x) => x.hp > 0 && x.statuses.burn > 0)) {
+      e.hp = Math.max(0, e.hp - e.statuses.burn);
+      events.push(`${e.name}被灵火灼烧，受 ${e.statuses.burn} 燃烧伤害。`);
+      e.statuses.burn = Math.max(0, e.statuses.burn - 1);
+    }
+    // 持续状态衰减
+    for (const e of battle.enemies) {
+      e.statuses.weak = Math.max(0, e.statuses.weak - 1);
+      e.statuses.vuln = Math.max(0, e.statuses.vuln - 1);
+    }
+    battle.playerStatuses.weak = Math.max(0, battle.playerStatuses.weak - 1);
+
+    this._checkEnd(state, battle);
+    if (!battle.done) this._startPlayerTurn(state, battle);
+    return events;
   },
 
-  boost(state, battle) {
-    if (battle.done || battle.boostsUsed >= 3) return false;
-    const cost = this.boostCost(state);
-    if (num(state.resources.mana) < cost) return false;
-    state.resources.mana -= cost;
-    battle.boostsUsed += 1;
-    battle.boostPending += 1;
-    return true;
+  _damagePlayer(state, battle, value) {
+    if (battle.playerStatuses.weak > 0) {
+      // 虚弱影响的是敌方输出，已在攻击方处理；此处不重复
+    }
+    if (battle.playerStatuses.shield > 0) {
+      battle.playerStatuses.shield -= 1;
+      return 0;
+    }
+    let dmg = value;
+    if (battle.playerBlock > 0) {
+      const absorbed = Math.min(battle.playerBlock, dmg);
+      battle.playerBlock -= absorbed;
+      dmg -= absorbed;
+    }
+    battle.playerHp = Math.max(0, battle.playerHp - dmg);
+    return dmg;
+  },
+
+  _checkEnd(state, battle) {
+    if (battle.enemies.every((e) => e.hp <= 0)) {
+      battle.done = true;
+      battle.win = true;
+      return;
+    }
+    if (battle.playerHp <= 0 || battle.turn >= battle.maxTurns) {
+      battle.done = true;
+      battle.win = false;
+    }
+  },
+
+  // 自动模式：从前往后出第一张可用牌
+  autoStep(state, battle) {
+    if (battle.done || battle.manual) return { events: [], acted: false };
+    for (let i = 0; i < battle.hand.length; i++) {
+      const card = battle.hand[i];
+      if (card.used) continue;
+      const def = CARD_DEFS[card.id];
+      if (!def) continue;
+      if (def.kind === "treasure" && battle.treasureUsed) continue;
+      if (def.target === "enemy" && !battle.enemies.some((e) => e.hp > 0)) continue;
+      const alive = battle.enemies.filter((e) => e.hp > 0);
+      const targetIndex = alive.reduce((best, e, idx) => (e.hp < alive[best].hp ? idx : best), 0);
+      const events = this.playCard(state, battle, i, targetIndex);
+      return { events, acted: events.length > 0, card };
+    }
+    return { events: [], acted: false };
+  },
+
+  toggleManual(state, battle) {
+    battle.manual = !battle.manual;
+    state.flags.battle_manual = battle.manual;
+    SaveManager.save(state);
   },
 };
 
@@ -1354,26 +1664,45 @@ const Game = {
     }
     this.state.boss_counts_today[bossId] = int(this.state.boss_counts_today[bossId]) + 1;
     this._log(`你踏入${boss.boss_name}的巢穴，妖气扑面而来。`);
+    const adds = {
+      boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
+      boss_003: [
+        { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 },
+        { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 },
+      ],
+    }[bossId] || [];
     this.startBattle({
       name: String(boss.boss_name),
       enemy_power: num(boss.recommended_power),
+      adds,
       source: "boss",
       payload: { bossId },
     });
     this._afterMutated();
   },
 
-  battleRound(battle) {
-    const events = BattleEngine.playRound(this.state, battle);
+  battlePlayCard(battle, handIndex, targetIndex = 0) {
+    const events = BattleEngine.playCard(this.state, battle, handIndex, targetIndex);
     this._emit();
     return events;
   },
 
-  battleBoost(battle) {
-    const ok = BattleEngine.boost(this.state, battle);
-    if (ok) SaveManager.save(this.state);
+  battleEndTurn(battle) {
+    const events = BattleEngine.endPlayerTurn(this.state, battle);
     this._emit();
-    return ok;
+    return events;
+  },
+
+  battleAutoStep(battle) {
+    const result = BattleEngine.autoStep(this.state, battle);
+    this._emit();
+    return result;
+  },
+
+  battleToggleManual(battle) {
+    BattleEngine.toggleManual(this.state, battle);
+    this._emit();
+    return battle.manual;
   },
 
   finishBattle(battle) {
