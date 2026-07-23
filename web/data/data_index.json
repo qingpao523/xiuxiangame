@@ -15,7 +15,9 @@
     "unlock_table.json",
     "action_table.json",
     "chapter_goal_table.json",
-    "encounter_table.json"
+    "encounter_table.json",
+    "race_table.json",
+    "faction_table.json"
   ],
   "notes": [
     "MVP 范围：炼气士一重到地仙一重。",

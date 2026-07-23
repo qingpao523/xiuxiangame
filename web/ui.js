@@ -42,6 +42,8 @@ const TREASURE_ICONS = {
   treasure_006: "assets/treasures/treasure_bronze_soul_mirror.png",
   treasure_007: "assets/treasures/treasure_gold_light_seal.png",
   treasure_008: "assets/treasures/treasure_calm_jade_pendant.png",
+  // R1-A：伴生灵宝暂复用 treasure_004 图，独立图标待美术
+  treasure_009: "assets/treasures/treasure_subduing_demon_bell.png",
 };
 
 const MAP_ACTION = {
@@ -54,7 +56,7 @@ const NAV_UNLOCK = {
   realm: { check: () => true },
   map: { check: (s) => UnlockManager.isUnlocked(s, "travel"), hint: "炼气士三重解锁游历" },
   spell: { check: (s) => UnlockManager.isUnlocked(s, "spell_system"), hint: "炼气士四重解锁术法" },
-  treasure: { check: (s) => UnlockManager.isUnlocked(s, "treasure_system"), hint: "真人一重解锁法宝" },
+  treasure: { check: (s) => UnlockManager.isUnlocked(s, "treasure_system") || int(s.treasures?.treasure_009?.level) > 0, hint: "真人一重解锁法宝" },
   chance: { check: (s) => UnlockManager.isUnlocked(s, "event_system") || !!s.pending_event_id, hint: "炼气士六重解锁机缘" },
   log: { check: () => true },
 };
@@ -123,7 +125,8 @@ function render() {
   $("fx-seal").classList.toggle("lit", DataManager.isRealmAtLeast(state.realm_id, "rq_06"));
   $("char-img").src = CHARACTER_PATHS[ui.character_phase] || CHARACTER_PATHS["炼气士"];
 
-  $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
+  const raceTag = getRaceShortName(state);
+  $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
   $("weather-line").textContent = `天象：${getWeather(state)}`;
   const omen = getTodayOmen();
   $("omen-line").textContent = `今日异象：${omen.name}——${omen.desc}`;
@@ -254,7 +257,10 @@ const SPARKLE_TYPES = [
 let sparkleCombo = 0;
 
 function sparkleDelay() {
-  return getTodayOmen().sparkleFast ? randInt(2500, 5000) : randInt(4000, 8000);
+  let delay = getTodayOmen().sparkleFast ? randInt(2500, 5000) : randInt(4000, 8000);
+  // R1-A：麒麟天赋——灵光间隔 -30%
+  if (str(Game.state.race_id, "") === "qilin") delay = Math.max(1200, Math.round(delay * 0.7));
+  return delay;
 }
 
 function rollSparkleType() {
@@ -459,6 +465,10 @@ function onMainButtonClick() {
       Game.queuePopup({ kind: "treasure_choice" });
       drainPopupQueue();
       break;
+    case "faction_choice":
+      Game._maybeQueueFactionChoice();
+      drainPopupQueue();
+      break;
     case "breakthrough":
       Game.requestBreakthrough();
       break;
@@ -530,6 +540,10 @@ function showPopup(popup) {
     renderBattlePopup(panel, title, body, buttons, popup.battle);
   } else if (popup.kind === "treasure_choice") {
     renderTreasureChoicePopup(panel, title, body, buttons);
+  } else if (popup.kind === "race_choice") {
+    renderRaceChoicePopup(panel, title, body, buttons);
+  } else if (popup.kind === "faction_choice") {
+    renderFactionChoicePopup(panel, title, body, buttons);
   } else if (popup.kind === "breakthrough_confirm") {
     renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
   }
@@ -761,6 +775,68 @@ function renderTreasureChoicePopup(panel, title, body, buttons) {
   }
 }
 
+// ---------------- 种族四选一（R1-A 开场择跟脚） ----------------
+
+function renderRaceChoicePopup(panel, title, body, buttons) {
+  panel.classList.add("style-seal");
+  title.textContent = "择跟脚：你自何处来";
+  body.textContent =
+    "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。\n\n跟脚一选定终身，不可更改。";
+  for (const row of DataManager.getRows("race_table")) {
+    const btn = document.createElement("button");
+    btn.className = "popup-btn treasure-pick choice-pick";
+    const glyph = document.createElement("span");
+    glyph.className = "choice-glyph";
+    glyph.textContent = row.glyph || "命";
+    const info = document.createElement("span");
+    info.className = "choice-info";
+    const name = document.createElement("span");
+    name.className = "choice-name";
+    name.textContent = `${row.race_name}｜天赋·${row.talent_name}`;
+    const sub = document.createElement("span");
+    sub.className = "popup-option-sub";
+    sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
+    info.append(name, sub);
+    btn.append(glyph, info);
+    btn.addEventListener("click", () => {
+      closePopup();
+      Game.chooseRace(String(row.race_id));
+    });
+    buttons.appendChild(btn);
+  }
+}
+
+// ---------------- 势力四选一（R2-B 地仙后入局） ----------------
+
+function renderFactionChoicePopup(panel, title, body, buttons) {
+  panel.classList.add("style-breakthrough");
+  title.textContent = "入局：择一方势力";
+  body.textContent =
+    "你已立身天仙之境，暂时挣脱榜文牵引。\n但洪荒棋局之上，无人能真正置身事外——地仙之后无散修。\n\n阐、截、天庭、五庄观，四方皆在落子。择一方入局，入局不悔。";
+  for (const row of DataManager.getRows("faction_table")) {
+    const btn = document.createElement("button");
+    btn.className = "popup-btn treasure-pick choice-pick";
+    const glyph = document.createElement("span");
+    glyph.className = "choice-glyph";
+    glyph.textContent = row.glyph || "势";
+    const info = document.createElement("span");
+    info.className = "choice-info";
+    const name = document.createElement("span");
+    name.className = "choice-name";
+    name.textContent = `${row.faction_name}｜${row.dojo}`;
+    const sub = document.createElement("span");
+    sub.className = "popup-option-sub";
+    sub.textContent = `${row.card_desc}\n护持·${row.passive_name}：${row.passive_desc}`;
+    info.append(name, sub);
+    btn.append(glyph, info);
+    btn.addEventListener("click", () => {
+      closePopup();
+      Game.chooseFaction(String(row.faction_id));
+    });
+    buttons.appendChild(btn);
+  }
+}
+
 function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroughId) {
   const data = DataManager.getById("breakthrough_table", breakthroughId);
   if (!Object.keys(data).length) {
@@ -770,13 +846,49 @@ function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroug
   panel.classList.add("style-breakthrough");
   const fromRealm = DataManager.getRealm(data.from_realm);
   const toRealm = DataManager.getRealm(data.to_realm);
-  title.textContent = `破劫：${fromRealm.realm_name || ""} → ${toRealm.realm_name || ""}`;
+  title.textContent = `破劫：${getPhaseRealmName(fromRealm)} → ${getPhaseRealmName(toRealm)}`;
   const b = BreakthroughManager.getRateBreakdown(Game.state, data);
   const pct = (v) => `${Math.round(v * 100)}%`;
-  body.textContent =
-    `${data.breakthrough_lore || ""}\n\n成功率：${pct(b.rate)}\n\n` +
-    `基础成功率：${pct(b.base)}\n功德护持：+${pct(b.meritBonus)}\n失败补偿：+${pct(b.failBonus)}\n榜文牵引：-${pct(b.calamityPenalty)}\n\n` +
-    `消耗道行：${formatInt(data.required_daoxing)}\n${data.pressure_label || ""}`;
+
+  const lore = document.createElement("div");
+  lore.textContent = data.breakthrough_lore || "";
+  body.appendChild(lore);
+
+  // R2-A 因果链明细：前置因果的总决算，缺前置的行显式记 +0%，负行标红
+  const failCount = int(Game.state.breakthrough_fail_counts[String(data.breakthrough_id)]);
+  const rows = [
+    { label: "基础成功率", value: b.base, base: true, hint: "劫数本身的成色" },
+    { label: "剧情节点", value: b.storyBonus, hint: "历过榜文碎光/榜文压顶者 +5%" },
+    { label: "功德护持", value: b.meritBonus, hint: "功德每满百 +0.5%，有上限" },
+    { label: "法宝护身", value: b.treasureBonus, hint: "最高法宝等级 ×2%，上限 12%" },
+    { label: "地脉之力", value: b.pulseBonus, hint: "地仙劫且历榜外地脉者 +10%" },
+    { label: "失败补偿", value: b.failBonus, hint: `劫火淬体，此劫已败 ${failCount} 次` },
+    { label: "先天道体", value: b.raceBonus, hint: "人族跟脚，破劫底子 +3%" },
+    { label: "榜文牵引", value: -b.calamityPenalty, sign: "-", hint: "劫气每满百 -0.3%，有上限" },
+  ];
+  const table = document.createElement("div");
+  table.className = "rate-table";
+  for (const r of rows) {
+    const line = document.createElement("div");
+    line.className = "rate-row" + (r.value < 0 ? " negative" : !r.base && r.value === 0 ? " zero" : "");
+    const name = document.createElement("span");
+    name.textContent = r.label;
+    const hint = document.createElement("span");
+    hint.className = "rate-hint";
+    hint.textContent = r.hint;
+    const value = document.createElement("span");
+    value.className = "rate-value";
+    value.textContent = r.base ? pct(r.value) : `${r.sign || (r.value < 0 ? "-" : "+")}${pct(Math.abs(r.value))}`;
+    line.append(name, hint, value);
+    table.appendChild(line);
+  }
+  body.appendChild(table);
+
+  const total = document.createElement("div");
+  total.className = "rate-total";
+  total.textContent = `总成功率：${pct(b.rate)}（钳制于 ${pct(num(data.min_success_rate))} ~ ${pct(num(data.max_success_rate, 1))}）\n消耗道行：${formatInt(data.required_daoxing)}\n${data.pressure_label || ""}`;
+  body.appendChild(total);
+
   buttons.appendChild(
     popupButton("开始破劫", false, () => {
       closePopup();
@@ -841,9 +953,16 @@ function note(text) {
 function renderRealmPanel(body, state) {
   const realm = RealmManager.getCurrentRealm(state);
   const progress = RealmManager.getProgress(state);
+  const raceTag = getRaceShortName(state);
+  const faction = getFactionRow(state);
+  const factionLine = Object.keys(faction).length
+    ? `势力：${faction.faction_name}（${faction.dojo}）\n护持：${faction.passive_name}——${faction.passive_desc}`
+    : RealmManager.isCapped(state)
+      ? "势力：尚未入局——你已立身天仙之境，四方皆在等你落子。"
+      : "势力：未入局（立身天仙之境后，须择一方势力）";
   body.appendChild(
     note(
-      `${realm.realm_name}｜${getTitle(state)}\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(
+      `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(
         progress.current
       )} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`
     )
@@ -868,7 +987,16 @@ function renderRealmPanel(body, state) {
       })
     );
   } else if (RealmManager.isCapped(state)) {
-    body.appendChild(note("你已至地仙一重，当前版本修行暂止。"));
+    body.appendChild(note(`你已至${getPhaseRealmName(realm)}，当前版本修行暂止。`));
+    if (!str(state.faction_id, "")) {
+      body.appendChild(
+        popupButton("择势力入局", false, () => {
+          closePanelSheet();
+          Game._maybeQueueFactionChoice();
+          drainPopupQueue();
+        })
+      );
+    }
     body.appendChild(
       popupButton("查看天仙篇预告", false, () => {
         closePanelSheet();
@@ -877,7 +1005,7 @@ function renderRealmPanel(body, state) {
     );
   } else {
     const next = RealmManager.getNextRealm(state);
-    body.appendChild(note(`下一境：${next.realm_name || "未知"}\n继续闭关或修行，积累道行。`));
+    body.appendChild(note(`下一境：${getPhaseRealmName(next)}\n继续闭关或修行，积累道行。`));
   }
 }
 
@@ -1107,6 +1235,68 @@ function renderChancePanel(body, state) {
 
 function renderLogPanel(body, state) {
   body.appendChild(note(`入道第 ${UnlockManager.currentDay(state)} 天`));
+  // R2-B：势力卡与师门任务卡（洞府页签）
+  const faction = getFactionRow(state);
+  if (Object.keys(faction).length) {
+    const card = document.createElement("div");
+    card.className = "card selected";
+    const glyph = document.createElement("span");
+    glyph.className = "choice-glyph";
+    glyph.textContent = faction.glyph || "门";
+    const info = document.createElement("div");
+    info.className = "card-info";
+    const name = document.createElement("div");
+    name.className = "card-name";
+    name.textContent = `${faction.faction_name}（${faction.dojo}）`;
+    const desc = document.createElement("div");
+    desc.className = "card-desc";
+    desc.textContent = faction.card_desc || "";
+    const passive = document.createElement("div");
+    passive.className = "card-cost";
+    passive.textContent = `护持·${faction.passive_name}：${faction.passive_desc}`;
+    info.append(name, desc, passive);
+    card.append(glyph, info);
+    body.appendChild(card);
+
+    const task = DataManager.getById("action_table", String(faction.task_action_id || ""));
+    if (Object.keys(task).length) {
+      const taskCard = document.createElement("div");
+      taskCard.className = "card";
+      const tInfo = document.createElement("div");
+      tInfo.className = "card-info";
+      const tName = document.createElement("div");
+      tName.className = "card-name";
+      tName.textContent = `师门任务：${task.action_name}（${task.duration_sec}息）`;
+      const tDesc = document.createElement("div");
+      tDesc.className = "card-desc";
+      tDesc.textContent = task.description || "";
+      const tCost = document.createElement("div");
+      tCost.className = "card-cost";
+      const remain = ActionManager.remainingToday(state, task);
+      tCost.textContent = remain >= 0 ? `今日剩余 ${remain} 次` : "不限次";
+      tInfo.append(tName, tDesc, tCost);
+      const goBtn = document.createElement("button");
+      goBtn.className = "card-btn";
+      const avail = ActionManager.getAvailability(state, task);
+      goBtn.textContent = avail.ok ? "前往" : avail.reason;
+      goBtn.disabled = !avail.ok;
+      goBtn.addEventListener("click", () => {
+        closePanelSheet();
+        Game.startAction(String(task.action_id));
+      });
+      taskCard.append(tInfo, goBtn);
+      body.appendChild(taskCard);
+    }
+  } else if (RealmManager.isCapped(state)) {
+    body.appendChild(note("地仙之后无散修。你已立身天仙之境，尚未择势力入局。"));
+    body.appendChild(
+      popupButton("择势力入局", false, () => {
+        closePanelSheet();
+        Game._maybeQueueFactionChoice();
+        drainPopupQueue();
+      })
+    );
+  }
   if (!state.logs.length) {
     body.appendChild(note("修行日志空空如也。"));
   }

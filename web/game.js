@@ -21,6 +21,8 @@ const ID_FIELDS = {
   action_table: "action_id",
   chapter_goal_table: "goal_id",
   encounter_table: "encounter_id",
+  race_table: "race_id",
+  faction_table: "faction_id",
 };
 
 // resource_table.unlock_condition 使用中文境界名
@@ -125,6 +127,8 @@ const SaveManager = {
       last_claim_time: now,
       last_daily_reset_day: todayString(),
       realm_id: "rq_01",
+      race_id: "",
+      faction_id: "",
       current_map_id: "",
       resources,
       unlocked_ids: [],
@@ -180,6 +184,19 @@ const SaveManager = {
     state.seen_unlock_popups = state.seen_unlock_popups || [];
     state.flags = state.flags || {};
     state.logs = state.logs || [];
+    state.race_id = str(state.race_id, "");
+    state.faction_id = str(state.faction_id, "");
+    // 旧档兼容：无种族的老存档默认人族（比无加成更友好），记「轮回续缘」一次
+    if (state.race_id === "" && nowUnix() - int(state.created_at, now) > 120) {
+      state.race_id = "human";
+      if (!state.flags.race_legacy_logged) {
+        state.flags.race_legacy_logged = true;
+        state.logs.unshift(
+          `[${new Date().toTimeString().slice(0, 5)}] 轮回续缘：前世跟脚已泯，此世以人族先天道体再踏修行路。`
+        );
+        if (state.logs.length > 30) state.logs.length = 30;
+      }
+    }
     const resources = state.resources || {};
     for (const id of DataManager.getResourceIds()) {
       if (!(id in resources)) resources[id] = 0;
@@ -232,6 +249,10 @@ const UnlockManager = {
     if (condition === "open") return true;
     if (condition in DataManager.realmOrder) {
       return DataManager.isRealmAtLeast(state.realm_id, condition);
+    }
+    // R1-A：种族条件（如 treasure_009 的 race_xiantian，仅对应种族存档可见）
+    if (condition.startsWith("race_")) {
+      return str(state.race_id, "") === condition.slice(5);
     }
     if (condition.startsWith("day_")) {
       return this.currentDay(state) >= parseInt(condition.slice(4), 10);
@@ -324,8 +345,12 @@ const RewardManager = {
     }
     let mult = this._effectiveMultiplier(state);
     mult *= includeMap ? num(omen.journeyMult, 1) : num(omen.gainMult, 1);
+    // R2-B：五庄观被动——闭关/离线收益 +10%
+    if (str(state.faction_id, "") === "wuzhuang") mult *= 1.1;
+    // R1-A：人族天赋——道行类收益 +5%
+    const daoxingRaceMult = str(state.race_id, "") === "human" ? 1.05 : 1;
     const resources = {
-      daoxing: Math.max(1, Math.floor(daoxingPerMin * minutes * mult)),
+      daoxing: Math.max(1, Math.floor(daoxingPerMin * minutes * mult * daoxingRaceMult)),
       mana: Math.floor(manaPerMin * minutes * mult * num(omen.manaMult, 1)),
     };
     if (Object.keys(map).length) {
@@ -373,11 +398,13 @@ const RewardManager = {
     const interval = int(map.drop_roll_interval_minutes, int(config.drop_roll_interval_minutes_default, 10));
     if (interval <= 0) return {};
     const rolls = Math.min(80, Math.max(1, Math.floor(minutes / interval)));
+    // R2-B：截教被动——地图掉落几率 +15%
+    const factionDropMult = str(state.faction_id, "") === "jie" ? 1.15 : 1;
     const result = {};
     for (let i = 0; i < rolls; i++) {
       for (const drop of map.drop_table || []) {
         if (!UnlockManager.conditionMet(state, String(drop.unlock_condition || "open"))) continue;
-        if (Math.random() <= num(drop.chance) * num(getTodayOmen().dropMult, 1)) {
+        if (Math.random() <= num(drop.chance) * num(getTodayOmen().dropMult, 1) * factionDropMult) {
           const id = String(drop.resource_id || "");
           const amount = randInt(int(drop.min, 1), int(drop.max, 1));
           result[id] = num(result[id]) + amount;
@@ -407,10 +434,45 @@ function getPhase(realm) {
   return PHASE_TIERS[0];
 }
 
+// R1-B 洪荒正统境界显示映射层：realm_id 与数据表一律不动，仅显示改名。
+// rq_01-03 炼精化气 / rq_04-06 炼气化神 / rq_07-09 炼神还虚 / rq_10 炼虚合道（凡境圆满）
+// zr_01-03 地仙·初期 / zr_04-06 地仙·中期 / zr_07-09 地仙·后期 / zr_10 地仙·圆满
+// dx_01 天仙·初期（当前版本封顶点）
 function getPhaseRealmName(realm) {
-  const major = String(realm.major_realm || "");
+  const id = String(realm.realm_id || "");
   const minor = int(realm.minor_level, 1);
+  if (id.startsWith("rq_")) {
+    if (minor <= 3) return `炼精化气·${minor}重`;
+    if (minor <= 6) return `炼气化神·${minor}重`;
+    if (minor <= 9) return `炼神还虚·${minor}重`;
+    return "炼虚合道·凡境圆满";
+  }
+  if (id.startsWith("zr_")) {
+    if (minor <= 3) return `地仙·初期·${minor}重`;
+    if (minor <= 6) return `地仙·中期·${minor}重`;
+    if (minor <= 9) return `地仙·后期·${minor}重`;
+    return `地仙·圆满·${minor}重`;
+  }
+  if (id.startsWith("dx_")) return "天仙·初期";
+  const major = String(realm.major_realm || "");
   return `${major}${getPhase(realm).label}·${minor}重`;
+}
+
+// 境界面板寿元行（取自 design/2.1：凡境数百年 / 地仙一万载 / 天仙十万载）
+function getRealmLifespan(realm) {
+  const id = String(realm.realm_id || "");
+  if (id.startsWith("dx_")) return "十万载";
+  if (id.startsWith("zr_")) return "一万载";
+  return "数百年";
+}
+
+function getRaceShortName(state) {
+  const row = DataManager.getById("race_table", str(state.race_id, ""));
+  return String(row.short_name || "");
+}
+
+function getFactionRow(state) {
+  return DataManager.getById("faction_table", str(state.faction_id, ""));
 }
 
 const RealmManager = {
@@ -479,18 +541,39 @@ const BreakthroughManager = {
     return DataManager.getById("breakthrough_table", String(id));
   },
 
+  // R2-A 破劫因果链：前置因果的总决算，逐行明细。
+  // 基础成功率 / 剧情节点 / 功德护持 / 法宝护身 / 地脉之力 / 失败补偿 / 榜文牵引（负）/ 先天道体。
+  // 缺前置即该行为 0 并显式展示；total 仍按 min/max clamp，规则不变。
   getRateBreakdown(state, data) {
     data = data || this.getAvailable(state);
     if (!Object.keys(data).length) return null;
-    const failCount = int(state.breakthrough_fail_counts[String(data.breakthrough_id || "")]);
+    const id = String(data.breakthrough_id || "");
+    const failCount = int(state.breakthrough_fail_counts[id]);
     const merit = num(state.resources.merit);
     const calamity = num(state.resources.calamity);
-    const meritBonus = Math.min(Math.floor(merit / 100) * 0.005, num(data.merit_bonus_cap, 0.2));
-    const calamityPenalty = Math.min(Math.floor(calamity / 100) * 0.003, num(data.calamity_penalty_cap, 0.15));
-    const failBonus = failCount * num(data.fail_bonus);
     const base = num(data.base_success_rate);
-    const rate = clamp(base + meritBonus + failBonus - calamityPenalty, num(data.min_success_rate), num(data.max_success_rate, 1));
-    return { base, meritBonus, calamityPenalty, failBonus, rate };
+    // 剧情节点：已历 event_001（榜文碎光）或 event_017（榜文压顶）者 +5%
+    const storyBonus =
+      state.seen_events.includes("event_001") || state.seen_events.includes("event_017") ? 0.05 : 0;
+    const meritBonus = Math.min(Math.floor(merit / 100) * 0.005, num(data.merit_bonus_cap, 0.2));
+    // 法宝护身：最高法宝等级 ×2%，上限 12%
+    let maxTreasureLevel = 0;
+    for (const t of Object.values(state.treasures || {})) {
+      maxTreasureLevel = Math.max(maxTreasureLevel, int(t.level));
+    }
+    const treasureBonus = Math.min(0.12, maxTreasureLevel * 0.02);
+    // 地脉之力：仅地仙劫（bt_002）且已历 event_020（榜外地脉）者 +10%
+    const pulseBonus = id === "bt_002" && state.seen_events.includes("event_020") ? 0.1 : 0;
+    const failBonus = failCount * num(data.fail_bonus);
+    const calamityPenalty = Math.min(Math.floor(calamity / 100) * 0.003, num(data.calamity_penalty_cap, 0.15));
+    // 先天道体：人族破劫基础率 +3%
+    const raceBonus = str(state.race_id, "") === "human" ? 0.03 : 0;
+    const rate = clamp(
+      base + storyBonus + meritBonus + treasureBonus + pulseBonus + failBonus + raceBonus - calamityPenalty,
+      num(data.min_success_rate),
+      num(data.max_success_rate, 1)
+    );
+    return { base, storyBonus, meritBonus, treasureBonus, pulseBonus, failBonus, calamityPenalty, raceBonus, rate };
   },
 
   getSuccessRate(state, data) {
@@ -582,15 +665,21 @@ const EventManager = {
 
 const ActionManager = {
   getActions(state) {
-    return DataManager.getRows("action_table").filter((row) =>
-      UnlockManager.conditionMet(state, String(row.unlock_realm || ""))
-    );
+    return DataManager.getRows("action_table").filter((row) => {
+      if (!UnlockManager.conditionMet(state, String(row.unlock_realm || ""))) return false;
+      // R2-B：师门任务仅本势力可见
+      if (row.faction_id && String(row.faction_id) !== str(state.faction_id, "")) return false;
+      return true;
+    });
   },
 
   getAvailability(state, row) {
     const id = String(row.action_id);
     if (!UnlockManager.conditionMet(state, String(row.unlock_realm || ""))) {
       return { ok: false, reason: "尚未开启" };
+    }
+    if (row.faction_id && String(row.faction_id) !== str(state.faction_id, "")) {
+      return { ok: false, reason: "非本门之法" };
     }
     if (state.current_action) return { ok: false, reason: "行动进行中" };
     if (row.only_major_realm) {
@@ -899,7 +988,7 @@ const FEATURE_UNLOCK_TEXT = {
 const FIRST_TREASURE_CHOICES = ["treasure_001", "treasure_002", "treasure_003"];
 
 const CAP_NOTICE_TEXT =
-  "你已破开地仙劫，暂时挣脱榜文牵引。\n再往前，便是天仙之路。\n\n天仙篇将开启：\n· 真正进入封神大劫\n· 术法进阶为神通\n· 法宝祭炼深化\n· 封神榜残影挑战\n· 骷髅山深处与陈塘因果\n\n当前版本暂时开放至地仙一重。\n你仍可继续游历骷髅山边界，收集祭炼材料与法宝碎片。";
+  "你已破开地仙劫，立身天仙·初期，暂时挣脱榜文牵引。\n再往前，便是天仙中境之路。\n\n天仙篇将开启：\n· 真正进入封神大劫\n· 术法进阶为神通\n· 法宝祭炼深化\n· 封神榜残影挑战\n· 骷髅山深处与陈塘因果\n\n当前版本暂时开放至天仙·初期。\n你仍可继续游历骷髅山边界，收集祭炼材料与法宝碎片。";
 
 // ---------------- Game 聚合入口 ----------------
 
@@ -918,6 +1007,8 @@ const Game = {
     this._refreshPendingReward();
     if (fresh) {
       this._log("你于山野洞府中睁开眼，开始修行。");
+      // R1-A：新档开场先择跟脚（种族四选一），再弹开场白
+      this.queuePopup({ kind: "race_choice" });
       this.queuePopup({
         kind: "text",
         style: "seal",
@@ -925,6 +1016,9 @@ const Game = {
         body: "商周兵火尚远，封神榜未显。\n你只是山野洞府中一名无名炼气士。\n若想在将来的大劫中活下去，先从吐纳一轮周天开始。",
         buttons: [{ label: "开始修行" }],
       });
+    } else if (!str(this.state.race_id, "") && !this.state.flags.race_choice_done) {
+      // R1-A：择跟脚途中离开，补弹种族四选一
+      this.queuePopup({ kind: "race_choice" });
     } else if (int(this.pendingOfflineReward.minutes) >= 5) {
       this.queuePopup({
         kind: "text",
@@ -1050,13 +1144,25 @@ const Game = {
       rewardText = this._formatResourceDelta(reward.resources);
     }
 
-    // 机缘：强制或概率
+    // 师门任务等固定赏赐（reward_resources 字段）
+    let extraRewardText = "";
+    if (row.reward_resources && Object.keys(row.reward_resources).length) {
+      const fixed = {};
+      for (const rid of Object.keys(row.reward_resources)) {
+        fixed[rid] = num(row.reward_resources[rid]);
+      }
+      this._applyResourceDelta(fixed);
+      extraRewardText = this._formatResourceDelta(fixed);
+    }
+
+    // 机缘：强制或概率（R1-A：麒麟行动机缘概率 ×1.3）
     let eventTriggered = false;
     if (!this.state.pending_event_id) {
+      const eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
       if (row.force_event && EventManager.canOffer(this.state, String(row.force_event))) {
         this._setPendingEvent(String(row.force_event));
         eventTriggered = true;
-      } else if (num(row.event_chance) > 0 && Math.random() <= num(row.event_chance)) {
+      } else if (eventChance > 0 && Math.random() <= eventChance) {
         const source = row.reward_type === "map_equivalent" ? "travel" : "offline";
         const eventId = EventManager.rollEvent(this.state, source);
         if (eventId) {
@@ -1086,11 +1192,12 @@ const Game = {
     }
 
     if (!chained) {
+      const allRewardText = [rewardText, extraRewardText].filter(Boolean).join("\n");
       this.queuePopup({
         kind: "text",
         style: "seal",
         title: `${row.action_name}完成！`,
-        body: `${row.complete_text || ""}${rewardText ? `\n\n获得：\n${rewardText}` : ""}${blessText}${
+        body: `${row.complete_text || ""}${allRewardText ? `\n\n获得：\n${allRewardText}` : ""}${blessText}${
           RealmManager.canLevelUp(this.state) ? "\n\n道行已满，可提升境界。" : ""
         }`,
         buttons: [{ label: "收功" }],
@@ -1113,6 +1220,8 @@ const Game = {
     if (!this.state.current_action) return null;
     const realm = RealmManager.getCurrentRealm(this.state);
     const comboMult = Math.min(2, 1 + 0.25 * (Math.max(1, combo) - 1));
+    // R1-A：人族天赋——灵光道行同样 +5%
+    const daoxingRaceMult = str(this.state.race_id, "") === "human" ? 1.05 : 1;
     const gain = {};
     if (type === "mana") {
       gain.mana = Math.max(20, Math.round(num(realm.base_mana_per_min) * 4 * comboMult));
@@ -1120,10 +1229,10 @@ const Game = {
       if (this.state.seen_resources.includes("spell_page")) {
         gain.spell_page = combo >= 3 ? 2 : 1;
       } else {
-        gain.daoxing = Math.max(2, Math.round(num(realm.base_daoxing_per_min) * 6 * comboMult));
+        gain.daoxing = Math.max(2, Math.round(num(realm.base_daoxing_per_min) * 6 * comboMult * daoxingRaceMult));
       }
     } else {
-      gain.daoxing = Math.max(1, Math.round(num(realm.base_daoxing_per_min) * 3 * comboMult));
+      gain.daoxing = Math.max(1, Math.round(num(realm.base_daoxing_per_min) * 3 * comboMult * daoxingRaceMult));
     }
     this._applyResourceDelta(gain);
     this.state.current_action.caught = int(this.state.current_action.caught) + 1;
@@ -1213,6 +1322,7 @@ const Game = {
     if (outcome.chance_extra && Math.random() <= num(outcome.chance_extra.chance)) {
       mergeResources(resources, outcome.chance_extra.resources || {});
     }
+    this._applyFactionMeritBonus(resources);
     if (Object.keys(resources).length) this._applyResourceDelta(resources);
     const deltaText = this._formatResourceDelta(resources);
     this._log(`遭遇「${enc.name}」：${ok ? "有惊无险" : "小挫而退"}。`);
@@ -1274,17 +1384,22 @@ const Game = {
       if (battle.win) {
         const rewards = { daoxing: num(boss.reward_daoxing), mana: num(boss.reward_mana) };
         mergeResources(rewards, boss.reward_items || {});
-        const loot = num(omen.lootMult, 1);
-        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * loot);
+        const omenLoot = num(omen.lootMult, 1);
+        // R1-A：妖族天赋——斗法胜利战利 +25%（吞噬）
+        const raceLoot = str(this.state.race_id, "") === "yao" ? 1.25 : 1;
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot);
         this._applyResourceDelta(rewards);
         const firstClear = int(this.state.boss_clears[bossId]) === 0;
         this.state.boss_clears[bossId] = int(this.state.boss_clears[bossId]) + 1;
         this._log(`你击败了${boss.boss_name}。`);
+        const lootLines = [];
+        if (omenLoot > 1) lootLines.push(`${omen.name}：战利 +${Math.round((omenLoot - 1) * 100)}%`);
+        if (raceLoot > 1) lootLines.push(`万灵之体·吞噬：战利 +${Math.round((raceLoot - 1) * 100)}%`);
         this.queuePopup({
           kind: "text",
           style: "breakthrough",
           title: "挑战胜利！",
-          body: `${boss.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${loot > 1 ? `\n\n${omen.name}：战利 +${Math.round((loot - 1) * 100)}%` : ""}`,
+          body: `${boss.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${lootLines.length ? `\n\n${lootLines.join("\n")}` : ""}`,
           buttons: [{ label: "收取战利" }],
         });
         if (firstClear && boss.first_clear_event && !this.state.pending_event_id) {
@@ -1312,12 +1427,17 @@ const Game = {
     const option = (enc.options || [])[int(battle.payload.optionIndex)];
     if (enc && option) {
       const outcome = battle.win ? option.success : option.fail;
-      if (battle.win && num(omen.lootMult, 1) > 1 && outcome && outcome.resources) {
+      const omenLoot = battle.win ? num(omen.lootMult, 1) : 1;
+      // R1-A：妖族天赋——斗法胜利战利 +25%（吞噬）
+      const raceLoot = battle.win && str(this.state.race_id, "") === "yao" ? 1.25 : 1;
+      if (outcome && outcome.resources && omenLoot * raceLoot > 1) {
         const boosted = {};
         for (const id of Object.keys(outcome.resources)) {
-          boosted[id] = Math.round(num(outcome.resources[id]) * num(omen.lootMult, 1));
+          boosted[id] = Math.round(num(outcome.resources[id]) * omenLoot * raceLoot);
         }
-        this._applyEncounterOutcome(enc, { ...outcome, resources: boosted }, battle.win);
+        let text = String(outcome.text || "");
+        if (raceLoot > 1) text += "\n万灵之体·吞噬：战利 +25%。";
+        this._applyEncounterOutcome(enc, { ...outcome, resources: boosted, text }, battle.win);
       } else {
         this._applyEncounterOutcome(enc, outcome, battle.win);
       }
@@ -1379,12 +1499,12 @@ const Game = {
     const to = result.to;
     const powerGain = num(to.combat_power_base) - num(from.combat_power_base);
     const tips = (to.feature_tips || []).map((t) => `解锁：${t}`).join("\n");
-    this._log(`你突破至${to.realm_name}。`);
+    this._log(`你突破至${getPhaseRealmName(to)}。`);
     this.queuePopup({
       kind: "text",
       style: "seal",
       title: "境界提升！",
-      body: `${to.lore_text || "你吐纳周天，法力更进一步。"}\n\n${from.realm_name} → ${to.realm_name}\n\n战力 +${formatInt(
+      body: `${to.lore_text || "你吐纳周天，法力更进一步。"}\n\n${getPhaseRealmName(from)} → ${getPhaseRealmName(to)}\n\n战力 +${formatInt(
         powerGain
       )}\n闭关收益提升${tips ? "\n" + tips : ""}`,
       buttons: [{ label: "继续修行" }],
@@ -1502,11 +1622,62 @@ const Game = {
     return { ok: true };
   },
 
+  // ---------- 种族与势力（R1-A / R2-B） ----------
+
+  // 开场种族四选一，一选定终身
+  chooseRace(raceId) {
+    const row = DataManager.getById("race_table", raceId);
+    if (!Object.keys(row).length) return;
+    if (this.state.flags.race_choice_done) return;
+    this.state.race_id = String(raceId);
+    this.state.flags.race_choice_done = true;
+    // 先天生灵：伴生灵宝开局即 1 级，不占本命择主位
+    if (String(raceId) === "xiantian" && !this.state.treasures.treasure_009) {
+      this.state.treasures.treasure_009 = { level: 1, owned: true };
+    }
+    this._log(`你觉醒了跟脚：${row.race_name}。`);
+    this.queuePopup({
+      kind: "text",
+      style: "seal",
+      title: `跟脚已定：${row.race_name}`,
+      body: String(row.choose_text || row.talent_desc || ""),
+      buttons: [{ label: "踏入修行" }],
+    });
+    this._afterMutated();
+  },
+
+  // 地仙后择势力（四择一入局），入局不悔
+  chooseFaction(factionId) {
+    const row = DataManager.getById("faction_table", factionId);
+    if (!Object.keys(row).length) return;
+    if (this.state.faction_id) return;
+    this.state.faction_id = String(factionId);
+    this._log(`你投身${row.faction_name}（${row.dojo}），自此入局。`);
+    this.queuePopup({
+      kind: "text",
+      style: "seal",
+      title: `入局：${row.faction_name}`,
+      body: String(row.join_text || ""),
+      buttons: [{ label: "领受护持" }],
+    });
+    this._afterMutated();
+  },
+
+  // 到达 dx_01（天仙·初期）后紧随「修行暂止」弹入局四选一；旧档未选者不强制，可从境界面板补选
+  _maybeQueueFactionChoice() {
+    if (this.state.faction_id) return;
+    if (this.popupQueue.some((p) => p.kind === "faction_choice")) return;
+    this.queuePopup({ kind: "faction_choice" });
+  },
+
   // ---------- 本命法宝择主 ----------
 
   hasPendingTreasureChoice() {
     if (!UnlockManager.isUnlocked(this.state, "treasure_system")) return false;
-    return !Object.values(this.state.treasures).some((t) => int(t.level) > 0);
+    // 伴生灵宝（treasure_009）不占本命择主位，不影响择主判定
+    return !Object.keys(this.state.treasures).some(
+      (id) => id !== "treasure_009" && int(this.state.treasures[id].level) > 0
+    );
   },
 
   chooseFirstTreasure(treasureId) {
@@ -1592,14 +1763,28 @@ const Game = {
 
   getTreasureUpgradeCost(treasureRow, toLevel) {
     const id = String(treasureRow.treasure_id);
+    let cost = null;
     if (toLevel === 1 && id !== this.state.first_treasure_id) {
       // 非择主法宝需以碎片炼化
-      return { treasure_shard_cost: 20, mana_cost: 10000 };
+      cost = { treasure_shard_cost: 20, mana_cost: 10000 };
+    } else {
+      for (const row of treasureRow.level_growth || []) {
+        if (int(row.level) === toLevel) {
+          cost = row;
+          break;
+        }
+      }
     }
-    for (const cost of treasureRow.level_growth || []) {
-      if (int(cost.level) === toLevel) return cost;
+    if (!cost) return null;
+    // R2-B：阐教被动——法宝温养/炼化消耗 -20%（出口统一乘，返回副本不动原表）
+    if (str(this.state.faction_id, "") === "chan") {
+      cost = {
+        ...cost,
+        treasure_shard_cost: Math.round(num(cost.treasure_shard_cost) * 0.8),
+        mana_cost: Math.round(num(cost.mana_cost) * 0.8),
+      };
     }
-    return null;
+    return cost;
   },
 
   upgradeTreasure(treasureId) {
@@ -1660,6 +1845,8 @@ const Game = {
       body: CAP_NOTICE_TEXT,
       buttons: [{ label: "继续收集" }],
     });
+    // R2-B：紧随「修行暂止」弹「入局」四选一（未入局者才弹）
+    this._maybeQueueFactionChoice();
     this._afterMutated();
   },
 
@@ -1676,6 +1863,10 @@ const Game = {
     }
     if (this.hasPendingTreasureChoice()) {
       return { type: "treasure_choice", label: "本命法宝择主" };
+    }
+    // R2-B：已到封顶却未入局（如弹窗途中刷新），主按钮兜底入局
+    if (RealmManager.isCapped(state) && !str(state.faction_id, "")) {
+      return { type: "faction_choice", label: "择一方势力入局" };
     }
     if (BreakthroughManager.canAttempt(state)) {
       const data = BreakthroughManager.getAvailable(state);
@@ -1709,8 +1900,9 @@ const Game = {
       const match = available.find((row) => String(row.action_id) === String(c.action_id));
       if (match) return match;
     }
-    // 其次：观榜悟道（若目标是事件类）、入定、吐纳
-    const order = ["observe_seal", "short_meditation", "breath_cycle", "wild_travel", "chentang_patrol", "kulou_explore"];
+    // 其次：师门任务（日限 3 次先做）、观榜悟道（若目标是事件类）、入定、吐纳
+    const factionTask = String(getFactionRow(state).task_action_id || "");
+    const order = [factionTask, "observe_seal", "short_meditation", "breath_cycle", "wild_travel", "chentang_patrol", "kulou_explore"];
     for (const id of order) {
       const match = available.find((row) => String(row.action_id) === id);
       if (match) return match;
@@ -1745,6 +1937,8 @@ const Game = {
     UnlockManager.refresh(this.state);
     this._refreshPendingReward();
     this._log("你重入轮回，再踏修行路。");
+    // R1-A：重入轮回视同新档，先择跟脚
+    this.queuePopup({ kind: "race_choice" });
     SaveManager.save(this.state);
     this._emit();
   },
@@ -1859,8 +2053,16 @@ const Game = {
       const calamity = num(this.state.resources.calamity);
       resources.calamity = num(resources.calamity) - Math.ceil(calamity * num(payload.breakthrough_pressure_reduce)) - 50;
     }
+    this._applyFactionMeritBonus(resources);
     this._applyResourceDelta(resources);
     return { resources };
+  },
+
+  // R2-B：天庭被动——事件/遭遇结算的功德行 +20%
+  _applyFactionMeritBonus(resources) {
+    if (str(this.state.faction_id, "") === "tianting" && num(resources.merit) > 0) {
+      resources.merit = Math.round(num(resources.merit) * 1.2);
+    }
   },
 
   _log(message) {

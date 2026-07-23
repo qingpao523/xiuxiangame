@@ -116,6 +116,84 @@
       "start_text": "你踏入骷髅山边界，阴云在头顶缓缓合拢。",
       "complete_text": "探幽结束，白骨阴火与地脉灵机被你收入袖中。",
       "button_style": "map"
+    },
+    {
+      "action_id": "chan_task",
+      "action_name": "玉虚听法",
+      "unlock_realm": "dx_01",
+      "faction_id": "chan",
+      "duration_sec": 30,
+      "reward_type": "offline_equivalent",
+      "reward_minutes_equivalent": 5,
+      "reward_resources": {
+        "merit": 100
+      },
+      "map_id": "",
+      "daily_limit": 3,
+      "event_chance": 0,
+      "force_event": "",
+      "description": "赴玉虚宫听讲一回，道行与功德并得。",
+      "start_text": "你整衣入宫，玉虚钟声正响。",
+      "complete_text": "一讲既毕，清光洗心，道行与功德皆有进益。",
+      "button_style": "gold"
+    },
+    {
+      "action_id": "jie_task",
+      "action_name": "碧游演阵",
+      "unlock_realm": "dx_01",
+      "faction_id": "jie",
+      "duration_sec": 30,
+      "reward_type": "offline_equivalent",
+      "reward_minutes_equivalent": 5,
+      "reward_resources": {
+        "spell_page": 4
+      },
+      "map_id": "",
+      "daily_limit": 3,
+      "event_chance": 0,
+      "force_event": "",
+      "description": "随万仙演练阵法方位，道行与残页并得。",
+      "start_text": "碧游宫中阵旗猎猎，你随众同门各归方位。",
+      "complete_text": "演阵已毕，你悟得几分截教阵意，同门塞给你几页残符。",
+      "button_style": "gold"
+    },
+    {
+      "action_id": "tianting_task",
+      "action_name": "值守香火",
+      "unlock_realm": "dx_01",
+      "faction_id": "tianting",
+      "duration_sec": 30,
+      "reward_type": "offline_equivalent",
+      "reward_minutes_equivalent": 5,
+      "reward_resources": {
+        "merit": 80
+      },
+      "map_id": "",
+      "daily_limit": 3,
+      "event_chance": 0,
+      "force_event": "",
+      "description": "按敕令值守一炷香火，法力与功德并得。",
+      "start_text": "你手捧功德簿，在封神台旧址前站直了些。",
+      "complete_text": "一炷香尽，香火气与功德金光一同入账。",
+      "button_style": "gold"
+    },
+    {
+      "action_id": "wuzhuang_task",
+      "action_name": "人参果会",
+      "unlock_realm": "dx_01",
+      "faction_id": "wuzhuang",
+      "duration_sec": 30,
+      "reward_type": "offline_equivalent",
+      "reward_minutes_equivalent": 8,
+      "reward_resources": {},
+      "map_id": "",
+      "daily_limit": 3,
+      "event_chance": 0,
+      "force_event": "",
+      "description": "赴五庄观人参果会，道行与法力并得。",
+      "start_text": "清风明月引你入院，人参果树下已设了小宴。",
+      "complete_text": "果会散去，你只觉周身轻快，道行与法力俱有长进。",
+      "button_style": "gold"
     }
   ]
 }

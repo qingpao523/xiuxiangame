@@ -1,0 +1,55 @@
+{
+  "schema_version": "0.1.0",
+  "table": "faction_table",
+  "description": "R2-B 地仙后择势力（四择一入局）。被动挂点见 game.js：阐教温养炼化减耗、截教地图掉落、天庭功德加成、五庄观闭关离线加成。师门任务见 action_table（faction_id 过滤）。文案取自 design/2.1 势力矩阵。",
+  "rows": [
+    {
+      "faction_id": "chan",
+      "faction_name": "阐教",
+      "dojo": "清微天·玉虚宫",
+      "saint": "元始天尊",
+      "passive_name": "玉虚炼器",
+      "passive_desc": "法宝温养/炼化消耗 -20%",
+      "card_desc": "玉虚宫·元始天尊座下。重跟脚，法宝最多，也最容易被卷进封神杀劫的中心。",
+      "join_text": "你对着玉虚宫方向端端正正三拜。元始天尊座前最重跟脚，你这出身倒也算清白。\n\n自今日起，玉虚炼器之法为你所用：法宝温养与炼化消耗减少两成。破劫之时，这份护持也算在你头上。\n\n门规只有一条：别给师门丢脸。当然，真丢了脸，十二金仙也未必来得及捞你。",
+      "task_action_id": "chan_task",
+      "glyph": "阐"
+    },
+    {
+      "faction_id": "jie",
+      "faction_name": "截教",
+      "dojo": "禹余天·碧游宫",
+      "saint": "通天教主",
+      "passive_name": "万仙来朝",
+      "passive_desc": "地图掉落几率 +15%",
+      "card_desc": "碧游宫·通天教主座下。有教无类，万仙来朝，异类最好的归宿，自由且热闹。",
+      "join_text": "碧游宫前，万仙来朝，不分披毛戴角、湿生卵化。通天教主有教无类，你这跟脚人家看都不看就收了。\n\n自今日起，同门遍布三界，地图掉落机缘 +15%。破劫之时，万仙的一点气机也算在你头上。\n\n自由是自由了，就是师兄弟太多，香火情分得自己挣。",
+      "task_action_id": "jie_task",
+      "glyph": "截"
+    },
+    {
+      "faction_id": "tianting",
+      "faction_name": "天庭",
+      "dojo": "封神台·凌霄殿",
+      "saint": "昊天上帝",
+      "passive_name": "功德敕令",
+      "passive_desc": "功德类获取 +20%",
+      "card_desc": "封神台·昊天上帝御前。体制内编制，功德加身，资源最多，规矩也最多。",
+      "join_text": "你在封神台旧址前领了天庭敕令。昊天上帝缺人缺得厉害，见你来投，当场给了编制。\n\n自今日起，功德类获取 +20%。破劫之时，这枚敕令也算在你头上。\n\n体制内的好处是稳，坏处是……算了，你既然来了，想必都懂。",
+      "task_action_id": "tianting_task",
+      "glyph": "庭"
+    },
+    {
+      "faction_id": "wuzhuang",
+      "faction_name": "五庄观",
+      "dojo": "万寿山·五庄观",
+      "saint": "镇元子",
+      "passive_name": "地仙之祖",
+      "passive_desc": "闭关/离线收益 +10%",
+      "card_desc": "五庄观·镇元子门下。地仙之祖的中立净土，人参果续命，不站队，不惹事。",
+      "join_text": "五庄观门扉半掩，镇元子只看了你一眼，便让清风明月引你入院。\n\n自今日起，闭关与离线收益 +10%，人参果会日日可赴。破劫之时，这方净土也算在你头上。\n\n地仙之祖不争。投到这里，图的就是个清净。",
+      "task_action_id": "wuzhuang_task",
+      "glyph": "观"
+    }
+  ]
+}
