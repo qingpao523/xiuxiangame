@@ -186,6 +186,9 @@ const SaveManager = {
     state.logs = state.logs || [];
     state.race_id = str(state.race_id, "");
     state.faction_id = str(state.faction_id, "");
+    // 战后休整：单卡永久淬炼等级 / 调息祝福（下 N 场斗法开局护持）
+    state.card_upgrades = state.card_upgrades || {};
+    state.battle_blessing = state.battle_blessing || null;
     // 旧档兼容：无种族的老存档默认人族（比无加成更友好），记「轮回续缘」一次
     if (state.race_id === "" && nowUnix() - int(state.created_at, now) > 120) {
       state.race_id = "human";
@@ -587,33 +590,23 @@ const BreakthroughManager = {
     return num(state.resources.daoxing) >= num(data.required_daoxing);
   },
 
-  try(state) {
-    const data = this.getAvailable(state);
-    if (!Object.keys(data).length) return { ok: false, message: "当前境界暂无破劫。" };
+  // 破劫斗法胜利：扣道行、入新境、解锁
+  applyVictory(state, data) {
     const required = num(data.required_daoxing);
-    if (num(state.resources.daoxing) < required) {
-      return { ok: false, message: "破劫道行不足，还需闭关积累。" };
-    }
+    state.resources.daoxing = Math.max(0, num(state.resources.daoxing) - required);
+    state.realm_id = String(data.to_realm || state.realm_id);
+    state.breakthrough_fail_counts[String(data.breakthrough_id)] = 0;
+    UnlockManager.add(state, data.success_rewards?.unlock_ids || []);
+  },
+
+  // 破劫斗法失利：劫火淬体（失败补偿累计）+ 法力小补，道行不散
+  applyDefeat(state, data) {
     const id = String(data.breakthrough_id || "");
-    const failCount = int(state.breakthrough_fail_counts[id]);
-    const guarantee = int(data.guarantee_after_fail, 99);
-    const rate = this.getSuccessRate(state, data);
-    const success = failCount >= guarantee || Math.random() <= rate;
-
-    if (success) {
-      state.resources.daoxing = Math.max(0, num(state.resources.daoxing) - required);
-      state.realm_id = String(data.to_realm || state.realm_id);
-      state.breakthrough_fail_counts[id] = 0;
-      UnlockManager.add(state, data.success_rewards?.unlock_ids || []);
-      return { ok: true, success: true, rate, data };
-    }
-
-    state.breakthrough_fail_counts[id] = failCount + 1;
+    state.breakthrough_fail_counts[id] = int(state.breakthrough_fail_counts[id]) + 1;
     const manaPercent = num(data.fail_rewards?.mana_percent);
     if (manaPercent > 0) {
       state.resources.mana = num(state.resources.mana) + Math.max(100, num(state.resources.mana) * manaPercent);
     }
-    return { ok: true, success: false, rate, data };
   },
 };
 
@@ -864,10 +857,26 @@ const CARD_DEFS = {
   spell_thunder_01: { name: "掌心雷", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(8 + 4 * lv) * m} 雷伤，附加雷殛标记` },
   spell_fire_01: { name: "灵火术", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(5 + 2 * lv) * m} 伤害，燃烧 ${(3 + lv) * m}` },
   spell_weapon_01: { name: "御器术", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(4 + lv) * m} 伤害，罡气 +${(6 + 2 * lv) * m}` },
-  charm_strike: { name: "符咒·镇妖", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${6 * m} 伤害` },
-  charm_guard: { name: "符咒·护体", kind: "defend", element: "charm", target: "none", text: (lv, m = 1) => `罡气 +${8 * m}` },
+  charm_strike: { name: "符咒·镇妖", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${6 * lv * m} 伤害` },
+  charm_guard: { name: "符咒·护体", kind: "defend", element: "charm", target: "none", text: (lv, m = 1) => `罡气 +${(6 + 2 * lv) * m}` },
   charm_focus: { name: "符咒·凝神", kind: "skill", element: "charm", target: "none", text: () => "真气 +2" },
   treasure_skill: { name: "法宝技", kind: "treasure", element: "treasure", target: "enemy", text: () => "依本命法宝而定，每战 1 次" },
+  // 功德/劫气主题卡：与全局资源打通——攒功德=攒弹药，引劫气=以战养战
+  merit_gold: {
+    name: "功德金光",
+    kind: "attack",
+    element: "merit",
+    target: "enemy",
+    cost: { resource: "merit", amount: 50 },
+    text: (lv, m = 1, s) => `耗 50 功德：${(10 + Math.floor(num(s?.resources?.merit) / 100)) * m} 伤害，净化虚弱`,
+  },
+  calamity_edge: {
+    name: "劫气纵横",
+    kind: "attack",
+    element: "calamity",
+    target: "enemy",
+    text: (lv, m = 1, s) => `引劫入体：${(12 + Math.floor(num(s?.resources?.calamity) / 100)) * m} 伤害，自损 5%，劫气 +30`,
+  },
 };
 
 // 法宝被动（已持有即生效）
@@ -893,24 +902,64 @@ const TREASURE_SKILLS = {
   treasure_008: { name: "清心", element: "treasure", text: (lv, m = 1) => `回复 ${(5 + lv) * m} 气血，净化燃烧与虚弱` },
 };
 
+// ---------------- 破劫多阶段斗法：榜文意图源 ----------------
+// 每阶段：power_ratio 相对玩家战力换算敌方气血，pool 为该阶段榜文的意图池。
+const TRIBULATION_INTENT_POOLS = {
+  suiguang: [
+    { type: "attack", w: 50, ratio: [0.16, 0.22], label: "金光扫落", short: "金光" },
+    { type: "block", w: 20, ratio: 0.08, label: "榜文凝聚", short: "凝聚" },
+    { type: "curse_weak", w: 30, label: "照影摄魂", short: "摄魂" },
+  ],
+  jinying: [
+    { type: "attack", w: 45, ratio: [0.2, 0.26], label: "金鞭抽魂", short: "金鞭" },
+    { type: "charge", w: 20, label: "真灵牵引，雷霆将落", short: "牵引" },
+    { type: "curse_burn", w: 20, ratio: 0.03, label: "劫火焚身", short: "劫火" },
+    { type: "block", w: 15, ratio: 0.1, label: "榜文护持", short: "护持" },
+  ],
+  yipie: [
+    { type: "attack", w: 45, ratio: [0.22, 0.3], label: "封神一瞥", short: "一瞥" },
+    { type: "charge", w: 20, label: "真灵牵引，雷霆将落", short: "牵引" },
+    { type: "curse_burn", w: 25, ratio: 0.04, label: "留名之厄", short: "留名" },
+    { type: "block", w: 10, ratio: 0.12, label: "榜文垂光", short: "垂光" },
+  ],
+};
+
+const TRIBULATION_PHASES = {
+  bt_001: [
+    { name: "榜文碎光", power_ratio: 0.75, intro: "天边榜文碎光凝聚，化作一轮金影，遥遥照住你的灵台。", pool: TRIBULATION_INTENT_POOLS.suiguang },
+    { name: "金影照灵", power_ratio: 0.95, intro: "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。", pool: TRIBULATION_INTENT_POOLS.jinying },
+  ],
+  bt_002: [
+    { name: "榜文碎光", power_ratio: 0.6, intro: "榜文碎光自九天垂落，劫云在你顶门凝成漩涡。", pool: TRIBULATION_INTENT_POOLS.suiguang },
+    { name: "金影照灵", power_ratio: 0.75, intro: "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。", pool: TRIBULATION_INTENT_POOLS.jinying },
+    { name: "封神一瞥", power_ratio: 0.9, intro: "榜文尽头金光大盛，似有一双眼睛抬起，朝你看来。", pool: TRIBULATION_INTENT_POOLS.yipie },
+  ],
+};
+
 const BattleEngine = {
   buildDeck(state) {
     const deck = [];
+    // 战后休整「淬炼符箓」的永久等级加成（独立于术法/法宝系统，仅斗法生效）
+    const ups = state.card_upgrades || {};
     for (const row of DataManager.getRows("spell_table")) {
-      const lv = int(state.spells[String(row.spell_id)]?.level);
-      if (lv > 0) deck.push({ id: String(row.spell_id), level: lv });
+      const id = String(row.spell_id);
+      const lv = int(state.spells[id]?.level);
+      if (lv > 0) deck.push({ id, level: lv + int(ups[id]) });
     }
     const firstId = state.first_treasure_id;
     if (firstId && int(state.treasures[firstId]?.level) > 0) {
-      deck.push({ id: "treasure_skill", level: int(state.treasures[firstId].level) });
+      deck.push({ id: "treasure_skill", level: int(state.treasures[firstId].level) + int(ups.treasure_skill) });
     }
     deck.push(
-      { id: "charm_strike", level: 1 },
-      { id: "charm_strike", level: 1 },
-      { id: "charm_guard", level: 1 },
-      { id: "charm_guard", level: 1 },
+      { id: "charm_strike", level: 1 + int(ups.charm_strike) },
+      { id: "charm_strike", level: 1 + int(ups.charm_strike) },
+      { id: "charm_guard", level: 1 + int(ups.charm_guard) },
+      { id: "charm_guard", level: 1 + int(ups.charm_guard) },
       { id: "charm_focus", level: 1 }
     );
+    // 功德/劫气主题卡：资源满百入牌库，攒资源即攒弹药
+    if (num(state.resources.merit) >= 100) deck.push({ id: "merit_gold", level: 1 });
+    if (num(state.resources.calamity) >= 100) deck.push({ id: "calamity_edge", level: 1 });
     return deck;
   },
 
@@ -922,7 +971,7 @@ const BattleEngine = {
     return total;
   },
 
-  _mkEnemy(name, power) {
+  _mkEnemy(name, power, intentPool) {
     return {
       name,
       power,
@@ -932,15 +981,23 @@ const BattleEngine = {
       charged: false,
       statuses: { burn: 0, weak: 0, vuln: 0, mark: 0 },
       intent: null,
+      intentPool: intentPool || null,
     };
   },
 
   create(state, cfg) {
     const omen = getTodayOmen();
     const playerPower = RealmManager.getCombatPower(state);
-    const enemies = [this._mkEnemy(String(cfg.name || "妖物"), Math.round(num(cfg.enemy_power) * num(omen.enemyMult, 1)))];
-    for (const add of cfg.adds || []) {
-      enemies.push(this._mkEnemy(String(add.name), Math.round(num(add.power) * num(omen.enemyMult, 1))));
+    const phases = cfg.phases || null;
+    const enemies = [];
+    if (phases) {
+      // 破劫多阶段：敌方气血按玩家战力比例换算，意图源自榜文
+      enemies.push(this._mkEnemy(phases[0].name, Math.round(playerPower * num(phases[0].power_ratio, 0.8)), phases[0].pool));
+    } else {
+      enemies.push(this._mkEnemy(String(cfg.name || "妖物"), Math.round(num(cfg.enemy_power) * num(omen.enemyMult, 1))));
+      for (const add of cfg.adds || []) {
+        enemies.push(this._mkEnemy(String(add.name), Math.round(num(add.power) * num(omen.enemyMult, 1))));
+      }
     }
     const battle = {
       name: String(cfg.name || "妖物"),
@@ -954,16 +1011,48 @@ const BattleEngine = {
       deck: this.buildDeck(state),
       ap: 3,
       turn: 0,
-      maxTurns: 12,
+      maxTurns: 12 + (phases ? 4 * (phases.length - 1) : 0),
+      phases,
+      phaseIndex: 0,
       hand: [],
       treasureUsed: false,
       relicThunderUsed: false,
+      guaranteeBuff: false,
+      pendingEvents: [],
       manual: !!state.flags.battle_manual,
       done: false,
       win: false,
     };
     battle.playerStatuses.shield = this.relic(state, "startShield");
     this._startPlayerTurn(state, battle);
+    // 以下护持类效果必须在 _startPlayerTurn 之后应用（回合开始会重置罡气）
+    // 战后休整「调息养气」：下 N 场斗法开局得罡气与圣盾
+    const blessing = state.battle_blessing;
+    if (blessing && int(blessing.battles) > 0) {
+      battle.playerBlock += Math.round(battle.playerHpMax * num(blessing.block_ratio));
+      battle.playerStatuses.shield += int(blessing.shield);
+      battle.pendingEvents.push("调息之效犹在：你气机完满，开局便得护持。");
+      blessing.battles = int(blessing.battles) - 1;
+      if (blessing.battles <= 0) state.battle_blessing = null;
+      SaveManager.save(state);
+    }
+    if (cfg.source === "breakthrough") {
+      // 破劫因果链决算：成功率化为你开局的气机护持
+      const rate = num(cfg.payload?.rate);
+      if (rate > 0) {
+        const bless = Math.round(battle.playerHpMax * rate * 0.3);
+        battle.playerBlock += bless;
+        if (rate >= 0.75) battle.playerStatuses.shield += 1;
+        battle.pendingEvents.push(`因果护持：开局罡气 +${formatInt(bless)}${rate >= 0.75 ? "，圣盾 1 层" : ""}。`);
+      }
+      // 屡败保底：劫火淬体，榜文再也拿不住你
+      if (int(cfg.payload?.failCount) >= int(cfg.payload?.guarantee, 99)) {
+        battle.guaranteeBuff = true;
+        battle.playerStatuses.shield += 2;
+        battle.pendingEvents.push("劫火淬体：此劫已数度失手，榜文再也拿不住你的真灵（圣盾 2 层，伤害 +25%）。");
+      }
+      if (phases[0]?.intro) battle.pendingEvents.push(phases[0].intro);
+    }
     return battle;
   },
 
@@ -986,11 +1075,34 @@ const BattleEngine = {
   },
 
   _rollIntent(enemy) {
+    const pool = enemy.intentPool;
+    if (pool && pool.length) {
+      let total = 0;
+      for (const p of pool) total += num(p.w, 1);
+      let pick = Math.random() * total;
+      for (const p of pool) {
+        pick -= num(p.w, 1);
+        if (pick <= 0) return this._mkIntent(enemy, p);
+      }
+    }
     const r = Math.random();
-    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))) };
-    if (r < 0.75) return { type: "charge" };
-    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)) };
-    return { type: "curse" };
+    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))), label: "扑击", short: "击" };
+    if (r < 0.75) return { type: "charge", label: "凶光大盛，蓄势待发", short: "蓄势" };
+    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)), label: "鳞甲收紧", short: "守" };
+    if (r < 0.95) return { type: "curse_burn", label: "喷吐邪火", short: "邪火" };
+    return { type: "curse_weak", label: "嘶吼震魂", short: "震魂" };
+  },
+
+  _mkIntent(enemy, p) {
+    if (p.type === "attack") {
+      const lo = num(p.ratio?.[0], 0.18);
+      const hi = num(p.ratio?.[1], 0.24);
+      return { type: "attack", value: Math.max(1, Math.round(enemy.power * (lo + Math.random() * (hi - lo)))), label: p.label, short: p.short };
+    }
+    if (p.type === "block") {
+      return { type: "block", value: Math.max(1, Math.round(enemy.power * num(p.ratio, 0.08))), label: p.label, short: p.short };
+    }
+    return { type: p.type, label: p.label, short: p.short, ratio: num(p.ratio, 0.03) };
   },
 
   _omenThunderBonus(state) {
@@ -1010,6 +1122,7 @@ const BattleEngine = {
   _dealDamage(state, battle, enemy, base, element) {
     // 卡牌基础值很小，按玩家战力放大到与敌方血量同一量级
     let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus"));
+    if (battle.guaranteeBuff) mult *= 1.25;
     if (element === "thunder") {
       mult += this._omenThunderBonus(state);
       if (!battle.relicThunderUsed && this.relic(state, "firstThunderBonus") > 0) {
@@ -1039,9 +1152,15 @@ const BattleEngine = {
     const def = CARD_DEFS[card.id];
     if (!def) return [];
     if (def.kind === "treasure" && battle.treasureUsed) return [];
+    // 资源卡：打出即消耗全局资源，攒功德=攒弹药
+    if (def.cost && num(state.resources[def.cost.resource]) < num(def.cost.amount)) return [];
     const target = battle.enemies.filter((e) => e.hp > 0)[targetIndex] || battle.enemies.find((e) => e.hp > 0);
     if (def.target === "enemy" && !target) return [];
 
+    if (def.cost) {
+      state.resources[def.cost.resource] = num(state.resources[def.cost.resource]) - num(def.cost.amount);
+      SaveManager.save(state);
+    }
     battle.ap -= 1;
     card.used = true;
     if (def.kind === "treasure") battle.treasureUsed = true;
@@ -1076,12 +1195,29 @@ const BattleEngine = {
         break;
       }
       case "charm_strike":
-        hit(target, 6, "charm", "符咒·镇妖");
+        hit(target, 6 * lv, "charm", "符咒·镇妖");
         break;
       case "charm_guard": {
-        const block = (8 + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        const block = (6 + 2 * lv + this.relic(state, "blockBonus")) * this._powerMult(battle);
         battle.playerBlock += block;
         events.push(`你获得罡气 +${block}。`);
+        break;
+      }
+      case "merit_gold": {
+        hit(target, 10 + Math.floor(num(state.resources.merit) / 100), "merit", "功德金光");
+        if (battle.playerStatuses.weak > 0) {
+          battle.playerStatuses.weak = 0;
+          events.push("功德金光绕体一周，滞涩尽去。");
+        }
+        break;
+      }
+      case "calamity_edge": {
+        hit(target, 12 + Math.floor(num(state.resources.calamity) / 100), "calamity", "劫气纵横");
+        const backlash = Math.max(1, Math.round(battle.playerHpMax * 0.05));
+        battle.playerHp = Math.max(1, battle.playerHp - backlash);
+        state.resources.calamity = num(state.resources.calamity) + 30;
+        SaveManager.save(state);
+        events.push(`劫气反噬，你受 ${backlash} 伤害；杀伐之气入体，劫气 +30。`);
         break;
       }
       case "charm_focus":
@@ -1138,13 +1274,14 @@ const BattleEngine = {
       }
     }
     this._checkEnd(state, battle);
+    events.push(...battle.pendingEvents.splice(0));
     return events;
   },
 
   endPlayerTurn(state, battle) {
     if (battle.done) return [];
     const events = [];
-    // 敌方阶段：执行意图
+    // 敌方阶段：执行意图（刚进下一阶段、尚未宣告意图的敌人跳过）
     for (const e of battle.enemies.filter((x) => x.hp > 0)) {
       if (e.charged) {
         const dmg = this._damagePlayer(state, battle, Math.max(1, Math.round(e.power * 0.35)));
@@ -1152,26 +1289,25 @@ const BattleEngine = {
         events.push(`${e.name}蓄势重击！你受 ${dmg} 伤害。`);
         continue;
       }
-      const intent = e.intent || { type: "attack", value: Math.max(1, Math.round(e.power * 0.2)) };
+      const intent = e.intent;
+      if (!intent) continue;
       if (intent.type === "attack") {
         let value = intent.value;
         if (e.statuses.weak > 0) value = Math.max(1, Math.round(value * 0.75));
         const dmg = this._damagePlayer(state, battle, value);
-        events.push(`${e.name}扑击，你受 ${dmg} 伤害。`);
+        events.push(`${e.name}${intent.label || "扑击"}，你受 ${dmg} 伤害。`);
       } else if (intent.type === "charge") {
         e.charged = true;
-        events.push(`${e.name}凶光大盛，蓄势待发！`);
+        events.push(`${e.name}${intent.label || "凶光大盛，蓄势待发"}！`);
       } else if (intent.type === "block") {
         e.block += intent.value;
-        events.push(`${e.name}鳞甲收紧，罡气 +${intent.value}。`);
-      } else if (intent.type === "curse") {
-        if (battle.turn % 2 === 0) {
-          battle.playerStatuses.burn += Math.max(2, Math.round(e.power * 0.03));
-          events.push(`${e.name}喷吐邪火，你被燃烧缠身。`);
-        } else {
-          battle.playerStatuses.weak = 2;
-          events.push(`${e.name}嘶吼震魂，你手足发软（虚弱 2 回合）。`);
-        }
+        events.push(`${e.name}${intent.label || "罡气护体"}，罡气 +${intent.value}。`);
+      } else if (intent.type === "curse_burn") {
+        battle.playerStatuses.burn += Math.max(2, Math.round(e.power * num(intent.ratio, 0.03)));
+        events.push(`${e.name}${intent.label || "喷吐邪火"}，你被燃烧缠身。`);
+      } else if (intent.type === "curse_weak") {
+        battle.playerStatuses.weak = 2;
+        events.push(`${e.name}${intent.label || "嘶吼震魂"}，你手足发软（虚弱 2 回合）。`);
       }
       e.intent = null;
     }
@@ -1194,6 +1330,7 @@ const BattleEngine = {
     battle.playerStatuses.weak = Math.max(0, battle.playerStatuses.weak - 1);
 
     this._checkEnd(state, battle);
+    events.push(...battle.pendingEvents.splice(0));
     if (!battle.done) this._startPlayerTurn(state, battle);
     return events;
   },
@@ -1218,6 +1355,11 @@ const BattleEngine = {
 
   _checkEnd(state, battle) {
     if (battle.enemies.every((e) => e.hp <= 0)) {
+      // 破劫多阶段：击碎当前金影后，榜文显化下一阶段
+      if (battle.phases && battle.phaseIndex < battle.phases.length - 1) {
+        this._advancePhase(state, battle);
+        return;
+      }
       battle.done = true;
       battle.win = true;
       return;
@@ -1226,6 +1368,13 @@ const BattleEngine = {
       battle.done = true;
       battle.win = false;
     }
+  },
+
+  _advancePhase(state, battle) {
+    battle.phaseIndex += 1;
+    const phase = battle.phases[battle.phaseIndex];
+    battle.enemies = [this._mkEnemy(phase.name, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)), phase.pool)];
+    battle.pendingEvents.push(phase.intro || `${phase.name}显化而出！`);
   },
 
   // 自动模式：从前往后出第一张可用牌
@@ -1237,6 +1386,7 @@ const BattleEngine = {
       const def = CARD_DEFS[card.id];
       if (!def) continue;
       if (def.kind === "treasure" && battle.treasureUsed) continue;
+      if (def.cost && num(state.resources[def.cost.resource]) < num(def.cost.amount)) continue;
       if (def.target === "enemy" && !battle.enemies.some((e) => e.hp > 0)) continue;
       const alive = battle.enemies.filter((e) => e.hp > 0);
       const targetIndex = alive.reduce((best, e, idx) => (e.hp < alive[best].hp ? idx : best), 0);
@@ -1707,6 +1857,46 @@ const Game = {
 
   finishBattle(battle) {
     const omen = getTodayOmen();
+    // 破劫多阶段斗法：胜则破境，败则劫火淬体
+    if (battle.source === "breakthrough") {
+      const btId = String(battle.payload.breakthroughId || "");
+      const data = DataManager.getById("breakthrough_table", btId);
+      if (!Object.keys(data).length) return;
+      const before = new Set(this.state.unlocked_ids);
+      if (battle.win) {
+        BreakthroughManager.applyVictory(this.state, data);
+        UnlockManager.refresh(this.state);
+        this._log(String(data.success_text || "破劫成功。"));
+        this.queuePopup({
+          kind: "text",
+          style: "breakthrough",
+          title: "破劫成功！",
+          body: String(data.success_text || "破劫成功。"),
+          buttons: [{ label: "踏入新境" }],
+        });
+        this._queueNewUnlockPopups(before);
+        // 真人一重 → 本命法宝择主
+        if (this.hasPendingTreasureChoice()) {
+          this.queuePopup({ kind: "treasure_choice" });
+        }
+        // 地仙一重 → 天仙篇预告 + 择势力入局
+        if (String(this.state.realm_id) === "dx_01") {
+          this.showCapNotice();
+        }
+      } else {
+        BreakthroughManager.applyDefeat(this.state, data);
+        this._log(String(data.fail_text || "破劫未成，但道心更稳。"));
+        this.queuePopup({
+          kind: "text",
+          style: "breakthrough",
+          title: "破劫失败",
+          body: `${data.fail_text || "破劫未成。"}\n\n获得：劫火淬体\n下次破劫因果护持更深（成功率 +${Math.round(num(data.fail_bonus) * 100)}%），屡败之后劫火淬体\n法力小幅补偿\n\n道行未散。`,
+          buttons: [{ label: "稳住道心" }],
+        });
+      }
+      this._afterMutated();
+      return;
+    }
     if (battle.source === "boss") {
       const bossId = String(battle.payload.bossId || "");
       const boss = DataManager.getById("boss_table", bossId);
@@ -1737,6 +1927,8 @@ const Game = {
             this._queueEventPopup();
           }
         }
+        // 战后休整节点：调息养气 / 淬炼符箓 / 敛气而去
+        this._queueRestPopup(bossId);
       } else {
         const consolation = Math.floor(num(boss.reward_mana) * 0.1);
         this.state.resources.mana = num(this.state.resources.mana) + consolation;
@@ -1771,6 +1963,42 @@ const Game = {
         this._applyEncounterOutcome(enc, outcome, battle.win);
       }
     }
+  },
+
+  // ---------- 战后休整（Boss 胜利后的营火节点） ----------
+
+  // 休整「淬炼符箓」候选：基础符咒（凝神除外）+ 已学术法 + 法宝技
+  _restCardPool() {
+    const pool = ["charm_strike", "charm_guard"];
+    for (const row of DataManager.getRows("spell_table")) {
+      if (int(this.state.spells[String(row.spell_id)]?.level) > 0) pool.push(String(row.spell_id));
+    }
+    if (this.state.first_treasure_id && int(this.state.treasures[this.state.first_treasure_id]?.level) > 0) {
+      pool.push("treasure_skill");
+    }
+    return pool;
+  },
+
+  _queueRestPopup(bossId) {
+    const copy = this._restCardPool();
+    const picks = [];
+    while (copy.length && picks.length < 3) {
+      picks.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
+    }
+    this.queuePopup({ kind: "rest", payload: { bossId, cardPicks: picks } });
+  },
+
+  applyRestChoice(choice, cardId) {
+    if (choice === "heal") {
+      this.state.battle_blessing = { block_ratio: 0.15, shield: 1, battles: 2 };
+      this._log("你饮露调息，气机完满——下两场斗法开局得罡气与圣盾护持。");
+    } else if (choice === "upgrade" && cardId && this._restCardPool().includes(cardId)) {
+      this.state.card_upgrades[cardId] = int(this.state.card_upgrades[cardId]) + 1;
+      this._log(`你淬炼符箓，「${getCardDisplayName(this.state, cardId)}」更为精妙（斗法中等级 +1）。`);
+    } else {
+      this._log("你敛气收藏，径自回山。");
+    }
+    this._afterMutated();
   },
 
   cancelAction() {
@@ -1881,43 +2109,30 @@ const Game = {
   },
 
   confirmBreakthrough() {
-    const result = BreakthroughManager.try(this.state);
-    if (!result.ok) {
-      this.queuePopup({ kind: "text", title: "破劫", body: result.message, buttons: [{ label: "继续修行" }] });
+    const data = BreakthroughManager.getAvailable(this.state);
+    if (!Object.keys(data).length) {
+      this.queuePopup({ kind: "text", title: "破劫", body: "当前境界暂无破劫。", buttons: [{ label: "继续修行" }] });
       return;
     }
-    const before = new Set(this.state.unlocked_ids);
-    const data = result.data;
-    if (result.success) {
-      UnlockManager.refresh(this.state);
-      this._log(String(data.success_text || "破劫成功。"));
-      this.queuePopup({
-        kind: "text",
-        style: "breakthrough",
-        title: "破劫成功！",
-        body: String(data.success_text || "破劫成功。"),
-        buttons: [{ label: "踏入新境" }],
-      });
-      this._queueNewUnlockPopups(before);
-      // 真人一重 → 本命法宝择主
-      if (this.hasPendingTreasureChoice()) {
-        this.queuePopup({ kind: "treasure_choice" });
-      }
-      // 地仙一重 → 天仙篇预告
-      if (String(this.state.realm_id) === "dx_01") {
-        this.showCapNotice();
-      }
-    } else {
-      this._log(String(data.fail_text || "破劫未成，但道心更稳。"));
-      this.queuePopup({
-        kind: "text",
-        style: "breakthrough",
-        title: "破劫失败",
-        body: `${data.fail_text || "破劫未成。"}\n\n获得：劫火淬体\n下次破劫成功率 +${Math.round(num(data.fail_bonus) * 100)}%\n法力小幅补偿\n\n道行未散。`,
-        buttons: [{ label: "稳住道心" }],
-      });
+    if (!BreakthroughManager.canAttempt(this.state)) {
+      this.queuePopup({ kind: "text", title: String(data.display_name || "破劫"), body: "破劫道行不足，还需闭关积累。", buttons: [{ label: "继续修行" }] });
+      return;
     }
-    this._afterMutated();
+    const id = String(data.breakthrough_id);
+    const breakdown = BreakthroughManager.getRateBreakdown(this.state, data);
+    const phases = TRIBULATION_PHASES[id] || TRIBULATION_PHASES.bt_001;
+    this._log(`榜文垂光，${data.display_name}的劫数显化而出。`);
+    this.startBattle({
+      name: "封神榜文",
+      source: "breakthrough",
+      phases,
+      payload: {
+        breakthroughId: id,
+        rate: num(breakdown?.rate),
+        failCount: int(this.state.breakthrough_fail_counts[id]),
+        guarantee: int(data.guarantee_after_fail, 99),
+      },
+    });
   },
 
   // ---------- 机缘 ----------
@@ -2417,6 +2632,24 @@ const Game = {
 };
 
 // ---------------- 工具函数 ----------------
+
+// 卡牌显示名：法宝技取本命法宝专属技名
+function getCardDisplayName(state, cardId) {
+  if (cardId === "treasure_skill") {
+    return TREASURE_SKILLS[state.first_treasure_id]?.name || "法宝技";
+  }
+  return CARD_DEFS[cardId]?.name || cardId;
+}
+
+// 斗法中的实际等级：术法/法宝基础级 + 休整淬炼加成
+function getCardBattleLevel(state, cardId) {
+  const ups = int(state.card_upgrades?.[cardId]);
+  if (cardId === "treasure_skill") return int(state.treasures[state.first_treasure_id]?.level) + ups;
+  if (cardId.startsWith("spell_")) return int(state.spells[cardId]?.level) + ups;
+  if (cardId === "charm_focus") return 1;
+  if (cardId.startsWith("charm_")) return 1 + ups;
+  return 1;
+}
 
 function nowUnix() {
   return Math.floor(Date.now() / 1000);

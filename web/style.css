@@ -1230,6 +1230,41 @@ body {
   animation: labelBlink 1.2s ease-in-out infinite;
 }
 
+/* 破劫多阶段：劫数阶段横幅 */
+.phase-banner {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #ffe3a1;
+  border: 1px solid rgba(255, 214, 120, 0.45);
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: rgba(60, 42, 8, 0.55);
+  text-shadow: 0 0 8px rgba(255, 214, 120, 0.6);
+}
+
+/* 功德/劫气主题卡 */
+.battle-card.element-merit {
+  background: rgba(46, 36, 10, 0.92);
+  box-shadow: 0 0 10px rgba(255, 217, 122, 0.18);
+}
+
+.battle-card.element-calamity {
+  background: rgba(46, 12, 12, 0.92);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.18);
+}
+
+.battle-card.element-merit .bc-name { color: #ffe3a1; }
+.battle-card.element-calamity .bc-name { color: #ffb3a6; }
+
+.rate-hint-block {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #b9a878;
+  white-space: pre-line;
+}
+
 .hidden {
   display: none !important;
 }

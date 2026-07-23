@@ -548,6 +548,8 @@ function showPopup(popup) {
     renderFactionChoicePopup(panel, title, body, buttons);
   } else if (popup.kind === "breakthrough_confirm") {
     renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
+  } else if (popup.kind === "rest") {
+    renderRestPopup(panel, title, body, buttons, popup.payload || {});
   }
 
   layer.classList.remove("hidden");
@@ -623,6 +625,8 @@ const ELEMENT_COLORS = {
   weapon: "#e8c96a",
   charm: "#9fb4a8",
   treasure: "#c89aff",
+  merit: "#ffd97a",
+  calamity: "#ff6b6b",
 };
 
 const STATUS_LABELS = {
@@ -645,14 +649,15 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
   logBox.className = "battle-log";
   body.appendChild(logBox);
   appendBattleLine(logBox, `你与${battle.name}对上了气机，斗法开始！`);
+  for (const t of battle.pendingEvents.splice(0)) appendBattleLine(logBox, t);
 
   const intentText = (e) => {
-    if (e.charged) return { icon: "怒", text: "蓄势" };
+    if (e.charged) return { icon: "怒", text: "雷霆将落" };
     const it = e.intent || {};
-    if (it.type === "attack") return { icon: "剑", text: `击 ${formatInt(it.value)}` };
-    if (it.type === "charge") return { icon: "怒", text: "蓄势" };
-    if (it.type === "block") return { icon: "盾", text: `守 ${formatInt(it.value)}` };
-    return { icon: "咒", text: "施咒" };
+    if (it.type === "attack") return { icon: "剑", text: `${it.short || "击"} ${formatInt(it.value)}` };
+    if (it.type === "charge") return { icon: "怒", text: it.short || "蓄势" };
+    if (it.type === "block") return { icon: "盾", text: `${it.short || "守"} ${formatInt(it.value)}` };
+    return { icon: "咒", text: it.short || "施咒" };
   };
 
   const statusChips = (statuses) => {
@@ -672,6 +677,15 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
 
   const render = () => {
     zone.innerHTML = "";
+
+    // 破劫多阶段：劫数阶段横幅
+    if (battle.phases) {
+      const banner = document.createElement("div");
+      banner.className = "phase-banner";
+      const nums = ["其一", "其二", "其三", "其四", "其五"];
+      banner.textContent = `劫数·${nums[battle.phaseIndex] || battle.phaseIndex + 1}｜${battle.phases[battle.phaseIndex].name}`;
+      zone.appendChild(banner);
+    }
 
     // 敌方区
     const enemyZone = document.createElement("div");
@@ -767,7 +781,8 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
     hand.className = "card-hand";
     battle.hand.forEach((card, i) => {
       const def = CARD_DEFS[card.id];
-      const locked = def.kind === "treasure" && battle.treasureUsed;
+      const lackResource = def.cost && num(Game.state.resources[def.cost.resource]) < num(def.cost.amount);
+      const locked = (def.kind === "treasure" && battle.treasureUsed) || lackResource;
       const el = document.createElement("div");
       el.className = `battle-card element-${def.element}${card.used ? " used" : ""}${locked ? " locked" : ""}${battleTargeting === i ? " targeting" : ""}`;
       el.style.borderColor = ELEMENT_COLORS[def.element] || "#888";
@@ -781,7 +796,11 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
       txt.className = "bc-text";
       const skill = def.kind === "treasure" ? TREASURE_SKILLS[Game.state.first_treasure_id] : null;
       const mult = BattleEngine._powerMult(battle);
-      txt.textContent = skill ? skill.text(card.level, mult) : def.text(card.level, mult);
+      txt.textContent = skill ? skill.text(card.level, mult) : def.text(card.level, mult, Game.state);
+      if (lackResource) {
+        const resRow = DataManager.getById("resource_table", def.cost.resource);
+        txt.textContent = `${resRow.resource_name || def.cost.resource}不足 ${def.cost.amount}，难以施展\n` + txt.textContent;
+      }
       el.append(nm, lv, txt);
       if (battle.manual && !battle.done && !card.used && !locked && battle.ap > 0) {
         el.classList.add("playable");
@@ -1033,6 +1052,39 @@ function renderFactionChoicePopup(panel, title, body, buttons) {
   }
 }
 
+// ---------------- 战后休整（Boss 胜利后的营火节点） ----------------
+
+function renderRestPopup(panel, title, body, buttons, payload) {
+  panel.classList.add("style-treasure");
+  title.textContent = "战后休整";
+  body.textContent = "妖氛既散，山中灵息暂宁。\n你可在此稍作休整——调息养气、淬炼符箓，或敛气径自回山。";
+
+  const makeOption = (main, sub, handler, secondary = false) => {
+    const btn = document.createElement("button");
+    btn.className = "popup-btn" + (secondary ? " secondary" : "");
+    const m = document.createElement("span");
+    m.textContent = main;
+    const s = document.createElement("span");
+    s.className = "popup-option-sub";
+    s.textContent = sub;
+    btn.append(m, s);
+    btn.addEventListener("click", () => {
+      closePopup();
+      handler();
+    });
+    buttons.appendChild(btn);
+  };
+
+  makeOption("调息养气", "饮露调息：下 2 场斗法开局罡气 +15%、圣盾 1 层", () => Game.applyRestChoice("heal"));
+  for (const cardId of payload.cardPicks || []) {
+    const lv = getCardBattleLevel(Game.state, cardId);
+    makeOption(`淬炼符箓：${getCardDisplayName(Game.state, cardId)}`, `斗法中等级 Lv.${lv} → Lv.${lv + 1}（永久）`, () =>
+      Game.applyRestChoice("upgrade", cardId)
+    );
+  }
+  makeOption("敛气而去", "不取分毫，径自回山", () => Game.applyRestChoice("skip"), true);
+}
+
 function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroughId) {
   const data = DataManager.getById("breakthrough_table", breakthroughId);
   if (!Object.keys(data).length) {
@@ -1085,8 +1137,13 @@ function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroug
   total.textContent = `总成功率：${pct(b.rate)}（钳制于 ${pct(num(data.min_success_rate))} ~ ${pct(num(data.max_success_rate, 1))}）\n消耗道行：${formatInt(data.required_daoxing)}\n${data.pressure_label || ""}`;
   body.appendChild(total);
 
+  const hint = document.createElement("div");
+  hint.className = "rate-hint-block";
+  hint.textContent = "此劫以斗法论胜负：榜文将显化劫数与你相持。\n以上因果护持会化为你开局的气机罡气；若屡败于此劫，劫火淬体，榜文再难拿你。";
+  body.appendChild(hint);
+
   buttons.appendChild(
-    popupButton("开始破劫", false, () => {
+    popupButton("应战劫数", false, () => {
       closePopup();
       playTribulation(() => Game.confirmBreakthrough());
     })
