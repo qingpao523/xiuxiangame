@@ -512,6 +512,7 @@ function showPopup(popup) {
       buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => {
         closePopup();
         if (cfg.action === "claim_offline") Game.claimOfflineReward();
+        if (cfg.action === "reincarnate") Game.reincarnate();
       }));
     }
   } else if (popup.kind === "event") {
@@ -660,12 +661,12 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
   const render = () => {
     zone.innerHTML = "";
 
-    // 破劫多阶段：劫数阶段横幅
+    // 多阶段战斗：阶段横幅（破劫=劫数，杀劫=阵势）
     if (battle.phases) {
       const banner = document.createElement("div");
       banner.className = "phase-banner";
       const nums = ["其一", "其二", "其三", "其四", "其五"];
-      banner.textContent = `劫数·${nums[battle.phaseIndex] || battle.phaseIndex + 1}｜${battle.phases[battle.phaseIndex].name}`;
+      banner.textContent = `${battle.bannerLabel || "劫数"}·${nums[battle.phaseIndex] || battle.phaseIndex + 1}｜${battle.phases[battle.phaseIndex].name}`;
       zone.appendChild(banner);
     }
 
@@ -979,6 +980,7 @@ function renderRaceChoicePopup(panel, title, body, buttons) {
   title.textContent = "择跟脚：你自何处来";
   body.textContent =
     "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。\n\n跟脚一选定终身，不可更改。";
+  const seenRaces = Game.state.rebirth?.races_seen || [];
   for (const row of DataManager.getRows("race_table")) {
     const btn = document.createElement("button");
     btn.className = "popup-btn treasure-pick choice-pick";
@@ -989,10 +991,11 @@ function renderRaceChoicePopup(panel, title, body, buttons) {
     info.className = "choice-info";
     const name = document.createElement("span");
     name.className = "choice-name";
-    name.textContent = `${row.race_name}｜天赋·${row.talent_name}`;
+    const seen = seenRaces.includes(String(row.race_id));
+    name.textContent = `${row.race_name}｜天赋·${row.talent_name}${seen ? "（前世）" : ""}`;
     const sub = document.createElement("span");
     sub.className = "popup-option-sub";
-    sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
+    sub.textContent = `${row.card_desc}\n${row.effect_desc}${seen ? "\n此生跟脚已入图鉴：收益 +1%。" : ""}`;
     info.append(name, sub);
     btn.append(glyph, info);
     btn.addEventListener("click", () => {
@@ -1236,13 +1239,23 @@ function renderRealmPanel(body, state) {
     : RealmManager.isCapped(state)
       ? "势力：尚未入局——你已立身天仙之境，四方皆在等你落子。"
       : "势力：未入局（立身天仙之境后，须择一方势力）";
+  const rb = state.rebirth || {};
+  const rebirthLine = int(rb.count) > 0 ? `\n历世：第${rb.count + 1}世｜道痕 ${int(rb.daohen)}｜宿慧 +${Math.round(int(rb.daohen) * 3 + (rb.races_seen || []).length)}%` : "";
   body.appendChild(
     note(
-      `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(
+      `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}${rebirthLine}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(
         progress.current
       )} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`
     )
   );
+  // 真灵上榜：已得神位（斗法失败化神位加持）
+  if (state.god_seats.length) {
+    const seatNames = state.god_seats.map((id) => {
+      const seat = GOD_SEATS.find((s) => s.id === id);
+      return `${seat.name}（${seat.desc}）`;
+    });
+    body.appendChild(note(`真灵上榜：${seatNames.join("\n")}`));
+  }
   const breakthrough = BreakthroughManager.getAvailable(state);
   if (Object.keys(breakthrough).length) {
     body.appendChild(note(`${breakthrough.pressure_label || "劫将至"}：${breakthrough.breakthrough_lore || ""}`));
@@ -1273,6 +1286,24 @@ function renderRealmPanel(body, state) {
         })
       );
     }
+    // 应劫转世：凝此生为道痕，来世更快
+    const preview = Game.getRebirthPreview();
+    body.appendChild(
+      popupButton("应劫转世（凝此生为道痕）", false, () => {
+        closePanelSheet();
+        Game.queuePopup({
+          kind: "text",
+          style: "breakthrough",
+          title: "应劫转世？",
+          body: `此生修至${getPhaseRealmName(realm)}。\n\n转世之后：境界、资源、术法、法宝尽数重走；\n此生凝作道痕 +${preview.gain}（共 ${preview.daohenAfter} 点）——每点道痕，来世收益 +3%；\n此生跟脚${preview.raceNew ? "将录入图鉴，来世再添 +1%" : "已入图鉴"}。\n历世记录与操作偏好保留。`,
+          buttons: [
+            { label: "应劫转世", action: "reincarnate" },
+            { label: "再想想", secondary: true },
+          ],
+        });
+        drainPopupQueue();
+      })
+    );
     body.appendChild(
       popupButton("查看天仙篇预告", false, () => {
         closePanelSheet();
@@ -1291,6 +1322,36 @@ function renderMapPanel(body, state) {
   if (!maps.length) {
     body.appendChild(note("暂无可游历之地。"));
     return;
+  }
+  // 今日杀劫：按真实日历轮转的大阵（zr_01 解锁）
+  const todayArray = getTodayArray();
+  if (Object.keys(todayArray).length && UnlockManager.conditionMet(state, String(todayArray.unlock_realm || ""))) {
+    const arrAvail = Game.getArrayAvailability();
+    const card = document.createElement("div");
+    card.className = "card selected";
+    const info = document.createElement("div");
+    info.className = "card-info";
+    const name = document.createElement("div");
+    name.className = "card-name";
+    const wins = int(state.array_wins[String(todayArray.array_id)]);
+    name.textContent = `今日杀劫：${todayArray.array_name}${wins > 0 ? `（已破 ${wins} 次）` : ""}`;
+    const desc = document.createElement("div");
+    desc.className = "card-desc";
+    desc.textContent = todayArray.intro || "";
+    const cost = document.createElement("div");
+    cost.className = "card-cost";
+    cost.textContent = arrAvail.ok ? `三段阵势，今日可闯 ${arrAvail.remain} 次｜败北亦有真灵上榜之机缘` : arrAvail.reason;
+    info.append(name, desc, cost);
+    const btn = document.createElement("button");
+    btn.className = "card-btn";
+    btn.textContent = "闯阵";
+    btn.disabled = !arrAvail.ok;
+    btn.addEventListener("click", () => {
+      closePanelSheet();
+      Game.startArrayBattle();
+    });
+    card.append(info, btn);
+    body.appendChild(card);
   }
   for (const map of maps) {
     const id = String(map.map_id);
@@ -1572,6 +1633,66 @@ function renderLogPanel(body, state) {
         drainPopupQueue();
       })
     );
+  }
+  // 历世录（轮回转生记录）
+  if (int(state.rebirth?.count) > 0) {
+    body.appendChild(note(`历世：\n${state.rebirth.log.join("\n")}`));
+  }
+  // 道友区（封神人物结缘）
+  for (const row of DataManager.getRows("companion_table")) {
+    const c = state.companions?.[String(row.companion_id)];
+    if (!c?.bonded) continue;
+    const card = document.createElement("div");
+    card.className = "card selected";
+    const glyph = document.createElement("span");
+    glyph.className = "choice-glyph";
+    glyph.textContent = row.glyph || "友";
+    const info = document.createElement("div");
+    info.className = "card-info";
+    const name = document.createElement("div");
+    name.className = "card-name";
+    name.textContent = `${row.name}｜${row.title}`;
+    const desc = document.createElement("div");
+    desc.className = "card-desc";
+    desc.textContent = `护持：${row.bond_passive_desc}`;
+    const cost = document.createElement("div");
+    cost.className = "card-cost";
+    cost.textContent = `专属斗法牌：${CARD_DEFS[row.bond_card]?.name || ""}`;
+    info.append(name, desc, cost);
+    card.append(glyph, info);
+    body.appendChild(card);
+  }
+  // 丹房区（rq_07 解锁）：法力与材料的消耗出口
+  if (Game.isAlchemyUnlocked()) {
+    body.appendChild(note("丹房：炉火常明，法力与材料在此化作丹药。"));
+    for (const def of PILL_DEFS) {
+      const card = document.createElement("div");
+      card.className = "card";
+      const info = document.createElement("div");
+      info.className = "card-info";
+      const name = document.createElement("div");
+      name.className = "card-name";
+      name.textContent = `${def.name}｜${def.effectText(state)}`;
+      const desc = document.createElement("div");
+      desc.className = "card-desc";
+      desc.textContent = def.desc;
+      const cost = document.createElement("div");
+      cost.className = "card-cost";
+      cost.textContent = `消耗：${Object.entries(def.cost)
+        .map(([rid, n]) => `${DataManager.getById("resource_table", rid).resource_name || rid} ${formatInt(n)}`)
+        .join("｜")}`;
+      info.append(name, desc, cost);
+      const btn = document.createElement("button");
+      btn.className = "card-btn";
+      btn.textContent = def.id === "peiyuan" ? "炼服" : "炼制";
+      btn.disabled = Object.entries(def.cost).some(([rid, n]) => num(state.resources[rid]) < num(n));
+      btn.addEventListener("click", () => {
+        Game.brewPill(def.id);
+        renderPanelBody("log");
+      });
+      card.append(info, btn);
+      body.appendChild(card);
+    }
   }
   if (!state.logs.length) {
     body.appendChild(note("修行日志空空如也。"));

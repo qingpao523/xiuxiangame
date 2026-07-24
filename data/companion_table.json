@@ -1,0 +1,89 @@
+{
+  "schema_version": "0.1.0",
+  "table": "companion_table",
+  "generated_at": "2026-07-24T00:00:00.000000Z",
+  "description": "封神人物因缘：因果事件链 → 道友结缘（放置被动 + 专属斗法牌）。condition.type: realm/boss_cleared/array_win/auto。",
+  "rows": [
+    {
+      "companion_id": "nezha",
+      "name": "哪吒",
+      "title": "陈塘关三太子",
+      "glyph": "吒",
+      "unlock_realm": "zr_03",
+      "stages": [
+        {
+          "title": "闹海余波",
+          "condition": { "type": "realm", "realm_id": "zr_03" },
+          "text": "你行至陈塘关外围，海风腥咸。\n海边渔人还在讲旧事：李总兵家三太子闹海，抽了龙王三太子的筋。\n你正听着，一个扎冲天揪的少年拦住你：「喂，修仙的，你身上有我熟悉的气机。」\n他眼睛亮得惊人：「我叫哪吒。等哪天东海再来闹事，你可得来帮我。」"
+        },
+        {
+          "title": "助拳闹海",
+          "condition": { "type": "boss_cleared", "boss_id": "boss_002" },
+          "text": "巡海妖将残影崩散之际，一道红绫自天外卷来，将最后一缕怨气抽得粉碎。\n哪吒踏着风火轮落在礁石上，冲你咧嘴一笑：「身手不赖嘛！」"
+        },
+        {
+          "title": "结为道友",
+          "condition": { "type": "auto" },
+          "text": "「我娘说我性子太烈，容易惹祸。」哪吒把火尖枪往肩上一扛，「但跟你打架，痛快！」\n「往后你的事，就是我的事。」"
+        }
+      ],
+      "bond_card": "nezha_spear",
+      "bond_passive_desc": "地图掉落 +5%（哪吒替你搜山检海）",
+      "bond_text": "哪吒把一缕枪意渡入你的掌心：「这是我的枪法，你拿去用！」"
+    },
+    {
+      "companion_id": "yangjian",
+      "name": "杨戬",
+      "title": "玉泉山金霞洞",
+      "glyph": "戬",
+      "unlock_realm": "zr_05",
+      "stages": [
+        {
+          "title": "玉泉山来客",
+          "condition": { "type": "realm", "realm_id": "zr_05" },
+          "text": "功德与劫气第一次在你面前摊开的那晚，你梦见一条白犬。\n醒来时，洞外立着个牵狗的青年，额间一道竖纹。\n「玉泉山金霞洞，杨戬。」他开门见山，「师尊说榜文将动，让我下山看看，有哪些生灵会被记住。」\n他看了你一眼：「你，有点意思。」"
+        },
+        {
+          "title": "破劫相赠",
+          "condition": { "type": "realm", "realm_id": "zr_10" },
+          "text": "真人十重那日，杨戬又来了，白犬绕着你的洞府撒欢。\n「地仙劫不好过。」他扔给你一坛酒，「记住，榜文照你的时候，别躲。」\n「躲了，就真被写进去了。」"
+        },
+        {
+          "title": "结为道友",
+          "condition": { "type": "realm", "realm_id": "dx_01" },
+          "text": "你破开地仙劫那日，杨戬在云端看了全程。\n「没被榜文拿走，好。」他难得笑了，「往后封神这盘棋，你我同局。」"
+        }
+      ],
+      "bond_card": "yangjian_blade",
+      "bond_passive_desc": "道行收益 +5%（常听杨戬讲道）",
+      "bond_text": "杨戬将三尖两刃刀的刀意借你参悟三日。"
+    },
+    {
+      "companion_id": "ziya",
+      "name": "姜子牙",
+      "title": "渭水钓者",
+      "glyph": "牙",
+      "unlock_realm": "dx_01",
+      "stages": [
+        {
+          "title": "渭水钓者",
+          "condition": { "type": "realm", "realm_id": "dx_01" },
+          "text": "你立身天仙那日，昆仑山下来个老翁，在渭水边直钩垂钓。\n「太公在此，愿者上钩。」他头也不回，「你便是那尾不上榜的鱼。」\n他自我介绍：姜尚，姜子牙，奉师命下山，执掌封神榜。"
+        },
+        {
+          "title": "观阵",
+          "condition": { "type": "array_win" },
+          "text": "你破阵归来，姜子牙正在阵外等你，手里捏着一片阵纹残片。\n「十绝阵、黄河阵、诛仙阵……你连破残影，阵道已入门。」\n「封神大战里，破阵者比施阵者活得久。」"
+        },
+        {
+          "title": "结为道友",
+          "condition": { "type": "auto" },
+          "text": "「榜上三百六十五位正神，各有去处。」姜子牙收起钓竿，「但榜外之人，也有榜外的路。」\n「老夫替你看看，这条路能走多远。」"
+        }
+      ],
+      "bond_card": "ziya_whip",
+      "bond_passive_desc": "杀劫大阵奖励 +10%（子牙观阵指点）",
+      "bond_text": "姜子牙将打神鞭的一缕鞭意封入你的袖中。"
+    }
+  ]
+}

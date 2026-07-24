@@ -23,6 +23,8 @@ const ID_FIELDS = {
   encounter_table: "encounter_id",
   race_table: "race_id",
   faction_table: "faction_id",
+  array_table: "array_id",
+  companion_table: "companion_id",
 };
 
 // resource_table.unlock_condition 使用中文境界名
@@ -152,6 +154,7 @@ const SaveManager = {
       seen_unlock_popups: [],
       flags: {},
       logs: [],
+      rebirth: { count: 0, daohen: 0, races_seen: [], log: [] },
     };
   },
 
@@ -189,6 +192,23 @@ const SaveManager = {
     // 战后休整：单卡永久淬炼等级 / 调息祝福（下 N 场斗法开局护持）
     state.card_upgrades = state.card_upgrades || {};
     state.battle_blessing = state.battle_blessing || null;
+    // 丹房：渡厄丹存货 / 培元丹药效截止时间
+    state.pills = state.pills || {};
+    state.pills.due = int(state.pills.due);
+    state.pills.peiyuan_until = int(state.pills.peiyuan_until);
+    // 真灵上榜：已得神位
+    state.god_seats = state.god_seats || [];
+    // 轮回转生：历世记录（账号级，不随转世重置）
+    state.rebirth = state.rebirth || {};
+    state.rebirth.count = int(state.rebirth.count);
+    state.rebirth.daohen = int(state.rebirth.daohen);
+    state.rebirth.races_seen = state.rebirth.races_seen || [];
+    state.rebirth.log = state.rebirth.log || [];
+    // 杀劫大阵：今日闯阵次数 / 各阵累计破阵次数
+    state.array_counts_today = state.array_counts_today || {};
+    state.array_wins = state.array_wins || {};
+    // 封神人物因缘
+    state.companions = state.companions || {};
     // 旧档兼容：无种族的老存档默认人族（比无加成更友好），记「轮回续缘」一次
     if (state.race_id === "" && nowUnix() - int(state.created_at, now) > 120) {
       state.race_id = "human";
@@ -307,6 +327,7 @@ const UnlockManager = {
     state.event_counts_today = {};
     state.action_counts_today = {};
     state.boss_counts_today = {};
+    state.array_counts_today = {};
   },
 };
 
@@ -350,10 +371,15 @@ const RewardManager = {
     mult *= includeMap ? num(omen.journeyMult, 1) : num(omen.gainMult, 1);
     // 新手护持：凡境（炼气士）收益 +50%，入真人境后消退（黄金开局节奏）
     if (String(realm.major_realm || "") === "炼气士") mult *= 1.5;
+    // 培元丹：药效期间收益 +15%
+    if (nowUnix() < int(state.pills?.peiyuan_until)) mult *= 1.15;
+    // 轮回宿慧：每点道痕 +3%，每个已历世跟脚 +1%（账号级永久乘区）
+    const rb = state.rebirth || {};
+    mult *= 1 + 0.03 * int(rb.daohen) + 0.01 * (rb.races_seen || []).length;
     // R2-B：五庄观被动——闭关/离线收益 +10%
     if (str(state.faction_id, "") === "wuzhuang") mult *= 1.1;
-    // R1-A：人族天赋——道行类收益 +5%
-    const daoxingRaceMult = str(state.race_id, "") === "human" ? 1.05 : 1;
+    // R1-A：人族天赋——道行类收益 +5%；杨戬结缘讲道 +5%
+    const daoxingRaceMult = (str(state.race_id, "") === "human" ? 1.05 : 1) * (state.companions?.yangjian?.bonded ? 1.05 : 1);
     const resources = {
       daoxing: Math.max(1, Math.floor(daoxingPerMin * minutes * mult * daoxingRaceMult)),
       mana: Math.floor(manaPerMin * minutes * mult * num(omen.manaMult, 1)),
@@ -403,8 +429,8 @@ const RewardManager = {
     const interval = int(map.drop_roll_interval_minutes, int(config.drop_roll_interval_minutes_default, 10));
     if (interval <= 0) return {};
     const rolls = Math.min(80, Math.max(1, Math.floor(minutes / interval)));
-    // R2-B：截教被动——地图掉落几率 +15%
-    const factionDropMult = str(state.faction_id, "") === "jie" ? 1.15 : 1;
+    // R2-B：截教被动——地图掉落几率 +15%；哪吒结缘 +5%
+    const factionDropMult = (str(state.faction_id, "") === "jie" ? 1.15 : 1) * (state.companions?.nezha?.bonded ? 1.05 : 1);
     const result = {};
     for (let i = 0; i < rolls; i++) {
       for (const drop of map.drop_table || []) {
@@ -880,6 +906,10 @@ const CARD_DEFS = {
     target: "enemy",
     text: (lv, m = 1, s) => `引劫入体：${(12 + Math.floor(num(s?.resources?.calamity) / 100)) * m} 伤害，自损 5%，劫气 +30`,
   },
+  // 道友专属卡（封神人物结缘后入库）
+  nezha_spear: { name: "火尖枪", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(14 + 4 * lv) * m} 伤害，燃烧 ${(4 + lv) * m}` },
+  yangjian_blade: { name: "三尖两刃", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(8 + 2 * lv) * m} 伤害` },
+  ziya_whip: { name: "打神鞭", kind: "attack", element: "merit", target: "enemy", text: (lv, m = 1) => `${(12 + 3 * lv) * m} 伤害，对榜文与阵法残影威力 +50%` },
 };
 
 // 法宝被动（已持有即生效）
@@ -939,6 +969,53 @@ const TRIBULATION_PHASES = {
   ],
 };
 
+// ---------------- 杀劫周期大阵：阵法意图池 ----------------
+// 阵法残影的意图文案（pool 键由 array_table phases.pool 引用）
+const ARRAY_INTENT_POOLS = {
+  zhenshi: [
+    { type: "attack", w: 45, ratio: [0.17, 0.23], label: "阵势压顶", short: "压顶" },
+    { type: "block", w: 20, ratio: 0.09, label: "阵纹收拢", short: "阵纹" },
+    { type: "curse_weak", w: 20, label: "阵法困神", short: "困神" },
+    { type: "charge", w: 15, label: "阵雷蓄势", short: "蓄势" },
+  ],
+  zhenzhu: [
+    { type: "attack", w: 50, ratio: [0.22, 0.28], label: "雷鞭抽落", short: "雷鞭" },
+    { type: "charge", w: 20, label: "雷鼓轰鸣，天威将落", short: "雷鼓" },
+    { type: "curse_burn", w: 20, ratio: 0.035, label: "雷火洗阵", short: "雷火" },
+    { type: "block", w: 10, ratio: 0.12, label: "阵主护体", short: "护体" },
+  ],
+  heniu: [
+    { type: "attack", w: 45, ratio: [0.18, 0.24], label: "河水拍岸", short: "拍岸" },
+    { type: "curse_weak", w: 25, label: "河雾迷神", short: "迷神" },
+    { type: "block", w: 20, ratio: 0.1, label: "水幕环护", short: "水幕" },
+    { type: "charge", w: 10, label: "河曲回潮", short: "回潮" },
+  ],
+  sanxiao: [
+    { type: "attack", w: 45, ratio: [0.2, 0.27], label: "金蛟剪落", short: "蛟剪" },
+    { type: "curse_burn", w: 25, ratio: 0.03, label: "消花散气", short: "散气" },
+    { type: "charge", w: 20, label: "三霄合力，黄河倒卷", short: "合力" },
+    { type: "block", w: 10, ratio: 0.11, label: "混元金斗", short: "金斗" },
+  ],
+  jianqi: [
+    { type: "attack", w: 50, ratio: [0.2, 0.26], label: "剑气穿空", short: "剑气" },
+    { type: "curse_weak", w: 20, label: "杀气锁神", short: "锁神" },
+    { type: "charge", w: 20, label: "剑鸣九霄", short: "剑鸣" },
+    { type: "block", w: 10, ratio: 0.1, label: "剑幕垂光", short: "剑幕" },
+  ],
+  jianzhu: [
+    { type: "attack", w: 50, ratio: [0.24, 0.3], label: "诛仙剑落", short: "剑落" },
+    { type: "charge", w: 20, label: "四剑齐鸣，杀机毕露", short: "齐鸣" },
+    { type: "curse_burn", w: 20, ratio: 0.04, label: "陷空剑火", short: "剑火" },
+    { type: "block", w: 10, ratio: 0.12, label: "绝仙剑幕", short: "剑幕" },
+  ],
+};
+
+// 今日当值大阵（按真实星期轮转）
+function getTodayArray() {
+  const weekday = new Date().getDay();
+  return DataManager.getRows("array_table").find((row) => (row.weekdays || []).includes(weekday)) || {};
+}
+
 const BattleEngine = {
   buildDeck(state) {
     const deck = [];
@@ -963,6 +1040,10 @@ const BattleEngine = {
     // 功德/劫气主题卡：资源满百入牌库，攒资源即攒弹药
     if (num(state.resources.merit) >= 100) deck.push({ id: "merit_gold", level: 1 });
     if (num(state.resources.calamity) >= 100) deck.push({ id: "calamity_edge", level: 1 });
+    // 道友专属卡：封神人物结缘后入库
+    if (state.companions?.nezha?.bonded) deck.push({ id: "nezha_spear", level: 1 + int(ups.nezha_spear) });
+    if (state.companions?.yangjian?.bonded) deck.push({ id: "yangjian_blade", level: 1 + int(ups.yangjian_blade) });
+    if (state.companions?.ziya?.bonded) deck.push({ id: "ziya_whip", level: 1 + int(ups.ziya_whip) });
     return deck;
   },
 
@@ -1017,6 +1098,7 @@ const BattleEngine = {
       maxTurns: 12 + (phases ? 4 * (phases.length - 1) : 0),
       phases,
       phaseIndex: 0,
+      bannerLabel: cfg.bannerLabel || "劫数",
       hand: [],
       treasureUsed: false,
       relicThunderUsed: false,
@@ -1029,6 +1111,9 @@ const BattleEngine = {
     battle.playerStatuses.shield = this.relic(state, "startShield");
     this._startPlayerTurn(state, battle);
     // 以下护持类效果必须在 _startPlayerTurn 之后应用（回合开始会重置罡气）
+    // 斗部正神位：斗法开局罡气 +8%
+    const seatBlock = godSeat(state, "startBlockRatio");
+    if (seatBlock > 0) battle.playerBlock += Math.round(battle.playerHpMax * seatBlock);
     // 战后休整「调息养气」：下 N 场斗法开局得罡气与圣盾
     const blessing = state.battle_blessing;
     if (blessing && int(blessing.battles) > 0) {
@@ -1040,6 +1125,14 @@ const BattleEngine = {
       SaveManager.save(state);
     }
     if (cfg.source === "breakthrough") {
+      // 渡厄丹：破劫战前嗑药，开局圣盾与罡气
+      if (int(state.pills?.due) > 0) {
+        state.pills.due = int(state.pills.due) - 1;
+        battle.playerStatuses.shield += 2;
+        battle.playerBlock += Math.round(battle.playerHpMax * 0.2);
+        battle.pendingEvents.push("你服下渡厄丹：圣盾 2 层，罡气护住周身大穴。");
+        SaveManager.save(state);
+      }
       // 破劫因果链决算：成功率化为你开局的气机护持
       const rate = num(cfg.payload?.rate);
       if (rate > 0) {
@@ -1064,7 +1157,7 @@ const BattleEngine = {
     battle.ap = 3;
     battle.playerBlock = 0;
     battle.relicThunderUsed = false;
-    const heal = Math.round(battle.playerHpMax * num(this.relic(state, "turnHealRatio")));
+    const heal = Math.round(battle.playerHpMax * num(this.relic(state, "turnHealRatio") + godSeat(state, "turnHealRatio")));
     if (heal > 0) battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
     // 每回合抽 6 张（牌库不足时允许重复）
     battle.hand = [];
@@ -1124,7 +1217,7 @@ const BattleEngine = {
 
   _dealDamage(state, battle, enemy, base, element) {
     // 卡牌基础值很小，按玩家战力放大到与敌方血量同一量级
-    let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus"));
+    let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus") + godSeat(state, "dmgBonus"));
     if (battle.guaranteeBuff) mult *= 1.25;
     if (element === "thunder") {
       mult += this._omenThunderBonus(state);
@@ -1186,7 +1279,7 @@ const BattleEngine = {
       case "spell_fire_01":
         hit(target, 5 + 2 * lv, "fire", "灵火术");
         if (target.hp > 0) {
-          target.statuses.burn += (3 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+          target.statuses.burn += (3 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle);
           events.push(`${target.name}被灵火缠绕（燃烧 ${target.statuses.burn}）。`);
         }
         break;
@@ -1223,6 +1316,22 @@ const BattleEngine = {
         events.push(`劫气反噬，你受 ${backlash} 伤害；杀伐之气入体，劫气 +30。`);
         break;
       }
+      case "nezha_spear":
+        hit(target, 14 + 4 * lv, "fire", "火尖枪");
+        if (target.hp > 0) {
+          target.statuses.burn += (4 + lv + godSeat(state, "burnBonus")) * this._powerMult(battle);
+          events.push(`${target.name}被枪锋火焰缠绕（燃烧 ${target.statuses.burn}）。`);
+        }
+        break;
+      case "yangjian_blade":
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) hit(e, 8 + 2 * lv, "weapon", "三尖两刃");
+        break;
+      case "ziya_whip": {
+        const vsSpirit = battle.source === "breakthrough" || battle.source === "array";
+        hit(target, Math.round((12 + 3 * lv) * (vsSpirit ? 1.5 : 1)), "merit", "打神鞭");
+        if (vsSpirit) events.push("打神鞭专封神祇——对此等残影，威力大增！");
+        break;
+      }
       case "charm_focus":
         battle.ap += 2;
         events.push("你凝神运气，真气 +2。");
@@ -1255,7 +1364,7 @@ const BattleEngine = {
             break;
           case "treasure_005":
             for (const e of battle.enemies.filter((x) => x.hp > 0)) {
-              e.statuses.burn += (3 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+              e.statuses.burn += (3 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle);
               events.push(`${e.name}被风火缠身（燃烧 ${e.statuses.burn}）。`);
             }
             break;
@@ -1297,6 +1406,7 @@ const BattleEngine = {
       if (intent.type === "attack") {
         let value = intent.value;
         if (e.statuses.weak > 0) value = Math.max(1, Math.round(value * 0.75));
+        value = Math.max(1, Math.round(value * (1 - godSeat(state, "enemyWeaken"))));
         const dmg = this._damagePlayer(state, battle, value);
         events.push(`${e.name}${intent.label || "扑击"}，你受 ${dmg} 伤害。`);
       } else if (intent.type === "charge") {
@@ -1405,6 +1515,58 @@ const BattleEngine = {
     SaveManager.save(state);
   },
 };
+
+// ---------------- 真灵上榜（斗法失败化神位加持） ----------------
+// 斗法败北不是纯挫败：一缕真灵被榜文照过，榜上无名、神位先虚。
+const GOD_SEATS = [
+  { id: "leibu", name: "雷部正神位", desc: "斗法伤害 +5%", effects: { dmgBonus: 0.05 } },
+  { id: "huobu", name: "火部正神位", desc: "燃烧层数 +2", effects: { burnBonus: 2 } },
+  { id: "doubu", name: "斗部正神位", desc: "斗法开局罡气 +8%", effects: { startBlockRatio: 0.08 } },
+  { id: "shuibu", name: "水部正神位", desc: "每回合回复 1.5% 气血", effects: { turnHealRatio: 0.015 } },
+  { id: "wenbu", name: "瘟部正神位", desc: "敌方攻击 -5%", effects: { enemyWeaken: 0.05 } },
+  { id: "caibu", name: "财部正神位", desc: "斗法战利 +10%", effects: { lootBonus: 0.1 } },
+];
+
+function godSeat(state, key) {
+  let total = 0;
+  for (const id of state.god_seats || []) {
+    const seat = GOD_SEATS.find((s) => s.id === id);
+    total += num(seat?.effects?.[key]);
+  }
+  return total;
+}
+
+// ---------------- 丹房（法力/材料经济出口，rq_07 解锁） ----------------
+
+const PILL_DEFS = [
+  {
+    id: "due",
+    name: "渡厄丹",
+    desc: "破劫斗法开局：圣盾 2 层、罡气 +20% 气血上限",
+    cost: { mana: 5000, spell_page: 5 },
+    stock: (state) => int(state.pills.due),
+    effectText: (state) => `存 ${int(state.pills.due)} 枚`,
+  },
+  {
+    id: "peiyuan",
+    name: "培元丹",
+    desc: "闭关与行动收益 +15%，持续 2 时辰",
+    cost: { mana: 3000 },
+    stock: (state) => (nowUnix() < int(state.pills.peiyuan_until) ? 1 : 0),
+    effectText: (state) => {
+      const remain = int(state.pills.peiyuan_until) - nowUnix();
+      return remain > 0 ? `药效中，余 ${Math.ceil(remain / 3600)} 时辰` : "未服";
+    },
+  },
+  {
+    id: "ningfa",
+    name: "凝法丹",
+    desc: "立即炼化法力为道行（30 分钟闭关量）",
+    cost: { mana: 8000, artifact_shard: 3 },
+    stock: () => 0,
+    effectText: () => "即炼即用",
+  },
+];
 
 // ---------------- 修行心得（行动完成三选一，黄金开局微决策密度） ----------------
 
@@ -1927,6 +2089,46 @@ const Game = {
     this._afterMutated();
   },
 
+  // ---------- 杀劫周期大阵 ----------
+
+  getArrayAvailability() {
+    const today = getTodayArray();
+    if (!Object.keys(today).length) return { ok: false, reason: "今日杀劫未聚，阵势未开。" };
+    if (!UnlockManager.conditionMet(this.state, String(today.unlock_realm || ""))) {
+      return { ok: false, reason: "真人境后方可闯阵。" };
+    }
+    const id = String(today.array_id);
+    const remain = 2 - int(this.state.array_counts_today[id]);
+    if (remain <= 0) return { ok: false, reason: "今日此阵已闯过两遭，阵势自闭。" };
+    return { ok: true, array: today, remain };
+  },
+
+  startArrayBattle() {
+    const avail = this.getArrayAvailability();
+    if (!avail.ok) {
+      this.queuePopup({ kind: "text", title: "杀劫大阵", body: avail.reason, buttons: [{ label: "知道了" }] });
+      return;
+    }
+    const arr = avail.array;
+    const id = String(arr.array_id);
+    this.state.array_counts_today[id] = int(this.state.array_counts_today[id]) + 1;
+    this._log(`你踏入${arr.array_name}，杀劫阵势轰然合拢。`);
+    const phases = (arr.phases || []).map((p) => ({
+      name: String(p.name),
+      power_ratio: num(p.power_ratio, 0.7),
+      intro: String(p.intro || ""),
+      pool: ARRAY_INTENT_POOLS[String(p.pool)] || ARRAY_INTENT_POOLS.zhenshi,
+    }));
+    this.startBattle({
+      name: arr.array_name,
+      source: "array",
+      phases,
+      bannerLabel: "阵势",
+      payload: { arrayId: id },
+    });
+    this._afterMutated();
+  },
+
   battlePlayCard(battle, handIndex, targetIndex = 0) {
     const events = BattleEngine.playCard(this.state, battle, handIndex, targetIndex);
     this._emit();
@@ -1993,6 +2195,44 @@ const Game = {
       this._afterMutated();
       return;
     }
+    // 杀劫周期大阵：胜则破阵取酬，败则真灵上榜
+    if (battle.source === "array") {
+      const arrayId = String(battle.payload.arrayId || "");
+      const arr = DataManager.getById("array_table", arrayId);
+      if (battle.win) {
+        const firstWin = int(this.state.array_wins[arrayId]) === 0;
+        this.state.array_wins[arrayId] = int(this.state.array_wins[arrayId]) + 1;
+        const r = arr.reward || {};
+        const base = RewardManager.calculateRewardForMinutes(this.state, num(r.daoxing_minutes, 30), { includeMap: false });
+        const rewards = { daoxing: num(base.resources.daoxing), merit: num(r.merit), calamity: num(r.calamity) };
+        if (firstWin) rewards.treasure_shard = num(r.treasure_shard_first);
+        // 姜子牙结缘：杀劫奖励 +10%
+        if (this.state.companions?.ziya?.bonded) {
+          for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * 1.1);
+        }
+        this._applyFactionMeritBonus(rewards);
+        this._applyResourceDelta(rewards);
+        this._log(`你破开${arr.array_name}。`);
+        this.queuePopup({
+          kind: "text",
+          style: "breakthrough",
+          title: "破阵成功！",
+          body: `${arr.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${firstWin ? "\n（首次破阵，另得法宝碎片）" : ""}`,
+          buttons: [{ label: "收取阵纹" }],
+        });
+      } else {
+        this._log(`你在${arr.array_name}中铩羽而归。`);
+        const seatText = this.awardGodSeat();
+        this.queuePopup({
+          kind: "text",
+          title: "破阵失败",
+          body: `阵势如山，你且战且退，未伤根本。\n杀劫仍在，明日阵开再来。${seatText}`,
+          buttons: [{ label: "暂且退去" }],
+        });
+      }
+      this._afterMutated();
+      return;
+    }
     if (battle.source === "boss") {
       const bossId = String(battle.payload.bossId || "");
       const boss = DataManager.getById("boss_table", bossId);
@@ -2002,7 +2242,9 @@ const Game = {
         const omenLoot = num(omen.lootMult, 1);
         // R1-A：妖族天赋——斗法胜利战利 +25%（吞噬）
         const raceLoot = str(this.state.race_id, "") === "yao" ? 1.25 : 1;
-        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot);
+        // 财部正神位：斗法战利 +10%
+        const seatLoot = 1 + godSeat(this.state, "lootBonus");
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot * seatLoot);
         this._applyResourceDelta(rewards);
         const firstClear = int(this.state.boss_clears[bossId]) === 0;
         this.state.boss_clears[bossId] = int(this.state.boss_clears[bossId]) + 1;
@@ -2029,10 +2271,11 @@ const Game = {
         const consolation = Math.floor(num(boss.reward_mana) * 0.1);
         this.state.resources.mana = num(this.state.resources.mana) + consolation;
         this._log(`你与${boss.boss_name}斗法失利，暂退回府。`);
+        const seatText = this.awardGodSeat();
         this.queuePopup({
           kind: "text",
           title: "斗法失利",
-          body: `${boss.boss_name}妖气正盛，你且战且退，未伤根本。\n\n拾得游离灵气：法力 +${formatInt(consolation)}\n\n再积累些道行与术法，改日再来。`,
+          body: `${boss.boss_name}妖气正盛，你且战且退，未伤根本。\n\n拾得游离灵气：法力 +${formatInt(consolation)}\n\n再积累些道行与术法，改日再来。${seatText}`,
           buttons: [{ label: "暂且退去" }],
         });
       }
@@ -2043,7 +2286,8 @@ const Game = {
     const enc = DataManager.getById("encounter_table", String(battle.payload.encounterId || ""));
     const option = (enc.options || [])[int(battle.payload.optionIndex)];
     if (enc && option) {
-      const outcome = battle.win ? option.success : option.fail;
+      const outcome = { ...(battle.win ? option.success : option.fail) };
+      if (!battle.win) outcome.text = String(outcome.text || "") + this.awardGodSeat();
       const omenLoot = battle.win ? num(omen.lootMult, 1) : 1;
       // R1-A：妖族天赋——斗法胜利战利 +25%（吞噬）
       const raceLoot = battle.win && str(this.state.race_id, "") === "yao" ? 1.25 : 1;
@@ -2061,9 +2305,119 @@ const Game = {
     }
   },
 
+  // ---------- 封神人物因缘（因果链 → 道友结缘） ----------
+
+  _checkCompanions() {
+    for (const row of DataManager.getRows("companion_table")) {
+      const id = String(row.companion_id);
+      if (!UnlockManager.conditionMet(this.state, String(row.unlock_realm || ""))) continue;
+      if (!this.state.companions[id]) this.state.companions[id] = { stage: 0, bonded: false };
+      const c = this.state.companions[id];
+      const stages = row.stages || [];
+      // 循环推进：一次检查内连续走完所有已满足条件的阶段（auto 阶段紧随前置）
+      let guard = 0;
+      while (!c.bonded && guard++ < 10) {
+        if (c.stage >= stages.length) {
+          this._bondCompanion(row);
+          break;
+        }
+        const st = stages[c.stage];
+        if (!this._companionConditionMet(st.condition)) break;
+        c.stage += 1;
+        this._log(`因缘·${row.name}：${st.title}。`);
+        this.queuePopup({
+          kind: "text",
+          style: "seal",
+          title: `因缘·${row.name}｜${st.title}`,
+          body: String(st.text || ""),
+          buttons: [{ label: "继续" }],
+        });
+        if (c.stage >= stages.length) this._bondCompanion(row);
+      }
+    }
+  },
+
+  _companionConditionMet(cond = {}) {
+    switch (cond.type) {
+      case "auto":
+        return true;
+      case "realm":
+        return DataManager.isRealmAtLeast(this.state.realm_id, String(cond.realm_id));
+      case "boss_cleared":
+        return int(this.state.boss_clears[String(cond.boss_id)]) > 0;
+      case "array_win":
+        return Object.values(this.state.array_wins).some((n) => int(n) > 0);
+      case "event_seen":
+        return this.state.seen_events.includes(String(cond.event_id));
+      default:
+        return false;
+    }
+  },
+
+  _bondCompanion(row) {
+    const id = String(row.companion_id);
+    const c = this.state.companions[id];
+    if (!c || c.bonded) return;
+    c.bonded = true;
+    this._log(`道友结缘：${row.name}——${row.bond_passive_desc}。`);
+    this.queuePopup({
+      kind: "text",
+      style: "goal",
+      title: `道友结缘：${row.name}`,
+      body: `${row.bond_text || ""}\n\n护持：${row.bond_passive_desc}\n专属斗法牌已入你的牌库。`,
+      buttons: [{ label: "志同道合" }],
+    });
+  },
+
+  // ---------- 真灵上榜（斗法失败化神位加持） ----------
+
+  // 斗法失败时调用：随机授一个未得神位，返回弹窗文案（无新神位可授时返回空串）
+  awardGodSeat() {
+    const owned = this.state.god_seats;
+    const pool = GOD_SEATS.filter((s) => !owned.includes(s.id));
+    if (!pool.length) return "";
+    const seat = pool[Math.floor(Math.random() * pool.length)];
+    owned.push(seat.id);
+    this._log(`真灵上榜：${seat.name}与你气机相合（${seat.desc}）。`);
+    return `\n\n真灵上榜：你斗法败北，一缕真灵却被榜文轻轻照过——榜上无名，神位先虚。\n${seat.name}与你气机相合：${seat.desc}。`;
+  },
+
+  // ---------- 丹房（rq_07 解锁，法力/材料经济出口） ----------
+
+  isAlchemyUnlocked() {
+    return DataManager.isRealmAtLeast(this.state.realm_id, "rq_07");
+  },
+
+  brewPill(pillId) {
+    if (!this.isAlchemyUnlocked()) return;
+    const def = PILL_DEFS.find((p) => p.id === pillId);
+    if (!def) return;
+    for (const rid of Object.keys(def.cost)) {
+      if (num(this.state.resources[rid]) < num(def.cost[rid])) {
+        this.queuePopup({ kind: "text", title: def.name, body: "炉火虽在，材料不足。", buttons: [{ label: "知道了" }] });
+        return;
+      }
+    }
+    for (const rid of Object.keys(def.cost)) {
+      this.state.resources[rid] = num(this.state.resources[rid]) - num(def.cost[rid]);
+    }
+    if (pillId === "due") {
+      this.state.pills.due = int(this.state.pills.due) + 1;
+      this._log(`你炼成一枚渡厄丹（存 ${this.state.pills.due} 枚）——破劫斗法开局得护持。`);
+    } else if (pillId === "peiyuan") {
+      this.state.pills.peiyuan_until = nowUnix() + 7200;
+      this._log("你服下培元丹，丹田暖意流转——2 时辰内闭关与行动收益 +15%。");
+    } else if (pillId === "ningfa") {
+      const gain = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, 30, { includeMap: false }).resources.daoxing) };
+      this._applyResourceDelta(gain);
+      this._log(`你炼化凝法丹，法力转为道行 +${formatInt(gain.daoxing)}。`);
+    }
+    this._afterMutated();
+  },
+
   // ---------- 战后休整（Boss 胜利后的营火节点） ----------
 
-  // 休整「淬炼符箓」候选：基础符咒（凝神除外）+ 已学术法 + 法宝技
+  // 休整「淬炼符箓」候选：基础符咒（凝神除外）+ 已学术法 + 法宝技 + 已结缘道友卡
   _restCardPool() {
     const pool = ["charm_strike", "charm_guard"];
     for (const row of DataManager.getRows("spell_table")) {
@@ -2071,6 +2425,10 @@ const Game = {
     }
     if (this.state.first_treasure_id && int(this.state.treasures[this.state.first_treasure_id]?.level) > 0) {
       pool.push("treasure_skill");
+    }
+    for (const cid of ["nezha_spear", "yangjian_blade", "ziya_whip"]) {
+      const companion = { nezha_spear: "nezha", yangjian_blade: "yangjian", ziya_whip: "ziya" }[cid];
+      if (this.state.companions?.[companion]?.bonded) pool.push(cid);
     }
     return pool;
   },
@@ -2628,6 +2986,64 @@ const Game = {
     this._afterMutated();
   },
 
+  // ---------- 轮回转生（Prestige：道痕/宿慧 + 多世跟脚图鉴） ----------
+
+  canReincarnate() {
+    return RealmManager.isCapped(this.state);
+  },
+
+  // 此生凝作道痕的预览（确认弹窗用）
+  getRebirthPreview() {
+    const realm = RealmManager.getCurrentRealm(this.state);
+    const majorGain = { 炼气士: 1, 真人: 3, 地仙: 5 }[String(realm.major_realm || "")] || 1;
+    const rb = this.state.rebirth;
+    return {
+      gain: majorGain,
+      daohenAfter: int(rb.daohen) + majorGain,
+      raceNew: str(this.state.race_id, "") && !rb.races_seen.includes(str(this.state.race_id, "")),
+      countAfter: int(rb.count) + 1,
+    };
+  },
+
+  reincarnate() {
+    if (!this.canReincarnate()) return;
+    const state = this.state;
+    const realm = RealmManager.getCurrentRealm(state);
+    const preview = this.getRebirthPreview();
+    // 历世记录
+    const rb = state.rebirth;
+    rb.count = preview.countAfter;
+    rb.daohen = preview.daohenAfter;
+    if (str(state.race_id, "") && !rb.races_seen.includes(str(state.race_id, ""))) {
+      rb.races_seen.push(str(state.race_id, ""));
+    }
+    const nums = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+    rb.log.unshift(
+      `第${nums[rb.count - 1] || rb.count}世：${getRaceShortName(state) || "无名"}，修至${getPhaseRealmName(realm)}，凝道痕 ${preview.gain}。`
+    );
+    if (rb.log.length > 9) rb.log.length = 9;
+    // 重置：保留历世记录与操作偏好，其余重走
+    const fresh = SaveManager.createDefault();
+    fresh.rebirth = rb;
+    fresh.flags.battle_manual = !!state.flags.battle_manual;
+    fresh.flags.auto_repeat = !!state.flags.auto_repeat;
+    this.state = SaveManager.normalize(fresh);
+    UnlockManager.refresh(this.state);
+    this._refreshPendingReward();
+    this._log(`第${nums[rb.count - 1] || rb.count}世开启：道痕 ${rb.daohen}，宿慧 +${Math.round(rb.daohen * 3 + rb.races_seen.length)}%。`);
+    SaveManager.save(this.state);
+    // 转世结算 → 重新择跟脚
+    this.queuePopup({
+      kind: "text",
+      style: "breakthrough",
+      title: "应劫转世",
+      body: `榜文照落，你此生真灵投入轮回。\n\n此生修为凝作道痕 ${preview.gain} 点（共 ${rb.daohen} 点）——每点道痕，来世收益 +3%。\n${preview.raceNew ? "此生跟脚已录入图鉴，来世收益再添 +1%。\n" : ""}\n新一世，你可以重新选择跟脚。`,
+      buttons: [{ label: "再入轮回" }],
+    });
+    this.queuePopup({ kind: "race_choice" });
+    this._emit();
+  },
+
   resetSave() {
     SaveManager.wipe();
     this.popupQueue = [];
@@ -2712,6 +3128,8 @@ const Game = {
         buttons: [{ label: "再进一步" }],
       });
     }
+    // 人物因缘推进（登场/阶段/结缘）
+    this._checkCompanions();
     this._refreshPendingReward();
     SaveManager.save(this.state);
     this._emit();

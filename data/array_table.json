@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.1.0",
+  "table": "array_table",
+  "generated_at": "2026-07-24T00:00:00.000000Z",
+  "description": "杀劫周期大阵：按真实日历轮转的多阶段阵法副本（zr_01 解锁）。phases.pool 引用 game.js 的 ARRAY_INTENT_POOLS。",
+  "rows": [
+    {
+      "array_id": "tianjue",
+      "array_name": "十绝阵·天绝阵",
+      "weekdays": [1, 4],
+      "unlock_realm": "zr_01",
+      "intro": "闻仲太师布下十绝阵，天绝阵为其首。阵中雷霆自成一体，踏入者真灵皆颤。",
+      "phases": [
+        { "name": "阵门", "power_ratio": 0.5, "intro": "你踏入天绝阵门，四面八方皆是雷纹。", "pool": "zhenshi" },
+        { "name": "阵眼", "power_ratio": 0.7, "intro": "阵眼处雷光凝聚，化作一面雷鼓。", "pool": "zhenshi" },
+        { "name": "阵主·雷部残影", "power_ratio": 0.9, "intro": "雷部残影执鞭而立——破此阵者，当受其一鞭。", "pool": "zhenzhu" }
+      ],
+      "reward": { "daoxing_minutes": 30, "merit": 60, "calamity": 20, "treasure_shard_first": 5 },
+      "victory_text": "雷鼓崩散，天绝阵破。你拾得几缕未散的阵纹雷意。"
+    },
+    {
+      "array_id": "huanghe",
+      "array_name": "九曲黄河阵",
+      "weekdays": [2, 5],
+      "unlock_realm": "zr_01",
+      "intro": "三霄娘娘所布之阵，九曲连环，能消仙神顶上三花、胸中五气。",
+      "phases": [
+        { "name": "河口", "power_ratio": 0.5, "intro": "黄河水雾扑面，你的气机已开始滞涩。", "pool": "heniu" },
+        { "name": "河曲", "power_ratio": 0.7, "intro": "九道河湾层层回折，每一步都像走在前世。", "pool": "heniu" },
+        { "name": "阵主·三霄残影", "power_ratio": 0.9, "intro": "三道倩影立于河心，金蛟剪寒光一闪。", "pool": "sanxiao" }
+      ],
+      "reward": { "daoxing_minutes": 30, "merit": 80, "calamity": 15, "treasure_shard_first": 5 },
+      "victory_text": "河雾散尽，九曲黄河阵破。你守住顶上三花，道心更固。"
+    },
+    {
+      "array_id": "zhuxian",
+      "array_name": "诛仙剑阵",
+      "weekdays": [3, 6],
+      "unlock_realm": "zr_01",
+      "intro": "截教镇教之阵，诛戮陷绝四剑齐悬，非四圣不可破。你只见其残影一隅。",
+      "phases": [
+        { "name": "剑门", "power_ratio": 0.55, "intro": "四门之上剑光垂落，杀气刺骨。", "pool": "jianqi" },
+        { "name": "剑阙", "power_ratio": 0.75, "intro": "诛仙剑影自门后浮现，天地为之一白。", "pool": "jianqi" },
+        { "name": "阵主·诛仙残影", "power_ratio": 0.95, "intro": "一剑西来，阵主残影与你隔着整条岁月长河对视。", "pool": "jianzhu" }
+      ],
+      "reward": { "daoxing_minutes": 35, "merit": 50, "calamity": 40, "treasure_shard_first": 6 },
+      "victory_text": "剑影归鞘，诛仙阵的杀气退潮。你的剑心被磨得更亮。"
+    },
+    {
+      "array_id": "wanxian",
+      "array_name": "万仙阵",
+      "weekdays": [0],
+      "unlock_realm": "zr_01",
+      "intro": "截教万仙来朝之阵，一周仅现一日。阵中万仙气机如海，是杀劫最重的一页。",
+      "phases": [
+        { "name": "万仙前锋", "power_ratio": 0.6, "intro": "万仙齐至，前锋如潮。", "pool": "zhenshi" },
+        { "name": "仙阵中枢", "power_ratio": 0.85, "intro": "中枢处仙光如织，压力如潮水般上涨。", "pool": "heniu" },
+        { "name": "万仙之主残影", "power_ratio": 1.0, "intro": "万仙气机凝成一道伟岸残影，缓缓抬手。", "pool": "jianzhu" }
+      ],
+      "reward": { "daoxing_minutes": 45, "merit": 100, "calamity": 50, "treasure_shard_first": 8 },
+      "victory_text": "万仙退潮，你独立场中。这一日，杀劫记住了你的名字。"
+    }
+  ]
+}
