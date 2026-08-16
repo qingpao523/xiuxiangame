@@ -1,0 +1,4 @@
+<web-view wx:if="{{gameUrl}}" src="{{gameUrl}}"></web-view>
+<view wx:else class="loading">
+  <text>正在进入封神世界……</text>
+</view>

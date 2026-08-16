@@ -1,0 +1,12 @@
+{
+  "appid": "wxac3f514d40407c15",
+  "projectname": "fengshen-xiuxian-webview",
+  "compileType": "miniprogram",
+  "libVersion": "latest",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true
+  }
+}

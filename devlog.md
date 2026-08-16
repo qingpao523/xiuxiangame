@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-08-16 — 微信端发布评估：小游戏不可直发，先给 web-view 测试壳
+
+### 变更摘要
+
+- 新增 `wechat/README.md`：说明微信小游戏与 DOM 网页版的兼容性结论、两条发布路线、云托管部署步骤与 AppSecret 安全提醒。
+- 新增 `wechat/miniprogram-webview/` 小程序壳工程：AppID 已写入 `project.config.json`，包含 `web-view` 页面骨架，把 `gameUrl` 替换为云托管域名即可在微信开发者工具中运行。
+- 结论：当前 DOM/CSS 版不能直接发布为微信小游戏；最快路径是微信小程序 web-view，正式微信小游戏需要 Canvas 渲染层移植。
+
+### 关键决策理由
+
+- 小游戏运行时没有 DOM，`index.html`、CSS、`document.getElementById` 全部不可用；用 web-view 验证玩法是成本最低的微信端测试方式。
+- AppSecret 不入库、不放客户端；测试号泄露后应重置。
+
+### 验证记录
+
+- 微信开发者工具未安装，本批次未做真机验证；文件为静态工程骨架，待云托管域名就绪后接入 `gameUrl` 再验证。
+
+---
+
+
 ## 2026-08-16 — 战斗直出化 + 主按钮修行不阻断
 
 ### 变更摘要
