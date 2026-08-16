@@ -2207,3 +2207,48 @@ body {
   justify-content: center;
   box-shadow: 0 0 8px rgba(255, 214, 120, 0.8);
 }
+
+/* 战斗直出：点卡即出招 */
+.battle-flow-hint {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #ffe3a1;
+  border: 1px dashed rgba(255, 214, 120, 0.45);
+  border-radius: 8px;
+  padding: 5px 8px;
+  background: rgba(40, 32, 14, 0.45);
+  animation: labelBlink 1.8s ease-in-out infinite;
+}
+
+/* ------- 次级推荐：修行不阻断 ------- */
+
+#action-hints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: -2px;
+}
+
+.hint-btn {
+  appearance: none;
+  border: 1px solid rgba(214, 170, 80, 0.55);
+  border-radius: 999px;
+  background: rgba(26, 23, 14, 0.85);
+  color: #d9cfa8;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.hint-btn.boss {
+  border-color: rgba(255, 130, 110, 0.55);
+  color: #ffc2b0;
+}
+
+.hint-btn:active {
+  transform: scale(0.97);
+}

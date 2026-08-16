@@ -108,6 +108,27 @@ function renderMainButton(state) {
     nextSparkleAt = nowMs() + 2500; nextInsightAt = nowMs() + 2000;
   }
   btn.dataset.type = main.type; btn.dataset.actionId = main.actionId || "";
+  renderActionHints(state, main);
+}
+
+function renderActionHints(state, main) {
+  const box = $("action-hints");
+  if (!box) return;
+  if (main.type !== "action" && main.type !== "claim" && main.type !== "idle") { box.classList.add("hidden"); box.innerHTML = ""; return; }
+  const recs = Game.getSecondaryRecommendations(state);
+  if (!recs.length) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+  box.innerHTML = "";
+  box.classList.remove("hidden");
+  for (const rec of recs) {
+    const b = document.createElement("button");
+    b.className = "hint-btn" + (rec.id === "boss" ? " boss" : "");
+    b.textContent = rec.label;
+    b.addEventListener("click", () => {
+      if (rec.id === "boss") { openPanelSheet("map"); return; }
+      if (rec.id === "goal_action" && rec.actionId) { Game.startAction(rec.actionId); }
+    });
+    box.appendChild(b);
+  }
 }
 
 // ---------------- 修行灵光 ----------------
@@ -302,8 +323,6 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
   appendBattleLine(logBox, `你与${battle.name}对上了气机，斗法开始！`);
   for (const t of battle.pendingEvents.splice(0)) appendBattleLine(logBox, t);
 
-  let queue = [];
-  const orderNames = ["壹", "贰", "叁"];
   const cardName = (card) => {
     const def = CARD_DEFS[card.id];
     if (!def) return card.id;
@@ -362,19 +381,9 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
     playerRow.append(php, pmeta); zone.appendChild(playerRow);
 
     if (battle.manual && !battle.done) {
-      const order = document.createElement("div"); order.className = "battle-queue";
-      const head = document.createElement("div"); head.className = "battle-queue-head";
-      head.textContent = "出招顺序：点卡牌排先后，攻击牌自动锁定气血最低的敌人";
-      order.appendChild(head);
-      const slots = document.createElement("div"); slots.className = "battle-queue-slots";
-      for (let i = 0; i < 3; i++) {
-        const slot = document.createElement("div"); slot.className = "queue-slot" + (i < queue.length ? " filled" : "");
-        const idx = queue[i];
-        slot.textContent = idx != null && battle.hand[idx] ? `${orderNames[i]} · ${cardName(battle.hand[idx])}` : orderNames[i];
-        slots.appendChild(slot);
-      }
-      order.appendChild(slots);
-      zone.appendChild(order);
+      const hint = document.createElement("div"); hint.className = "battle-flow-hint";
+      hint.textContent = "点卡即出招：攻击牌自动锁定气血最低的敌人，三招出满自动进入敌方回合。";
+      zone.appendChild(hint);
     }
 
     const hand = document.createElement("div"); hand.className = "card-hand";
@@ -382,8 +391,7 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
       const def = CARD_DEFS[card.id];
       const lackResource = def.cost && num(Game.state.resources[def.cost.resource]) < num(def.cost.amount);
       const locked = (def.kind === "treasure" && battle.treasureUsed) || lackResource;
-      const queuePos = queue.indexOf(i);
-      const el = document.createElement("div"); el.className = `battle-card element-${def.element}${card.used ? " used" : ""}${locked ? " locked" : ""}${queuePos >= 0 ? " queued" : ""}`;
+      const el = document.createElement("div"); el.className = `battle-card element-${def.element}${card.used ? " used" : ""}${locked ? " locked" : ""}`;
       el.style.borderColor = ELEMENT_COLORS[def.element] || "#888";
       const nm = document.createElement("div"); nm.className = "bc-name";
       nm.textContent = cardName(card);
@@ -393,18 +401,10 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
       const mult = BattleEngine._powerMult(battle);
       txt.textContent = skill ? skill.text(card.level, mult) : def.text(card.level, mult, Game.state);
       if (lackResource) txt.textContent = `${DataManager.getById("resource_table", def.cost.resource).resource_name || def.cost.resource}不足 ${def.cost.amount}，难以施展\n` + txt.textContent;
-      if (queuePos >= 0) {
-        const badge = document.createElement("span"); badge.className = "queue-badge"; badge.textContent = orderNames[queuePos];
-        el.appendChild(badge);
-      }
       el.append(nm, lv, txt);
       if (battle.manual && !battle.done && !card.used && !locked && battle.ap > 0) {
         el.classList.add("playable");
-        el.addEventListener("click", () => {
-          if (queuePos >= 0) queue.splice(queuePos, 1);
-          else if (queue.length < battle.ap) queue.push(i);
-          updateControls(); render();
-        });
+        el.addEventListener("click", () => playCardNow(i));
       }
       hand.appendChild(el);
     });
@@ -415,8 +415,7 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
 
   const finishUp = () => {
     if (battleTimer) { clearInterval(battleTimer); battleTimer = null; }
-    queue = [];
-    [playQueueBtn, refreshBtn, endTurnBtn, toggleBtn].forEach((b) => { if (b) b.disabled = true; });
+    [refreshBtn, endTurnBtn, toggleBtn].forEach((b) => { if (b) b.disabled = true; });
     const endBtn = popupButton(battle.win ? "收取战果" : "退出战圈", false, () => { closePopup(); Game.finishBattle(battle); });
     buttons.appendChild(endBtn);
     appendBattleLine(logBox, battle.win ? `${battle.name}溃散！` : "你护住灵台，且战且退。");
@@ -425,65 +424,56 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
   const updateControls = () => {
     if (battle.done) return;
     const manual = battle.manual;
-    playQueueBtn.classList.toggle("hidden", !manual);
     refreshBtn.classList.toggle("hidden", !manual);
     endTurnBtn.classList.toggle("hidden", !manual);
-    playQueueBtn.textContent = `按序出手${queue.length ? `（${queue.length}）` : ""}`;
-    playQueueBtn.disabled = queue.length === 0 || battle.ap <= 0;
     refreshBtn.textContent = battle.refreshUsed ? "刷新卡牌（已用）" : "刷新卡牌";
     refreshBtn.disabled = battle.refreshUsed || !manual || battle.ap <= 0;
+    endTurnBtn.textContent = battle.ap >= 3 ? "结束回合" : `结束回合（剩 ${battle.ap} 气）`;
     endTurnBtn.disabled = battle.ap >= 3;
-    toggleBtn.textContent = manual ? "自动托管" : "手动排序";
+    toggleBtn.textContent = manual ? "自动托管" : "手动出招";
   };
 
-  const playQueue = () => {
-    if (battle.done || !battle.manual) return;
-    const order = [...queue];
-    queue = [];
-    for (const handIndex of order) {
-      if (battle.done || battle.ap <= 0) break;
-      const card = battle.hand[handIndex];
-      if (!card || card.used) continue;
-      const def = CARD_DEFS[card.id];
-      if (!def) continue;
-      if (def.kind === "treasure" && battle.treasureUsed) continue;
-      if (def.cost && num(Game.state.resources[def.cost.resource]) < num(def.cost.amount)) continue;
-      const alive = battle.enemies.filter((e) => e.hp > 0);
-      const targetIndex = alive.length > 1 ? alive.reduce((best, e, idx) => (e.hp < alive[best].hp ? idx : best), 0) : 0;
-      appendEvents(Game.battlePlayCard(battle, handIndex, targetIndex));
-      if (battle.done) { render(); finishUp(); return; }
-    }
+  const playCardNow = (handIndex) => {
+    if (battle.done || !battle.manual || battle.ap <= 0) return;
+    const card = battle.hand[handIndex];
+    if (!card || card.used) return;
+    const def = CARD_DEFS[card.id];
+    if (!def) return;
+    if (def.kind === "treasure" && battle.treasureUsed) return;
+    if (def.cost && num(Game.state.resources[def.cost.resource]) < num(def.cost.amount)) return;
+    const alive = battle.enemies.filter((e) => e.hp > 0);
+    const targetIndex = alive.length > 1 ? alive.reduce((best, e, idx) => (e.hp < alive[best].hp ? idx : best), 0) : 0;
+    appendEvents(Game.battlePlayCard(battle, handIndex, targetIndex));
     render();
-    if (!battle.done && battle.ap <= 0) {
-      appendBattleLine(logBox, "你按序出完此轮，对手趁势而动。");
+    if (battle.done) { finishUp(); return; }
+    if (battle.ap <= 0) {
+      appendBattleLine(logBox, "你三招已尽，对手趁势而动。");
       appendEvents(Game.battleEndTurn(battle));
       render();
       if (battle.done) finishUp();
+    } else {
+      updateControls();
     }
   };
 
   const endTurnNow = () => {
     if (battle.done) return;
-    queue = [];
     appendEvents(Game.battleEndTurn(battle));
     render();
     if (battle.done) finishUp();
   };
 
-  const playQueueBtn = popupButton("按序出手", false, playQueue);
   const refreshBtn = popupButton("刷新卡牌", false, () => {
     if (battle.done) return;
     const result = Game.battleRefreshHand(battle);
-    if (result.ok) { queue = []; appendEvents(result.events); updateControls(); render(); }
+    if (result.ok) { appendEvents(result.events); updateControls(); render(); }
   }, "secondary");
   const endTurnBtn = popupButton("结束回合", false, endTurnNow, "secondary");
-  const toggleBtn = popupButton(battle.manual ? "自动托管" : "手动排序", false, () => {
-    const manual = Game.battleToggleManual(battle);
-    queue = [];
-    battleTargeting = null;
+  const toggleBtn = popupButton(battle.manual ? "自动托管" : "手动出招", false, () => {
+    Game.battleToggleManual(battle);
     updateControls(); render();
   });
-  buttons.append(playQueueBtn, refreshBtn, endTurnBtn, toggleBtn);
+  buttons.append(refreshBtn, endTurnBtn, toggleBtn);
   updateControls(); render();
   if (battleTimer) clearInterval(battleTimer);
   battleTimer = setInterval(() => {

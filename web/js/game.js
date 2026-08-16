@@ -810,21 +810,48 @@ const Game = {
     if (RealmManager.canLevelUp(state)) {
       return { type: "level_up", label: "道行已满，可升重" };
     }
-    const boss = this._challengeableBoss(state);
-    if (boss) {
-      return { type: "boss_fight", label: `${boss.boss_name}现身，前往斗法` };
-    }
     if (int(this.pendingOfflineReward.minutes) >= 5) {
       return { type: "claim", label: `出关领取\n闭关 ${formatDuration(int(this.pendingOfflineReward.minutes))}` };
     }
-    const recommended = this._recommendedAction();
-    if (recommended) {
-      return { type: "action", label: recommended.action_name, actionId: String(recommended.action_id) };
+    // 主按钮永远保留一条“继续修行”的默认路；Boss/目标行动只做次级推荐，绝不阻断修行。
+    const preferred = this._preferredCultivationAction(state);
+    if (preferred) {
+      return { type: "action", label: preferred.action_name, actionId: String(preferred.action_id) };
     }
     if (RealmManager.isCapped(state)) {
       return { type: "action", label: "骷髅山探幽", actionId: "kulou_explore" };
     }
     return { type: "idle", label: "继续闭关" };
+  },
+
+  _preferredCultivationAction(state) {
+    const actions = ActionManager.getActions(state);
+    const available = actions.filter((row) => ActionManager.getAvailability(state, row).ok);
+    if (!available.length) return null;
+    const order = ["short_meditation", "breath_cycle", "wild_travel", "chentang_patrol", "kulou_explore"];
+    for (const id of order) {
+      const match = available.find((row) => String(row.action_id) === id);
+      if (match) return match;
+    }
+    return available[0];
+  },
+
+  getSecondaryRecommendations(state) {
+    const list = [];
+    const primary = this._preferredCultivationAction(state);
+    const primaryId = primary ? String(primary.action_id) : "";
+    const goal = GoalManager.getCurrent(state);
+    const c = goal.complete_condition || {};
+    if (c.type === "action_complete") {
+      const available = ActionManager.getActions(state).filter((row) => ActionManager.getAvailability(state, row).ok);
+      const match = available.find((row) => String(row.action_id) === String(c.action_id));
+      if (match && String(match.action_id) !== primaryId) {
+        list.push({ id: "goal_action", label: `${match.action_name}（修行指引）`, actionId: String(match.action_id) });
+      }
+    }
+    const boss = this._challengeableBoss(state);
+    if (boss) list.push({ id: "boss", label: `${boss.boss_name}现身，可挑战`, bossId: String(boss.boss_id) });
+    return list.slice(0, 2);
   },
 
   _hasAffordableSpell(state) {
