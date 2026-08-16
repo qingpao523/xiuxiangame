@@ -1701,6 +1701,7 @@ body {
 }
 
 .scroll-chapter {
+  flex: 0 0 auto;
   border: 1px solid rgba(214, 170, 80, 0.4);
   border-radius: 12px;
   background: rgba(16, 17, 15, 0.88);
