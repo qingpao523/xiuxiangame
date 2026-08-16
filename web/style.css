@@ -1253,3 +1253,956 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* ------- 顶部榜文感应条 ------- */
+
+#top-banner {
+  position: relative;
+}
+
+.scroll-open {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 214, 120, 0.7);
+  background: rgba(44, 34, 14, 0.92);
+  color: #ffe3a1;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255, 210, 120, 0.25);
+  animation: scrollOpenGlow 3s ease-in-out infinite;
+}
+
+@keyframes scrollOpenGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 210, 120, 0.22); }
+  50% { box-shadow: 0 0 16px rgba(255, 210, 120, 0.5); }
+}
+
+#seal-pressure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 10.5px;
+  color: #b9a878;
+}
+
+#seal-pressure-label {
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+#seal-pressure-track {
+  position: relative;
+  width: 120px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(8, 11, 13, 0.85);
+  border: 1px solid rgba(160, 135, 85, 0.4);
+  overflow: hidden;
+}
+
+#seal-pressure-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #b89952, #ffd97a, #ff8d6e);
+  box-shadow: 0 0 6px rgba(255, 190, 110, 0.7);
+  transition: width 0.7s ease;
+}
+
+#seal-pressure-state {
+  min-width: 44px;
+  text-align: left;
+  color: #ffe3a1;
+  white-space: nowrap;
+}
+
+#seal-pressure[data-level="high"] #seal-pressure-fill {
+  background: linear-gradient(90deg, #d98a45, #ff6d4d);
+  box-shadow: 0 0 10px rgba(255, 100, 70, 0.85);
+  animation: sealDanger 1.2s ease-in-out infinite;
+}
+
+#seal-pressure[data-level="high"] #seal-pressure-state {
+  color: #ffb3a6;
+}
+
+@keyframes sealDanger {
+  0%, 100% { opacity: 0.75; }
+  50% { opacity: 1; }
+}
+
+/* ------- 开局卷首演出 ------- */
+
+#prologue-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  background: #05070a;
+  transition: background 0.9s ease;
+}
+
+#prologue-layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.5;
+  filter: blur(2px) saturate(0.8);
+  transition: background-image 0.8s ease, opacity 0.8s ease;
+}
+
+#prologue-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 35% at 50% -10%, rgba(255, 214, 120, 0.28), transparent 65%),
+    linear-gradient(180deg, rgba(3, 4, 7, 0.2), rgba(3, 4, 7, 0.82) 78%, rgba(3, 4, 7, 0.94));
+  pointer-events: none;
+}
+
+#prologue-layer[data-scene="0"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.png"); opacity: 0.7; }
+#prologue-layer[data-scene="1"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.png"); opacity: 0.45; }
+#prologue-layer[data-scene="2"]::before { background-image: url("assets/backgrounds/bg_chentang_pass.png"); opacity: 0.52; }
+#prologue-layer[data-scene="3"]::before { background-image: url("assets/backgrounds/bg_bone_mountain_edge.png"); opacity: 0.5; }
+
+#prologue-scroll {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px;
+  height: min(74vh, 620px);
+  margin: 0 22px;
+  border: 1px solid rgba(214, 170, 80, 0.55);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(34, 28, 16, 0.94), rgba(15, 14, 11, 0.97)),
+    repeating-linear-gradient(0deg, transparent 0 31px, rgba(160, 130, 70, 0.08) 31px 32px);
+  box-shadow: 0 0 44px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  animation: scrollUnroll 0.85s ease;
+}
+
+#prologue-scroll::before,
+#prologue-scroll::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  height: 18px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #7b5a22, #d4aa54 45%, #6f4d1e);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+
+#prologue-scroll::before { top: -9px; }
+#prologue-scroll::after { bottom: -9px; }
+
+@keyframes scrollUnroll {
+  from { transform: scaleY(0.12); opacity: 0; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+#prologue-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.prologue-scene {
+  position: absolute;
+  inset: 26px 24px 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.prologue-scene.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.prologue-scene.leaving {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+
+.prologue-kicker {
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: #b9a878;
+  margin-bottom: 16px;
+  animation: prologueKicker 0.7s ease both;
+}
+
+.prologue-title {
+  font-size: clamp(30px, 8vw, 46px);
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #ffe3a1;
+  text-shadow: 0 0 24px rgba(255, 210, 120, 0.45);
+  margin-bottom: 22px;
+  animation: prologueTitle 0.8s ease both;
+}
+
+.prologue-text {
+  font-size: 16px;
+  line-height: 1.9;
+  color: #ecebda;
+  letter-spacing: 1px;
+  animation: prologueText 0.9s ease both;
+}
+
+.scene-seal .prologue-title {
+  color: #ffd97a;
+  text-shadow: 0 0 34px rgba(255, 210, 120, 0.9), 0 0 80px rgba(255, 180, 80, 0.4);
+}
+
+@keyframes prologueKicker {
+  from { opacity: 0; letter-spacing: 10px; }
+  to { opacity: 1; }
+}
+
+@keyframes prologueTitle {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes prologueText {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#prologue-enter {
+  margin-top: 28px;
+  appearance: none;
+  border: 1px solid rgba(255, 214, 120, 0.8);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(90, 66, 22, 0.95), rgba(52, 38, 15, 0.95));
+  color: #ffe9b0;
+  font-family: inherit;
+  font-size: 16px;
+  letter-spacing: 3px;
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 0 22px rgba(255, 210, 120, 0.3);
+  animation: prologueTitle 0.9s ease both;
+}
+
+#prologue-hint {
+  position: absolute;
+  z-index: 4;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: #b9a878;
+  animation: labelBlink 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+#prologue-skip {
+  position: absolute;
+  z-index: 5;
+  right: 14px;
+  top: 14px;
+  appearance: none;
+  border: 1px solid rgba(150, 165, 158, 0.45);
+  border-radius: 999px;
+  background: rgba(12, 15, 17, 0.72);
+  color: #a9b8ae;
+  font-family: inherit;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+/* ------- 封神图卷（山河卷轴） ------- */
+
+#world-scroll-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(3, 5, 7, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#world-scroll-panel {
+  width: 100%;
+  max-width: 480px;
+  height: 92vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid rgba(214, 170, 80, 0.6);
+  background:
+    linear-gradient(180deg, rgba(30, 27, 18, 0.98), rgba(14, 15, 14, 0.99)),
+    repeating-linear-gradient(0deg, transparent 0 36px, rgba(180, 150, 90, 0.07) 36px 37px);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.75), inset 0 0 34px rgba(0, 0, 0, 0.55);
+  animation: scrollUnroll 0.3s ease;
+  overflow: hidden;
+}
+
+#world-scroll-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(214, 170, 80, 0.35);
+}
+
+#world-scroll-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #ffe3a1;
+  text-shadow: 0 0 18px rgba(255, 210, 120, 0.4);
+}
+
+#world-scroll-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b9a878;
+  letter-spacing: 1px;
+}
+
+#world-scroll-close {
+  flex-shrink: 0;
+  appearance: none;
+  border: 1px solid rgba(150, 165, 158, 0.5);
+  border-radius: 8px;
+  background: rgba(28, 36, 36, 0.95);
+  color: #dbe6de;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#world-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#world-scroll-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 18px 14px;
+  border-top: 1px solid rgba(214, 170, 80, 0.3);
+  background: rgba(8, 9, 9, 0.7);
+}
+
+.scroll-foot-label {
+  font-size: 13px;
+  color: #ffe3a1;
+  letter-spacing: 2px;
+}
+
+.scroll-foot-tip {
+  font-size: 11.5px;
+  color: #9fb4a8;
+}
+
+.scroll-horizon {
+  border: 1px solid rgba(130, 115, 80, 0.4);
+  border-radius: 10px;
+  padding: 10px 12px 12px;
+  background:
+    radial-gradient(ellipse 70% 90% at 50% 100%, rgba(110, 80, 30, 0.22), transparent 70%),
+    rgba(10, 12, 12, 0.72);
+}
+
+.scroll-horizon-caption {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #9b8d6d;
+  margin-bottom: 10px;
+}
+
+.scroll-horizon-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.scroll-horizon-spot {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 4px 8px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 1px;
+  border-top: 1px solid rgba(160, 135, 85, 0.5);
+  position: relative;
+}
+
+.scroll-horizon-spot::before {
+  content: "▲";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #b89952;
+}
+
+.scroll-horizon-spot.reached {
+  color: #ffe3a1;
+  border-top-color: rgba(255, 214, 120, 0.8);
+  text-shadow: 0 0 10px rgba(255, 210, 120, 0.4);
+}
+
+.scroll-horizon-spot.fogged {
+  color: #66746c;
+  border-top-color: rgba(110, 118, 112, 0.4);
+}
+
+.scroll-horizon-spot.fogged::before {
+  content: "";
+  width: 20px;
+  height: 6px;
+  top: -3px;
+  background: rgba(160, 175, 166, 0.18);
+  filter: blur(3px);
+}
+
+.scroll-chapter {
+  border: 1px solid rgba(214, 170, 80, 0.4);
+  border-radius: 12px;
+  background: rgba(16, 17, 15, 0.88);
+  overflow: hidden;
+}
+
+.scroll-chapter.current {
+  border-color: rgba(255, 214, 120, 0.75);
+  box-shadow: 0 0 18px rgba(255, 210, 120, 0.16);
+}
+
+.scroll-chapter.done {
+  border-color: rgba(110, 180, 140, 0.4);
+}
+
+.scroll-chapter.future {
+  opacity: 0.68;
+}
+
+.scroll-chapter-head {
+  padding: 12px 14px 10px;
+  border-bottom: 1px dashed rgba(170, 145, 90, 0.35);
+  background: rgba(22, 21, 16, 0.9);
+}
+
+.scroll-chapter-line {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffe3a1;
+  letter-spacing: 3px;
+}
+
+.scroll-chapter.future .scroll-chapter-line {
+  color: #7d857f;
+}
+
+.scroll-chapter-place {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #c8b98a;
+  letter-spacing: 2px;
+}
+
+.scroll-chapter-sub {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #a5baaf;
+  line-height: 1.6;
+}
+
+.scroll-chapter-progress {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  font-size: 12px;
+  color: #b9a878;
+  font-variant-numeric: tabular-nums;
+}
+
+.scroll-chapter-head {
+  position: relative;
+  padding-right: 72px;
+}
+
+.scroll-chapter-body {
+  position: relative;
+  padding: 8px 14px 12px;
+}
+
+.scroll-chapter-body::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 14px;
+  bottom: 22px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(214, 170, 80, 0.55), rgba(214, 170, 80, 0.12));
+}
+
+.scroll-node {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 9px 0 9px 0;
+}
+
+.scroll-node-marker {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  margin-top: 5px;
+  margin-left: 4px;
+  border-radius: 50%;
+  border: 1px solid rgba(160, 135, 85, 0.7);
+  background: rgba(14, 17, 16, 0.95);
+}
+
+.scroll-node.done .scroll-node-marker {
+  border-color: rgba(110, 200, 150, 0.9);
+  background: #3c9f72;
+  box-shadow: 0 0 8px rgba(80, 200, 140, 0.55);
+}
+
+.scroll-node.current .scroll-node-marker {
+  border-color: rgba(255, 214, 120, 1);
+  background: #ffd97a;
+  box-shadow: 0 0 12px rgba(255, 214, 120, 0.9);
+  animation: navGlow 1.4s ease-in-out infinite;
+}
+
+.scroll-node.future {
+  opacity: 0.52;
+}
+
+.scroll-node-info {
+  min-width: 0;
+}
+
+.scroll-node-tag {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 1px;
+  border-radius: 999px;
+  padding: 1px 8px;
+  border: 1px solid rgba(150, 165, 158, 0.5);
+  color: #9fb4a8;
+  margin-bottom: 3px;
+}
+
+.scroll-node.current .scroll-node-tag {
+  border-color: rgba(255, 214, 120, 0.75);
+  color: #ffe3a1;
+}
+
+.scroll-node.done .scroll-node-tag {
+  border-color: rgba(110, 200, 150, 0.6);
+  color: #9ad8b6;
+}
+
+.scroll-node-name {
+  font-size: 14px;
+  color: #ecebda;
+  letter-spacing: 1px;
+}
+
+.scroll-node.current .scroll-node-name {
+  color: #ffe9ad;
+}
+
+.scroll-node-desc {
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: #8fa398;
+}
+
+.scroll-locked-card {
+  padding: 12px 12px;
+  border: 1px dashed rgba(110, 118, 112, 0.35);
+  border-radius: 9px;
+  color: #6f7c74;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+  white-space: pre-line;
+  background: rgba(8, 10, 11, 0.5);
+}
+
+@media (max-width: 380px) {
+  #prologue-scroll { height: 70vh; }
+  .prologue-title { font-size: 30px; letter-spacing: 4px; }
+  #seal-pressure-track { width: 88px; }
+  #world-scroll-panel { height: 94vh; }
+}
+
+#game-title {
+  cursor: pointer;
+  transition: text-shadow 0.25s ease, color 0.25s ease;
+}
+
+#game-title:active {
+  color: #fff2c8;
+  text-shadow: 0 0 24px rgba(255, 220, 120, 0.75);
+}
+
+/* ------- 行动结算浮字（非阻断） ------- */
+
+#action-toast {
+  position: fixed;
+  z-index: 18;
+  left: 50%;
+  bottom: 172px;
+  transform: translateX(-50%);
+  width: min(420px, calc(100% - 48px));
+  padding: 10px 14px;
+  border: 1px solid rgba(214, 170, 80, 0.55);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(22, 22, 16, 0.94), rgba(12, 13, 12, 0.94));
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  animation: toastIn 0.25s ease;
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.action-toast-title {
+  font-size: 14px;
+  color: #ffe3a1;
+  letter-spacing: 1px;
+}
+
+.action-toast-body {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #c8d4cc;
+  white-space: pre-line;
+  line-height: 1.55;
+}
+
+/* ------- 封神山河图（前期示意图，无美术素材） ------- */
+
+.map-open {
+  right: auto;
+  left: 10px;
+}
+
+#world-map-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  background: rgba(3, 5, 7, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+#world-map-panel {
+  width: 100%;
+  max-width: 480px;
+  height: 94vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid rgba(214, 170, 80, 0.6);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(80, 62, 28, 0.55), transparent 70%),
+    linear-gradient(180deg, rgba(28, 26, 19, 0.98), rgba(12, 14, 13, 0.99));
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.75), inset 0 0 40px rgba(0, 0, 0, 0.6);
+  animation: popupIn 0.22s ease;
+  overflow: hidden;
+}
+
+#world-map-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid rgba(214, 170, 80, 0.35);
+}
+
+#world-map-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #ffe3a1;
+  text-shadow: 0 0 18px rgba(255, 210, 120, 0.4);
+}
+
+#world-map-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b9a878;
+  letter-spacing: 1px;
+}
+
+#world-map-close {
+  flex-shrink: 0;
+  appearance: none;
+  border: 1px solid rgba(150, 165, 158, 0.5);
+  border-radius: 8px;
+  background: rgba(28, 36, 36, 0.95);
+  color: #dbe6de;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+#world-map-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 320px;
+  margin: 12px 14px 0;
+  border: 1px solid rgba(160, 135, 85, 0.5);
+  border-radius: 14px;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(120, 96, 44, 0.35), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 80% 75%, rgba(30, 74, 74, 0.3), transparent 70%),
+    rgba(10, 12, 11, 0.82);
+  overflow: hidden;
+}
+
+#world-map-canvas::before {
+  content: "封神山河图 · 示意图";
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(180, 160, 110, 0.5);
+  pointer-events: none;
+}
+
+.world-map-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.world-map-path {
+  stroke: rgba(190, 155, 85, 0.22);
+  stroke-width: 0.35;
+  stroke-dasharray: 1.2 1.6;
+}
+
+.world-map-path.lit {
+  stroke: rgba(255, 214, 120, 0.65);
+  stroke-width: 0.5;
+  filter: drop-shadow(0 0 2px rgba(255, 214, 120, 0.55));
+}
+
+.world-map-decor {
+  fill: none;
+  stroke: rgba(140, 150, 140, 0.16);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.world-map-node {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #cfe0d8;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  max-width: 90px;
+}
+
+.world-map-node-glyph {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border: 1px solid rgba(150, 165, 158, 0.5);
+  background: rgba(16, 20, 20, 0.92);
+  color: #cfd8d2;
+}
+
+.world-map-node-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.world-map-node.reached .world-map-node-glyph {
+  border-color: rgba(255, 214, 120, 0.8);
+  color: #ffe3a1;
+  box-shadow: 0 0 10px rgba(255, 210, 120, 0.35);
+}
+
+.world-map-node.current .world-map-node-glyph {
+  border-color: #ffd97a;
+  background: rgba(70, 54, 16, 0.95);
+  color: #fff0c4;
+  animation: navGlow 1.4s ease-in-out infinite;
+}
+
+.world-map-node.locked {
+  opacity: 0.62;
+}
+
+.world-map-node.locked .world-map-node-glyph {
+  border-color: rgba(110, 118, 112, 0.4);
+  color: #7d857f;
+  background: rgba(10, 12, 13, 0.92);
+}
+
+.world-map-node.kind-seal .world-map-node-glyph {
+  width: 38px;
+  height: 38px;
+  font-size: 15px;
+  color: #ffd97a;
+  border-color: rgba(255, 214, 120, 0.8);
+  background: radial-gradient(circle, rgba(80, 60, 16, 0.95), rgba(24, 20, 10, 0.95));
+  box-shadow: 0 0 16px rgba(255, 214, 120, 0.45);
+}
+
+#world-map-foot {
+  padding: 11px 18px 14px;
+  border-top: 1px solid rgba(214, 170, 80, 0.3);
+  background: rgba(8, 9, 9, 0.7);
+}
+
+.world-map-foot-name {
+  font-size: 13px;
+  color: #ffe3a1;
+  letter-spacing: 2px;
+}
+
+.world-map-foot-tip {
+  margin-top: 3px;
+  font-size: 11.5px;
+  color: #9fb4a8;
+  line-height: 1.6;
+}
+
+/* ------- 斗法 v3：出招排序 / 刷新卡牌 ------- */
+
+.battle-queue {
+  border: 1px solid rgba(214, 170, 80, 0.4);
+  border-radius: 10px;
+  background: rgba(20, 18, 12, 0.6);
+  padding: 7px 9px 9px;
+}
+
+.battle-queue-head {
+  font-size: 11px;
+  color: #c8b98a;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.battle-queue-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.queue-slot {
+  min-height: 34px;
+  border: 1px dashed rgba(150, 145, 110, 0.45);
+  border-radius: 8px;
+  background: rgba(8, 10, 11, 0.55);
+  color: #8d978e;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3px 4px;
+  line-height: 1.25;
+}
+
+.queue-slot.filled {
+  border-style: solid;
+  border-color: rgba(255, 214, 120, 0.65);
+  color: #ffe3a1;
+  background: rgba(45, 36, 14, 0.75);
+}
+
+.battle-card.queued {
+  border-color: #ffd97a !important;
+  box-shadow: 0 0 12px rgba(255, 214, 120, 0.45);
+  transform: translateY(-2px);
+}
+
+.queue-badge {
+  position: absolute;
+  top: -7px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd97a;
+  color: #231a08;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(255, 214, 120, 0.8);
+}

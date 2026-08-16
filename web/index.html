@@ -14,10 +14,17 @@
   <main id="app">
     <!-- 顶部封神天象条 -->
     <header id="top-banner">
-      <div id="game-title">封神修道录</div>
+      <div id="game-title" title="点击展开封神图卷">封神修道录</div>
+      <button id="world-scroll-btn" class="scroll-open" title="展开封神图卷">卷</button>
+      <button id="world-map-btn" class="scroll-open map-open" title="展开封神山河图">图</button>
       <div id="identity-line"></div>
       <div id="weather-line"></div>
       <div id="omen-line"></div>
+      <div id="seal-pressure" title="封神榜对你的感应">
+        <span id="seal-pressure-label">榜文感应</span>
+        <span id="seal-pressure-track"><i id="seal-pressure-fill"></i></span>
+        <span id="seal-pressure-state">未显</span>
+      </div>
     </header>
 
     <!-- 资源浮层 -->
@@ -44,6 +51,9 @@
 
     <!-- 修行日志（最新一条） -->
     <div id="status-line"></div>
+
+    <!-- 行动结算浮字（非阻断） -->
+    <div id="action-toast" class="hidden"></div>
 
     <!-- 唯一主行动按钮 -->
     <button id="main-btn">
@@ -95,7 +105,61 @@
   <!-- 破劫演出 -->
   <div id="tribulation-fx" class="hidden"><span>劫云压顶</span></div>
 
-  <script src="game.js"></script>
-  <script src="ui.js"></script>
+  <!-- 开局卷首演出 -->
+  <div id="prologue-layer" class="hidden">
+    <div id="prologue-scroll"><div id="prologue-stage"></div></div>
+    <div id="prologue-hint">轻触继续</div>
+    <button id="prologue-skip">跳过卷首</button>
+  </div>
+
+  <!-- 封神图卷（山河卷轴） -->
+  <div id="world-scroll-layer" class="hidden">
+    <div id="world-scroll-panel">
+      <header id="world-scroll-head">
+        <div>
+          <div id="world-scroll-title">封神图卷</div>
+          <div id="world-scroll-sub"></div>
+        </div>
+        <button id="world-scroll-close">收起</button>
+      </header>
+      <div id="world-scroll-body"></div>
+      <footer id="world-scroll-foot"></footer>
+    </div>
+  </div>
+
+  <!-- 封神山河图（无美术素材期的示意图，正式地图素材就位后替换） -->
+  <div id="world-map-layer" class="hidden">
+    <div id="world-map-panel">
+      <header id="world-map-head">
+        <div>
+          <div id="world-map-title">封神山河图</div>
+          <div id="world-map-sub"></div>
+        </div>
+        <button id="world-map-close">收起</button>
+      </header>
+      <div id="world-map-canvas"></div>
+      <footer id="world-map-foot"></footer>
+    </div>
+  </div>
+
+  <!-- 核心模块 -->
+  <script src="js/utils.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/data-manager.js"></script>
+  <script src="js/realm-manager.js"></script>
+  <script src="js/save-manager.js"></script>
+  <script src="js/unlock-manager.js"></script>
+  <script src="js/event-manager.js"></script>
+  <script src="js/reward-manager.js"></script>
+  <script src="js/action-manager.js"></script>
+  <script src="js/goal-manager.js"></script>
+  <script src="js/boss-manager.js"></script>
+  <script src="js/breakthrough-manager.js"></script>
+  <script src="js/battle-engine.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/world-scroll.js"></script>
+  <script src="js/world-map.js"></script>
+  <script src="js/ui-constants.js"></script>
+  <script src="js/ui.js"></script>
 </body>
 </html>
