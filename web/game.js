@@ -43,12 +43,15 @@ const DataManager = {
   realmOrder: {},
   sortedRealmIds: [],
 
-  async loadAll() {
-    const index = await (await fetch("data/data_index.json")).json();
-    const payloads = await Promise.all(
-      index.tables.map((file) => fetch(`data/${file}`).then((r) => r.json()))
-    );
-    for (const payload of payloads) {
+  // 串行加载 + 超时 + 重试：弱网/网关限流环境下并发请求会互相卡死
+  async loadAll(onProgress) {
+    const index = await fetchJsonWithRetry("data/data_index.json");
+    const files = index.tables || [];
+    let done = 0;
+    for (const file of files) {
+      const payload = await fetchJsonWithRetry(`data/${file}`);
+      done += 1;
+      if (typeof onProgress === "function") onProgress(done, files.length);
       const name = payload.table;
       this.tables[name] = payload;
       const idField = ID_FIELDS[name];
@@ -3214,6 +3217,27 @@ function getCardDisplayName(state, cardId) {
     return TREASURE_SKILLS[state.first_treasure_id]?.name || "法宝技";
   }
   return CARD_DEFS[cardId]?.name || cardId;
+}
+
+// 带超时与指数退避重试的 JSON 加载（弱网限流环境的底线保障）
+async function fetchJsonWithRetry(url, retries = 4) {
+  let lastError = null;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
+      const res = await fetch(url, { signal: controller.signal, cache: "no-cache" });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (e) {
+      lastError = e;
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 600 * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError || new Error(`加载失败：${url}`);
 }
 
 // 斗法中的实际等级：术法/法宝基础级 + 休整淬炼加成

@@ -5,45 +5,45 @@
 "use strict";
 
 const ICON_PATHS = {
-  daoxing: "assets/resources/resource_daoxing.png",
-  mana: "assets/resources/resource_mana.png",
-  merit: "assets/resources/resource_merit.png",
-  calamity: "assets/resources/resource_calamity.png",
-  spell_page: "assets/resources/resource_spell_page.png",
-  artifact_shard: "assets/resources/resource_treasure_shard.png",
-  treasure_shard: "assets/resources/resource_treasure_shard.png",
-  refine_material: "assets/resources/resource_refine_material.png",
+  daoxing: "assets/resources/resource_daoxing.jpg",
+  mana: "assets/resources/resource_mana.jpg",
+  merit: "assets/resources/resource_merit.jpg",
+  calamity: "assets/resources/resource_calamity.jpg",
+  spell_page: "assets/resources/resource_spell_page.jpg",
+  artifact_shard: "assets/resources/resource_treasure_shard.jpg",
+  treasure_shard: "assets/resources/resource_treasure_shard.jpg",
+  refine_material: "assets/resources/resource_refine_material.jpg",
 };
 
 const BACKGROUND_PATHS = {
-  mountain_cave: "assets/backgrounds/bg_mountain_cave.png",
-  chentang_far: "assets/backgrounds/bg_chentang_pass.png",
-  kulou_edge: "assets/backgrounds/bg_bone_mountain_edge.png",
+  mountain_cave: "assets/backgrounds/bg_mountain_cave.jpg",
+  chentang_far: "assets/backgrounds/bg_chentang_pass.jpg",
+  kulou_edge: "assets/backgrounds/bg_bone_mountain_edge.jpg",
 };
 
 const CHARACTER_PATHS = {
-  炼气士: "assets/characters/char_cultivator.png",
-  真人: "assets/characters/char_realman.png",
-  地仙: "assets/characters/char_earth_immortal.png",
+  炼气士: "assets/characters/char_cultivator.jpg",
+  真人: "assets/characters/char_realman.jpg",
+  地仙: "assets/characters/char_earth_immortal.jpg",
 };
 
 const SPELL_ICONS = {
-  spell_thunder_01: "assets/spells/spell_palm_thunder.png",
-  spell_fire_01: "assets/spells/spell_spirit_fire.png",
-  spell_weapon_01: "assets/spells/spell_artifact_control.png",
+  spell_thunder_01: "assets/spells/spell_palm_thunder.jpg",
+  spell_fire_01: "assets/spells/spell_spirit_fire.jpg",
+  spell_weapon_01: "assets/spells/spell_artifact_control.jpg",
 };
 
 const TREASURE_ICONS = {
-  treasure_001: "assets/treasures/treasure_lightwood_sword.png",
-  treasure_002: "assets/treasures/treasure_spirit_gourd.png",
-  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.png",
-  treasure_004: "assets/treasures/treasure_subduing_demon_bell.png",
-  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.png",
-  treasure_006: "assets/treasures/treasure_bronze_soul_mirror.png",
-  treasure_007: "assets/treasures/treasure_gold_light_seal.png",
-  treasure_008: "assets/treasures/treasure_calm_jade_pendant.png",
+  treasure_001: "assets/treasures/treasure_lightwood_sword.jpg",
+  treasure_002: "assets/treasures/treasure_spirit_gourd.jpg",
+  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.jpg",
+  treasure_004: "assets/treasures/treasure_subduing_demon_bell.jpg",
+  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.jpg",
+  treasure_006: "assets/treasures/treasure_bronze_soul_mirror.jpg",
+  treasure_007: "assets/treasures/treasure_gold_light_seal.jpg",
+  treasure_008: "assets/treasures/treasure_calm_jade_pendant.jpg",
   // R1-A：伴生灵宝暂复用 treasure_004 图，独立图标待美术
-  treasure_009: "assets/treasures/treasure_subduing_demon_bell.png",
+  treasure_009: "assets/treasures/treasure_subduing_demon_bell.jpg",
 };
 
 const MAP_ACTION = {
@@ -1715,7 +1715,17 @@ function renderLogPanel(body, state) {
 // ---------------- 启动 ----------------
 
 async function boot() {
-  await DataManager.loadAll();
+  const btnLabel = $("main-btn-label");
+  btnLabel.textContent = "正在加载修行数据…";
+  try {
+    await DataManager.loadAll((done, total) => {
+      btnLabel.textContent = `正在加载修行数据 ${done}/${total}…`;
+    });
+  } catch (e) {
+    console.error("数据加载失败", e);
+    btnLabel.textContent = "数据加载失败，请检查网络后刷新重试";
+    return;
+  }
 
   $("main-btn").addEventListener("click", onMainButtonClick);
   $("auto-toggle").addEventListener("click", () => Game.toggleAutoRepeat());

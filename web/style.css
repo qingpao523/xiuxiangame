@@ -81,7 +81,7 @@ body {
   border-radius: 10px;
   background:
     linear-gradient(180deg, rgba(30, 26, 16, 0.72), rgba(16, 15, 10, 0.72)),
-    url("assets/ui/banners/ui_top_seal_banner.png") center / cover;
+    url("assets/ui/banners/ui_top_seal_banner.jpg") center / cover;
   box-shadow: 0 0 24px rgba(214, 170, 80, 0.12) inset;
 }
 
@@ -601,13 +601,13 @@ body {
   pointer-events: none;
 }
 
-#popup-panel.style-seal::before { background-image: url("assets/ui/borders/ui_seal_border.png"); }
+#popup-panel.style-seal::before { background-image: url("assets/ui/borders/ui_seal_border.jpg"); }
 #popup-panel.style-chance { border-color: rgba(234, 143, 87, 0.75); }
-#popup-panel.style-chance::before { background-image: url("assets/ui/popups/ui_chance_popup_bg.png"); }
+#popup-panel.style-chance::before { background-image: url("assets/ui/popups/ui_chance_popup_bg.jpg"); }
 #popup-panel.style-breakthrough { border-color: rgba(255, 214, 120, 0.85); }
-#popup-panel.style-breakthrough::before { background-image: url("assets/ui/popups/ui_breakthrough_popup_bg.png"); }
+#popup-panel.style-breakthrough::before { background-image: url("assets/ui/popups/ui_breakthrough_popup_bg.jpg"); }
 #popup-panel.style-treasure { border-color: rgba(199, 168, 255, 0.6); }
-#popup-panel.style-treasure::before { background-image: url("assets/ui/popups/ui_treasure_popup_bg.png"); }
+#popup-panel.style-treasure::before { background-image: url("assets/ui/popups/ui_treasure_popup_bg.jpg"); }
 #popup-panel.style-goal { border-color: rgba(120, 200, 160, 0.6); }
 
 #popup-title {
