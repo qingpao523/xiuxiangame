@@ -69,6 +69,58 @@
         "照魂镜",
         "截教残痕"
       ]
+    },
+    {
+      "boss_id": "boss_004",
+      "boss_name": "黑风老妖",
+      "unlock_condition": "rq_08",
+      "map_id": "map_001",
+      "recommended_power": 2600,
+      "reward_daoxing": 120,
+      "reward_mana": 5000,
+      "reward_items": {
+        "spell_page": 8,
+        "artifact_shard": 4
+      },
+      "first_clear_event": "event_006",
+      "lore_text": "山野深处，黑风老妖盘踞百年古洞。它本是山中一头老熊，受封神劫气浸染后开了灵智，却只学会了一件事——召唤小妖。每逢月圆，洞中妖物成群，山中樵夫不敢近前。",
+      "victory_text": "你以术法轰碎最后一面妖旗，黑风老妖嚎叫一声，化为一缕黑烟散入山风。古洞深处，几页残符与法器碎片散落一地。",
+      "visual_keywords": [
+        "黑风",
+        "老熊妖",
+        "妖旗",
+        "古洞",
+        "小妖成群",
+        "劫气黑雾"
+      ],
+      "mechanics": "summon: 每 2 回合召唤 1 只小妖（HP=主Boss 20%），小妖存活时主Boss受伤-20%。需先清小妖再打主。",
+      "daily_limit": 3
+    },
+    {
+      "boss_id": "boss_005",
+      "boss_name": "东海龙兵",
+      "unlock_condition": "zr_09",
+      "map_id": "map_002",
+      "recommended_power": 130000,
+      "reward_daoxing": 400,
+      "reward_mana": 20000,
+      "reward_items": {
+        "treasure_shard": 6,
+        "merit": 300
+      },
+      "first_clear_event": "event_009",
+      "lore_text": "哪吒闹海之后，东海龙宫元气大伤，却也有不甘者。一名龙兵校尉率残部巡弋陈塘关外海，誓要找回三太子敖丙的遗骨。它的枪法快如闪电，一回合能刺出两枪。",
+      "victory_text": "龙兵校尉的长枪断为两截，它跪倒在礁石上，望向东海深处，喃喃道：'三太子……属下无能。'随即化为一道水光没入海中。",
+      "visual_keywords": [
+        "龙兵校尉",
+        "银枪",
+        "东海",
+        "鳞甲",
+        "水光",
+        "敖丙遗骨"
+      ],
+      "mechanics": "double_strike: 每回合攻击 2 次（第二次伤害为第一次的 60%）。每 3 回合获得水盾（罡气+30%最大HP），需破罡后输出。",
+      "daily_limit": 3
     }
   ]
 }

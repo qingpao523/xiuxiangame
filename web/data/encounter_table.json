@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1.0",
   "table": "encounter_table",
-  "description": "R0 凡境好玩化：游历途中遭遇事件。每次游历随机 2 个遭遇，选项类型 battle=斗法 / check=判定 / safe=稳妥。",
+  "description": "R0 凡境好玩化：游历途中遭遇事件。每次游历随机 2 个遭遇，选项类型 battle=斗法 / check=判定 / safe=稳妥。新增遭遇采用 encounter_type 结构：battle=战斗 / choice=抉择 / gather=采集 / narrative=叙事。",
   "rows": [
     {
       "encounter_id": "enc_wild_01",
@@ -74,6 +74,127 @@
       ]
     },
     {
+      "encounter_id": "enc_101",
+      "map_id": "map_001",
+      "encounter_name": "黑雾小妖",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 1.0,
+      "text": "山道转角，一团黑雾凝聚成人形，朝你扑来。它没有面孔，只有两团赤红的劫气充当眼睛。",
+      "battle_config": {
+        "enemy_name": "黑雾小妖",
+        "power_ratio": 0.15,
+        "intent_pool": [
+          { "intent": "attack", "weight": 60 },
+          { "intent": "charge", "weight": 20 },
+          { "intent": "block", "weight": 20 }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_102",
+      "map_id": "map_001",
+      "encounter_name": "山魈",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 0.8,
+      "text": "一只独脚山魈从树后跳出，足有两人高。它不会法术，但一掌拍下来，碎石飞溅。",
+      "battle_config": {
+        "enemy_name": "山魈",
+        "power_ratio": 0.25,
+        "intent_pool": [
+          { "intent": "attack", "weight": 70 },
+          { "intent": "charge", "weight": 30 }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_103",
+      "map_id": "map_001",
+      "encounter_name": "迷途樵夫",
+      "encounter_type": "choice",
+      "unlock_condition": "open",
+      "weight": 0.6,
+      "text": "一个樵夫蹲在路边发抖，见你来，连忙作揖：'仙长，山中黑雾越来越重，我迷了路，求您指条明路。'",
+      "choices": [
+        {
+          "label": "指引山路",
+          "result": { "merit": 10, "log": "你以灵光为樵夫照路，他千恩万谢而去。" }
+        },
+        {
+          "label": "赠一枚护身符",
+          "result": { "merit": 20, "mana": -100, "log": "你撕下一角符纸递给他，樵夫跪地叩首。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_104",
+      "map_id": "map_001",
+      "encounter_name": "残破山神庙",
+      "encounter_type": "gather",
+      "unlock_condition": "open",
+      "weight": 0.7,
+      "text": "半山腰有一座塌了半边的山神庙，神像脸上裂了一道缝。缝里透出微弱灵光，像是有人藏了东西。",
+      "gather_reward": { "mana": 200, "log": "你从神像裂缝中取出一团凝缩灵气，聊胜于无。" }
+    },
+    {
+      "encounter_id": "enc_105",
+      "map_id": "map_001",
+      "encounter_name": "劫气漩涡",
+      "encounter_type": "choice",
+      "unlock_condition": "open",
+      "weight": 0.5,
+      "text": "山坳里盘旋着一团黑雾，中心隐约有灵机闪烁。那是劫气与灵气交缠的漩涡——吸它，能涨道行，但劫气也会入体。",
+      "choices": [
+        {
+          "label": "吸纳灵机",
+          "result": { "daoxing": 50, "calamity": 30, "log": "你张口一吸，灵机入腹，但一缕黑气也顺着经脉钻了进去。" }
+        },
+        {
+          "label": "绕道而行",
+          "result": { "log": "你绕开漩涡。有些便宜，不占也罢。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_106",
+      "map_id": "map_001",
+      "encounter_name": "野狐精",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 0.6,
+      "text": "一只半化形的野狐拦住去路，人面狐身，手里攥着一根偷来的灵草。它见你看来，转身就跑。",
+      "battle_config": {
+        "enemy_name": "野狐精",
+        "power_ratio": 0.12,
+        "intent_pool": [
+          { "intent": "attack", "weight": 40 },
+          { "intent": "flee", "weight": 60 }
+        ],
+        "special": "flee: 2回合后若HP>50%则逃跑，战斗结束给半额奖励"
+      }
+    },
+    {
+      "encounter_id": "enc_107",
+      "map_id": "map_001",
+      "encounter_name": "灵草",
+      "encounter_type": "gather",
+      "unlock_condition": "open",
+      "weight": 0.9,
+      "text": "溪边石缝里长着一株散发微光的草药，叶片上有露珠滚动，灵气内敛。",
+      "gather_reward": { "mana": 300, "log": "你小心摘下灵草，收入袖中。" }
+    },
+    {
+      "encounter_id": "enc_108",
+      "map_id": "map_001",
+      "encounter_name": "落石",
+      "encounter_type": "narrative",
+      "unlock_condition": "open",
+      "weight": 0.5,
+      "text": "头顶忽然轰隆一响，几块巨石从崖壁滚落。你侧身一闪，石块砸在方才站立之处，扬起一片尘土。山中地脉不稳，怕是劫气扰动了山体。",
+      "narrative_only": true
+    },
+    {
       "encounter_id": "enc_chen_01",
       "map_id": "map_002",
       "name": "巡海残兵拦路",
@@ -137,6 +258,149 @@
           "success": { "resources": { "calamity": 60, "mana": 2500 }, "text": "你张手引怨潮入体炼化，法力暴涨，一丝劫气也随之入了命门。" }
         }
       ]
+    },
+    {
+      "encounter_id": "enc_201",
+      "map_id": "map_002",
+      "encounter_name": "巡海妖兵",
+      "encounter_type": "battle",
+      "unlock_condition": "zr_03",
+      "weight": 1.0,
+      "text": "海雾中走出一队鳞甲妖兵，手持三叉戟，眼中泛着幽绿的光。它们是东海怨潮中凝成的低级水族，受劫气驱使巡弋海岸。",
+      "battle_config": {
+        "enemy_name": "巡海妖兵",
+        "power_ratio": 0.2,
+        "intent_pool": [
+          { "intent": "attack", "weight": 60 },
+          { "intent": "block", "weight": 20 },
+          { "intent": "curse_weak", "weight": 20 }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_202",
+      "map_id": "map_002",
+      "encounter_name": "风雷残机",
+      "encounter_type": "gather",
+      "unlock_condition": "zr_03",
+      "weight": 0.8,
+      "text": "礁石上残留着一片焦黑痕迹，空气中弥漫着臭氧味。那是哪吒风火轮碾过时留下的风雷余气，至今未散。",
+      "gather_reward": { "spell_page": 2, "log": "你以法力牵引风雷残机，凝成两页术法残页。" }
+    },
+    {
+      "encounter_id": "enc_203",
+      "map_id": "map_002",
+      "encounter_name": "东海怨魂",
+      "encounter_type": "battle",
+      "unlock_condition": "zr_03",
+      "weight": 0.7,
+      "text": "海面下浮起一团幽蓝光影，是被哪吒抽筋的龙族怨魂。它没有形体，只有一声尖啸直刺神魂。",
+      "battle_config": {
+        "enemy_name": "东海怨魂",
+        "power_ratio": 0.18,
+        "intent_pool": [
+          { "intent": "attack", "weight": 40 },
+          { "intent": "curse_burn", "weight": 30 },
+          { "intent": "curse_weak", "weight": 30 }
+        ],
+        "special": "soul_attack: 伤害为真伤，无视罡气"
+      }
+    },
+    {
+      "encounter_id": "enc_204",
+      "map_id": "map_002",
+      "encounter_name": "陈塘渔人",
+      "encounter_type": "narrative",
+      "unlock_condition": "zr_03",
+      "weight": 0.6,
+      "text": "一个老渔人坐在礁石上补网，见你路过，主动搭话：'仙长，您可知这海里的故事？李总兵家三太子，当年可是把龙王三太子的筋给抽了啊……'他压低声音：'如今海里那些东西，都是来找他算账的。'",
+      "narrative_only": true
+    },
+    {
+      "encounter_id": "enc_205",
+      "map_id": "map_002",
+      "encounter_name": "龙鳞碎片",
+      "encounter_type": "gather",
+      "unlock_condition": "zr_03",
+      "weight": 0.5,
+      "text": "潮水退去后，沙滩上露出一片巴掌大的鳞片，泛着青幽光泽。那是敖丙的鳞——哪吒闹海时碎落海中的。",
+      "gather_reward": { "treasure_shard": 3, "log": "你拾起龙鳞碎片，其中残留的龙族灵机可作法器材料。" }
+    },
+    {
+      "encounter_id": "enc_206",
+      "map_id": "map_002",
+      "encounter_name": "海妖伏击",
+      "encounter_type": "battle",
+      "unlock_condition": "zr_03",
+      "weight": 0.6,
+      "text": "你刚踏上礁石，三面海雾同时涌来——三只海妖从不同方向扑出，将你围在中间。",
+      "battle_config": {
+        "enemy_name": "海妖×3",
+        "power_ratio": 0.15,
+        "enemy_count": 3,
+        "intent_pool": [
+          { "intent": "attack", "weight": 70 },
+          { "intent": "curse_burn", "weight": 30 }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_207",
+      "map_id": "map_002",
+      "encounter_name": "功德金光",
+      "encounter_type": "choice",
+      "unlock_condition": "zr_03",
+      "weight": 0.5,
+      "text": "远处海岸传来呼救声——几个渔人被妖兵围困，眼看就要被拖入海中。你可以出手相救，也可以趁妖兵注意力被分散时绕道采集。",
+      "choices": [
+        {
+          "label": "出手相救",
+          "result": { "merit": 100, "daoxing": 30, "log": "你一道雷法劈下，妖兵四散。渔人跪地叩谢，一缕功德金光落入你眉心。" }
+        },
+        {
+          "label": "绕道采集",
+          "result": { "calamity": 30, "spell_page": 2, "log": "你趁乱绕到礁石背面，拾得几页风雷残页。身后的呼救声渐渐远了。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_208",
+      "map_id": "map_002",
+      "encounter_name": "雷云",
+      "encounter_type": "narrative",
+      "unlock_condition": "zr_03",
+      "weight": 0.4,
+      "text": "陈塘关上空忽然聚起一片铅色雷云，云中隐约有风火之影翻涌。城中百姓纷纷关门闭户。你知道，那是哪吒的气机——他还在城里。",
+      "narrative_only": true
+    },
+    {
+      "encounter_id": "enc_209",
+      "map_id": "map_002",
+      "encounter_name": "散修求助",
+      "encounter_type": "choice",
+      "unlock_condition": "zr_03",
+      "weight": 0.5,
+      "text": "一个衣衫褴褛的散修靠在岩壁下，肩头被三叉戟划了一道深可见骨的伤口。他见你走来，苦笑：'道友，行行好，给颗丹药。'",
+      "choices": [
+        {
+          "label": "赠药救治",
+          "result": { "merit": 50, "mana": -200, "spell_page": 1, "log": "你渡了一道法力过去，散修伤好大半，从怀里掏出一页残符：'无以为报，这个给你。'" }
+        },
+        {
+          "label": "摇头离去",
+          "result": { "log": "你摇了摇头。修行界自有修行界的规矩，不是谁都能帮的。" }
+        }
+      ]
+    },
+    {
+      "encounter_id": "enc_210",
+      "map_id": "map_002",
+      "encounter_name": "潮汐异变",
+      "encounter_type": "narrative",
+      "unlock_condition": "zr_03",
+      "weight": 0.4,
+      "text": "海水忽然倒卷，露出百丈海底。沙床上白骨累累，全是水族残骸。一道巨大的阴影从深处掠过，随即海水合拢，仿佛什么都没发生过。你后背发凉——那东西，至少是地仙级。",
+      "narrative_only": true
     },
     {
       "encounter_id": "enc_kul_01",

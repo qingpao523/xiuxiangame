@@ -535,6 +535,537 @@
       "icon_key": "icon_treasure_009",
       "card_asset_key": "card_treasure_009",
       "obtain_text": "伴生灵宝与你神魂相连，自睁眼之日起便悬于身侧。"
+    },
+    {
+      "treasure_id": "treasure_010",
+      "treasure_name": "乾坤圈",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_02",
+      "related_spell_type": "weapon",
+      "base_power_bonus": 0.9,
+      "main_effect": {
+        "combat_power_bonus": 0.9,
+        "weapon_damage_bonus": 0.2,
+        "boss_damage_bonus": 0.08
+      },
+      "skill_name": "乾坤一掷",
+      "skill_desc": "祭出金刚镯砸向敌人，造成大量伤害。",
+      "origin_desc": "陈塘关总兵府旧藏，鎏金镯身刻有云纹，掷出时可大可小。",
+      "fengshen_relation": "哪吒闹海之物，后随其莲花化身",
+      "visual_keywords": [
+        "鎏金金刚镯",
+        "云纹",
+        "灵气漩涡"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_010",
+      "card_asset_key": "card_treasure_010",
+      "obtain_text": "获得本命法宝：乾坤圈\n陈塘关总兵府旧藏，鎏金镯身刻有云纹，掷出时可大可小。\n战力大幅提升，解锁法宝技：乾坤一掷。"
+    },
+    {
+      "treasure_id": "treasure_011",
+      "treasure_name": "混天绫",
+      "treasure_type": "control",
+      "unlock_realm": "zr_03",
+      "related_spell_type": "soul",
+      "base_power_bonus": 0.8,
+      "main_effect": {
+        "combat_power_bonus": 0.8,
+        "control_duration_bonus": 0.2,
+        "travel_speed_bonus": 0.05
+      },
+      "skill_name": "绫缚苍穹",
+      "skill_desc": "赤绫缠缚敌人，使其虚弱。",
+      "origin_desc": "七尺赤绫，搅动过东海波涛，如今静静缠在你腕间。",
+      "fengshen_relation": "哪吒伴身之宝，红绫如火",
+      "visual_keywords": [
+        "赤红长绫",
+        "翻卷飞舞",
+        "霞光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_011",
+      "card_asset_key": "card_treasure_011",
+      "obtain_text": "获得本命法宝：混天绫\n七尺赤绫，搅动过东海波涛，如今静静缠在你腕间。\n战力大幅提升，解锁法宝技：绫缚苍穹。"
+    },
+    {
+      "treasure_id": "treasure_012",
+      "treasure_name": "风火轮",
+      "treasure_type": "cultivation",
+      "unlock_realm": "zr_04",
+      "related_spell_type": "fire",
+      "base_power_bonus": 0.7,
+      "main_effect": {
+        "combat_power_bonus": 0.7,
+        "travel_speed_bonus": 0.25,
+        "offline_gain_bonus": 0.08
+      },
+      "skill_name": "风火疾行",
+      "skill_desc": "双轮齐转，风火伤敌并大幅提升游历速度。",
+      "origin_desc": "左轮生风，右轮吐火。踏上去的那一刻，天地都变小了。",
+      "fengshen_relation": "哪吒脚下双轮，日行万里",
+      "visual_keywords": [
+        "风火双轮",
+        "青风赤焰",
+        "鎏金轮缘"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_012",
+      "card_asset_key": "card_treasure_012",
+      "obtain_text": "获得本命法宝：风火轮\n左轮生风，右轮吐火。踏上去的那一刻，天地都变小了。\n战力大幅提升，解锁法宝技：风火疾行。"
+    },
+    {
+      "treasure_id": "treasure_013",
+      "treasure_name": "先仙剑",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_05",
+      "related_spell_type": "sword",
+      "base_power_bonus": 1.0,
+      "main_effect": {
+        "combat_power_bonus": 1.0,
+        "sword_damage_bonus": 0.25,
+        "boss_damage_bonus": 0.1
+      },
+      "skill_name": "先天一斩",
+      "skill_desc": "幽碧剑光斩落，对首领威力倍增。",
+      "origin_desc": "剑身幽碧，寒气逼人。据说是某位上古仙真遗落在人间的佩剑。",
+      "fengshen_relation": "仙家佩剑，斩妖邪护正道",
+      "visual_keywords": [
+        "青铜古剑",
+        "幽碧寒光",
+        "丝绦剑柄"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_013",
+      "card_asset_key": "card_treasure_013",
+      "obtain_text": "获得本命法宝：先仙剑\n剑身幽碧，寒气逼人。据说是某位上古仙真遗落在人间的佩剑。\n战力大幅提升，解锁法宝技：先天一斩。"
+    },
+    {
+      "treasure_id": "treasure_014",
+      "treasure_name": "五色石",
+      "treasure_type": "protect",
+      "unlock_realm": "zr_06",
+      "related_spell_type": "water",
+      "base_power_bonus": 0.8,
+      "main_effect": {
+        "combat_power_bonus": 0.8,
+        "damage_reduction": 0.1,
+        "breakthrough_bonus": 0.03
+      },
+      "skill_name": "补天遗泽",
+      "skill_desc": "五色神光护体，减免所受伤害。",
+      "origin_desc": "补天剩下的那一块，五色流转，握在掌心像握着一小片天。",
+      "fengshen_relation": "女娲补天遗石",
+      "visual_keywords": [
+        "五色奇石",
+        "青黄赤白黑",
+        "星点"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_014",
+      "card_asset_key": "card_treasure_014",
+      "obtain_text": "获得本命法宝：五色石\n补天剩下的那一块，五色流转，握在掌心像握着一小片天。\n战力大幅提升，解锁法宝技：补天遗泽。"
+    },
+    {
+      "treasure_id": "treasure_015",
+      "treasure_name": "七宝妙树",
+      "treasure_type": "cultivation",
+      "unlock_realm": "zr_07",
+      "related_spell_type": "weapon",
+      "base_power_bonus": 0.9,
+      "main_effect": {
+        "combat_power_bonus": 0.9,
+        "mana_gain_bonus": 0.15,
+        "offline_gain_bonus": 0.1
+      },
+      "skill_name": "七宝垂光",
+      "skill_desc": "枝叶摇动，七色宝光刷落敌人攻势并回复法力。",
+      "origin_desc": "一枝虬结小树，叶泛七色宝光。西方教中物，流落东土。",
+      "fengshen_relation": "准提道人手执之宝，刷落万物",
+      "visual_keywords": [
+        "七宝树枝",
+        "七色宝光",
+        "铃铛璎珞"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_015",
+      "card_asset_key": "card_treasure_015",
+      "obtain_text": "获得本命法宝：七宝妙树\n一枝虬结小树，叶泛七色宝光。西方教中物，流落东土。\n战力大幅提升，解锁法宝技：七宝垂光。"
+    },
+    {
+      "treasure_id": "treasure_016",
+      "treasure_name": "金蛟剪",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_08",
+      "related_spell_type": "sword",
+      "base_power_bonus": 1.1,
+      "main_effect": {
+        "combat_power_bonus": 1.1,
+        "weapon_damage_bonus": 0.3,
+        "boss_damage_bonus": 0.12
+      },
+      "skill_name": "蛟龙交剪",
+      "skill_desc": "双蛟化剪，绞杀之势无可阻挡。",
+      "origin_desc": "两条蛟龙炼成一把金剪，剪口开合间，有龙吟之声。",
+      "fengshen_relation": "三霄娘娘镇洞之宝",
+      "visual_keywords": [
+        "鎏金蛟剪",
+        "蛟龙交缠",
+        "森寒金光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_016",
+      "card_asset_key": "card_treasure_016",
+      "obtain_text": "获得本命法宝：金蛟剪\n两条蛟龙炼成一把金剪，剪口开合间，有龙吟之声。\n战力大幅提升，解锁法宝技：蛟龙交剪。"
+    },
+    {
+      "treasure_id": "treasure_017",
+      "treasure_name": "龙魂鞭",
+      "treasure_type": "control",
+      "unlock_realm": "zr_09",
+      "related_spell_type": "soul",
+      "base_power_bonus": 0.9,
+      "main_effect": {
+        "combat_power_bonus": 0.9,
+        "control_duration_bonus": 0.25,
+        "soul_damage_bonus": 0.2
+      },
+      "skill_name": "鞭笞龙魂",
+      "skill_desc": "墨绿长鞭抽落，伤敌并使其虚弱。",
+      "origin_desc": "鞭身隐有龙鳞纹，挥动时隐闻龙吟。鞭梢那一点幽光，是未散的龙魂。",
+      "fengshen_relation": "截教仙人驭龙之鞭",
+      "visual_keywords": [
+        "墨绿长鞭",
+        "龙鳞纹路",
+        "幽蓝光华"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_017",
+      "card_asset_key": "card_treasure_017",
+      "obtain_text": "获得本命法宝：龙魂鞭\n鞭身隐有龙鳞纹，挥动时隐闻龙吟。鞭梢那一点幽光，是未散的龙魂。\n战力大幅提升，解锁法宝技：鞭笞龙魂。"
+    },
+    {
+      "treasure_id": "treasure_018",
+      "treasure_name": "轩辕镜",
+      "treasure_type": "protect_cultivation",
+      "unlock_realm": "dx_01",
+      "related_spell_type": "water",
+      "base_power_bonus": 1.0,
+      "main_effect": {
+        "combat_power_bonus": 1.0,
+        "damage_reduction": 0.12,
+        "breakthrough_bonus": 0.05
+      },
+      "skill_name": "照胆玄光",
+      "skill_desc": "镜面玄光一照，敌人易伤，自身得护。",
+      "origin_desc": "古铜圆镜，缘刻日月星辰。镜面幽邃，似能照见人心底最深的秘密。",
+      "fengshen_relation": "上古轩辕氏遗物，照妖辟邪",
+      "visual_keywords": [
+        "古铜圆镜",
+        "日月星辰纹",
+        "幽邃玄光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_018",
+      "card_asset_key": "card_treasure_018",
+      "obtain_text": "获得本命法宝：轩辕镜\n古铜圆镜，缘刻日月星辰。镜面幽邃，似能照见人心底最深的秘密。\n战力大幅提升，解锁法宝技：照胆玄光。"
     }
   ]
 }

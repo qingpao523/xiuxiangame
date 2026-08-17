@@ -889,6 +889,21 @@ const CARD_DEFS = {
   spell_thunder_01: { name: "掌心雷", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(8 + 4 * lv) * m} 雷伤，附加雷殛标记` },
   spell_fire_01: { name: "灵火术", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(5 + 2 * lv) * m} 伤害，燃烧 ${(3 + lv) * m}` },
   spell_weapon_01: { name: "御器术", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(4 + lv) * m} 伤害，罡气 +${(6 + 2 * lv) * m}` },
+  spell_thunder_02: { name: "五雷术", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(12 + 5 * lv) * m} 雷伤，雷痕越重越痛` },
+  spell_thunder_03: { name: "雷部敕令", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(10 + 4 * lv) * m} 雷伤，雷网束缚（虚弱 2）` },
+  spell_fire_02: { name: "赤火术", kind: "attack_all", element: "fire", target: "none", text: (lv, m = 1) => `全体 ${(4 + lv) * m} 伤害，燃烧 ${(2 + lv) * m}` },
+  spell_fire_03: { name: "三昧真火", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(9 + 3 * lv) * m} 伤害，燃烧 ${(6 + 2 * lv) * m}` },
+  spell_fire_04: { name: "神火罩", kind: "attack_all", element: "fire", target: "none", text: (lv, m = 1) => `全体 ${(5 + 2 * lv) * m} 伤害，燃烧 ${(3 + lv) * m}` },
+  spell_weapon_02: { name: "御剑术", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(9 + 4 * lv) * m} 伤害，罡气 +${(4 + lv) * m}` },
+  spell_weapon_03: { name: "斩妖剑气", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(6 + 2 * lv) * m} 伤害` },
+  spell_soul_01: { name: "摄魂咒", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${(5 + 2 * lv) * m} 伤害，无视罡气` },
+  spell_soul_02: { name: "落魂术", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${(6 + 2 * lv) * m} 伤害，虚弱 2 回合` },
+  spell_soul_03: { name: "缚灵咒", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${(6 + 2 * lv) * m} 伤害，虚弱 2 回合` },
+  spell_calamity_01: { name: "劫火入体", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(14 + 4 * lv) * m} 伤害，自损 5%，劫气 +20` },
+  spell_calamity_02: { name: "杀劫缠身", kind: "attack_all", element: "calamity", target: "none", text: (lv, m = 1, s) => `全体 ${(8 + Math.floor(num(s?.resources?.calamity) / 120)) * m} 伤害，自损 3%，劫气 +30` },
+  spell_earth_01: { name: "土遁术", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(7 + 3 * lv) * m} 伤害，罡气 +${(5 + 2 * lv) * m}` },
+  spell_water_01: { name: "水幕术", kind: "defend", element: "charm", target: "none", text: (lv, m = 1) => `罡气 +${(8 + 3 * lv) * m}，净化燃烧与虚弱` },
+  spell_sword_01: { name: "飞剑术", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(12 + 5 * lv) * m} 伤害，意到剑到` },
   charm_strike: { name: "符咒·镇妖", kind: "attack", element: "charm", target: "enemy", text: (lv, m = 1) => `${6 * lv * m} 伤害` },
   charm_guard: { name: "符咒·护体", kind: "defend", element: "charm", target: "none", text: (lv, m = 1) => `罡气 +${(6 + 2 * lv) * m}` },
   charm_focus: { name: "符咒·凝神", kind: "skill", element: "charm", target: "none", text: () => "真气 +2" },
@@ -925,6 +940,15 @@ const RELIC_EFFECTS = {
   treasure_006: { dmgBonus: 0.05, desc: "照魂：全部伤害 +5%" },
   treasure_007: { dmgBonus: 0.1, desc: "金印：全部伤害 +10%" },
   treasure_008: { blockBonus: 2, desc: "清心：每张防御牌额外 +2 罡气" },
+  treasure_010: { dmgBonus: 0.04, desc: "乾坤：全部伤害 +4%" },
+  treasure_011: { blockBonus: 1, desc: "混天：每张防御牌额外 +1 罡气" },
+  treasure_012: { burnBonus: 1, desc: "风火：燃烧 +1 层" },
+  treasure_013: { dmgBonus: 0.05, desc: "仙剑：全部伤害 +5%" },
+  treasure_014: { startShield: 1, desc: "五色：开局获得 1 层圣盾" },
+  treasure_015: { turnHealRatio: 0.02, desc: "七宝：每回合开始回复 2% 气血" },
+  treasure_016: { dmgBonus: 0.06, desc: "金蛟：全部伤害 +6%" },
+  treasure_017: { blockBonus: 1, desc: "龙魂：每张防御牌额外 +1 罡气" },
+  treasure_018: { startShield: 1, desc: "轩辕：开局获得 1 层圣盾" },
 };
 
 const TREASURE_SKILLS = {
@@ -936,6 +960,15 @@ const TREASURE_SKILLS = {
   treasure_006: { name: "照魂", element: "treasure", text: (lv, m = 1) => `易伤 2 回合，${(4 + 2 * lv) * m} 伤害` },
   treasure_007: { name: "金印镇山", element: "treasure", text: (lv, m = 1) => `${(12 + 6 * lv) * m} 伤害` },
   treasure_008: { name: "清心", element: "treasure", text: (lv, m = 1) => `回复 ${(5 + lv) * m} 气血，净化燃烧与虚弱` },
+  treasure_010: { name: "乾坤一掷", element: "treasure", text: (lv, m = 1) => `${(14 + 6 * lv) * m} 伤害` },
+  treasure_011: { name: "绫缚苍穹", element: "treasure", text: (lv, m = 1) => `${(6 + 3 * lv) * m} 伤害，虚弱 2 回合` },
+  treasure_012: { name: "风火疾行", element: "fire", text: (lv, m = 1) => `全体 ${(4 + lv) * m} 伤害，燃烧 ${(2 + lv) * m}` },
+  treasure_013: { name: "先天一斩", element: "weapon", text: (lv, m = 1) => `${(16 + 7 * lv) * m} 伤害` },
+  treasure_014: { name: "补天遗泽", element: "treasure", text: (lv, m = 1) => `圣盾 1 层，罡气 +${(4 + 2 * lv) * m}` },
+  treasure_015: { name: "七宝垂光", element: "treasure", text: (lv, m = 1) => `回复 ${(10 + 5 * lv) * m} 气血，净化燃烧与虚弱` },
+  treasure_016: { name: "蛟龙交剪", element: "weapon", text: (lv, m = 1) => `${(18 + 8 * lv) * m} 伤害` },
+  treasure_017: { name: "鞭笞龙魂", element: "treasure", text: (lv, m = 1) => `${(8 + 3 * lv) * m} 伤害，虚弱 2 回合并易伤 1 回合` },
+  treasure_018: { name: "照胆玄光", element: "treasure", text: (lv, m = 1) => `${(6 + 3 * lv) * m} 伤害，敌人易伤 2 回合，自身圣盾 1 层` },
 };
 
 // ---------------- 破劫多阶段斗法：榜文意图源 ----------------
@@ -1293,6 +1326,110 @@ const BattleEngine = {
         events.push(`你获得罡气 +${block}。`);
         break;
       }
+      case "spell_thunder_02": {
+        const markBonus = target.statuses.mark * 2;
+        hit(target, 12 + 5 * lv + markBonus, "thunder", "五雷术");
+        events.push(markBonus > 0 ? `雷痕引爆，五雷齐发之威更盛！` : `五道雷柱自掌心迸发。`);
+        break;
+      }
+      case "spell_thunder_03":
+        hit(target, 10 + 4 * lv, "thunder", "雷部敕令");
+        if (target.hp > 0) {
+          target.statuses.weak = Math.max(target.statuses.weak, 2);
+          events.push(`雷网束缚之下，${target.name}攻势一滞（虚弱 2 回合）。`);
+        }
+        break;
+      case "spell_fire_02":
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+          hit(e, 4 + lv, "fire", "赤火术");
+          if (e.hp > 0) e.statuses.burn += (2 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+        }
+        events.push("赤火蔓延，相邻妖物同受其殃。");
+        break;
+      case "spell_fire_03":
+        hit(target, 9 + 3 * lv, "fire", "三昧真火");
+        if (target.hp > 0) {
+          target.statuses.burn += (6 + 2 * lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+          events.push(`三昧真火沾身，非水可灭（燃烧 ${target.statuses.burn}）。`);
+        }
+        break;
+      case "spell_fire_04":
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+          hit(e, 5 + 2 * lv, "fire", "神火罩");
+          if (e.hp > 0) e.statuses.burn += (3 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+        }
+        events.push("神火华盖垂落，火帘罩定四方。");
+        break;
+      case "spell_weapon_02": {
+        hit(target, 9 + 4 * lv, "weapon", "御剑术");
+        const block = (4 + lv + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        battle.playerBlock += block;
+        events.push(`剑随心动，罡气 +${block}。`);
+        break;
+      }
+      case "spell_weapon_03":
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) hit(e, 6 + 2 * lv, "weapon", "斩妖剑气");
+        events.push("剑气纵横，一剑光寒。");
+        break;
+      case "spell_soul_01": {
+        // 摄魂咒：不伤肉身专摇心神——无视罡气直损魂魄
+        const dmg = Math.max(1, Math.round((5 + 2 * lv) * this._powerMult(battle)));
+        target.hp = Math.max(0, target.hp - dmg);
+        events.push(`摄魂咒动摇${target.name}心神，造成 ${dmg} 伤害（无视罡气）。`);
+        break;
+      }
+      case "spell_soul_02":
+        hit(target, 6 + 2 * lv, "charm", "落魂术");
+        if (target.hp > 0) {
+          target.statuses.weak = Math.max(target.statuses.weak, 2);
+          events.push(`${target.name}神魂不稳，攻势衰减（虚弱 2 回合）。`);
+        }
+        break;
+      case "spell_soul_03":
+        hit(target, 6 + 2 * lv, "charm", "缚灵咒");
+        if (target.hp > 0) {
+          target.statuses.weak = Math.max(target.statuses.weak, 2);
+          events.push(`紫符为锁，${target.name}被缚灵咒所制（虚弱 2 回合）。`);
+        }
+        break;
+      case "spell_calamity_01": {
+        hit(target, 14 + 4 * lv, "calamity", "劫火入体");
+        const backlash = Math.max(1, Math.round(battle.playerHpMax * 0.05));
+        battle.playerHp = Math.max(1, battle.playerHp - backlash);
+        state.resources.calamity = num(state.resources.calamity) + 20;
+        SaveManager.save(state);
+        events.push(`劫火反噬，你受 ${backlash} 伤害；劫气入骨，劫气 +20。`);
+        break;
+      }
+      case "spell_calamity_02": {
+        const base = 8 + Math.floor(num(state.resources.calamity) / 120);
+        for (const e of battle.enemies.filter((x) => x.hp > 0)) hit(e, base, "calamity", "杀劫缠身");
+        const backlash = Math.max(1, Math.round(battle.playerHpMax * 0.03));
+        battle.playerHp = Math.max(1, battle.playerHp - backlash);
+        state.resources.calamity = num(state.resources.calamity) + 30;
+        SaveManager.save(state);
+        events.push(`杀劫之气爆发，你受 ${backlash} 伤害；劫气 +30。`);
+        break;
+      }
+      case "spell_earth_01": {
+        hit(target, 7 + 3 * lv, "weapon", "土遁术");
+        const block = (5 + 2 * lv + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        battle.playerBlock += block;
+        events.push(`身入厚土，攻守一体，罡气 +${block}。`);
+        break;
+      }
+      case "spell_water_01": {
+        const block = (8 + 3 * lv + this.relic(state, "blockBonus")) * this._powerMult(battle);
+        battle.playerBlock += block;
+        battle.playerStatuses.burn = 0;
+        battle.playerStatuses.weak = 0;
+        events.push(`水幕护体，罡气 +${block}，邪火与滞涩尽去。`);
+        break;
+      }
+      case "spell_sword_01":
+        hit(target, 12 + 5 * lv, "weapon", "飞剑术");
+        events.push("意到剑到，青锋破空。");
+        break;
       case "charm_strike":
         hit(target, 6 * lv, "charm", "符咒·镇妖");
         break;
@@ -1384,6 +1521,49 @@ const BattleEngine = {
             events.push(`你回复 ${heal} 气血，邪火与滞涩尽去。`);
             break;
           }
+          case "treasure_010": hit(target, 14 + 6 * lv, "treasure", skill.name); break;
+          case "treasure_011":
+            hit(target, 6 + 3 * lv, "treasure", skill.name);
+            if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 2); events.push(`${target.name}被赤绫缠缚（虚弱 2 回合）。`); }
+            break;
+          case "treasure_012":
+            for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+              hit(e, 4 + lv, "fire", skill.name);
+              if (e.hp > 0) e.statuses.burn += (2 + lv + this.relic(state, "burnBonus")) * this._powerMult(battle);
+            }
+            events.push("双轮齐转，风火燎原。");
+            break;
+          case "treasure_013": hit(target, 16 + 7 * lv, "weapon", skill.name); break;
+          case "treasure_014": {
+            battle.playerStatuses.shield += 1;
+            const blk = (4 + 2 * lv) * this._powerMult(battle);
+            battle.playerBlock += blk;
+            events.push(`五色神光护体：圣盾 1 层，罡气 +${blk}。`);
+            break;
+          }
+          case "treasure_015": {
+            const heal = (10 + 5 * lv) * this._powerMult(battle);
+            battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
+            battle.playerStatuses.burn = 0;
+            battle.playerStatuses.weak = 0;
+            events.push(`七宝垂光，你回复 ${heal} 气血，邪祟尽刷。`);
+            break;
+          }
+          case "treasure_016": hit(target, 18 + 8 * lv, "weapon", skill.name); break;
+          case "treasure_017":
+            hit(target, 8 + 3 * lv, "treasure", skill.name);
+            if (target.hp > 0) {
+              target.statuses.weak = Math.max(target.statuses.weak, 2);
+              target.statuses.vuln = Math.max(target.statuses.vuln, 1);
+              events.push(`龙魂鞭笞，${target.name}虚弱且易伤。`);
+            }
+            break;
+          case "treasure_018":
+            hit(target, 6 + 3 * lv, "treasure", skill.name);
+            if (target.hp > 0) { target.statuses.vuln = Math.max(target.statuses.vuln, 2); events.push(`${target.name}被玄光照彻（易伤 2 回合）。`); }
+            battle.playerStatuses.shield += 1;
+            events.push("轩辕镜光反照，你获得圣盾 1 层。");
+            break;
         }
         break;
       }

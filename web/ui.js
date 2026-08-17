@@ -31,6 +31,21 @@ const SPELL_ICONS = {
   spell_thunder_01: "assets/spells/spell_palm_thunder.jpg",
   spell_fire_01: "assets/spells/spell_spirit_fire.jpg",
   spell_weapon_01: "assets/spells/spell_artifact_control.jpg",
+  spell_thunder_02: "assets/spells/spell_thunder_02.jpg",
+  spell_thunder_03: "assets/spells/spell_thunder_03.jpg",
+  spell_fire_02: "assets/spells/spell_fire_02.jpg",
+  spell_fire_03: "assets/spells/spell_fire_03.jpg",
+  spell_fire_04: "assets/spells/spell_fire_04.jpg",
+  spell_weapon_02: "assets/spells/spell_weapon_02.jpg",
+  spell_weapon_03: "assets/spells/spell_weapon_03.jpg",
+  spell_soul_01: "assets/spells/spell_soul_01.jpg",
+  spell_soul_02: "assets/spells/spell_soul_02.jpg",
+  spell_soul_03: "assets/spells/spell_soul_03.jpg",
+  spell_calamity_01: "assets/spells/spell_calamity_01.jpg",
+  spell_calamity_02: "assets/spells/spell_calamity_02.jpg",
+  spell_earth_01: "assets/spells/spell_earth_01.jpg",
+  spell_water_01: "assets/spells/spell_water_01.jpg",
+  spell_sword_01: "assets/spells/spell_sword_01.jpg",
 };
 
 const TREASURE_ICONS = {
@@ -44,6 +59,15 @@ const TREASURE_ICONS = {
   treasure_008: "assets/treasures/treasure_calm_jade_pendant.jpg",
   // R1-A：伴生灵宝暂复用 treasure_004 图，独立图标待美术
   treasure_009: "assets/treasures/treasure_subduing_demon_bell.jpg",
+  treasure_010: "assets/treasures/treasure_qiankun_ring.jpg",
+  treasure_011: "assets/treasures/treasure_huntian_sash.jpg",
+  treasure_012: "assets/treasures/treasure_windfire_wheels.jpg",
+  treasure_013: "assets/treasures/treasure_xiantian_sword.jpg",
+  treasure_014: "assets/treasures/treasure_wuse_stone.jpg",
+  treasure_015: "assets/treasures/treasure_seven_treasure_tree.jpg",
+  treasure_016: "assets/treasures/treasure_golden_dragon_scissors.jpg",
+  treasure_017: "assets/treasures/treasure_dragon_soul_whip.jpg",
+  treasure_018: "assets/treasures/treasure_xuanyuan_mirror.jpg",
 };
 
 const MAP_ACTION = {
