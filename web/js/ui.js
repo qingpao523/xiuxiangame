@@ -13,7 +13,6 @@ let sparkleEl = null, nextSparkleAt = 0, nextInsightAt = 0, insightShowing = fal
 let currentPopup = null, preludeActive = false, openPanel = "", lastRev = -1;
 let sparkleCombo = 0, battleTimer = null, battleTargeting = null;
 let toastShownId = null, toastTimer = null;
-const $ = (id) => document.getElementById(id);
 
 // ---------------- 主渲染 ----------------
 

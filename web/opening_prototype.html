@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>封神修道录 · 开局原型（画卷验证）</title>
+<style>
+  :root{
+    --ink:#1a1c1e; --parchment:#c9b79c; --gold:#d9a441; --gold-soft:#e8c877;
+    --mist:#8a93a0; --qing:#5a6b73;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;background:#000;overflow:hidden;
+    font-family:"Songti SC","STSong","SimSun",serif;color:#e8e2d5;}
+  #stage{
+    position:relative;width:100vw;height:100vh;max-width:540px;margin:0 auto;
+    overflow:hidden;background:#000;cursor:pointer;user-select:none;
+  }
+
+  /* 场景层 */
+  .scene{position:absolute;inset:0;opacity:0;transition:opacity 2.2s ease;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    pointer-events:none;}
+  .scene.on{opacity:1;}
+
+  /* 文字 */
+  .line{font-size:20px;line-height:2.1;letter-spacing:.18em;text-align:center;
+    color:#dcd6c8;text-shadow:0 2px 18px rgba(0,0,0,.8);padding:0 40px;
+    opacity:0;transform:translateY(12px);transition:opacity 1.6s ease,transform 1.6s ease;}
+  .line.show{opacity:1;transform:none;}
+  .line.faint{color:#9a9488;font-size:16px;letter-spacing:.3em;}
+  .line.small{font-size:15px;color:#8a8478;letter-spacing:.25em;}
+
+  /* 提示 */
+  #hint{position:absolute;bottom:6%;left:0;right:0;text-align:center;
+    font-size:13px;letter-spacing:.4em;color:#6a6459;opacity:0;transition:opacity 1s;}
+  #hint.show{opacity:.7;animation:breathe 3s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{opacity:.35}50%{opacity:.75}}
+
+  /* --- 场景1: 洞中微光 --- */
+  #s-cave{background:radial-gradient(ellipse 60% 40% at 50% 18%, #2a2c2e 0%, #141517 45%, #050506 100%);}
+  .lightshaft{position:absolute;top:0;left:50%;width:120px;height:55%;
+    transform:translateX(-50%);
+    background:linear-gradient(to bottom, rgba(220,210,180,.16), rgba(220,210,180,0));
+    clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);filter:blur(2px);}
+  .mote{position:absolute;width:2px;height:2px;background:rgba(230,220,190,.5);
+    border-radius:50%;animation:drift linear infinite;}
+  @keyframes drift{0%{transform:translateY(0);opacity:0}
+    20%{opacity:.6}80%{opacity:.4}100%{transform:translateY(120px);opacity:0}}
+
+  /* --- 场景2: 洞口山河 --- */
+  #s-vista{background:linear-gradient(to bottom,#3a444c 0%,#5a6b73 38%,#7d8a8f 60%,#4a545a 100%);}
+  .mountain{position:absolute;bottom:0;left:0;right:0;height:52%;
+    background:linear-gradient(to top,#2c343a,#48555c);
+    clip-path:polygon(0 100%,0 55%,12% 38%,22% 52%,34% 28%,46% 48%,58% 22%,70% 45%,82% 30%,92% 50%,100% 35%,100% 100%);
+    opacity:.85;}
+  .mountain.far{height:60%;opacity:.4;filter:blur(1px);
+    clip-path:polygon(0 100%,0 45%,15% 30%,30% 42%,45% 20%,60% 40%,75% 25%,90% 42%,100% 30%,100% 100%);}
+  .mistband{position:absolute;left:-20%;right:-20%;height:80px;
+    background:linear-gradient(to right,transparent,rgba(200,205,210,.18),transparent);
+    filter:blur(6px);animation:mistmove 18s linear infinite;}
+  @keyframes mistmove{0%{transform:translateX(-10%)}100%{transform:translateX(10%)}}
+  /* 榜文金光 —— 只看见，不解释 */
+  .seal-glow{position:absolute;top:14%;left:50%;transform:translateX(-50%);
+    width:3px;height:0;background:linear-gradient(to bottom,var(--gold-soft),rgba(217,164,65,0));
+    box-shadow:0 0 24px 6px rgba(232,200,119,.5);opacity:0;
+    transition:height 4s ease,opacity 4s ease;}
+  .seal-glow.lit{height:90px;opacity:.9;}
+  .seal-halo{position:absolute;top:13%;left:50%;transform:translateX(-50%);
+    width:8px;height:8px;border-radius:50%;background:var(--gold-soft);
+    box-shadow:0 0 40px 16px rgba(232,200,119,.55);opacity:0;transition:opacity 4s;}
+  .seal-halo.lit{opacity:1;animation:sealpulse 5s ease-in-out infinite;}
+  @keyframes sealpulse{0%,100%{box-shadow:0 0 40px 16px rgba(232,200,119,.4)}
+    50%{box-shadow:0 0 60px 24px rgba(232,200,119,.7)}}
+  /* 雷闪 */
+  #flash{position:absolute;inset:0;background:#dfe6ea;opacity:0;pointer-events:none;}
+  #flash.strike{animation:strike .5s ease-out;}
+  @keyframes strike{0%{opacity:0}8%{opacity:.5}100%{opacity:0}}
+
+  /* --- 场景3: 石壁刻字 --- */
+  #s-wall{background:radial-gradient(ellipse 70% 60% at 50% 45%, #26221d 0%, #14110d 70%, #080605 100%);}
+  .carved{font-size:22px;line-height:2.4;letter-spacing:.3em;color:#b8a888;
+    text-align:center;writing-mode:vertical-rl;text-orientation:upright;
+    text-shadow:0 1px 0 #000,0 -1px 2px rgba(0,0,0,.6);
+    opacity:0;transition:opacity 2.5s;}
+  .carved.show{opacity:.92;}
+
+  /* --- 场景4: 吐纳 --- */
+  #s-breath{background:radial-gradient(ellipse 80% 70% at 50% 55%, #1e2226 0%, #0e1012 60%, #050506 100%);}
+  .breath-ring{position:absolute;top:42%;left:50%;width:120px;height:120px;
+    transform:translate(-50%,-50%) scale(.4);border-radius:50%;
+    border:1px solid rgba(232,200,119,.4);
+    box-shadow:0 0 30px rgba(232,200,119,.15) inset,0 0 20px rgba(232,200,119,.1);
+    transition:transform .1s linear,box-shadow .3s;opacity:.7;}
+  .breath-core{position:absolute;top:42%;left:50%;width:8px;height:8px;
+    transform:translate(-50%,-50%);border-radius:50%;background:var(--gold-soft);
+    box-shadow:0 0 20px 6px rgba(232,200,119,.5);opacity:.6;}
+  #breath-word{position:absolute;top:60%;left:0;right:0;text-align:center;
+    font-size:16px;letter-spacing:.5em;color:#8a8478;opacity:0;transition:opacity 1s;}
+
+  /* 收尾 */
+  #s-end{background:radial-gradient(ellipse 70% 60% at 50% 40%, #20242a 0%, #0c0e10 70%, #040405 100%);}
+
+  /* 顶部小字：原型标记 */
+  #tag{position:absolute;top:12px;left:0;right:0;text-align:center;font-size:11px;
+    letter-spacing:.3em;color:#4a463d;z-index:10;}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="tag">开局原型 · 画卷验证 · 轻触继续</div>
+
+  <!-- 场景1 洞中 -->
+  <div class="scene" id="s-cave">
+    <div class="lightshaft"></div>
+    <div class="line" id="cave-1">……</div>
+    <div class="line" id="cave-2" style="margin-top:30px">你睁开眼。</div>
+    <div class="line faint" id="cave-3" style="margin-top:24px">洞顶有一线天光，照见空气里的尘埃。</div>
+  </div>
+
+  <!-- 场景2 洞口山河 -->
+  <div class="scene" id="s-vista">
+    <div class="mountain far"></div>
+    <div class="mountain"></div>
+    <div class="mistband" style="top:48%"></div>
+    <div class="mistband" style="top:62%;animation-duration:26s"></div>
+    <div class="seal-halo" id="halo"></div>
+    <div class="seal-glow" id="glow"></div>
+    <div class="line" id="vista-1" style="position:absolute;top:30%">你走到洞口。</div>
+    <div class="line faint" id="vista-2" style="position:absolute;top:70%">山。松林。雾。远处有雷声滚过。</div>
+    <div class="line small" id="vista-3" style="position:absolute;top:80%">天际线上，有一道极细的金光。你看不清那是什么。</div>
+  </div>
+
+  <!-- 场景3 石壁 -->
+  <div class="scene" id="s-wall">
+    <div class="carved" id="wall-text">吐纳一轮 听风三息 山中无日月 修行无早晚</div>
+    <div class="line small" id="wall-note" style="position:absolute;bottom:22%">石壁上，是前任洞主留下的字。</div>
+  </div>
+
+  <!-- 场景4 吐纳 -->
+  <div class="scene" id="s-breath">
+    <div class="breath-ring" id="ring"></div>
+    <div class="breath-core"></div>
+    <div class="line" id="breath-1" style="position:absolute;top:24%">你盘膝坐下。</div>
+    <div id="breath-word">按住，缓缓吸气</div>
+    <div class="line faint" id="breath-2" style="position:absolute;top:74%;opacity:0">一缕暖气，从丹田升起。</div>
+  </div>
+
+  <!-- 收尾 -->
+  <div class="scene" id="s-end">
+    <div class="line" id="end-1">你听见了风。</div>
+    <div class="line faint" id="end-2" style="margin-top:30px">也听见了，极远处，那页金光里传来的——</div>
+    <div class="line small" id="end-3" style="margin-top:20px">一声叹息。</div>
+    <div class="line small" id="end-4" style="margin-top:60px;color:#5a564d">（原型完 · 此处接入择跟脚与正式修行）</div>
+  </div>
+
+  <div id="flash"></div>
+  <div id="hint">轻触继续</div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const stage = $("stage"), hint = $("hint");
+let sceneIdx = -1;
+let holding = false, holdStart = 0, breathDone = false, breathRAF = null;
+
+// 尘埃
+(function motes(){
+  const cave = $("s-cave");
+  for(let i=0;i<14;i++){
+    const m=document.createElement("div");m.className="mote";
+    m.style.left=(20+Math.random()*60)+"%";
+    m.style.top=(10+Math.random()*30)+"%";
+    m.style.animationDuration=(6+Math.random()*8)+"s";
+    m.style.animationDelay=(-Math.random()*8)+"s";
+    cave.appendChild(m);
+  }
+})();
+
+function showScene(id){
+  document.querySelectorAll(".scene").forEach(s=>s.classList.remove("on"));
+  $(id).classList.add("on");
+}
+function reveal(id,delay){ setTimeout(()=>$(id).classList.add("show"),delay); }
+function showHint(on){ hint.classList.toggle("show",on); }
+
+// 雷闪
+function thunder(){
+  const f=$("flash");f.classList.remove("strike");void f.offsetWidth;f.classList.add("strike");
+}
+
+// 场景脚本
+const scenes = [
+  // 0 洞中
+  ()=>{ showScene("s-cave"); showHint(false);
+    reveal("cave-1",400);
+    reveal("cave-2",2600);
+    reveal("cave-3",5200);
+    setTimeout(()=>showHint(true),7000);
+  },
+  // 1 洞口
+  ()=>{ showScene("s-vista"); showHint(false);
+    reveal("vista-1",600);
+    reveal("vista-2",3200);
+    setTimeout(thunder,4200);
+    setTimeout(()=>{ $("halo").classList.add("lit"); $("glow").classList.add("lit"); },5200);
+    reveal("vista-3",6800);
+    setTimeout(()=>showHint(true),9000);
+  },
+  // 2 石壁
+  ()=>{ showScene("s-wall"); showHint(false);
+    setTimeout(()=>$("wall-text").classList.add("show"),800);
+    reveal("wall-note",4200);
+    setTimeout(()=>showHint(true),6000);
+  },
+  // 3 吐纳（按住呼吸）
+  ()=>{ showScene("s-breath"); showHint(false);
+    reveal("breath-1",600);
+    setTimeout(()=>{ $("breath-word").style.opacity=".7"; },2200);
+    // 按住交互在下方事件里处理
+  },
+  // 4 收尾
+  ()=>{ showScene("s-end"); showHint(false);
+    reveal("end-1",800);
+    reveal("end-2",3600);
+    reveal("end-3",6200);
+    reveal("end-4",9000);
+    setTimeout(()=>showHint(true),10500);
+  },
+];
+
+function next(){
+  // 吐纳场景未完成时，轻触不推进
+  if(sceneIdx===3 && !breathDone) return;
+  sceneIdx++;
+  if(sceneIdx>=scenes.length){ sceneIdx=0; resetBreath(); }
+  scenes[sceneIdx]();
+}
+
+// 吐纳按住逻辑
+const ring=$("ring");
+function startHold(e){
+  if(sceneIdx!==3 || breathDone) return;
+  e.preventDefault();
+  holding=true; holdStart=performance.now();
+  $("breath-word").textContent="吸气……";
+  tickHold();
+}
+function tickHold(){
+  if(!holding) return;
+  const t=(performance.now()-holdStart)/1000;
+  const scale=Math.min(1.6,0.4+t*0.4);
+  ring.style.transform=`translate(-50%,-50%) scale(${scale})`;
+  ring.style.boxShadow=`0 0 ${30+t*20}px rgba(232,200,119,${0.15+t*0.1}) inset,0 0 ${20+t*15}px rgba(232,200,119,${0.1+t*0.08})`;
+  if(t>=3.0){ finishBreath(); return; }
+  breathRAF=requestAnimationFrame(tickHold);
+}
+function endHold(){
+  if(sceneIdx!==3 || breathDone) return;
+  if(!holding) return;
+  holding=false; cancelAnimationFrame(breathRAF);
+  const t=(performance.now()-holdStart)/1000;
+  if(t<3.0){ // 没吸满，缓缓收回
+    $("breath-word").textContent="按住，缓缓吸气";
+    ring.style.transform="translate(-50%,-50%) scale(.4)";
+    ring.style.boxShadow="0 0 30px rgba(232,200,119,.15) inset,0 0 20px rgba(232,200,119,.1)";
+  }
+}
+function finishBreath(){
+  holding=false; breathDone=true; cancelAnimationFrame(breathRAF);
+  $("breath-word").style.opacity="0";
+  ring.style.transform="translate(-50%,-50%) scale(1.8)";
+  ring.style.opacity="0";
+  ring.style.transition="transform 2s ease,opacity 2s ease";
+  $("breath-2").style.opacity="1"; $("breath-2").classList.add("show");
+  setTimeout(()=>showHint(true),3200);
+}
+function resetBreath(){
+  breathDone=false; holding=false;
+  ring.style.transition="transform .1s linear,box-shadow .3s";
+  ring.style.opacity=".7";
+  ring.style.transform="translate(-50%,-50%) scale(.4)";
+  $("breath-2").style.opacity="0"; $("breath-2").classList.remove("show");
+  $("breath-word").textContent="按住，缓缓吸气";
+}
+
+// 事件：轻触推进 / 按住吐纳
+stage.addEventListener("mousedown",e=>{ if(sceneIdx===3){startHold(e);} });
+stage.addEventListener("touchstart",e=>{ if(sceneIdx===3){startHold(e);} },{passive:false});
+window.addEventListener("mouseup",()=>{ if(sceneIdx===3){endHold();} else {next();} });
+window.addEventListener("touchend",e=>{ if(sceneIdx===3){endHold();} else {next();} });
+
+// 启动
+scenes[0](); sceneIdx=0;
+</script>
+</body>
+</html>

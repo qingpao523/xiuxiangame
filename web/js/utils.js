@@ -1,5 +1,7 @@
 "use strict";
 
+const $ = (id) => document.getElementById(id);
+
 function nowUnix() {
   return Math.floor(Date.now() / 1000);
 }

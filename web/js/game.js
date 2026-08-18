@@ -222,7 +222,10 @@ const Game = {
         body: `你盘膝吐纳，运转一轮小周天。\n山中灵气被缓缓牵引，化作一缕道行归入体内。\n\n获得：\n${allRewardText}${blessText}\n\n体内气机已动，可以提升境界了。`,
         buttons: [{ label: "收功" }] });
     } else {
-      this.toast(`${row.action_name}完成`, completionBody);
+      // 第一层·微反馈：气韵为主，数字退为次级（design/6.0）
+        const qiyun = Atmosphere.actionLine(id, this.state);
+        const compact = [allRewardText, blessText].filter(Boolean).join(" ").replace(/\n/g, " ");
+        this.toast(qiyun, compact);
     }
     if (eventTriggered) this._queueEventPopup();
   },
@@ -438,13 +441,24 @@ const Game = {
       if (!Object.keys(data).length) return;
       const before = new Set(this.state.unlocked_ids);
       if (battle.win) {
-        BreakthroughManager.applyVictory(this.state, data); UnlockManager.refresh(this.state);
-        this._log(String(data.success_text || "破劫成功。"));
-        this.queuePopup({ kind: "text", style: "breakthrough", title: "破劫成功！", body: String(data.success_text || "破劫成功。"), buttons: [{ label: "踏入新境" }] });
-        this._queueNewUnlockPopups(before);
-        if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
-        if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
-      } else {
+          BreakthroughManager.applyVictory(this.state, data); UnlockManager.refresh(this.state);
+          this._log(String(data.success_text || "破劫成功。"));
+          // 第三层·大画卷：破劫是质变，给一整幅沉浸演出；机械结算延后到画卷结束（design/6.0）
+          const afterScene = () => {
+            this._queueNewUnlockPopups(before);
+            if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
+            if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
+            this._afterMutated();
+          };
+          if (Atmosphere.breakthroughScene(btId)) {
+            Atmosphere.playBreakthrough(btId, afterScene);
+            return;
+          }
+          this.queuePopup({ kind: "text", style: "breakthrough", title: "破劫成功！", body: String(data.success_text || "破劫成功。"), buttons: [{ label: "踏入新境" }] });
+          this._queueNewUnlockPopups(before);
+          if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
+          if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
+        } else {
         BreakthroughManager.applyDefeat(this.state, data);
         this._log(String(data.fail_text || "破劫未成，但道心更稳。"));
         this.queuePopup({ kind: "text", style: "breakthrough", title: "破劫失败",
@@ -685,10 +699,15 @@ const Game = {
     const powerGain = num(to.combat_power_base) - num(from.combat_power_base);
     const tips = (to.feature_tips || []).map((t) => `解锁：${t}`).join("\n");
     this._log(`你突破至${getPhaseRealmName(to)}。`);
-    this.queuePopup({ kind: "text", style: "seal", title: "境界提升！",
-      body: `${to.lore_text || "你吐纳周天，法力更进一步。"}\n\n${getPhaseRealmName(from)} → ${getPhaseRealmName(to)}\n\n战力 +${formatInt(powerGain)}\n闭关收益提升${tips ? "\n" + tips : ""}`,
-      buttons: [{ label: "继续修行" }] });
-    this._queueNewUnlockPopups(before);
+      // 第二层·小仪式：阶段转换（每3重）给呼吸时刻；普通升重只给气韵，不弹窗（design/6.0）
+      const ritualText = Atmosphere.phaseRitual(String(to.realm_id));
+      if (Atmosphere.isPhaseTransition(from, to) && ritualText) {
+        Atmosphere.playRitual(ritualText);
+        this._log(`【境界】${ritualText}`);
+      } else {
+        this.toast(`突破至${getPhaseRealmName(to)}`, to.lore_text || "你吐纳周天，法力更进一步。");
+      }
+      this._queueNewUnlockPopups(before);
     if (!this.state.pending_event_id) { const eventId = EventManager.rollEvent(this.state, "level_up"); if (eventId) { this._setPendingEvent(eventId); this._queueEventPopup(); } }
     this._afterMutated();
   },
