@@ -42,9 +42,16 @@ function render() {
       const img = document.createElement("img"); img.src = TREASURE_ICONS[state.first_treasure_id] || ""; img.alt = ""; orb.appendChild(img);
     }
   } else { orb.classList.add("hidden"); }
-  const goal = GoalManager.getCurrent(state);
-  if (Object.keys(goal).length) { $("goal-text").textContent = goal.display_text || `当前目标：${goal.goal_name}`; $("goal-reward").textContent = goal.reward_preview || ""; }
-  else { $("goal-text").textContent = "当前目标：等待天仙篇开启"; $("goal-reward").textContent = "可继续：骷髅山边界游历，收集祭炼材料"; }
+  const threads = GoalManager.getChapterThreads(state);
+  if (threads.chapter) {
+    const openThreads = threads.list.filter((t) => t.status === "open");
+    const first = openThreads[0];
+    $("goal-text").textContent = threads.chapterName;
+    $("goal-reward").textContent = (first ? `可循：${first.goal.goal_name} ｜ ` : "") + `手札共 ${openThreads.length} 线（洞府查看）`;
+  } else {
+    $("goal-text").textContent = "卷三已尽·等待天仙篇";
+    $("goal-reward").textContent = "可继续：骷髅山边界游历，收集祭炼材料";
+  }
   const progress = RealmManager.getProgress(state);
   $("progress-fill").style.width = `${Math.round(progress.ratio * 100)}%`;
   $("progress-label").textContent = `道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}`;
@@ -945,6 +952,37 @@ function renderChancePanel(body, state) {
 // 洞府面板
 function renderLogPanel(body, state) {
   body.appendChild(note(`入道第 ${UnlockManager.currentDay(state)} 天`));
+
+  // P2 网状叙事·洞府手札：当前卷的因果线（可循/已经历/雾中），非任务清单
+  const journal = GoalManager.getChapterThreads(state);
+  if (journal.chapter) {
+    const done = journal.list.filter((t) => t.status === "done");
+    const open = journal.list.filter((t) => t.status === "open");
+    const fog = journal.list.filter((t) => t.status === "fog");
+    body.appendChild(note(`${journal.chapterName} · 手札：可循 ${open.length} 线｜已经历 ${done.length}｜雾中 ${fog.length}`));
+    for (const t of open) {
+      const card = document.createElement("div"); card.className = "card";
+      const info = document.createElement("div"); info.className = "card-info";
+      const name = document.createElement("div"); name.className = "card-name"; name.textContent = `可循·${t.goal.goal_name}`;
+      const hint = document.createElement("div"); hint.className = "card-desc"; hint.textContent = t.hint || "";
+      info.append(name, hint); card.appendChild(info); body.appendChild(card);
+    }
+    for (const t of done) {
+      const card = document.createElement("div"); card.className = "card selected";
+      const info = document.createElement("div"); info.className = "card-info";
+      const name = document.createElement("div"); name.className = "card-name"; name.textContent = `✓ ${t.goal.goal_name}`;
+      const hint = document.createElement("div"); hint.className = "card-desc"; hint.textContent = t.hint || "";
+      info.append(name, hint); card.appendChild(info); body.appendChild(card);
+    }
+    for (const t of fog) {
+      const card = document.createElement("div"); card.className = "card"; card.style.opacity = "0.6";
+      const info = document.createElement("div"); info.className = "card-info";
+      const name = document.createElement("div"); name.className = "card-name"; name.textContent = "雾中因果";
+      const hint = document.createElement("div"); hint.className = "card-desc"; hint.textContent = t.hint || "";
+      info.append(name, hint); card.appendChild(info); body.appendChild(card);
+    }
+  }
+
   const faction = getFactionRow(state);
   if (Object.keys(faction).length) {
     const card = document.createElement("div"); card.className = "card selected";
