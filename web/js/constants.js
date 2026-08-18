@@ -91,6 +91,17 @@ const CARD_DEFS = {
   yuanshi_banner: { name: "盘古幡（影）", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `${(60 + 20 * lv) * m} 伤害，无视一切防御` },
   nuwa_picture: { name: "山河社稷图", kind: "skill", element: "treasure", target: "none", text: () => "本场战斗全收益 +10%（被动生效）" },
   laojun_chart: { name: "太极图（影）", kind: "skill", element: "treasure", target: "none", text: () => "免疫下次控制效果（眩晕/虚弱/锁定）" },
+  // P0-A/P2 神通（T4/T5）：本命流派高阶术法
+  spell_thunder_04: { name: "九霄神雷", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(24 + 8 * lv) * m} 雷伤，溅射 50%，克妖 +30%` },
+  spell_thunder_05: { name: "代天行罚", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(40 + 12 * lv) * m} 雷伤，斩杀残血，对 Boss 额外 30% 上限` },
+  spell_fire_04: { name: "九龙神火", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(18 + 6 * lv) * m} 火伤，灼魂（每回合 5% 上限）` },
+  spell_fire_05: { name: "焚天炼界", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(30 + 10 * lv) * m} 火伤，火域 3 回合，击杀回血` },
+  spell_weapon_04: { name: "太乙剑诀", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(22 + 7 * lv) * m} 伤害，斩杀后余威斩下一敌` },
+  spell_weapon_05: { name: "一剑破万法", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(50 + 15 * lv) * m} 伤害，无视罡气与圣盾` },
+  spell_soul_04: { name: "幽冥锁魂", kind: "attack", element: "soul", target: "enemy", text: (lv, m = 1) => `${(20 + 6 * lv) * m} 真伤，锁魂 2 回合` },
+  spell_soul_05: { name: "魂灭道消", kind: "attack", element: "soul", target: "enemy", text: (lv, m = 1) => `${(35 + 10 * lv) * m} 真伤，20% 即死（对 Boss 30% 上限真伤）` },
+  spell_calamity_04: { name: "劫气化刃", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(28 + 8 * lv) * m} 伤害，耗尽劫气增威，自损 10%` },
+  spell_calamity_05: { name: "万劫归一", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(60 + 20 * lv) * m} 伤害，自损 20%，后续诸牌 ×1.5（3 回合）` },
   // P1 生活技艺·画符：一次性符咒卡（打出即消耗 state.talismans）
   talisman_fire: { name: "火符", kind: "talisman", element: "fire", target: "enemy", talisman: "fire", text: (lv, m = 1) => `${(10 + 5 * lv) * m} 火伤，燃烧 ${(4 + lv) * m}` },
   talisman_thunder: { name: "雷符", kind: "talisman", element: "thunder", target: "enemy", talisman: "thunder", text: (lv, m = 1) => `${(12 + 6 * lv) * m} 雷伤，雷殛标记` },

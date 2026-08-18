@@ -202,6 +202,11 @@ const BattleEngine = {
     battle.thunderBoost = 0;
     for (const c of battle.hand) { if (c.disabled > 0) c.disabled -= 1; }
     if (battle.pictureWorld > 0) battle.pictureWorld -= 1;
+    if (battle.rageAllTurns > 0) battle.rageAllTurns -= 1;
+    if (int(battle.fireDomainTurns) > 0) {
+      for (const e of battle.enemies.filter((x) => x.hp > 0)) e.statuses.burn += Math.round((10 + int(battle.fireDomainLv, 1)) * this._powerMult(battle));
+      battle.fireDomainTurns -= 1;
+    }
     this._processMechanicTurnStart(state, battle);
     const heal = Math.round(battle.playerHpMax * num(this.relic(state, "turnHealRatio") + godSeat(state, "turnHealRatio")));
     if (heal > 0) battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
@@ -287,6 +292,9 @@ const BattleEngine = {
     return 1;
   },
 
+  // 火修被动：燃烧持续 +1 回合（施加燃烧时 +1）
+  _fireBenmingTurn(state) { return str(state.benming_school, "") === "fire" ? 1 : 0; },
+
   _dealDamage(state, battle, enemy, base, element) {
     // Boss mechanic: element immunity
     const mech = battle.mechanic;
@@ -321,6 +329,7 @@ const BattleEngine = {
       }
     }
     if (enemy.statuses.vuln > 0) mult *= 1.5;
+    if (int(battle.rageAllTurns) > 0) mult *= 1.5; // 万劫归一：后续诸牌 ×1.5
     let dmg = Math.max(1, Math.round(base * mult * pictureMult * weaknessMult * this._benmingMult(state, battle, element)));
     if (enemy.block > 0) {
       const absorbed = Math.min(enemy.block, dmg);
@@ -369,7 +378,7 @@ const BattleEngine = {
       case "spell_fire_01":
         hit(target, 5 + 2 * lv, "fire", "灵火术");
         if (target.hp > 0) {
-          target.statuses.burn += (3 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle);
+          target.statuses.burn += (3 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus") + this._fireBenmingTurn(state)) * this._powerMult(battle);
           events.push(`${target.name}被灵火缠绕（燃烧 ${target.statuses.burn}）。`);
         }
         break;
@@ -453,7 +462,7 @@ const BattleEngine = {
         case "spell_fire_02": {
           hit(target, 8 + 3 * lv, "fire", "赤火术");
           if (target.hp > 0) {
-            target.statuses.burn += Math.round((5 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle));
+            target.statuses.burn += Math.round((5 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus") + this._fireBenmingTurn(state)) * this._powerMult(battle));
             events.push(`${target.name}被赤火缠绕（燃烧 ${target.statuses.burn}）。`);
             for (const e of battle.enemies.filter((x) => x.hp > 0 && x !== target)) {
               e.statuses.burn += 2;
@@ -465,7 +474,7 @@ const BattleEngine = {
         case "spell_fire_03": {
           hit(target, 12 + 4 * lv, "fire", "三昧真火");
           if (target.hp > 0) {
-            target.statuses.burn += Math.round((8 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle));
+            target.statuses.burn += Math.round((8 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus") + this._fireBenmingTurn(state)) * this._powerMult(battle));
             target.statuses.burnUnpurgeable = true;
             events.push(`三昧真火沾身（燃烧 ${target.statuses.burn}），非水可灭！`);
           }
@@ -636,6 +645,103 @@ const BattleEngine = {
           events.push("太极图护体，免疫下次控制。");
           break;
         }
+        // ===== P0-A/P2 神通（T4/T5） =====
+        case "spell_thunder_04": {
+          let base = 24 + 8 * lv;
+          const isYao = (target.tags || []).includes("yao") || String(target.name || "").includes("妖");
+          if (isYao) base = Math.round(base * 1.3);
+          hit(target, base, "thunder", "九霄神雷");
+          if (target.hp > 0) { target.statuses.mark += 1; events.push(`${target.name}烙下雷殛标记。`); }
+          for (const e of battle.enemies.filter((x) => x.hp > 0 && x !== target)) {
+            const sd = this._dealDamage(state, battle, e, Math.round(base * 0.5), "thunder");
+            events.push(`雷光溅射${e.name}，受 ${sd} 伤害。`);
+          }
+          if (isYao) events.push("九霄神雷克妖，威力大增！");
+          break;
+        }
+        case "spell_thunder_05": {
+          let base = 40 + 12 * lv;
+          if (battle.source === "boss" || battle.source === "breakthrough" || battle.source === "array") base += Math.round(target.hpMax * 0.3);
+          hit(target, base, "thunder", "代天行罚");
+          if (target.hp > 0 && target.hp <= target.hpMax * 0.2) { target.hp = 0; events.push("代天行罚——天雷审判，灰飞烟灭！"); }
+          break;
+        }
+        case "spell_fire_04": {
+          hit(target, 18 + 6 * lv, "fire", "九龙神火");
+          if (target.hp > 0) {
+            target.statuses.burn += Math.round((5 + lv + this._fireBenmingTurn(state)) * this._powerMult(battle));
+            target.statuses.pctBurn = 0.05;
+            events.push(`${target.name}被九龙神火缠绕（燃烧 ${target.statuses.burn}，另受灼魂之痛）。`);
+          }
+          break;
+        }
+        case "spell_fire_05": {
+          hit(target, 30 + 10 * lv, "fire", "焚天炼界");
+          battle.fireDomainTurns = 3; battle.fireDomainLv = lv;
+          for (const e of battle.enemies.filter((x) => x.hp > 0)) e.statuses.burn += Math.round((10 + lv + this._fireBenmingTurn(state)) * this._powerMult(battle));
+          events.push("焚天炼界——火域展开，万物皆焚（3 回合）！");
+          break;
+        }
+        case "spell_weapon_04": {
+          const wb = 22 + 7 * lv;
+          hit(target, wb, "weapon", "太乙剑诀");
+          if (target.hp <= 0) {
+            const next = battle.enemies.find((x) => x.hp > 0);
+            if (next) { const cd = this._dealDamage(state, battle, next, Math.round(wb * 0.5), "weapon"); events.push(`剑势不断，余威斩向${next.name}，受 ${cd} 伤害。`); }
+          }
+          break;
+        }
+        case "spell_weapon_05": {
+          const savedBlock = target.block; target.block = 0;
+          hit(target, 50 + 15 * lv, "weapon", "一剑破万法");
+          target.block = savedBlock;
+          events.push("一剑破万法——罡气圣盾，皆为虚妄！");
+          break;
+        }
+        case "spell_soul_04": {
+          const soulBen = str(state.benming_school, "") === "soul" ? 1.2 : 1;
+          const sd = Math.round((20 + 6 * lv) * this._powerMult(battle) * soulBen);
+          target.hp = Math.max(0, target.hp - sd);
+          events.push(`幽冥锁魂对${target.name}造成 ${sd} 真伤。`);
+          if (target.hp > 0) {
+            const wd = 2 + (str(state.benming_school, "") === "soul" ? 1 : 0);
+            target.statuses.weak = Math.max(target.statuses.weak, wd);
+            target.statuses.lock = 2;
+            events.push(`${target.name}被锁魂，${wd} 回合内攻势受挫、无法蓄力。`);
+          }
+          break;
+        }
+        case "spell_soul_05": {
+          const soulBen = str(state.benming_school, "") === "soul" ? 1.2 : 1;
+          const sd = Math.round((35 + 10 * lv) * this._powerMult(battle) * soulBen);
+          target.hp = Math.max(0, target.hp - sd);
+          events.push(`魂灭道消对${target.name}造成 ${sd} 真伤。`);
+          if (target.hp > 0) {
+            if (battle.source === "boss" || battle.source === "breakthrough" || battle.source === "array") {
+              const td = Math.round(target.hpMax * 0.3); target.hp = Math.max(0, target.hp - td);
+              events.push(`魂灭之力直捣元神，${target.name}再受 ${td} 真伤！`);
+            } else if (Math.random() < 0.2) { target.hp = 0; events.push("魂灭道消——元神俱灭！"); }
+          }
+          break;
+        }
+        case "spell_calamity_04": {
+          const cal = num(state.resources.calamity);
+          const bonus = Math.floor(cal / 100) * 10;
+          state.resources.calamity = 0; SaveManager.save(state);
+          hit(target, 28 + 8 * lv + bonus, "calamity", "劫气化刃");
+          const sh = Math.max(1, Math.round(battle.playerHpMax * 0.1));
+          battle.playerHp = Math.max(1, battle.playerHp - sh);
+          events.push(`劫气化刃，耗尽劫气（+${bonus} 威力），你受 ${sh} 反噬。`);
+          break;
+        }
+        case "spell_calamity_05": {
+          hit(target, 60 + 20 * lv, "calamity", "万劫归一");
+          const sh = Math.max(1, Math.round(battle.playerHpMax * 0.2));
+          battle.playerHp = Math.max(1, battle.playerHp - sh);
+          battle.rageAllTurns = 3;
+          events.push(`万劫归一——你受 ${sh} 反噬，杀意滔天，后续诸牌威力 ×1.5（3 回合）！`);
+          break;
+        }
         case "talisman_fire":
           hit(target, 10 + 5 * lv, "fire", "火符");
           if (target.hp > 0) { target.statuses.burn += (4 + lv) * this._powerMult(battle); events.push(`${target.name}被符火缠身（燃烧 ${target.statuses.burn}）。`); }
@@ -739,7 +845,8 @@ const BattleEngine = {
         const dmg = this._damagePlayer(state, battle, value);
         events.push(`${e.name}${intent.label || "扑击"}，你受 ${dmg} 伤害。`);
       } else if (intent.type === "charge") {
-        e.charged = true;
+        if (num(e.statuses.lock) > 0) { events.push(`${e.name}被锁魂，蓄势被打断。`); }
+        else e.charged = true;
         events.push(`${e.name}${intent.label || "凶光大盛，蓄势待发"}！`);
       } else if (intent.type === "block") {
         e.block += intent.value;
@@ -759,16 +866,19 @@ const BattleEngine = {
       events.push(`邪火焚身，你受 ${battle.playerStatuses.burn} 燃烧伤害。`);
       battle.playerStatuses.burn = Math.max(0, battle.playerStatuses.burn - 1);
     }
-    for (const e of battle.enemies.filter((x) => x.hp > 0 && x.statuses.burn > 0)) {
+    for (const e of battle.enemies.filter((x) => x.hp > 0 && (x.statuses.burn > 0 || x.statuses.pctBurn > 0))) {
       const burnDmg = (str(state.benming_school, "") === "fire") ? Math.round(e.statuses.burn * 1.3) : e.statuses.burn;
-      e.hp = Math.max(0, e.hp - burnDmg);
-      events.push(`${e.name}被灵火灼烧，受 ${burnDmg} 燃烧伤害。`);
+      const pctDmg = num(e.statuses.pctBurn) > 0 ? Math.round(e.hpMax * num(e.statuses.pctBurn)) : 0;
+      const total = burnDmg + pctDmg;
+      if (total > 0) { e.hp = Math.max(0, e.hp - total); events.push(`${e.name}被灵火灼烧，受 ${total} 燃烧伤害${pctDmg > 0 ? "（含灼魂）" : ""}。`); }
       e.statuses.burn = Math.max(0, e.statuses.burn - 1);
+      if (num(e.statuses.pctBurn) > 0) e.statuses.pctBurn = Math.max(0, num(e.statuses.pctBurn) - 0.01);
     }
     // 持续状态衰减
     for (const e of battle.enemies) {
       e.statuses.weak = Math.max(0, e.statuses.weak - 1);
       e.statuses.vuln = Math.max(0, e.statuses.vuln - 1);
+      if (num(e.statuses.lock) > 0) e.statuses.lock = Math.max(0, e.statuses.lock - 1);
     }
     battle.playerStatuses.weak = Math.max(0, battle.playerStatuses.weak - 1);
 

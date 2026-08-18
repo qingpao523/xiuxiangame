@@ -127,10 +127,12 @@ const SaveManager = {
     // P1 生活技艺：符咒存货（[{type,lv}]）/ 占卜记录
     if (!Array.isArray(state.talismans)) state.talismans = [];
     state.divination = state.divination || {};
-    // P1 阵容：上场道友（最多 3）。旧档无此字段则补齐，并自动填入前 3 位已结缘道友。
-    if (!Array.isArray(state.lineup)) state.lineup = [];
+    // P1 阵容：上场道友（最多 3）。仅旧档迁移（无此字段）时自动补齐前 3 位已结缘道友；
+    // 已有阵容则尊重玩家选择（含主动撤下），只过滤失效项与超上限。
+    const hadLineup = Array.isArray(state.lineup);
+    if (!hadLineup) state.lineup = [];
     state.lineup = state.lineup.filter((id) => state.companions[id] && state.companions[id].bonded).slice(0, 3);
-    if (state.lineup.length < 3) {
+    if (!hadLineup && state.lineup.length < 3) {
       const bonded = Object.keys(state.companions).filter((id) => state.companions[id].bonded);
       for (const id of bonded) { if (state.lineup.length >= 3) break; if (!state.lineup.includes(id)) state.lineup.push(id); }
     }

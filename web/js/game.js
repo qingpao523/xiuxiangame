@@ -710,7 +710,7 @@ const Game = {
   hasDivinationBoost(effect) {
     const d = this.state.divination || {};
     if (str(d.effect, "") !== effect) return false;
-    return true; // 简化：本次会话内有效
+    return true; // 占卜效果持续生效，直到下次占卜覆盖（每日仅可占一次）
   },
 
   brewPill(pillId) {
