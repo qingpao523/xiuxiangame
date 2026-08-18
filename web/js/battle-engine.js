@@ -139,6 +139,7 @@ const BattleEngine = {
       done: false,
       win: false,
       mechanic: cfg.mechanic || null,
+      weakness: cfg.weakness || null,
       mechanicState: { turnCount: 0, pearlsUsed: 0, rotateIndex: 0 },
     };
     battle.playerStatuses.shield = this.relic(state, "startShield");
@@ -266,6 +267,19 @@ const BattleEngine = {
     return Math.max(1, Math.round(battle.playerHpMax / 200));
   },
 
+  // P0-A: 本命流派战斗风格被动乘区
+  _benmingMult(state, battle, element) {
+    const bm = str(state.benming_school, "");
+    if (!bm) return 1;
+    if (bm === "thunder" && element === "thunder" && !battle.benmingThunderUsed) {
+      battle.benmingThunderUsed = true;
+      return 1.5;
+    }
+    if (bm === "weapon" && element === "weapon") return 1.25;
+    if (bm === "calamity") return 1 + 0.05 * int(battle.cardsPlayed);
+    return 1;
+  },
+
   _dealDamage(state, battle, enemy, base, element) {
     // Boss mechanic: element immunity
     const mech = battle.mechanic;
@@ -278,6 +292,12 @@ const BattleEngine = {
     if (mech === "array_eyes" && enemy.isMain && battle.enemies.some(e => e.hp > 0 && !e.isMain)) return 0;
     let pictureMult = 1;
     if (mech === "picture_world" && battle.pictureWorld > 0) pictureMult = 0.5;
+    // P0-B: 弱点克制——卡牌元素命中 Boss 弱点，伤害 +30%
+    let weaknessMult = 1;
+    if (battle.weakness && battle.weakness.includes(element)) {
+      weaknessMult = 1.3;
+      if (!battle.weaknessShown) { battle.weaknessShown = true; battle.pendingEvents.push("正中弱点！你的攻势撕开了它的破绽。"); }
+    }
     // 卡牌基础值很小，按玩家战力放大到与敌方血量同一量级
     let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus") + godSeat(state, "dmgBonus"));
     if (battle.guaranteeBuff) mult *= 1.25;
@@ -294,7 +314,7 @@ const BattleEngine = {
       }
     }
     if (enemy.statuses.vuln > 0) mult *= 1.5;
-    let dmg = Math.max(1, Math.round(base * mult * pictureMult));
+    let dmg = Math.max(1, Math.round(base * mult * pictureMult * weaknessMult * this._benmingMult(state, battle, element)));
     if (enemy.block > 0) {
       const absorbed = Math.min(enemy.block, dmg);
       enemy.block -= absorbed;
@@ -459,17 +479,19 @@ const BattleEngine = {
           break;
         }
         case "spell_soul_01": {
-          const soulDmg = Math.round((6 + 2 * lv) * this._powerMult(battle));
+          const soulBen = str(state.benming_school, "") === "soul" ? 1.2 : 1;
+          const soulDmg = Math.round((6 + 2 * lv) * this._powerMult(battle) * soulBen);
           target.hp = Math.max(0, target.hp - soulDmg);
           events.push(`摄魂咒对${target.name}造成 ${soulDmg} 真伤（无视罡气）。`);
-          if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 1); events.push(`${target.name}心神动摇（虚弱 1 回合）。`); }
+          if (target.hp > 0) { const wd = 1 + (str(state.benming_school, "") === "soul" ? 1 : 0); target.statuses.weak = Math.max(target.statuses.weak, wd); events.push(`${target.name}心神动摇（虚弱 ${wd} 回合）。`); }
           break;
         }
         case "spell_soul_02": {
-          const soulDmg2 = Math.round((10 + 3 * lv) * this._powerMult(battle));
+          const soulBen2 = str(state.benming_school, "") === "soul" ? 1.2 : 1;
+          const soulDmg2 = Math.round((10 + 3 * lv) * this._powerMult(battle) * soulBen2);
           target.hp = Math.max(0, target.hp - soulDmg2);
           events.push(`落魂术对${target.name}造成 ${soulDmg2} 真伤。`);
-          if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 2); events.push(`${target.name}神魂不稳，攻势衰减（虚弱 2 回合）。`); }
+          if (target.hp > 0) { const wd2 = 2 + (str(state.benming_school, "") === "soul" ? 1 : 0); target.statuses.weak = Math.max(target.statuses.weak, wd2); events.push(`${target.name}神魂不稳，攻势衰减（虚弱 ${wd2} 回合）。`); }
           break;
         }
         case "spell_calamity_01": {
@@ -656,6 +678,7 @@ const BattleEngine = {
         break;
       }
     }
+    battle.cardsPlayed = int(battle.cardsPlayed) + 1;
     this._checkEnd(state, battle);
     events.push(...battle.pendingEvents.splice(0));
     return events;
@@ -707,8 +730,9 @@ const BattleEngine = {
       battle.playerStatuses.burn = Math.max(0, battle.playerStatuses.burn - 1);
     }
     for (const e of battle.enemies.filter((x) => x.hp > 0 && x.statuses.burn > 0)) {
-      e.hp = Math.max(0, e.hp - e.statuses.burn);
-      events.push(`${e.name}被灵火灼烧，受 ${e.statuses.burn} 燃烧伤害。`);
+      const burnDmg = (str(state.benming_school, "") === "fire") ? Math.round(e.statuses.burn * 1.3) : e.statuses.burn;
+      e.hp = Math.max(0, e.hp - burnDmg);
+      events.push(`${e.name}被灵火灼烧，受 ${burnDmg} 燃烧伤害。`);
       e.statuses.burn = Math.max(0, e.statuses.burn - 1);
     }
     // 持续状态衰减
@@ -941,3 +965,4 @@ function getCardBattleLevel(state, cardId) {
   if (cardId.startsWith("charm_")) return 1 + ups;
   return 1;
 }
+

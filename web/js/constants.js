@@ -210,6 +210,17 @@ const CAP_NOTICE_TEXT = "你已破开地仙劫，立身天仙·初期，暂时�
 const BOSS_DAILY_LIMIT = 3;
 
 
+// P0-A: 本命流派战斗风格被动（真仙破劫时五选一，不可逆）
+const SCHOOL_PASSIVES = {
+  thunder: { name: "雷修·开局爆发", desc: "开局第一张雷系牌伤害 +50%", element: "thunder" },
+  fire: { name: "火修·燎原", desc: "燃烧伤害 +30%，燃烧持续 +1 回合", element: "fire" },
+  weapon: { name: "剑修·斩魂", desc: "剑系伤害 +25%", element: "weapon" },
+  soul: { name: "魂修·摄心", desc: "真伤 +20%，控制持续 +1 回合", element: "soul" },
+  calamity: { name: "劫修·噬劫", desc: "每出一张牌，本场后续所有牌伤害 +5%（叠加）", element: "calamity" },
+};
+const SCHOOL_LIST = ["thunder", "fire", "weapon", "soul", "calamity"];
+const SCHOOL_NAME = { thunder: "雷", fire: "火", weapon: "剑", soul: "魂", calamity: "劫" };
+
 const PILL_DEFS = [
   {
     id: "due",

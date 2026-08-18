@@ -94,7 +94,10 @@
         "劫气黑雾"
       ],
       "mechanics": "summon: 每 2 回合召唤 1 只小妖（HP=主Boss 20%），小妖存活时主Boss受伤-20%。需先清小妖再打主。",
-      "daily_limit": 3
+      "daily_limit": 3,
+      "weakness": [
+        "weapon"
+      ]
     },
     {
       "boss_id": "boss_005",
@@ -120,7 +123,10 @@
         "敖丙遗骨"
       ],
       "mechanics": "double_strike: 每回合攻击 2 次（第二次伤害为第一次的 60%）。每 3 回合获得水盾（罡气+30%最大HP），需破罡后输出。",
-      "daily_limit": 3
+      "daily_limit": 3,
+      "weakness": [
+        "soul"
+      ]
     },
     {
       "boss_id": "boss_006",
@@ -197,7 +203,10 @@
         "劫气凝聚"
       ],
       "mechanics": "array_eyes: 开局有 2 个阵眼（HP=主Boss 25%），阵眼存活时主Boss免疫伤害。需先破阵眼。每 4 回合阵眼重生 1 个。",
-      "daily_limit": 2
+      "daily_limit": 2,
+      "weakness": [
+        "weapon"
+      ]
     },
     {
       "boss_id": "boss_009",
@@ -222,7 +231,10 @@
         "三霄阵意"
       ],
       "mechanics": "realm_cut: 每回合玩家战力 -5%（永久本场）。第 6 回合起削境加速为 -8%。需在 12 回合内击杀。",
-      "daily_limit": 2
+      "daily_limit": 2,
+      "weakness": [
+        "calamity"
+      ]
     },
     {
       "boss_id": "boss_010",
@@ -247,7 +259,11 @@
         "金色雷纹"
       ],
       "mechanics": "thunder_immune: 雷系伤害无效。每 3 回合释放全场雷击（玩家受 15% 最大 HP 伤害）。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "fire",
+        "weapon"
+      ]
     },
     {
       "boss_id": "boss_011",
@@ -272,7 +288,11 @@
         "赤金光焰"
       ],
       "mechanics": "fire_immune: 火系伤害无效。每 2 回合施加燃烧 10 层（不可净化）。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "thunder",
+        "soul"
+      ]
     },
     {
       "boss_id": "boss_012",
@@ -297,7 +317,11 @@
         "金色护体"
       ],
       "mechanics": "block_regen: 每回合恢复 20% 最大罡气。罡气存在时受伤 -50%。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "weapon",
+        "soul"
+      ]
     },
     {
       "boss_id": "boss_013",
@@ -345,7 +369,10 @@
         "榜文复活"
       ],
       "mechanics": "immortal: 每回合结束时若HP>0则回复至满。唯一击杀方式：单回合伤害>最大HP。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "calamity"
+      ]
     },
     {
       "boss_id": "boss_015",
@@ -369,7 +396,10 @@
         "四剑轮转"
       ],
       "mechanics": "four_swords: 4阶段，每阶段一把剑（诛仙→戮仙→陷仙→绝仙），每把剑有独立意图池。击碎一把剑后下一把满血显化。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "weapon"
+      ]
     },
     {
       "boss_id": "boss_016",
@@ -393,7 +423,10 @@
         "开天"
       ],
       "mechanics": "pangu_strike: 每 3 回合蓄力一次'开天一击'（伤害×10），蓄力期间可被眩晕打断。普通回合只释放罡气护体（罡气+30%）。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "soul"
+      ]
     },
     {
       "boss_id": "boss_017",
@@ -417,7 +450,10 @@
         "图中天地"
       ],
       "mechanics": "picture_world: 每 4 回合将玩家拉入'图中'（3回合内玩家伤害-50%，但受到的伤害也-50%）。需在图中存活并输出。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "thunder"
+      ]
     },
     {
       "boss_id": "boss_018",
@@ -441,7 +477,10 @@
         "紫气东来"
       ],
       "mechanics": "alchemy: 每 2 回合炼成一丹（随机效果：回血/增伤/护盾），老君自服一丹（回复 10% HP）。需在炼丹间隙爆发输出。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "calamity"
+      ]
     },
     {
       "boss_id": "boss_019",
@@ -465,7 +504,10 @@
         "财神"
       ],
       "mechanics": "pearl_barrage: 每回合投掷 3 颗定海珠（每颗独立攻击），24 颗用完后进入虚弱（受伤+50%）2回合，然后重置。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "soul"
+      ]
     },
     {
       "boss_id": "boss_020",
@@ -489,7 +531,10 @@
         "九曲黄河"
       ],
       "mechanics": "trio_attack: 3体同时存在（云霄/碧霄/琼霄），各有独立HP和意图。每回合三体同时行动。需逐个击破。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "weapon"
+      ]
     },
     {
       "boss_id": "boss_021",
@@ -513,7 +558,10 @@
         "万法不侵"
       ],
       "mechanics": "five_light: 每 3 回合释放五色神光（禁用玩家牌库中随机 1 张牌 2 回合）。被禁用的牌变灰不可出。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "thunder"
+      ]
     },
     {
       "boss_id": "boss_022",
@@ -537,7 +585,10 @@
         "万宝"
       ],
       "mechanics": "six_soul: 每 2 回合摇动六魂幡（清除玩家所有增益状态：罡气/圣盾/增伤buff）。需在摇幡间隙叠buff并爆发。",
-      "daily_limit": 1
+      "daily_limit": 1,
+      "weakness": [
+        "fire"
+      ]
     }
   ]
 }

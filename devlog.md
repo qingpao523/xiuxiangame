@@ -2,6 +2,64 @@
 
 ---
 
+## 2026-08-16 — P0 战斗改造：本命流派构筑身份 + Boss 克制闭环（design/6.1 落地）
+
+### 背景
+
+对标《烟雨江湖》调研（design/6.1）：理念层 95% 契合，机制层 35%。烟雨江湖真正的护城河是"让玩家为构筑身份投入沉没成本，用战术深度回报这份投入"。本批次落地两个 P0 项，不抄四人结阵（品类不同，保放置轻松感），但吸收"构筑身份 + 策略闭环"的术。
+
+### P0-A：本命流派（构筑身份）
+
+- **选择时机**：真仙破劫（bt_003）胜利画卷结束后，弹出五选一（雷/火/剑/魂/劫），**不可逆**（转世才能重选）。
+- **专精规则**：本命流派神通可升 T4/T5 且威力 ×1.5；非本命流派**封顶 T3**（upgradeSpell 拦截 + 术法面板置灰）。
+- **5 种战斗风格被动**（battle-engine `_benmingMult` + 燃烧结算 + 魂系真伤内联）：
+  - 雷修：开局第一张雷系牌 +50%
+  - 火修：燃烧伤害 +30%
+  - 剑修：剑系伤害 +25%
+  - 魂修：真伤 +20%，控制持续 +1 回合
+  - 劫修：每出一张牌，本场后续伤害 +5%（叠加，cardsPlayed 计数）
+- **UI**：术法面板显示本命状态、本命流派 ★ 标记、非本命四阶"封顶三阶"提示；新增 `renderBenmingChoicePopup` 五选一弹窗。
+
+### P0-B：Boss 机制 ↔ 玩家策略闭环
+
+- 16 个有机制的 Boss 增加 `weakness`（弱点元素），写入 boss_table。
+- battle-engine `_dealDamage`：卡牌元素命中弱点 → 伤害 ×1.3，首次命中触发战斗日志"正中弱点"。
+- 战前 UI：Boss 挑战卡显示"弱点：X·Y系（命中 +30% 伤害）"金色提示。
+- 与本命联动：雷修打雷部神将（免疫雷）是天然逆风局，逼玩家发展副系——烟雨江湖式阵容规划。
+
+### 代码改动
+
+- `constants.js`：SCHOOL_PASSIVES / SCHOOL_LIST / SCHOOL_NAME
+- `save-manager.js`：benming_school 字段（createDefault + normalize）
+- `game.js`：chooseBenmingSchool / hasBenming / _maybeTriggerBenming 方法；upgradeSpell 本命 gating；bt_003 胜利触发本命选择（画卷后 + 兜底路径）；startBossBattle 传 weakness
+- `battle-engine.js`：_benmingMult 被动乘区；fire 燃烧 ×1.3；soul 真伤 ×1.2 + 控制 +1；calamity cardsPlayed 计数；weakness 存储 + ×1.3 + 首击日志
+- `ui.js`：renderBenmingChoicePopup + 弹窗分发；术法面板本命标记与封顶；Boss 弱点提示
+- `boss_table.json`：16 Boss 加 weakness
+
+### 验证记录
+
+- 20 个 JS 文件全部通过 `node --check`
+- P0-A 完整链路 8 项全通：state 字段 / chooseBenmingSchool 定义 / 3 处触发 / upgradeSpell gate / 引擎被动 / 选择弹窗渲染 / 弹窗分发 / 术法面板封顶
+- P0-B 完整链路 5 项全通：16 Boss 弱点数据 / weakness 传入 / 存储 / ×1.3 应用 / UI 提示
+- 加载顺序正确：constants.js（定义 SCHOOL_*）在 game.js / ui.js 之前
+- 修复一处事故：早期内联 python 超时导致 game.js 三个本命方法定义丢失（仅剩调用点），已重新插入并验证
+
+### 关键决策理由
+
+- **沉没成本产生身份**：选了剑修，雷/火/魂/劫的 T4/T5 永远关上。这份"失去"让"我是剑修"有重量。
+- **被动改变节奏而非堆数值**：雷修抢开局、劫修拖后期、魂修控场——同样 Boss 不同流派打法不同。
+- **不破坏放置**：自动托管仍在，AI 利用流派被动；硬核玩家手动有优势。
+- **Boss 战从数值检查变 puzzle**：战前要想"这个 Boss 免疫雷，我带什么"。
+- **纯数据驱动**：weakness 写在 boss_table，加 Boss 只需填表。
+
+### 下一步（design/6.1 后续）
+
+- P1：NPC 从挂件→阵容（道友卡上场位）
+- P1：生活技艺（炼丹重做/画符/布阵）——呼应 6.0 留白
+- P2：网状叙事/分支、赛季 PVP
+
+---
+
 ## 2026-08-16 — 三层反馈体系实现：从数值游戏到画卷（design/6.0 落地）
 
 ### 背景

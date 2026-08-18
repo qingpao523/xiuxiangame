@@ -273,6 +273,7 @@ function showPopup(popup) {
   else if (popup.kind === "battle") renderBattlePopup(panel, title, body, buttons, popup.battle);
   else if (popup.kind === "treasure_choice") renderTreasureChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "race_choice") renderRaceChoicePopup(panel, title, body, buttons);
+  else if (popup.kind === "benming_choice") renderBenmingChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "faction_choice") renderFactionChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "breakthrough_confirm") renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
   else if (popup.kind === "rest") renderRestPopup(panel, title, body, buttons, popup.payload || {});
@@ -603,6 +604,24 @@ function renderRaceChoicePopup(panel, title, body, buttons) {
   }
 }
 
+// ---------------- 本命流派五选一弹窗（P0-A） ----------------
+
+function renderBenmingChoicePopup(panel, title, body, buttons) {
+  panel.classList.add("style-breakthrough"); title.textContent = "定本命：择一道走到黑";
+  body.textContent = "真仙劫后，你的道开始有了形状。\n五条路在面前展开——雷、火、剑、魂、劫。\n\n选一条，它将与你性命相系，神通可至五阶，威力更增五成。\n其余四道，自此封顶三阶。\n\n此选择不可逆（唯转世可重定）。";
+  for (const sc of SCHOOL_LIST) {
+    const p = SCHOOL_PASSIVES[sc];
+    const btn = document.createElement("button"); btn.className = "popup-btn treasure-pick choice-pick";
+    const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = SCHOOL_NAME[sc];
+    const info = document.createElement("span"); info.className = "choice-info";
+    const name = document.createElement("span"); name.className = "choice-name"; name.textContent = p.name;
+    const sub = document.createElement("span"); sub.className = "popup-option-sub"; sub.textContent = p.desc;
+    info.append(name, sub); btn.append(glyph, info);
+    btn.addEventListener("click", () => { closePopup(); Game.chooseBenmingSchool(sc); });
+    buttons.appendChild(btn);
+  }
+}
+
 // ---------------- 势力四选一弹窗 ----------------
 
 function renderFactionChoicePopup(panel, title, body, buttons) {
@@ -818,6 +837,14 @@ function renderMapPanel(body, state) {
       const remain = Math.max(0, 3 - int(state.boss_counts_today[bossId]));
       bCost.textContent = `推荐战力 ${formatInt(boss.recommended_power)}｜胜率 ${rate}%｜今日可挑战 ${remain} 次`;
       bInfo.append(bName, bDesc, bCost);
+      // P0-B: 弱点提示
+      if (boss.weakness && boss.weakness.length) {
+        const elName = { thunder: "雷", fire: "火", weapon: "剑", soul: "魂", calamity: "劫" };
+        const wLine = document.createElement("div"); wLine.className = "card-cost";
+        wLine.style.color = "#d9a441";
+        wLine.textContent = `弱点：${boss.weakness.map(w => elName[w] || w).join("·")}系（命中 +30% 伤害）`;
+        bInfo.appendChild(wLine);
+      }
       bossCard.appendChild(bInfo);
       const fightBtn = document.createElement("button"); fightBtn.className = "card-btn"; fightBtn.textContent = "斗法"; fightBtn.disabled = remain <= 0;
       fightBtn.addEventListener("click", () => { closePanelSheet(); Game.startBossBattle(bossId); });
@@ -845,6 +872,10 @@ function renderSpellPanel(body, state) {
   const spells = UnlockManager.getAvailableSpells(state);
   if (!spells.length) { body.appendChild(note("术法尚未开启。炼气士四重可观残符悟法。")); return; }
   body.appendChild(note("真仙之前，你所修仍是术法，不是神通。"));
+  // P0-A: 本命流派状态
+  const bm = str(state.benming_school, "");
+  if (bm) body.appendChild(note(`本命·${SCHOOL_PASSIVES[bm].name}：${SCHOOL_PASSIVES[bm].desc}。非本命流派封顶三阶。`));
+  else body.appendChild(note("本命未定。真仙破劫后，于雷/火/剑/魂/劫五道中择一，走到黑。"));
   for (const spell of spells) {
     const id = String(spell.spell_id); const spellState = Game.getSpellState(id);
     const level = int(spellState.level), maxLevel = Game.getSpellMaxLevel(spell), nextLevel = level + 1;
@@ -856,10 +887,17 @@ function renderSpellPanel(body, state) {
     const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = spell.lore_text || "";
     const costLine = document.createElement("div"); costLine.className = "card-cost";
     costLine.textContent = cost ? (nextLevel === 1 ? (num(cost.spell_page_cost) + num(cost.mana_cost) === 0 ? "参悟：首门术法，无需材料" : `参悟：残页 ${formatInt(cost.spell_page_cost)}｜法力 ${formatInt(cost.mana_cost)}`) : `升至${nextLevel}重：残页 ${formatInt(cost.spell_page_cost)}｜法力 ${formatInt(cost.mana_cost)}`) : "已至当前境界上限";
+      // P0-A: 本命流派封顶
+      const spellSchool = String(spell.spell_school || "");
+      const schoolCapped = int(spell.tier) >= 4 && !!bm && spellSchool !== bm;
+      const schoolLocked = int(spell.tier) >= 4 && !bm;
+      if (schoolCapped) costLine.textContent = `非本命流派，封顶三阶（你的本命：${SCHOOL_NAME[bm]}）`;
+      else if (schoolLocked) costLine.textContent = "四阶神通，需先定本命流派";
+      if (bm && spellSchool === bm) name.textContent += " ★本命";
     info.append(name, desc, costLine);
     const btn = document.createElement("button"); btn.className = "card-btn";
     btn.textContent = level === 0 ? "参悟" : "升重";
-    btn.disabled = !cost || num(state.resources.spell_page) < num(cost?.spell_page_cost) || num(state.resources.mana) < num(cost?.mana_cost);
+      btn.disabled = schoolCapped || schoolLocked || !cost || num(state.resources.spell_page) < num(cost?.spell_page_cost) || num(state.resources.mana) < num(cost?.mana_cost);
     btn.addEventListener("click", () => { Game.upgradeSpell(id); renderPanelBody("spell"); });
     card.append(img, info, btn); body.appendChild(card);
   }

@@ -401,7 +401,7 @@ const Game = {
     const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
       boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }] }[bossId] || [];
     const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
-    this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, payload: { bossId } });
+    this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, weakness: boss.weakness || null, payload: { bossId } });
     this._afterMutated();
   },
 
@@ -446,6 +446,7 @@ const Game = {
           // 第三层·大画卷：破劫是质变，给一整幅沉浸演出；机械结算延后到画卷结束（design/6.0）
           const afterScene = () => {
             this._queueNewUnlockPopups(before);
+            this._maybeTriggerBenming(btId);
             if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
             if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
             this._afterMutated();
@@ -456,6 +457,7 @@ const Game = {
           }
           this.queuePopup({ kind: "text", style: "breakthrough", title: "破劫成功！", body: String(data.success_text || "破劫成功。"), buttons: [{ label: "踏入新境" }] });
           this._queueNewUnlockPopups(before);
+          this._maybeTriggerBenming(btId);
           if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
           if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
         } else {
@@ -820,6 +822,12 @@ const Game = {
     const spellState = this.getSpellState(spellId);
     const nextLevel = int(spellState.level) + 1;
     if (nextLevel > this.getSpellMaxLevel(spellRow)) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: "此术在当前境界已至上限，破境后可再精进。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    // P0-A: 本命流派——四阶以上神通需先定本命；非本命流派封顶三阶
+    if (nextLevel === 1 && int(spellRow.tier) >= 4) {
+      const bm = str(this.state.benming_school, "");
+      if (!bm) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: "四阶神通，需先定本命流派。\n（真仙破劫后，于五条道中选一条走到黑。）", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+      if (String(spellRow.spell_school) !== bm) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: `你已定本命「${SCHOOL_NAME[bm]}」。\n非本命流派，封顶三阶，此路不通。`, buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    }
     const cost = this.getSpellUpgradeCost(spellRow, nextLevel);
     if (!cost) return { ok: false };
     if (num(this.state.resources.spell_page) < num(cost.spell_page_cost) || num(this.state.resources.mana) < num(cost.mana_cost)) return { ok: false, message: "材料不足" };
@@ -828,6 +836,29 @@ const Game = {
     if (nextLevel === 1) { this._log(`你悟得术法「${spellRow.spell_name}」。`); this.queuePopup({ kind: "text", style: "seal", title: `悟得术法：${spellRow.spell_name}`, body: `${spellRow.lore_text || ""}\n\n此术虽浅，却已能惊退山野妖邪。`, buttons: [{ label: "谨记于心" }] }); }
     else { this._log(`「${spellRow.spell_name}」提升至${nextLevel}重。`); }
     this._afterMutated(); return { ok: true };
+  },
+
+  // ---------- P0-A 本命流派 ----------
+
+  hasBenming() { return !!str(this.state.benming_school, ""); },
+
+  chooseBenmingSchool(school) {
+    if (this.hasBenming()) return; // 不可逆
+    if (!SCHOOL_PASSIVES[school]) return;
+    this.state.benming_school = school;
+    const p = SCHOOL_PASSIVES[school];
+    this._log(`你定下本命：${p.name}。自此${SCHOOL_NAME[school]}之一道，与你性命相系。`);
+    this.queuePopup({ kind: "text", style: "breakthrough", title: `本命·${p.name}`,
+      body: `你在五条道中，选了「${SCHOOL_NAME[school]}」。\n\n${p.desc}\n\n自此，${SCHOOL_NAME[school]}系神通可精进至五阶，威力更增五成；其余四道，封顶三阶。\n这条路，走到黑。`,
+      buttons: [{ label: "就是它了" }] });
+    this._afterMutated();
+  },
+
+  // 真仙破劫（bt_003）后触发本命选择
+  _maybeTriggerBenming(btId) {
+    if (String(btId) !== "bt_003") return;
+    if (this.hasBenming()) return;
+    this.queuePopup({ kind: "benming_choice" });
   },
 
   // ---------- 法宝温养 ----------
