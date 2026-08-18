@@ -3,31 +3,131 @@
 "use strict";
 
 const ICON_PATHS = {
-  daoxing: "assets/resources/resource_daoxing.png",
-  mana: "assets/resources/resource_mana.png",
-  merit: "assets/resources/resource_merit.png",
-  calamity: "assets/resources/resource_calamity.png",
-  spell_page: "assets/resources/resource_spell_page.png",
-  artifact_shard: "assets/resources/resource_treasure_shard.png",
-  treasure_shard: "assets/resources/resource_treasure_shard.png",
-  refine_material: "assets/resources/resource_refine_material.png",
+  daoxing: "assets/resources/resource_daoxing.jpg",
+  mana: "assets/resources/resource_mana.jpg",
+  merit: "assets/resources/resource_merit.jpg",
+  calamity: "assets/resources/resource_calamity.jpg",
+  spell_page: "assets/resources/resource_spell_page.jpg",
+  artifact_shard: "assets/resources/resource_treasure_shard.jpg",
+  treasure_shard: "assets/resources/resource_treasure_shard.jpg",
+  refine_material: "assets/resources/resource_refine_material.jpg",
 };
 
+// 背景：每个境界阶段(background_phase)映射到一张底图，无专属美术的阶段回退到相近场景
 const BACKGROUND_PATHS = {
-  mountain_cave: "assets/backgrounds/bg_mountain_cave.png",
-  chentang_far: "assets/backgrounds/bg_chentang_pass.png",
-  kulou_edge: "assets/backgrounds/bg_bone_mountain_edge.png",
+  mountain_cave: "assets/backgrounds/bg_mountain_cave.jpg",       // 炼气士·山野洞府
+  chentang_far: "assets/backgrounds/bg_chentang_pass.jpg",        // 真人·陈塘关
+  kulou_edge: "assets/backgrounds/bg_bone_mountain_edge.jpg",     // 地仙·骷髅山
+  xichi_far: "assets/backgrounds/bg_xiqi_field.jpg",              // 天仙·西岐战场
+  shijue_far: "assets/backgrounds/bg_xiqi_field.jpg",             // 十绝阵外围（回退战场）
+  wanxian_far: "assets/backgrounds/bg_xiqi_field.jpg",            // 万仙阵外围（回退战场）
+  huanghe_far: "assets/backgrounds/bg_bone_mountain_edge.jpg",    // 九曲黄河残域（回退暗色）
+  fengsheng_far: "assets/backgrounds/bg_fengshen_platform.jpg",   // 封神台
+  duobao_far: "assets/backgrounds/bg_fengshen_platform.jpg",      // 多宝道人（回封神台）
+  hunyuan_daochang: "assets/backgrounds/bg_hunyuan_field.jpg",    // 混元道场
 };
 
-const CHARACTER_PATHS = { 炼气士: "assets/characters/char_cultivator.png", 真人: "assets/characters/char_realman.png", 地仙: "assets/characters/char_earth_immortal.png" };
-const SPELL_ICONS = { spell_thunder_01: "assets/spells/spell_palm_thunder.png", spell_fire_01: "assets/spells/spell_spirit_fire.png", spell_weapon_01: "assets/spells/spell_artifact_control.png" };
+const CHARACTER_PATHS = {
+  炼气士: "assets/characters/char_cultivator.jpg",
+  真人: "assets/characters/char_realman.jpg",
+  地仙: "assets/characters/char_earth_immortal.jpg",
+};
 
+// 术法图标：四阶/五阶神通暂无专属图，回退到本系最高阶图标
+const SPELL_ICONS = {
+  spell_thunder_01: "assets/spells/spell_palm_thunder.jpg",
+  spell_thunder_02: "assets/spells/spell_thunder_02.jpg",
+  spell_thunder_03: "assets/spells/spell_thunder_03.jpg",
+  spell_thunder_04: "assets/spells/spell_thunder_03.jpg",
+  spell_thunder_05: "assets/spells/spell_thunder_03.jpg",
+  spell_fire_01: "assets/spells/spell_spirit_fire.jpg",
+  spell_fire_02: "assets/spells/spell_fire_02.jpg",
+  spell_fire_03: "assets/spells/spell_fire_03.jpg",
+  spell_fire_04: "assets/spells/spell_fire_04.jpg",
+  spell_fire_05: "assets/spells/spell_fire_04.jpg",
+  spell_fire_shenhuozhao_legacy: "assets/spells/spell_fire_04.jpg",
+  spell_weapon_01: "assets/spells/spell_artifact_control.jpg",
+  spell_weapon_02: "assets/spells/spell_weapon_02.jpg",
+  spell_weapon_03: "assets/spells/spell_weapon_03.jpg",
+  spell_weapon_04: "assets/spells/spell_weapon_03.jpg",
+  spell_weapon_05: "assets/spells/spell_weapon_03.jpg",
+  spell_soul_01: "assets/spells/spell_soul_01.jpg",
+  spell_soul_02: "assets/spells/spell_soul_02.jpg",
+  spell_soul_03: "assets/spells/spell_soul_03.jpg",
+  spell_soul_04: "assets/spells/spell_soul_03.jpg",
+  spell_soul_05: "assets/spells/spell_soul_03.jpg",
+  spell_calamity_01: "assets/spells/spell_calamity_01.jpg",
+  spell_calamity_02: "assets/spells/spell_calamity_02.jpg",
+  spell_calamity_04: "assets/spells/spell_calamity_02.jpg",
+  spell_calamity_05: "assets/spells/spell_calamity_02.jpg",
+  spell_earth_01: "assets/spells/spell_earth_01.jpg",
+  spell_water_01: "assets/spells/spell_water_01.jpg",
+  spell_sword_01: "assets/spells/spell_sword_01.jpg",
+};
+
+// 法宝图标：残影/影系列回退到本体或相近法宝
 const TREASURE_ICONS = {
-  treasure_001: "assets/treasures/treasure_lightwood_sword.png", treasure_002: "assets/treasures/treasure_spirit_gourd.png",
-  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.png", treasure_004: "assets/treasures/treasure_subduing_demon_bell.png",
-  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.png", treasure_006: "assets/treasures/treasure_bronze_soul_mirror.png",
-  treasure_007: "assets/treasures/treasure_gold_light_seal.png", treasure_008: "assets/treasures/treasure_calm_jade_pendant.png",
-  treasure_009: "assets/treasures/treasure_subduing_demon_bell.png",
+  treasure_001: "assets/treasures/treasure_lightwood_sword.jpg",
+  treasure_002: "assets/treasures/treasure_spirit_gourd.jpg",
+  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.jpg",
+  treasure_004: "assets/treasures/treasure_subduing_demon_bell.jpg",
+  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.jpg",
+  treasure_006: "assets/treasures/treasure_bronze_soul_mirror.jpg",
+  treasure_007: "assets/treasures/treasure_gold_light_seal.jpg",
+  treasure_008: "assets/treasures/treasure_calm_jade_pendant.jpg",
+  treasure_009: "assets/treasures/treasure_seven_treasure_tree.jpg",
+  treasure_010: "assets/treasures/treasure_qiankun_ring.jpg",
+  treasure_011: "assets/treasures/treasure_huntian_sash.jpg",
+  treasure_012: "assets/treasures/treasure_windfire_wheels.jpg",
+  treasure_013: "assets/treasures/treasure_xiantian_sword.jpg",
+  treasure_014: "assets/treasures/treasure_wuse_stone.jpg",
+  treasure_015: "assets/treasures/treasure_seven_treasure_tree.jpg",
+  treasure_016: "assets/treasures/treasure_golden_dragon_scissors.jpg",
+  treasure_017: "assets/treasures/treasure_dragon_soul_whip.jpg",
+  treasure_018: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_019: "assets/treasures/icon_treasure_019.png",
+  treasure_020: "assets/treasures/treasure_huntian_sash.jpg",
+  treasure_021: "assets/treasures/icon_treasure_021.png",
+  treasure_022: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_023: "assets/treasures/icon_treasure_019.png",
+  treasure_024: "assets/treasures/treasure_wuse_stone.jpg",
+  treasure_025: "assets/treasures/treasure_golden_dragon_scissors.jpg",
+  treasure_026: "assets/treasures/treasure_spirit_gourd.jpg",
+  treasure_027: "assets/treasures/icon_treasure_027.png",
+  treasure_028: "assets/treasures/icon_treasure_021.png",
+  treasure_029: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_030: "assets/treasures/icon_treasure_030.png",
+};
+
+// Boss 立绘（暂无专属图的 Boss 不显示立绘）
+const BOSS_ICONS = {
+  boss_001: "assets/bosses/boss_001_shanye_yaoshou.png",
+  boss_005: "assets/bosses/boss_005_donghai_longbing.png",
+  boss_014: "assets/bosses/boss_014_baijian.png",
+  boss_015: "assets/bosses/boss_015_tongtian_canying.png",
+  boss_017: "assets/bosses/boss_017_nuwa_canying.png",
+  boss_018: "assets/bosses/boss_018_laojun_canying.png",
+};
+
+// 封神人物立绘（道友结缘卡）
+const NPC_ICONS = {
+  nezha: "assets/characters/npc_nezha.png",
+  yangjian: "assets/characters/npc_yangjian.png",
+  ziya: "assets/characters/npc_ziya.png",
+  tongtian: "assets/characters/npc_tongtian.png",
+};
+
+// 山河图地点图标
+const MAP_NODE_ICONS = {
+  fengshen_tai: "assets/map/icons/icon_place_fengshentai.png",
+  chaoge: "assets/map/icons/icon_place_chaoge.png",
+  yuxu: "assets/map/icons/icon_place_yuxugong.png",
+  xiqi: "assets/map/icons/icon_place_xiqi.png",
+  jin_ao: "assets/map/icons/icon_place_jinaodao.png",
+  chentang: "assets/map/icons/icon_place_chentangguan.png",
+  kulou: "assets/map/icons/icon_place_kuloushan.png",
+  wild: "assets/map/icons/icon_place_yaohuan.png",
+  cave: "assets/map/icons/icon_place_dongfu.png",
 };
 
 const MAP_ACTION = { map_001: "wild_travel", map_002: "chentang_patrol", map_003: "kulou_explore" };

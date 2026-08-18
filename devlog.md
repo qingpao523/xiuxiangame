@@ -2,6 +2,52 @@
 
 ---
 
+## 2026-08-16 — 美术接入：内容美术全量接线（61 素材 / 80 引用全解析）
+
+### 背景
+
+美术需求（`美术需求.md`）产出的素材到位，本批次把内容美术接入代码。核心问题：代码原引用 `.png` 但实际素材多为 `.jpg`，导致几乎所有图片此前都是坏的；且新内容（背景/术法/法宝/Boss/NPC/地图图标）无映射。
+
+### 变更摘要
+
+**ui-constants.js（资源路径映射全量重写）**
+- `ICON_PATHS`：8 资源图标 `.png`→`.jpg`
+- `BACKGROUND_PATHS`：3→10 个境界阶段映射到 6 张底图（无专属图的阶段回退相近场景：十绝/万仙→西岐战场，九曲黄河→骷髅山暗色，多宝→封神台）
+- `CHARACTER_PATHS`：3 主角立绘 `.png`→`.jpg`
+- `SPELL_ICONS`：3→28 门术法图标（四阶/五阶神通回退本系最高阶图标）
+- `TREASURE_ICONS`：9→30 件法宝图标（残影/影系列回退本体或相近法宝）
+- 新增 `BOSS_ICONS`（6 Boss 立绘）、`NPC_ICONS`（4 封神人物立绘）、`MAP_NODE_ICONS`（9 山河图地点图标）
+
+**ui.js**
+- Boss 挑战卡显示 Boss 立绘（有图则显示，复用 `.card img` 样式）
+- 道友结缘卡显示 NPC 立绘（`.npc-portrait` 圆形头像，无图回退字符 glyph）
+
+**world-map.js**
+- 山河图地点节点用真实图标（`.world-map-node-icon`）替代字符 glyph，reached/current/locked 三态用 filter 区分（金光/呼吸光/灰化）
+
+**style.css**
+- 山河图画布背景换为 `world_map_base_parchment.jpg` 羊皮底图（叠暗色遮罩保证节点/路线可读），水印"示意图"字样去除
+- 新增 `.npc-portrait`、`.world-map-node-icon` 及三态样式
+- 卷首演出背景 `.png`→`.jpg`
+
+### 验证记录
+
+- 20 个 JS 文件 `node --check` 全过
+- 代码引用的 80 个素材路径全部存在于磁盘（零缺失）
+- 修复要点：扩展名错配（png→jpg）是本批次主要 bug，此前资源/背景/立绘/术法/法宝图全部加载失败
+
+### 待接入（19 素材，列为单独视觉打磨 pass，需看渲染效果联调，不盲接）
+
+- UI 进度条/资源条（3）：当前为 CSS 圆角胶囊+渐变，jpg 不透明会盖住圆角
+- UI 按钮/边框（3）：需九宫格切图参数
+- UI 图标（3）：lock/red_dot/unlock_flash，red_dot 当前 CSS 圆点更精致
+- VFX（5）：breakthrough/level_up/treasure/chance/collect，jpg 不透明不宜做透明叠层，且破劫已改用画卷演出，接入点需重设计
+- 山河图分层（5）：terrain/routes/fog/marker/border，routes/terrain 需与节点坐标对齐（现节点为 SVG 示意图设计），盲叠会错位
+
+判断：这 19 个均为"替换可用 CSS 的皮肤层"且多不透明，盲接大概率破坏现有 CSS UI（违背画卷感受），故留作视觉打磨 pass 由人看着渲染联调。
+
+---
+
 ## 2026-08-16 — P0 战斗改造：本命流派构筑身份 + Boss 克制闭环（design/6.1 落地）
 
 ### 背景

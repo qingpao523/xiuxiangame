@@ -1375,10 +1375,10 @@ body {
   pointer-events: none;
 }
 
-#prologue-layer[data-scene="0"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.png"); opacity: 0.7; }
-#prologue-layer[data-scene="1"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.png"); opacity: 0.45; }
-#prologue-layer[data-scene="2"]::before { background-image: url("assets/backgrounds/bg_chentang_pass.png"); opacity: 0.52; }
-#prologue-layer[data-scene="3"]::before { background-image: url("assets/backgrounds/bg_bone_mountain_edge.png"); opacity: 0.5; }
+#prologue-layer[data-scene="0"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.jpg"); opacity: 0.7; }
+#prologue-layer[data-scene="1"]::before { background-image: url("assets/backgrounds/bg_mountain_cave.jpg"); opacity: 0.45; }
+#prologue-layer[data-scene="2"]::before { background-image: url("assets/backgrounds/bg_chentang_pass.jpg"); opacity: 0.52; }
+#prologue-layer[data-scene="3"]::before { background-image: url("assets/backgrounds/bg_bone_mountain_edge.jpg"); opacity: 0.5; }
 
 #prologue-scroll {
   position: relative;
@@ -2005,14 +2005,14 @@ body {
   border: 1px solid rgba(160, 135, 85, 0.5);
   border-radius: 14px;
   background:
-    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(120, 96, 44, 0.35), transparent 70%),
-    radial-gradient(ellipse 60% 45% at 80% 75%, rgba(30, 74, 74, 0.3), transparent 70%),
-    rgba(10, 12, 11, 0.82);
+    radial-gradient(ellipse 70% 60% at 50% 30%, rgba(120, 96, 44, 0.22), transparent 70%),
+    linear-gradient(rgba(8, 10, 10, 0.5), rgba(8, 10, 10, 0.58)),
+    url("assets/map/world_map_base_parchment.jpg") center / cover;
   overflow: hidden;
 }
 
 #world-map-canvas::before {
-  content: "封神山河图 · 示意图";
+  content: "封神山河图";
   position: absolute;
   left: 50%;
   bottom: 10px;
@@ -2356,3 +2356,33 @@ body {
   color:#7a7468;font-size:12px;letter-spacing:.2em;padding:6px 14px;border-radius:3px;
   opacity:0;pointer-events:none;transition:opacity .6s;font-family:inherit;}
 #ss-skip.show{opacity:.7;pointer-events:auto;}
+
+/* ---- 美术接入：NPC 立绘 / 山河图地点图标（design 美术需求） ---- */
+.npc-portrait {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 214, 120, 0.6);
+  box-shadow: 0 0 8px rgba(255, 210, 120, 0.2);
+  margin-top: 2px;
+}
+
+.world-map-node-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.85));
+}
+.world-map-node.reached .world-map-node-icon {
+  filter: drop-shadow(0 0 6px rgba(255, 210, 120, 0.6));
+}
+.world-map-node.current .world-map-node-icon {
+  filter: drop-shadow(0 0 9px rgba(255, 217, 122, 0.95));
+  animation: navGlow 1.4s ease-in-out infinite;
+}
+.world-map-node.locked .world-map-node-icon {
+  filter: grayscale(0.75) brightness(0.55);
+  opacity: 0.7;
+}

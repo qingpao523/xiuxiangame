@@ -827,7 +827,8 @@ function renderMapPanel(body, state) {
     const boss = DataManager.getById("boss_table", bossId);
     if (Object.keys(boss).length && UnlockManager.conditionMet(state, String(boss.unlock_condition || ""))) {
       const bossCard = document.createElement("div"); bossCard.className = "card";
-      const bInfo = document.createElement("div"); bInfo.className = "card-info";
+      if (BOSS_ICONS[bossId]) { const bImg = document.createElement("img"); bImg.src = BOSS_ICONS[bossId]; bImg.alt = ""; bossCard.appendChild(bImg); }
+        const bInfo = document.createElement("div"); bInfo.className = "card-info";
       const bName = document.createElement("div"); bName.className = "card-name";
       const cleared = int(state.boss_clears[bossId]) > 0;
       bName.textContent = `挑战：${boss.boss_name}${cleared ? "（已伏）" : ""}`;
@@ -985,7 +986,9 @@ function renderLogPanel(body, state) {
       const row = DataManager.getById("companion_table", cid);
       if (!Object.keys(row).length) continue;
       const card = document.createElement("div"); card.className = "card selected";
-      const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "友";
+      let glyph;
+        if (NPC_ICONS[cid]) { glyph = document.createElement("img"); glyph.className = "npc-portrait"; glyph.src = NPC_ICONS[cid]; glyph.alt = ""; }
+        else { glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "友"; }
       const info = document.createElement("div"); info.className = "card-info";
       const name = document.createElement("div"); name.className = "card-name"; name.textContent = row.name || cid;
       const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = row.bond_passive_desc || "";

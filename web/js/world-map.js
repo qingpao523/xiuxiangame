@@ -117,7 +117,12 @@ const WorldMap = {
     el.style.left = `${node.x}%`;
     el.style.top = `${node.y}%`;
     el.title = node.desc;
-    const glyph = this._node("span", "world-map-node-glyph", this._glyph(node.kind));
+    let glyph;
+      if (typeof MAP_NODE_ICONS !== "undefined" && MAP_NODE_ICONS[node.id]) {
+        glyph = document.createElement("img"); glyph.className = "world-map-node-icon"; glyph.src = MAP_NODE_ICONS[node.id]; glyph.alt = "";
+      } else {
+        glyph = this._node("span", "world-map-node-glyph", this._glyph(node.kind));
+      }
     const label = this._node("span", "world-map-node-label", node.name);
     el.append(glyph, label);
     el.addEventListener("click", () => this._onNodeClick(state, node));
