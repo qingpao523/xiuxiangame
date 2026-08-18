@@ -978,6 +978,19 @@ const BattleEngine = {
         if (ms.pearlsUsed >= 26) ms.pearlsUsed = 0;
         break;
       }
+      case "four_swords": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main) {
+          const swords = [
+            { type: "attack", value: Math.round(main.power * 0.28), label: "诛仙剑落", short: "诛仙" },
+            { type: "attack", value: Math.round(main.power * 0.30), label: "戮仙剑斩", short: "戮仙" },
+            { type: "curse_burn", ratio: 0.04, label: "陷仙剑火", short: "陷仙" },
+            { type: "attack", value: Math.round(main.power * 0.32), label: "绝仙剑灭", short: "绝仙" },
+          ];
+          main.intent = swords[(ms.turnCount - 1) % 4];
+        }
+        break;
+      }
       default: break;
     }
   },
@@ -1049,6 +1062,27 @@ const BattleEngine = {
         if (ms.turnCount % 4 === 0) {
           battle.pictureWorld = 3;
           battle.pendingEvents.push("女娲残影展开山河社稷图——你被拉入图中！3 回合内伤害 -50%，但受到的伤害也 -50%。");
+        }
+        break;
+      }
+      case "charge_strike": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main && ms.turnCount % 3 === 0) {
+          const dmg = this._damagePlayer(state, battle, Math.round(main.power * 0.5));
+          events.push(`${main.name}蓄力重击，你受 ${dmg} 伤害！`);
+        }
+        break;
+      }
+      case "pangu_strike": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main) {
+          if (ms.turnCount % 3 === 0) {
+            const dmg = this._damagePlayer(state, battle, Math.round(main.power * 0.8));
+            events.push(`${main.name}开天一击！你受 ${dmg} 伤害！`);
+          } else {
+            main.block += Math.round(main.hpMax * 0.3);
+            events.push(`${main.name}罡气护体。`);
+          }
         }
         break;
       }

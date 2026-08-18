@@ -405,7 +405,8 @@ const Game = {
     this.state.boss_counts_today[bossId] = int(this.state.boss_counts_today[bossId]) + 1;
     this._log(`你踏入${boss.boss_name}的巢穴，妖气扑面而来。`);
     const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
-      boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }] }[bossId] || [];
+      boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }],
+      boss_020: [{ name: "碧霄", power: num(boss.recommended_power) * 0.5 }, { name: "琼霄", power: num(boss.recommended_power) * 0.5 }] }[bossId] || []; // boss_020 trio_attack 机制：三霄三体同时
     const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
     this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, weakness: boss.weakness || null, payload: { bossId } });
     this._afterMutated();

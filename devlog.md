@@ -2,6 +2,41 @@
 
 ---
 
+## 2026-08-16 — 实现完整性审计：根除"数据有但实现无"模式（代码审查后续）
+
+### 背景
+
+上一轮对抗性审查发现 T4/T5 神通"数据有但实现无"的致命 bug。本批次做**实现完整性审计**，确认这一模式不在别处存在，并根除。新增可复用审计工具 `audit_completeness.js`。
+
+### 审计发现与处理
+
+**① 5 个 legacy 术法（移除）**
+- spell_earth_01（土遁术）/ spell_water_01（水幕术）/ spell_sword_01（飞剑术）/ spell_soul_03（缚灵咒）/ spell_fire_shenhuozhao_legacy（神火罩）——有 unlock_realm（可学）但无 tier/school、无 CARD_DEFS、无 playCard。
+- 定性：5 系术法体系确立前的遗留数据，玩家若学会则卡牌无效果（同 T4/T5 致命模式）。不属于当前 5 系设计。
+- 处理：从 spell_table 移除（跨系统审计确认无外部引用，移除安全）。术法 28 → 23。
+
+**② 4 个 Boss 机制（实现）**
+- charge_strike（殷商守将）：每 3 回合蓄力重击（power×0.5）。
+- pangu_strike（元始天尊）：每 3 回合开天一击（power×0.8），普通回合罡气护体 +30%。
+- four_swords（通天教主）：诛仙→戮仙→陷仙→绝仙四剑意图循环。
+- trio_attack（三霄）：云霄（主）+ 碧霄 + 琼霄三体同时（经 startBossBattle adds 实现）。
+
+**③ 审计工具自身的误报（修复）**
+- 孤儿定义检查的正则过宽，误匹配 CRAFT_QUALITY（上/中/下品）、SCHOOL_PASSIVES（雷/火/剑/魂/劫）、FEATURE_UNLOCK_TEXT 等非卡牌对象。修正为只解析 CARD_DEFS 对象内部。
+- Boss 机制检查只搜 battle-engine.js，漏掉经 game.js adds 实现的 trio_attack。修正为同时搜 battle-engine.js 与 game.js。
+
+### 验证记录
+
+- 实现完整性审计：51 张牌库卡牌全部有 CARD_DEFS + playCard（0 缺口）；CARD_DEFS 无孤儿定义；19 种 Boss 机制全部有处理（0 未处理）。**零缺口**。
+- 跨系统完整性审计：零问题。
+- 21 个 JS 文件 node --check 全过。
+
+### 结论
+
+"数据有但实现无"模式已根除：所有可学卡牌均有战斗实现，所有 Boss 机制均有处理。审计工具（audit_integrity + audit_completeness）可作为后续回归检查复用。
+
+---
+
 ## 2026-08-16 — 对抗性代码审查：发现并修复 5 处问题（含 1 处致命）
 
 ### 背景
