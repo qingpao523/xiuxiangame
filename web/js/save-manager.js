@@ -44,6 +44,7 @@ const SaveManager = {
       boss_counts_today: {},
       action_counts_total: {},
       action_counts_today: {},
+        map_explores: {},
       current_action: null,
       current_goal_id: "goal_001",
       completed_goals: [],
@@ -83,6 +84,7 @@ const SaveManager = {
     state.boss_clears = state.boss_clears || {};
     state.boss_counts_today = state.boss_counts_today || {};
     state.action_counts_total = state.action_counts_total || {};
+    state.map_explores = state.map_explores || {};
     state.action_counts_today = state.action_counts_today || {};
     state.current_action = state.current_action || null;
     state.current_goal_id = str(state.current_goal_id, "goal_001");

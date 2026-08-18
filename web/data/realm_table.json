@@ -690,6 +690,2325 @@
         "MVP",
         "前七天"
       ]
+    },
+    {
+      "realm_id": "dx_02",
+      "sort_order": 22,
+      "realm_name": "地仙2重",
+      "major_realm": "地仙",
+      "minor_level": 2,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 35000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 30,
+      "base_mana_per_min": 18000,
+      "combat_power_base": 600000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙2重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_03",
+      "sort_order": 23,
+      "realm_name": "地仙3重",
+      "major_realm": "地仙",
+      "minor_level": 3,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 45000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 36,
+      "base_mana_per_min": 22000,
+      "combat_power_base": 800000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙3重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_04",
+      "sort_order": 24,
+      "realm_name": "地仙4重",
+      "major_realm": "地仙",
+      "minor_level": 4,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 60000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 43,
+      "base_mana_per_min": 26000,
+      "combat_power_base": 1100000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙4重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_05",
+      "sort_order": 25,
+      "realm_name": "地仙5重",
+      "major_realm": "地仙",
+      "minor_level": 5,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 80000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 52,
+      "base_mana_per_min": 31000,
+      "combat_power_base": 1500000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙5重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_06",
+      "sort_order": 26,
+      "realm_name": "地仙6重",
+      "major_realm": "地仙",
+      "minor_level": 6,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 105000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 62,
+      "base_mana_per_min": 37000,
+      "combat_power_base": 2000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙6重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_07",
+      "sort_order": 27,
+      "realm_name": "地仙7重",
+      "major_realm": "地仙",
+      "minor_level": 7,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 140000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 75,
+      "base_mana_per_min": 45000,
+      "combat_power_base": 2700000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙7重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_08",
+      "sort_order": 28,
+      "realm_name": "地仙8重",
+      "major_realm": "地仙",
+      "minor_level": 8,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 185000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 90,
+      "base_mana_per_min": 54000,
+      "combat_power_base": 3600000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙8重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_09",
+      "sort_order": 29,
+      "realm_name": "地仙9重",
+      "major_realm": "地仙",
+      "minor_level": 9,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 245000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 108,
+      "base_mana_per_min": 65000,
+      "combat_power_base": 4800000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙9重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "dx_10",
+      "sort_order": 30,
+      "realm_name": "地仙10重",
+      "major_realm": "地仙",
+      "minor_level": 10,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 325000,
+      "breakthrough_id_to_next": "bt_003",
+      "base_daoxing_per_min": 130,
+      "base_mana_per_min": 78000,
+      "combat_power_base": 6500000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "地仙10重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "地脉灵光稳固",
+      "ui": {
+        "badge_color_key": "earth_gold",
+        "background_phase": "kulou_edge",
+        "character_phase": "地仙"
+      },
+      "tags": [
+        "地仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_01",
+      "sort_order": 31,
+      "realm_name": "天仙1重",
+      "major_realm": "天仙",
+      "minor_level": 1,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 30000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 25,
+      "base_mana_per_min": 15000,
+      "combat_power_base": 450000,
+      "unlock_ids": [
+        "map_004_preview"
+      ],
+      "feature_tips": [
+        "西岐战场预告"
+      ],
+      "lore_text": "破地仙劫后，你已可腾云入天，俯瞰人间兵火。封神大劫的边缘，终于向你展开。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_02",
+      "sort_order": 32,
+      "realm_name": "天仙2重",
+      "major_realm": "天仙",
+      "minor_level": 2,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 40000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 30,
+      "base_mana_per_min": 18000,
+      "combat_power_base": 600000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "天风猎猎，带着战场的血腥气。你驾云而行，开始学会从九天之上俯瞰人间。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_03",
+      "sort_order": 33,
+      "realm_name": "天仙3重",
+      "major_realm": "天仙",
+      "minor_level": 3,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 55000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 36,
+      "base_mana_per_min": 22000,
+      "combat_power_base": 800000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "道行渐深，榜文看你的目光渐重。你已能隐约听见西岐战场的兵戈之声。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_04",
+      "sort_order": 34,
+      "realm_name": "天仙4重",
+      "major_realm": "天仙",
+      "minor_level": 4,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 75000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 43,
+      "base_mana_per_min": 26000,
+      "combat_power_base": 1100000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "天仙道行渐成，地脉灵光已在脚下沉去。你望见的，是更远处的人间烽火。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_05",
+      "sort_order": 35,
+      "realm_name": "天仙5重",
+      "major_realm": "天仙",
+      "minor_level": 5,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 100000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 52,
+      "base_mana_per_min": 31000,
+      "combat_power_base": 1500000,
+      "unlock_ids": [
+        "map_004",
+        "boss_006"
+      ],
+      "feature_tips": [
+        "进入西岐战场"
+      ],
+      "lore_text": "西岐战场旌旗蔽日，功德与劫气并生。你第一次真正踏入封神棋局。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_06",
+      "sort_order": 36,
+      "realm_name": "天仙6重",
+      "major_realm": "天仙",
+      "minor_level": 6,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 135000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 62,
+      "base_mana_per_min": 37000,
+      "combat_power_base": 2000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "战场之上，功德与劫气纠缠。你每走一步，榜文都在默默注视。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_07",
+      "sort_order": 37,
+      "realm_name": "天仙7重",
+      "major_realm": "天仙",
+      "minor_level": 7,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 180000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 75,
+      "base_mana_per_min": 45000,
+      "combat_power_base": 2700000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "你的名字尚未上榜，但榜文已经记住了你的气机。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_08",
+      "sort_order": 38,
+      "realm_name": "天仙8重",
+      "major_realm": "天仙",
+      "minor_level": 8,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 240000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 90,
+      "base_mana_per_min": 54000,
+      "combat_power_base": 3600000,
+      "unlock_ids": [
+        "boss_007"
+      ],
+      "feature_tips": [
+        "殷商守将挑战"
+      ],
+      "lore_text": "殷商守将的残影仍在战场游荡，等待有缘人破之。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_09",
+      "sort_order": 39,
+      "realm_name": "天仙9重",
+      "major_realm": "天仙",
+      "minor_level": 9,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 320000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 108,
+      "base_mana_per_min": 65000,
+      "combat_power_base": 4800000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "天仙道行将满，三花初现之兆已在头顶隐隐浮动。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "tx_10",
+      "sort_order": 40,
+      "realm_name": "天仙10重",
+      "major_realm": "天仙",
+      "minor_level": 10,
+      "stage": "仙道初成",
+      "required_daoxing_to_next": 430000,
+      "breakthrough_id_to_next": "bt_003",
+      "base_daoxing_per_min": 130,
+      "base_mana_per_min": 78000,
+      "combat_power_base": 6500000,
+      "unlock_ids": [
+        "breakthrough_bt_003"
+      ],
+      "feature_tips": [
+        "真仙破劫入口"
+      ],
+      "lore_text": "天仙圆满，三花初现之兆已显。破真仙劫，便可称真人。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "腾云入天",
+      "ui": {
+        "badge_color_key": "sky_gold",
+        "background_phase": "xichi_far",
+        "character_phase": "天仙"
+      },
+      "tags": [
+        "天仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_01",
+      "sort_order": 41,
+      "realm_name": "真仙1重",
+      "major_realm": "真仙",
+      "minor_level": 1,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 500000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 150,
+      "base_mana_per_min": 90000,
+      "combat_power_base": 8000000,
+      "unlock_ids": [
+        "spell_tier4"
+      ],
+      "feature_tips": [
+        "术法进阶为神通"
+      ],
+      "lore_text": "三花初现，术法不再是术法，而是神通。你的掌心雷，从此可称五雷正法。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_02",
+      "sort_order": 42,
+      "realm_name": "真仙2重",
+      "major_realm": "真仙",
+      "minor_level": 2,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 680000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 180,
+      "base_mana_per_min": 108000,
+      "combat_power_base": 11000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "神通初成，术法再非旧貌。五雷正法之威，已可在你掌心流转。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_03",
+      "sort_order": 43,
+      "realm_name": "真仙3重",
+      "major_realm": "真仙",
+      "minor_level": 3,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 920000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 220,
+      "base_mana_per_min": 130000,
+      "combat_power_base": 15000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "三花渐明，道基渐固。神通之路，才刚刚开始。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_04",
+      "sort_order": 44,
+      "realm_name": "真仙4重",
+      "major_realm": "真仙",
+      "minor_level": 4,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 1250000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 265,
+      "base_mana_per_min": 156000,
+      "combat_power_base": 20000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "劫气渐重，你却已能将其化为自身道行的养料。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_05",
+      "sort_order": 45,
+      "realm_name": "真仙5重",
+      "major_realm": "真仙",
+      "minor_level": 5,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 1700000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 320,
+      "base_mana_per_min": 187000,
+      "combat_power_base": 27000000,
+      "unlock_ids": [
+        "map_005",
+        "boss_008"
+      ],
+      "feature_tips": [
+        "十绝阵外围"
+      ],
+      "lore_text": "十绝阵外围，阵纹残刻在山石之间。金仙级修士的试炼场，你已可踏入。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_06",
+      "sort_order": 46,
+      "realm_name": "真仙6重",
+      "major_realm": "真仙",
+      "minor_level": 6,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 2300000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 385,
+      "base_mana_per_min": 225000,
+      "combat_power_base": 36000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "阵纹残刻中藏着阵道至理。你参悟其中一二，破阵之法渐入胸怀。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_07",
+      "sort_order": 47,
+      "realm_name": "真仙7重",
+      "major_realm": "真仙",
+      "minor_level": 7,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 3100000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 460,
+      "base_mana_per_min": 270000,
+      "combat_power_base": 49000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜文残影现于战场，记录着劫中陨落的真灵。你读之，心有所感。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_08",
+      "sort_order": 48,
+      "realm_name": "真仙8重",
+      "major_realm": "真仙",
+      "minor_level": 8,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 4200000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 555,
+      "base_mana_per_min": 324000,
+      "combat_power_base": 66000000,
+      "unlock_ids": [
+        "boss_010",
+        "boss_011"
+      ],
+      "feature_tips": [
+        "榜文残影挑战"
+      ],
+      "lore_text": "榜文残影愈发清晰，你已能看见榜上之人留下的神通残响。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_09",
+      "sort_order": 49,
+      "realm_name": "真仙9重",
+      "major_realm": "真仙",
+      "minor_level": 9,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 5700000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 670,
+      "base_mana_per_min": 389000,
+      "combat_power_base": 89000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "真仙道行将满，三花将聚。金仙之劫，已在眼前不远。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "zx_10",
+      "sort_order": 50,
+      "realm_name": "真仙10重",
+      "major_realm": "真仙",
+      "minor_level": 10,
+      "stage": "三花初现",
+      "required_daoxing_to_next": 7700000,
+      "breakthrough_id_to_next": "bt_004",
+      "base_daoxing_per_min": 800,
+      "base_mana_per_min": 467000,
+      "combat_power_base": 120000000,
+      "unlock_ids": [
+        "breakthrough_bt_004"
+      ],
+      "feature_tips": [
+        "金仙破劫入口"
+      ],
+      "lore_text": "真仙圆满，三花将聚。破金仙劫，五气朝元，便可称金仙。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "三花初现",
+      "ui": {
+        "badge_color_key": "purple_gold",
+        "background_phase": "shijue_far",
+        "character_phase": "真仙"
+      },
+      "tags": [
+        "真仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_01",
+      "sort_order": 51,
+      "realm_name": "金仙1重",
+      "major_realm": "金仙",
+      "minor_level": 1,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 10000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 900,
+      "base_mana_per_min": 540000,
+      "combat_power_base": 150000000,
+      "unlock_ids": [
+        "map_005",
+        "boss_010",
+        "boss_011",
+        "boss_012"
+      ],
+      "feature_tips": [
+        "榜文残影挑战开启"
+      ],
+      "lore_text": "三花聚顶，五气朝元。金仙道果初成，封神榜上，你的名字开始发光。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_02",
+      "sort_order": 52,
+      "realm_name": "金仙2重",
+      "major_realm": "金仙",
+      "minor_level": 2,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 14000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1100,
+      "base_mana_per_min": 650000,
+      "combat_power_base": 210000000,
+      "unlock_ids": [
+        "boss_012"
+      ],
+      "feature_tips": [],
+      "lore_text": "榜上有名发光，却不被榜所缚。这是金仙道果的代价，也是荣耀。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_03",
+      "sort_order": 53,
+      "realm_name": "金仙3重",
+      "major_realm": "金仙",
+      "minor_level": 3,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 19000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1350,
+      "base_mana_per_min": 790000,
+      "combat_power_base": 290000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "五气朝元，五行之力为你所用。你的神通，已触及大道门槛。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_04",
+      "sort_order": 54,
+      "realm_name": "金仙4重",
+      "major_realm": "金仙",
+      "minor_level": 4,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 26000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1650,
+      "base_mana_per_min": 960000,
+      "combat_power_base": 400000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "十绝阵的阵纹机理，你已能看懂大半。破阵之道，在于一心。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_05",
+      "sort_order": 55,
+      "realm_name": "金仙5重",
+      "major_realm": "金仙",
+      "minor_level": 5,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 35000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2000,
+      "base_mana_per_min": 1160000,
+      "combat_power_base": 550000000,
+      "unlock_ids": [
+        "map_006",
+        "boss_009"
+      ],
+      "feature_tips": [
+        "九曲黄河残域"
+      ],
+      "lore_text": "九曲黄河残域，削境之力犹在。你已可踏入其中，不受其害。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_06",
+      "sort_order": 56,
+      "realm_name": "金仙6重",
+      "major_realm": "金仙",
+      "minor_level": 6,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 47000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2450,
+      "base_mana_per_min": 1410000,
+      "combat_power_base": 760000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "削境之力于你如清风拂面。混元金斗之威，你已见过，也已破过。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_07",
+      "sort_order": 57,
+      "realm_name": "金仙7重",
+      "major_realm": "金仙",
+      "minor_level": 7,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 64000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 3000,
+      "base_mana_per_min": 1710000,
+      "combat_power_base": 1050000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "万仙阵的气机隐隐浮现。那一场万仙来朝的盛况，你已能窥见一二。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_08",
+      "sort_order": 58,
+      "realm_name": "金仙8重",
+      "major_realm": "金仙",
+      "minor_level": 8,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 86000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 3650,
+      "base_mana_per_min": 2080000,
+      "combat_power_base": 1450000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "金仙道行渐深，大道在望。榜文看你的目光，已带了几分郑重。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_09",
+      "sort_order": 59,
+      "realm_name": "金仙9重",
+      "major_realm": "金仙",
+      "minor_level": 9,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 116000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 4450,
+      "base_mana_per_min": 2530000,
+      "combat_power_base": 2000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "金仙道行将满，太乙之劫已在九天之上隐隐成型。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "jx_10",
+      "sort_order": 60,
+      "realm_name": "金仙10重",
+      "major_realm": "金仙",
+      "minor_level": 10,
+      "stage": "三花聚顶",
+      "required_daoxing_to_next": 156000000,
+      "breakthrough_id_to_next": "bt_005",
+      "base_daoxing_per_min": 5400,
+      "base_mana_per_min": 3070000,
+      "combat_power_base": 2750000000,
+      "unlock_ids": [
+        "breakthrough_bt_005"
+      ],
+      "feature_tips": [
+        "太乙破劫入口"
+      ],
+      "lore_text": "金仙圆满，大道在望。破太乙劫，便可窥见太乙玄妙。",
+      "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
+      "visual_state": "五气朝元",
+      "ui": {
+        "badge_color_key": "five_color",
+        "background_phase": "huanghe_far",
+        "character_phase": "金仙"
+      },
+      "tags": [
+        "金仙",
+        "P2",
+        "中期"
+      ]
+    },
+    {
+      "realm_id": "ty_01",
+      "sort_order": 61,
+      "realm_name": "太乙1重",
+      "major_realm": "太乙",
+      "minor_level": 1,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 200000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 6500,
+      "base_mana_per_min": 3700000,
+      "combat_power_base": 3500000000,
+      "unlock_ids": [
+        "map_007",
+        "boss_013",
+        "boss_015",
+        "boss_016"
+      ],
+      "feature_tips": [
+        "万仙阵外围·教主残影"
+      ],
+      "lore_text": "金仙圆满，大道初成。太乙玄妙，你已可窥见一角。万仙阵中，教主残影在等你。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_02",
+      "sort_order": 62,
+      "realm_name": "太乙2重",
+      "major_realm": "太乙",
+      "minor_level": 2,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 280000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 7900,
+      "base_mana_per_min": 4500000,
+      "combat_power_base": 4800000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "万仙阵中，教主残影各留一缕道韵。你观之，太乙道行更进一步。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_03",
+      "sort_order": 63,
+      "realm_name": "太乙3重",
+      "major_realm": "太乙",
+      "minor_level": 3,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 390000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 9600,
+      "base_mana_per_min": 5500000,
+      "combat_power_base": 6600000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "太乙玄妙，层层剥开。你每参透一分大道符文，榜文便拿你不住一分。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_04",
+      "sort_order": 64,
+      "realm_name": "太乙4重",
+      "major_realm": "太乙",
+      "minor_level": 4,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 550000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 11700,
+      "base_mana_per_min": 6700000,
+      "combat_power_base": 9100000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "大道符文环绕周身，昼夜不息。太乙之妙，你已得了三分。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_05",
+      "sort_order": 65,
+      "realm_name": "太乙5重",
+      "major_realm": "太乙",
+      "minor_level": 5,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 770000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 14200,
+      "base_mana_per_min": 8100000,
+      "combat_power_base": 12500000000,
+      "unlock_ids": [
+        "map_008",
+        "boss_014",
+        "boss_017"
+      ],
+      "feature_tips": [
+        "封神台·榜文炼化"
+      ],
+      "lore_text": "封神台上，榜文金光直射。你已可踏上此台，直面榜文。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_06",
+      "sort_order": 66,
+      "realm_name": "太乙6重",
+      "major_realm": "太乙",
+      "minor_level": 6,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 1080000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 17200,
+      "base_mana_per_min": 9900000,
+      "combat_power_base": 17200000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "封神台榜文金光，照见劫中陨落者的真灵。你立于台下，观榜上之道。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_07",
+      "sort_order": 67,
+      "realm_name": "太乙7重",
+      "major_realm": "太乙",
+      "minor_level": 7,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 1510000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 20900,
+      "base_mana_per_min": 12000000,
+      "combat_power_base": 23700000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜文之力已拿不住你的道韵。封神榜第一次把你当作对手。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_08",
+      "sort_order": 68,
+      "realm_name": "太乙8重",
+      "major_realm": "太乙",
+      "minor_level": 8,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 2120000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 25400,
+      "base_mana_per_min": 14600000,
+      "combat_power_base": 32600000000,
+      "unlock_ids": [
+        "boss_018"
+      ],
+      "feature_tips": [
+        "老君残影"
+      ],
+      "lore_text": "老君残影现身于万仙阵深处，一缕大道余韵，等你来参。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_09",
+      "sort_order": 69,
+      "realm_name": "太乙9重",
+      "major_realm": "太乙",
+      "minor_level": 9,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 2970000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 30900,
+      "base_mana_per_min": 17700000,
+      "combat_power_base": 44900000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "老君残影已散，大道余韵却仍在识海盘旋。太乙圆满，只欠一步。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "ty_10",
+      "sort_order": 70,
+      "realm_name": "太乙10重",
+      "major_realm": "太乙",
+      "minor_level": 10,
+      "stage": "大道初成",
+      "required_daoxing_to_next": 4160000000,
+      "breakthrough_id_to_next": "bt_006",
+      "base_daoxing_per_min": 37500,
+      "base_mana_per_min": 21500000,
+      "combat_power_base": 61800000000,
+      "unlock_ids": [
+        "breakthrough_bt_006"
+      ],
+      "feature_tips": [
+        "大罗破劫入口"
+      ],
+      "lore_text": "太乙圆满，因果将断。破大罗劫，便可跳出因果。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "大道符文环绕",
+      "ui": {
+        "badge_color_key": "dao_blue",
+        "background_phase": "wanxian_far",
+        "character_phase": "太乙"
+      },
+      "tags": [
+        "太乙",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_01",
+      "sort_order": 71,
+      "realm_name": "大罗1重",
+      "major_realm": "大罗",
+      "minor_level": 1,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 5500000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 45000,
+      "base_mana_per_min": 26000000,
+      "combat_power_base": 85000000000,
+      "unlock_ids": [
+        "boss_019",
+        "boss_020"
+      ],
+      "feature_tips": [
+        "榜文残影·高阶"
+      ],
+      "lore_text": "大罗初成，因果不沾。封神榜对你的压制，轻了三分。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_02",
+      "sort_order": 72,
+      "realm_name": "大罗2重",
+      "major_realm": "大罗",
+      "minor_level": 2,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 7700000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 55000,
+      "base_mana_per_min": 32000000,
+      "combat_power_base": 117000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "因果之线无形无质，你却已能看清。它们落在你身上，再也粘不住。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_03",
+      "sort_order": 73,
+      "realm_name": "大罗3重",
+      "major_realm": "大罗",
+      "minor_level": 3,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 10800000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 67000,
+      "base_mana_per_min": 39000000,
+      "combat_power_base": 161000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜文压制于他人是天威，于你却如清风拂面。此之谓因果不沾。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_04",
+      "sort_order": 74,
+      "realm_name": "大罗4重",
+      "major_realm": "大罗",
+      "minor_level": 4,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 15100000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 82000,
+      "base_mana_per_min": 48000000,
+      "combat_power_base": 222000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜上封神者的残影纷纷向你试手。他们试的不是法力，是你的道够不够格跳出因果。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_05",
+      "sort_order": 75,
+      "realm_name": "大罗5重",
+      "major_realm": "大罗",
+      "minor_level": 5,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 21200000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 100000,
+      "base_mana_per_min": 59000000,
+      "combat_power_base": 306000000000,
+      "unlock_ids": [
+        "boss_021"
+      ],
+      "feature_tips": [
+        "孔宣残影"
+      ],
+      "lore_text": "你已可反制因果。榜文照你，你也能照回去。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_06",
+      "sort_order": 76,
+      "realm_name": "大罗6重",
+      "major_realm": "大罗",
+      "minor_level": 6,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 29700000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 122000,
+      "base_mana_per_min": 72000000,
+      "combat_power_base": 421000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "你开始学会反制因果。一念起，因果生——但你已能让它调头。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_07",
+      "sort_order": 77,
+      "realm_name": "大罗7重",
+      "major_realm": "大罗",
+      "minor_level": 7,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 41600000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 149000,
+      "base_mana_per_min": 88000000,
+      "combat_power_base": 580000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "孔宣残影的五色神光几乎刷动你。你的道域，已学会吞光。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_08",
+      "sort_order": 78,
+      "realm_name": "大罗8重",
+      "major_realm": "大罗",
+      "minor_level": 8,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 58200000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 182000,
+      "base_mana_per_min": 107000000,
+      "combat_power_base": 799000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "身后道域愈发凝实。三千世界中，已有属于你的一方天地。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_09",
+      "sort_order": 79,
+      "realm_name": "大罗9重",
+      "major_realm": "大罗",
+      "minor_level": 9,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 81500000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 222000,
+      "base_mana_per_min": 131000000,
+      "combat_power_base": 1100000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "大罗道行将满，三尸虚影偶现于识海边缘。斩尸之劫，已在眼前。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "dl_10",
+      "sort_order": 80,
+      "realm_name": "大罗10重",
+      "major_realm": "大罗",
+      "minor_level": 10,
+      "stage": "因果不沾",
+      "required_daoxing_to_next": 114000000000,
+      "breakthrough_id_to_next": "bt_007",
+      "base_daoxing_per_min": 270000,
+      "base_mana_per_min": 160000000,
+      "combat_power_base": 1510000000000,
+      "unlock_ids": [
+        "breakthrough_bt_007"
+      ],
+      "feature_tips": [
+        "准圣破劫入口"
+      ],
+      "lore_text": "大罗圆满，斩尸在即。破准圣劫，便可斩却一尸。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "身后显化道域",
+      "ui": {
+        "badge_color_key": "dao_purple",
+        "background_phase": "fengsheng_far",
+        "character_phase": "大罗"
+      },
+      "tags": [
+        "大罗",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_01",
+      "sort_order": 81,
+      "realm_name": "准圣1重",
+      "major_realm": "准圣",
+      "minor_level": 1,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 150000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 320000,
+      "base_mana_per_min": 195000000,
+      "combat_power_base": 2100000000000,
+      "unlock_ids": [
+        "boss_022"
+      ],
+      "feature_tips": [
+        "多宝残影·六魂幡"
+      ],
+      "lore_text": "准圣初成，斩却一尸。你的道，开始有了自己的形状。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_02",
+      "sort_order": 82,
+      "realm_name": "准圣2重",
+      "major_realm": "准圣",
+      "minor_level": 2,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 210000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 390000,
+      "base_mana_per_min": 238000000,
+      "combat_power_base": 2900000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "第一尸已斩，道果愈明。多宝残影的六魂幡，仍悬于九天，等一个能收它的人。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_03",
+      "sort_order": 83,
+      "realm_name": "准圣3重",
+      "major_realm": "准圣",
+      "minor_level": 3,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 294000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 475000,
+      "base_mana_per_min": 290000000,
+      "combat_power_base": 4000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "斩尸之路，每进一步，你自己的形状便清晰一分。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_04",
+      "sort_order": 84,
+      "realm_name": "准圣4重",
+      "major_realm": "准圣",
+      "minor_level": 4,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 412000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 580000,
+      "base_mana_per_min": 354000000,
+      "combat_power_base": 5500000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "第二尸已动。执念与欲望的虚影，各怀心思，等你回头的一瞬。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_05",
+      "sort_order": 85,
+      "realm_name": "准圣5重",
+      "major_realm": "准圣",
+      "minor_level": 5,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 577000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 707000,
+      "base_mana_per_min": 432000000,
+      "combat_power_base": 7600000000000,
+      "unlock_ids": [
+        "map_009"
+      ],
+      "feature_tips": [
+        "混元道场"
+      ],
+      "lore_text": "混元道场，你自己开辟的天地。榜文照不到这里。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_06",
+      "sort_order": 86,
+      "realm_name": "准圣6重",
+      "major_realm": "准圣",
+      "minor_level": 6,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 808000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 862000,
+      "base_mana_per_min": 527000000,
+      "combat_power_base": 10500000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "混元道场中的天地愈发完整。在这里，你即是规则。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_07",
+      "sort_order": 87,
+      "realm_name": "准圣7重",
+      "major_realm": "准圣",
+      "minor_level": 7,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 1130000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1050000,
+      "base_mana_per_min": 643000000,
+      "combat_power_base": 14400000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "第三尸藏于道心最深处。它不说话，但你知道它在等什么。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_08",
+      "sort_order": 88,
+      "realm_name": "准圣8重",
+      "major_realm": "准圣",
+      "minor_level": 8,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 1580000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1280000,
+      "base_mana_per_min": 784000000,
+      "combat_power_base": 19900000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜文连你的道场门槛都照不进来了。封神榜第一次学会了绕开你。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_09",
+      "sort_order": 89,
+      "realm_name": "准圣9重",
+      "major_realm": "准圣",
+      "minor_level": 9,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 2220000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 1560000,
+      "base_mana_per_min": 957000000,
+      "combat_power_base": 27400000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "三尸将尽，混元劫已在九天成型。最后一步，也是最远的一步。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "zs_10",
+      "sort_order": 90,
+      "realm_name": "准圣10重",
+      "major_realm": "准圣",
+      "minor_level": 10,
+      "stage": "斩尸证道",
+      "required_daoxing_to_next": 3100000000000,
+      "breakthrough_id_to_next": "bt_008",
+      "base_daoxing_per_min": 1900000,
+      "base_mana_per_min": 1170000000,
+      "combat_power_base": 37700000000000,
+      "unlock_ids": [
+        "breakthrough_bt_008"
+      ],
+      "feature_tips": [
+        "混元破劫入口"
+      ],
+      "lore_text": "准圣圆满，三尸将尽。破混元劫，便可超脱。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "三尸虚影",
+      "ui": {
+        "badge_color_key": "dao_gold",
+        "background_phase": "duobao_far",
+        "character_phase": "准圣"
+      },
+      "tags": [
+        "准圣",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_01",
+      "sort_order": 91,
+      "realm_name": "混元1重",
+      "major_realm": "混元",
+      "minor_level": 1,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 4000000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2300000,
+      "base_mana_per_min": 1400000000,
+      "combat_power_base": 52000000000000,
+      "unlock_ids": [
+        "map_009"
+      ],
+      "feature_tips": [
+        "混元道果初成"
+      ],
+      "lore_text": "混元初成，与天地同寿。封神榜上，没有你的名字。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_02",
+      "sort_order": 92,
+      "realm_name": "混元2重",
+      "major_realm": "混元",
+      "minor_level": 2,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 5600000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 2800000,
+      "base_mana_per_min": 1700000000,
+      "combat_power_base": 72000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "榜上无名，道却开始在天地间生根。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_03",
+      "sort_order": 93,
+      "realm_name": "混元3重",
+      "major_realm": "混元",
+      "minor_level": 3,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 7800000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 3400000,
+      "base_mana_per_min": 2100000000,
+      "combat_power_base": 99000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "无量清光照彻十方。光之所及，万物生长而不自知。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_04",
+      "sort_order": 94,
+      "realm_name": "混元4重",
+      "major_realm": "混元",
+      "minor_level": 4,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 11000000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 4200000,
+      "base_mana_per_min": 2600000000,
+      "combat_power_base": 137000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "你与天地同寿，与日月同德。天道见你，也要让半子。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_05",
+      "sort_order": 95,
+      "realm_name": "混元5重",
+      "major_realm": "混元",
+      "minor_level": 5,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 15400000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 5100000,
+      "base_mana_per_min": 3100000000,
+      "combat_power_base": 189000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "你已不受天庭敕封，不入封神榜，不沾大教因果。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_06",
+      "sort_order": 96,
+      "realm_name": "混元6重",
+      "major_realm": "混元",
+      "minor_level": 6,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 21500000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 6200000,
+      "base_mana_per_min": 3800000000,
+      "combat_power_base": 260000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "天庭敕书至，你一笑不受。三界之内，已无位置能装下你。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_07",
+      "sort_order": 97,
+      "realm_name": "混元7重",
+      "major_realm": "混元",
+      "minor_level": 7,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 30100000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 7600000,
+      "base_mana_per_min": 4700000000,
+      "combat_power_base": 358000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "大教因果一次次寻来，又一次次被你体外的清光化去。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_08",
+      "sort_order": 98,
+      "realm_name": "混元8重",
+      "major_realm": "混元",
+      "minor_level": 8,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 42200000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 9300000,
+      "base_mana_per_min": 5700000000,
+      "combat_power_base": 493000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "你的道已自成天地。混元大道，只差最后一笔。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_09",
+      "sort_order": 99,
+      "realm_name": "混元9重",
+      "major_realm": "混元",
+      "minor_level": 9,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 59000000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 11300000,
+      "base_mana_per_min": 6900000000,
+      "combat_power_base": 679000000000000,
+      "unlock_ids": [],
+      "feature_tips": [],
+      "lore_text": "混元将成。天道、榜文、大教，一时俱静。它们知道：这盘棋，快装不下你了。",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
+    },
+    {
+      "realm_id": "hy_10",
+      "sort_order": 100,
+      "realm_name": "混元10重",
+      "major_realm": "混元",
+      "minor_level": 10,
+      "stage": "逍遥不灭",
+      "required_daoxing_to_next": 82600000000000,
+      "breakthrough_id_to_next": null,
+      "base_daoxing_per_min": 13800000,
+      "base_mana_per_min": 8500000000,
+      "combat_power_base": 935000000000000,
+      "unlock_ids": [
+        "ending_choice"
+      ],
+      "feature_tips": [
+        "终局三路线抉择"
+      ],
+      "lore_text": "混元圆满。三条路摆在面前：受封天庭、肉身成圣、混元逍遥。你选哪条？",
+      "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
+      "visual_state": "无量清光",
+      "ui": {
+        "badge_color_key": "dao_white",
+        "background_phase": "hunyuan_daochang",
+        "character_phase": "混元"
+      },
+      "tags": [
+        "混元",
+        "P3",
+        "终局"
+      ]
     }
   ]
 }

@@ -1712,7 +1712,7 @@
       "icon_key": "icon_spell_water_01"
     },
     {
-      "spell_id": "spell_fire_04",
+      "spell_id": "spell_fire_shenhuozhao_legacy",
       "spell_name": "神火罩",
       "advanced_names": {
         "真人": "三昧神火",
@@ -2028,6 +2028,1193 @@
         "劫气细雾"
       ],
       "icon_key": "icon_spell_soul_03"
+    },
+    {
+      "spell_id": "spell_thunder_04",
+      "spell_name": "九霄神雷",
+      "advanced_names": {
+        "真仙": "九霄神雷",
+        "金仙": "代天行罚"
+      },
+      "spell_type": "thunder",
+      "spell_school": "thunder",
+      "tier": 4,
+      "unlock_realm": "dx_05",
+      "prerequisite_spell": "spell_thunder_03",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "地仙": 15,
+        "天仙": 20
+      },
+      "effect_type": "burst_boss",
+      "base_effect": {
+        "boss_damage_bonus": 0.16,
+        "thunder_damage_bonus": 0.16,
+        "anti_yao_damage_bonus": 0.12
+      },
+      "bonus_per_level": {
+        "boss_damage_bonus": 0.035,
+        "thunder_damage_bonus": 0.045,
+        "anti_yao_damage_bonus": 0.03
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 10,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 15,
+          "mana_cost": 10000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 22,
+          "mana_cost": 20000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 32,
+          "mana_cost": 38000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 45,
+          "mana_cost": 70000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 62,
+          "mana_cost": 125000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 85,
+          "mana_cost": 220000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 115,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 155,
+          "mana_cost": 650000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 210,
+          "mana_cost": 1100000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 280,
+          "mana_cost": 1850000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 375,
+          "mana_cost": 3100000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 500,
+          "mana_cost": 5200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 660,
+          "mana_cost": 8500000
+        }
+      ],
+      "card_id": "spell_thunder_04",
+      "card_base_damage": 24,
+      "card_damage_per_level": 8,
+      "card_element": "thunder",
+      "card_special": "splash",
+      "card_special_params": {
+        "splash_ratio": 0.5,
+        "anti_yao_bonus": 0.3
+      },
+      "lore_text": "九天应元雷声普化天尊之威，化为九霄神雷。雷落之处，妖邪尽灭，无一幸免。",
+      "visual_keywords": [
+        "九霄雷云",
+        "九道金雷",
+        "普化天尊虚影",
+        "雷海倾泻"
+      ],
+      "icon_key": "icon_spell_thunder"
+    },
+    {
+      "spell_id": "spell_fire_04",
+      "spell_name": "九龙神火",
+      "advanced_names": {
+        "真仙": "九龙神火",
+        "金仙": "焚天炼界"
+      },
+      "spell_type": "fire",
+      "spell_school": "fire",
+      "tier": 4,
+      "unlock_realm": "dx_05",
+      "prerequisite_spell": "spell_fire_03",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "地仙": 15,
+        "天仙": 20
+      },
+      "effect_type": "idle_farming",
+      "base_effect": {
+        "map_reward_bonus": 0.12,
+        "fire_damage_bonus": 0.16,
+        "burn_damage_bonus": 0.14
+      },
+      "bonus_per_level": {
+        "map_reward_bonus": 0.02,
+        "fire_damage_bonus": 0.04,
+        "burn_damage_bonus": 0.035
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 10,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 15,
+          "mana_cost": 10000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 22,
+          "mana_cost": 20000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 32,
+          "mana_cost": 38000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 45,
+          "mana_cost": 70000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 62,
+          "mana_cost": 125000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 85,
+          "mana_cost": 220000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 115,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 155,
+          "mana_cost": 650000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 210,
+          "mana_cost": 1100000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 280,
+          "mana_cost": 1850000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 375,
+          "mana_cost": 3100000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 500,
+          "mana_cost": 5200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 660,
+          "mana_cost": 8500000
+        }
+      ],
+      "card_id": "spell_fire_04",
+      "card_base_damage": 18,
+      "card_damage_per_level": 6,
+      "card_element": "fire",
+      "card_special": "percent_burn",
+      "card_special_params": {
+        "burn_max_hp_ratio_per_turn": 0.05
+      },
+      "lore_text": "九龙神火罩中炼出的真火，九条火龙盘旋不休。不烧尽敌人，绝不熄灭。",
+      "visual_keywords": [
+        "九条火龙",
+        "神火罩虚影",
+        "盘旋火环",
+        "金红真火"
+      ],
+      "icon_key": "icon_spell_fire"
+    },
+    {
+      "spell_id": "spell_weapon_04",
+      "spell_name": "太乙剑诀",
+      "advanced_names": {
+        "真仙": "太乙剑诀",
+        "金仙": "一剑破万法"
+      },
+      "spell_type": "weapon",
+      "spell_school": "weapon",
+      "tier": 4,
+      "unlock_realm": "dx_05",
+      "prerequisite_spell": "spell_weapon_03",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "地仙": 15,
+        "天仙": 20
+      },
+      "effect_type": "treasure_link",
+      "base_effect": {
+        "combat_power_bonus": 0.16,
+        "anti_yao_damage_bonus": 0.14,
+        "artifact_drop_bonus": 0.1
+      },
+      "bonus_per_level": {
+        "combat_power_bonus": 0.035,
+        "anti_yao_damage_bonus": 0.04,
+        "artifact_drop_bonus": 0.02
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 10,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 15,
+          "mana_cost": 10000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 22,
+          "mana_cost": 20000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 32,
+          "mana_cost": 38000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 45,
+          "mana_cost": 70000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 62,
+          "mana_cost": 125000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 85,
+          "mana_cost": 220000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 115,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 155,
+          "mana_cost": 650000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 210,
+          "mana_cost": 1100000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 280,
+          "mana_cost": 1850000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 375,
+          "mana_cost": 3100000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 500,
+          "mana_cost": 5200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 660,
+          "mana_cost": 8500000
+        }
+      ],
+      "card_id": "spell_weapon_04",
+      "card_base_damage": 22,
+      "card_damage_per_level": 7,
+      "card_element": "weapon",
+      "card_special": "chain_kill",
+      "card_special_params": {
+        "chain_damage_ratio": 0.5
+      },
+      "lore_text": "太乙真人剑诀，一剑既出，必见血。斩杀之后剑意不减，反增三分。",
+      "visual_keywords": [
+        "太乙剑光",
+        "连环斩击",
+        "剑意如潮",
+        "白虹贯日"
+      ],
+      "icon_key": "icon_spell_weapon"
+    },
+    {
+      "spell_id": "spell_soul_04",
+      "spell_name": "幽冥锁魂",
+      "advanced_names": {
+        "真仙": "幽冥锁魂",
+        "金仙": "魂灭道消"
+      },
+      "spell_type": "soul",
+      "spell_school": "soul",
+      "tier": 4,
+      "unlock_realm": "dx_05",
+      "prerequisite_spell": "spell_soul_02",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "地仙": 15,
+        "天仙": 20
+      },
+      "effect_type": "true_damage",
+      "base_effect": {
+        "true_damage_bonus": 0.14,
+        "soul_damage_bonus": 0.14,
+        "heal_block_potency": 0.1
+      },
+      "bonus_per_level": {
+        "true_damage_bonus": 0.04,
+        "soul_damage_bonus": 0.04,
+        "heal_block_potency": 0.02
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 10,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 15,
+          "mana_cost": 10000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 22,
+          "mana_cost": 20000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 32,
+          "mana_cost": 38000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 45,
+          "mana_cost": 70000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 62,
+          "mana_cost": 125000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 85,
+          "mana_cost": 220000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 115,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 155,
+          "mana_cost": 650000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 210,
+          "mana_cost": 1100000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 280,
+          "mana_cost": 1850000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 375,
+          "mana_cost": 3100000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 500,
+          "mana_cost": 5200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 660,
+          "mana_cost": 8500000
+        }
+      ],
+      "card_id": "spell_soul_04",
+      "card_base_damage": 20,
+      "card_damage_per_level": 6,
+      "card_element": "soul",
+      "card_special": "lock",
+      "card_special_params": {
+        "block_heal": true,
+        "block_charge": true,
+        "duration_turns": 2
+      },
+      "lore_text": "幽冥界魂锁之法，锁住敌方神魂，令其不能回血、不能蓄力。如坠无间。",
+      "visual_keywords": [
+        "幽冥魂锁",
+        "黑铁锁链",
+        "神魂禁锢",
+        "无间幽光"
+      ],
+      "icon_key": "icon_spell_soul"
+    },
+    {
+      "spell_id": "spell_calamity_04",
+      "spell_name": "劫气化刃",
+      "advanced_names": {
+        "真仙": "劫气化刃",
+        "金仙": "万劫归一"
+      },
+      "spell_type": "calamity",
+      "spell_school": "calamity",
+      "tier": 4,
+      "unlock_realm": "dx_05",
+      "prerequisite_spell": "spell_calamity_02",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "地仙": 15,
+        "天仙": 20
+      },
+      "effect_type": "risk_burst",
+      "base_effect": {
+        "burst_damage_bonus": 0.16,
+        "risk_damage_bonus": 0.14,
+        "calamity_convert_bonus": 0.1
+      },
+      "bonus_per_level": {
+        "burst_damage_bonus": 0.04,
+        "risk_damage_bonus": 0.035,
+        "calamity_convert_bonus": 0.025
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 10,
+          "mana_cost": 5000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 15,
+          "mana_cost": 10000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 22,
+          "mana_cost": 20000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 32,
+          "mana_cost": 38000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 45,
+          "mana_cost": 70000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 62,
+          "mana_cost": 125000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 85,
+          "mana_cost": 220000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 115,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 155,
+          "mana_cost": 650000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 210,
+          "mana_cost": 1100000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 280,
+          "mana_cost": 1850000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 375,
+          "mana_cost": 3100000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 500,
+          "mana_cost": 5200000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 660,
+          "mana_cost": 8500000
+        }
+      ],
+      "card_id": "spell_calamity_04",
+      "card_base_damage": 28,
+      "card_damage_per_level": 8,
+      "card_element": "calamity",
+      "card_special": [
+        "consume_calamity",
+        "self_harm"
+      ],
+      "card_special_params": {
+        "consume_all_calamity": true,
+        "damage_per_100_calamity": 10,
+        "self_harm_max_hp_ratio": 0.1
+      },
+      "lore_text": "将体内全部劫气凝为一刃，一击之后，劫气清空。这是孤注一掷的打法。",
+      "visual_keywords": [
+        "劫气凝刃",
+        "黑红刃芒",
+        "孤注一掷",
+        "万劫一瞬"
+      ],
+      "icon_key": "icon_spell_calamity"
+    },
+    {
+      "spell_id": "spell_thunder_05",
+      "spell_name": "代天行罚",
+      "advanced_names": {
+        "太乙": "天罚无极",
+        "大罗": "混元雷劫"
+      },
+      "spell_type": "thunder",
+      "spell_school": "thunder",
+      "tier": 5,
+      "unlock_realm": "jx_01",
+      "prerequisite_spell": "spell_thunder_04",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "金仙": 20,
+        "太乙": 25
+      },
+      "effect_type": "burst_boss",
+      "base_effect": {
+        "boss_damage_bonus": 0.2,
+        "thunder_damage_bonus": 0.2,
+        "execute_damage_bonus": 0.15
+      },
+      "bonus_per_level": {
+        "boss_damage_bonus": 0.045,
+        "thunder_damage_bonus": 0.05,
+        "execute_damage_bonus": 0.035
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 20,
+          "mana_cost": 50000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 30,
+          "mana_cost": 100000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 45,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 65,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 90,
+          "mana_cost": 700000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 125,
+          "mana_cost": 1250000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 170,
+          "mana_cost": 2200000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 230,
+          "mana_cost": 3800000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 310,
+          "mana_cost": 6500000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 420,
+          "mana_cost": 11000000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 560,
+          "mana_cost": 18500000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 750,
+          "mana_cost": 31000000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 1000,
+          "mana_cost": 52000000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 1320,
+          "mana_cost": 85000000
+        }
+      ],
+      "card_id": "spell_thunder_05",
+      "card_base_damage": 40,
+      "card_damage_per_level": 12,
+      "card_element": "thunder",
+      "card_special": "execute",
+      "card_special_params": {
+        "execute_hp_threshold": 0.2,
+        "vs_boss_max_hp_ratio": 0.3
+      },
+      "lore_text": "代天行罚，雷部至高之威。天要罚谁，雷就劈谁——你即是天。",
+      "visual_keywords": [
+        "九天刑雷",
+        "代天之罚",
+        "金色刑字敕令",
+        "雷劫加身"
+      ],
+      "icon_key": "icon_spell_thunder"
+    },
+    {
+      "spell_id": "spell_fire_05",
+      "spell_name": "焚天炼界",
+      "advanced_names": {
+        "太乙": "九幽焚尽",
+        "大罗": "混元真火"
+      },
+      "spell_type": "fire",
+      "spell_school": "fire",
+      "tier": 5,
+      "unlock_realm": "jx_01",
+      "prerequisite_spell": "spell_fire_04",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "金仙": 20,
+        "太乙": 25
+      },
+      "effect_type": "idle_farming",
+      "base_effect": {
+        "map_reward_bonus": 0.14,
+        "fire_damage_bonus": 0.2,
+        "burn_damage_bonus": 0.18
+      },
+      "bonus_per_level": {
+        "map_reward_bonus": 0.022,
+        "fire_damage_bonus": 0.045,
+        "burn_damage_bonus": 0.04
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 20,
+          "mana_cost": 50000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 30,
+          "mana_cost": 100000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 45,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 65,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 90,
+          "mana_cost": 700000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 125,
+          "mana_cost": 1250000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 170,
+          "mana_cost": 2200000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 230,
+          "mana_cost": 3800000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 310,
+          "mana_cost": 6500000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 420,
+          "mana_cost": 11000000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 560,
+          "mana_cost": 18500000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 750,
+          "mana_cost": 31000000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 1000,
+          "mana_cost": 52000000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 1320,
+          "mana_cost": 85000000
+        }
+      ],
+      "card_id": "spell_fire_05",
+      "card_base_damage": 30,
+      "card_damage_per_level": 10,
+      "card_element": "fire",
+      "card_special": "fire_domain",
+      "card_special_params": {
+        "duration_turns": 3,
+        "burn_base": 10,
+        "burn_per_level": 1,
+        "kill_heal_ratio": 0.05
+      },
+      "lore_text": "南明离火，焚天炼界。火域展开，万物归灰。杀敌之余，反哺己身。",
+      "visual_keywords": [
+        "南明离火",
+        "火域展开",
+        "焚天",
+        "万物归灰"
+      ],
+      "icon_key": "icon_spell_fire"
+    },
+    {
+      "spell_id": "spell_weapon_05",
+      "spell_name": "一剑破万法",
+      "advanced_names": {
+        "太乙": "诛仙剑意",
+        "大罗": "开天一剑"
+      },
+      "spell_type": "weapon",
+      "spell_school": "weapon",
+      "tier": 5,
+      "unlock_realm": "jx_01",
+      "prerequisite_spell": "spell_weapon_04",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "金仙": 20,
+        "太乙": 25
+      },
+      "effect_type": "treasure_link",
+      "base_effect": {
+        "combat_power_bonus": 0.2,
+        "anti_yao_damage_bonus": 0.18,
+        "artifact_drop_bonus": 0.12
+      },
+      "bonus_per_level": {
+        "combat_power_bonus": 0.04,
+        "anti_yao_damage_bonus": 0.045,
+        "artifact_drop_bonus": 0.025
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 20,
+          "mana_cost": 50000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 30,
+          "mana_cost": 100000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 45,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 65,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 90,
+          "mana_cost": 700000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 125,
+          "mana_cost": 1250000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 170,
+          "mana_cost": 2200000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 230,
+          "mana_cost": 3800000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 310,
+          "mana_cost": 6500000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 420,
+          "mana_cost": 11000000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 560,
+          "mana_cost": 18500000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 750,
+          "mana_cost": 31000000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 1000,
+          "mana_cost": 52000000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 1320,
+          "mana_cost": 85000000
+        }
+      ],
+      "card_id": "spell_weapon_05",
+      "card_base_damage": 50,
+      "card_damage_per_level": 15,
+      "card_element": "weapon",
+      "card_special": "ignore_all_defense",
+      "card_special_params": {
+        "ignore_block": true,
+        "ignore_shield": true,
+        "ignore_saint_shield": true
+      },
+      "lore_text": "一剑破万法。什么罡气、圣盾、护体神光——一剑之下，皆为虚妄。",
+      "visual_keywords": [
+        "一剑破空",
+        "万法皆虚",
+        "剑光裂界",
+        "白虹贯日"
+      ],
+      "icon_key": "icon_spell_weapon"
+    },
+    {
+      "spell_id": "spell_soul_05",
+      "spell_name": "魂灭道消",
+      "advanced_names": {
+        "太乙": "万魂归寂",
+        "大罗": "混元灭魂"
+      },
+      "spell_type": "soul",
+      "spell_school": "soul",
+      "tier": 5,
+      "unlock_realm": "jx_01",
+      "prerequisite_spell": "spell_soul_04",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "金仙": 20,
+        "太乙": 25
+      },
+      "effect_type": "true_damage",
+      "base_effect": {
+        "true_damage_bonus": 0.18,
+        "soul_damage_bonus": 0.18,
+        "heal_block_potency": 0.12
+      },
+      "bonus_per_level": {
+        "true_damage_bonus": 0.045,
+        "soul_damage_bonus": 0.045,
+        "heal_block_potency": 0.025
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 20,
+          "mana_cost": 50000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 30,
+          "mana_cost": 100000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 45,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 65,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 90,
+          "mana_cost": 700000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 125,
+          "mana_cost": 1250000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 170,
+          "mana_cost": 2200000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 230,
+          "mana_cost": 3800000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 310,
+          "mana_cost": 6500000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 420,
+          "mana_cost": 11000000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 560,
+          "mana_cost": 18500000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 750,
+          "mana_cost": 31000000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 1000,
+          "mana_cost": 52000000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 1320,
+          "mana_cost": 85000000
+        }
+      ],
+      "card_id": "spell_soul_05",
+      "card_base_damage": 35,
+      "card_damage_per_level": 10,
+      "card_element": "soul",
+      "card_special": "instant_kill_chance",
+      "card_special_params": {
+        "instant_kill_chance": 0.2,
+        "vs_boss_max_hp_true_ratio": 0.3
+      },
+      "lore_text": "魂灭道消。不伤肉身，只灭元神。一旦命中，道基尽毁，万劫不复。",
+      "visual_keywords": [
+        "元神湮灭",
+        "道基崩毁",
+        "幽黑魂渊",
+        "万劫不复"
+      ],
+      "icon_key": "icon_spell_soul"
+    },
+    {
+      "spell_id": "spell_calamity_05",
+      "spell_name": "万劫归一",
+      "advanced_names": {
+        "太乙": "杀道无极",
+        "大罗": "混元劫灭"
+      },
+      "spell_type": "calamity",
+      "spell_school": "calamity",
+      "tier": 5,
+      "unlock_realm": "jx_01",
+      "prerequisite_spell": "spell_calamity_04",
+      "prerequisite_level": 5,
+      "max_level_by_realm": {
+        "金仙": 20,
+        "太乙": 25
+      },
+      "effect_type": "risk_burst",
+      "base_effect": {
+        "burst_damage_bonus": 0.2,
+        "risk_damage_bonus": 0.18,
+        "calamity_convert_bonus": 0.12
+      },
+      "bonus_per_level": {
+        "burst_damage_bonus": 0.045,
+        "risk_damage_bonus": 0.04,
+        "calamity_convert_bonus": 0.03
+      },
+      "upgrade_costs": [
+        {
+          "to_level": 2,
+          "spell_page_cost": 20,
+          "mana_cost": 50000
+        },
+        {
+          "to_level": 3,
+          "spell_page_cost": 30,
+          "mana_cost": 100000
+        },
+        {
+          "to_level": 4,
+          "spell_page_cost": 45,
+          "mana_cost": 200000
+        },
+        {
+          "to_level": 5,
+          "spell_page_cost": 65,
+          "mana_cost": 380000
+        },
+        {
+          "to_level": 6,
+          "spell_page_cost": 90,
+          "mana_cost": 700000
+        },
+        {
+          "to_level": 7,
+          "spell_page_cost": 125,
+          "mana_cost": 1250000
+        },
+        {
+          "to_level": 8,
+          "spell_page_cost": 170,
+          "mana_cost": 2200000
+        },
+        {
+          "to_level": 9,
+          "spell_page_cost": 230,
+          "mana_cost": 3800000
+        },
+        {
+          "to_level": 10,
+          "spell_page_cost": 310,
+          "mana_cost": 6500000
+        },
+        {
+          "to_level": 11,
+          "spell_page_cost": 420,
+          "mana_cost": 11000000
+        },
+        {
+          "to_level": 12,
+          "spell_page_cost": 560,
+          "mana_cost": 18500000
+        },
+        {
+          "to_level": 13,
+          "spell_page_cost": 750,
+          "mana_cost": 31000000
+        },
+        {
+          "to_level": 14,
+          "spell_page_cost": 1000,
+          "mana_cost": 52000000
+        },
+        {
+          "to_level": 15,
+          "spell_page_cost": 1320,
+          "mana_cost": 85000000
+        }
+      ],
+      "card_id": "spell_calamity_05",
+      "card_base_damage": 60,
+      "card_damage_per_level": 20,
+      "card_element": "calamity",
+      "card_special": "rage_all",
+      "card_special_params": {
+        "self_harm_max_hp_ratio": 0.2,
+        "damage_multiplier": 1.5,
+        "duration_turns": 3
+      },
+      "lore_text": "万劫归一。以己身为炉，以万劫为火，炼出这一击。三回合之内，你即是杀劫本身。",
+      "visual_keywords": [
+        "万劫归一",
+        "以身为炉",
+        "杀劫化身",
+        "黑红劫焰吞天"
+      ],
+      "icon_key": "icon_spell_calamity"
     }
   ]
 }

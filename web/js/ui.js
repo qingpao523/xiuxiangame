@@ -294,6 +294,12 @@ function popupButton(label, secondary, handler, extraClass = "") {
 function renderEncounterPopup(panel, title, body, buttons, encounterId) {
   const enc = DataManager.getById("encounter_table", encounterId);
   if (!Object.keys(enc).length) { closePopup(); return; }
+  // --- New format ---
+  if (enc.encounter_type) {
+    renderNewEncounterPopup(panel, title, body, buttons, enc);
+    return;
+  }
+  // --- Old format ---
   panel.classList.add("style-chance"); title.textContent = `遭遇：${enc.name}`; body.textContent = enc.narrative || "";
   const state = Game.state;
   (enc.options || []).forEach((option, index) => {
@@ -312,6 +318,47 @@ function renderEncounterPopup(panel, title, body, buttons, encounterId) {
     btn.addEventListener("click", () => { closePopup(); Game.resolveEncounter(encounterId, index); });
     buttons.appendChild(btn);
   });
+}
+
+function renderNewEncounterPopup(panel, title, body, buttons, enc) {
+  const type = String(enc.encounter_type);
+  const name = String(enc.encounter_name || "遭遇");
+  const state = Game.state;
+  panel.classList.add(type === "battle" ? "style-breakthrough" : "style-chance");
+  title.textContent = `遭遇：${name}`;
+  body.textContent = String(enc.text || "");
+  if (type === "battle") {
+    const cfg = enc.battle_config || {};
+    const map = DataManager.getById("map_table", String(enc.map_id));
+    const ratio = num(cfg.power_ratio, 0.2);
+    const enemyPower = Math.max(50, Math.round(num(map.recommended_power, 300) * ratio * num(getTodayOmen().enemyMult, 1)));
+    const btn = document.createElement("button"); btn.className = "popup-btn calamity";
+    const main = document.createElement("span"); main.textContent = "应战";
+    const sub = document.createElement("span"); sub.className = "popup-option-sub";
+    sub.textContent = `斗法 · ${cfg.enemy_name || name} · 战力约 ${formatInt(enemyPower)}（你 ${formatInt(RealmManager.getCombatPower(state))}）`;
+    btn.append(main, sub);
+    btn.addEventListener("click", () => { closePopup(); Game.resolveEncounter(enc.encounter_id, 0); });
+    buttons.appendChild(btn);
+  } else if (type === "choice") {
+    (enc.choices || []).forEach((choice, index) => {
+      const btn = document.createElement("button"); btn.className = "popup-btn";
+      const main = document.createElement("span"); main.textContent = choice.label || "选择";
+      btn.appendChild(main);
+      btn.addEventListener("click", () => { closePopup(); Game.resolveEncounter(enc.encounter_id, index); });
+      buttons.appendChild(btn);
+    });
+  } else if (type === "gather") {
+    const btn = document.createElement("button"); btn.className = "popup-btn";
+    btn.textContent = "采集";
+    btn.addEventListener("click", () => { closePopup(); Game.resolveEncounter(enc.encounter_id, 0); });
+    buttons.appendChild(btn);
+  } else {
+    // narrative
+    const btn = document.createElement("button"); btn.className = "popup-btn";
+    btn.textContent = "继续赶路";
+    btn.addEventListener("click", () => { closePopup(); Game.resolveEncounter(enc.encounter_id, 0); });
+    buttons.appendChild(btn);
+  }
 }
 
 // ---------------- 斗法弹窗 v2 ----------------

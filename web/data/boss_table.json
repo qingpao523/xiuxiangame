@@ -121,6 +121,423 @@
       ],
       "mechanics": "double_strike: 每回合攻击 2 次（第二次伤害为第一次的 60%）。每 3 回合获得水盾（罡气+30%最大HP），需破罡后输出。",
       "daily_limit": 3
+    },
+    {
+      "boss_id": "boss_006",
+      "boss_name": "西岐先锋",
+      "unlock_condition": "dx_05",
+      "map_id": "map_004",
+      "recommended_power": 1500000,
+      "reward_daoxing": 1200,
+      "reward_mana": 50000,
+      "reward_items": {
+        "merit": 500,
+        "treasure_shard": 8
+      },
+      "first_clear_event": "event_301",
+      "lore_text": "西岐城下，殷商先锋官率三百甲士列阵。他手持长戟，胯下墨麒麟，每一击都带着军阵之力。他不是一个人——他身后是三百条命凝成的阵意。",
+      "victory_text": "先锋官的长戟断为两截，墨麒麟嘶鸣一声驮着他退入阵中。三百甲士的阵意散了，你脚下多了一枚沾血的军令符。",
+      "visual_keywords": [
+        "先锋官",
+        "墨麒麟",
+        "长戟",
+        "军阵",
+        "甲士",
+        "旌旗"
+      ],
+      "mechanics": "army_formation: 召唤 3 只甲士（HP=主Boss 15%），甲士存活时主Boss受伤-15%/只。每 3 回合甲士全部阵亡后重新召唤。",
+      "daily_limit": 3
+    },
+    {
+      "boss_id": "boss_007",
+      "boss_name": "殷商守将",
+      "unlock_condition": "dx_08",
+      "map_id": "map_004",
+      "recommended_power": 3000000,
+      "reward_daoxing": 2000,
+      "reward_mana": 80000,
+      "reward_items": {
+        "calamity": 800,
+        "refine_material": 10
+      },
+      "first_clear_event": "event_302",
+      "lore_text": "殷商守将闻仲麾下第一猛将，手持金鞭，蓄力三息后一击可碎山。他不说话，只以鞭指人，被指者无不胆寒。三息蓄力，一击毙命——这是他的道。",
+      "victory_text": "金鞭落地，守将单膝跪地，朝你抱拳：'好手段。'随即化为一缕劫气散入战场。他虽败，却败得坦荡。",
+      "visual_keywords": [
+        "殷商守将",
+        "金鞭",
+        "蓄力",
+        "碎山",
+        "沉默",
+        "劫气"
+      ],
+      "mechanics": "charge_strike: 每 3 回合蓄力 1 次（蓄力时不攻击但罡气+50%），蓄力完成后下一击伤害 ×5。蓄力期间可被眩晕打断。",
+      "daily_limit": 3
+    },
+    {
+      "boss_id": "boss_008",
+      "boss_name": "十绝阵守",
+      "unlock_condition": "jx_01",
+      "map_id": "map_005",
+      "recommended_power": 8000000,
+      "reward_daoxing": 5000,
+      "reward_mana": 150000,
+      "reward_items": {
+        "spell_page": 15,
+        "refine_material": 10
+      },
+      "first_clear_event": "event_401",
+      "lore_text": "十绝阵的阵眼残影，由十道阵纹凝成的人形。它没有意识，只有一个本能：守住阵心。需先破两个阵眼（小怪），才能攻击主体。",
+      "victory_text": "阵纹人形崩散，十道残旗落地。你拾起一面，上面刻着'天绝'二字。",
+      "visual_keywords": [
+        "阵纹人形",
+        "十绝",
+        "残旗",
+        "阵眼",
+        "劫气凝聚"
+      ],
+      "mechanics": "array_eyes: 开局有 2 个阵眼（HP=主Boss 25%），阵眼存活时主Boss免疫伤害。需先破阵眼。每 4 回合阵眼重生 1 个。",
+      "daily_limit": 2
+    },
+    {
+      "boss_id": "boss_009",
+      "boss_name": "黄河阵灵",
+      "unlock_condition": "jx_05",
+      "map_id": "map_006",
+      "recommended_power": 20000000,
+      "reward_daoxing": 8000,
+      "reward_mana": 250000,
+      "reward_items": {
+        "treasure_shard": 15,
+        "refine_material": 12
+      },
+      "first_clear_event": "event_402",
+      "lore_text": "九曲黄河阵的阵灵，三霄娘娘留下的一缕阵意。它每回合削去你 5% 的战力，越打越弱。除非你能在削境生效前将其击溃，否则道基不保。",
+      "victory_text": "阵灵化为一缕浊水散去，留下一片混元金斗的碎片。削境之力消散，你的修为重新稳固。",
+      "visual_keywords": [
+        "黄河阵灵",
+        "浊水",
+        "削境",
+        "混元金斗",
+        "三霄阵意"
+      ],
+      "mechanics": "realm_cut: 每回合玩家战力 -5%（永久本场）。第 6 回合起削境加速为 -8%。需在 12 回合内击杀。",
+      "daily_limit": 2
+    },
+    {
+      "boss_id": "boss_010",
+      "boss_name": "雷部神将残影",
+      "unlock_condition": "jx_01",
+      "map_id": "map_005",
+      "recommended_power": 10000000,
+      "reward_daoxing": 6000,
+      "reward_mana": 180000,
+      "reward_items": {
+        "spell_page": 12,
+        "merit": 500
+      },
+      "first_clear_event": "event_403",
+      "lore_text": "封神榜上雷部正神的残影，周身雷光不绝。它免疫雷系伤害——用雷打雷，是打不动的。需用火系或剑系破之。",
+      "victory_text": "雷部神将残影崩散，一缕雷道感悟落入你的泥丸宫。榜文上，雷部那一栏微微暗了一分。",
+      "visual_keywords": [
+        "雷部神将",
+        "雷光",
+        "榜文残影",
+        "免疫",
+        "金色雷纹"
+      ],
+      "mechanics": "thunder_immune: 雷系伤害无效。每 3 回合释放全场雷击（玩家受 15% 最大 HP 伤害）。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_011",
+      "boss_name": "火部神将残影",
+      "unlock_condition": "jx_01",
+      "map_id": "map_005",
+      "recommended_power": 10000000,
+      "reward_daoxing": 6000,
+      "reward_mana": 180000,
+      "reward_items": {
+        "spell_page": 12,
+        "calamity": 500
+      },
+      "first_clear_event": "event_404",
+      "lore_text": "封神榜上火部正神的残影，周身烈焰不休。它免疫火系伤害——以火攻火，徒劳无功。需用雷系或魂系破之。",
+      "victory_text": "火部神将残影化为一缕青烟散去，一缕火道感悟融入你的丹田。榜文上，火部那一栏微微暗了一分。",
+      "visual_keywords": [
+        "火部神将",
+        "烈焰",
+        "榜文残影",
+        "免疫",
+        "赤金光焰"
+      ],
+      "mechanics": "fire_immune: 火系伤害无效。每 2 回合施加燃烧 10 层（不可净化）。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_012",
+      "boss_name": "斗部神将残影",
+      "unlock_condition": "jx_02",
+      "map_id": "map_005",
+      "recommended_power": 12000000,
+      "reward_daoxing": 7000,
+      "reward_mana": 200000,
+      "reward_items": {
+        "treasure_shard": 10,
+        "refine_material": 8
+      },
+      "first_clear_event": "event_405",
+      "lore_text": "封神榜上斗部正神的残影，罡气厚如山岳。它的罡气每回合自动恢复 20%——普通攻击根本打不穿。需用破罡手段（御剑术/番天印）或真伤（魂系）。",
+      "victory_text": "斗部神将的罡气终于碎尽，残影崩散。一缕斗战感悟落入你的筋骨。",
+      "visual_keywords": [
+        "斗部神将",
+        "罡气如山",
+        "榜文残影",
+        "高防",
+        "金色护体"
+      ],
+      "mechanics": "block_regen: 每回合恢复 20% 最大罡气。罡气存在时受伤 -50%。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_013",
+      "boss_name": "万仙阵灵",
+      "unlock_condition": "ty_01",
+      "map_id": "map_007",
+      "recommended_power": 100000000,
+      "reward_daoxing": 15000,
+      "reward_mana": 400000,
+      "reward_items": {
+        "spell_page": 20,
+        "refine_material": 15
+      },
+      "lore_text": "万仙阵的阵灵，由万仙残影凝成的集合体。它没有固定形态，每一回合都会切换一种攻击模式——雷、火、剑、魂、劫，五系轮转。你无法预判它下一击是什么。",
+      "victory_text": "万仙残影一一散去，阵灵化为一面残旗。旗上'万仙'二字犹在，但已无人应召。",
+      "visual_keywords": [
+        "万仙阵灵",
+        "万仙残影",
+        "五系轮转",
+        "残旗",
+        "集合体"
+      ],
+      "mechanics": "five_rotate: 每回合切换攻击属性（雷→火→剑→魂→劫循环），对应属性免疫。需在被免疫的属性回合防御/刷新，在克制回合输出。",
+      "daily_limit": 2
+    },
+    {
+      "boss_id": "boss_014",
+      "boss_name": "封神台守卫",
+      "unlock_condition": "ty_05",
+      "map_id": "map_008",
+      "recommended_power": 300000000,
+      "reward_daoxing": 25000,
+      "reward_mana": 600000,
+      "reward_items": {
+        "merit": 1000,
+        "treasure_shard": 20
+      },
+      "lore_text": "封神台的守卫，柏鉴。他手持百灵幡，守在封神台入口三千年。他不强，但他不死——每次你打空他的血，榜文会照他一次，他就满血复活。除非你能在一回合内打出超过他最大HP的伤害。",
+      "victory_text": "柏鉴的百灵幡落地，他朝你拱手：'三千年了，终于有人能一回合破我。进去吧。'他化为一道金光没入榜文。",
+      "visual_keywords": [
+        "柏鉴",
+        "百灵幡",
+        "封神台守卫",
+        "不死",
+        "榜文复活"
+      ],
+      "mechanics": "immortal: 每回合结束时若HP>0则回复至满。唯一击杀方式：单回合伤害>最大HP。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_015",
+      "boss_name": "通天教主残影",
+      "unlock_condition": "ty_01",
+      "map_id": "map_007",
+      "recommended_power": 500000000,
+      "reward_daoxing": 40000,
+      "reward_mana": 800000,
+      "reward_items": {
+        "spell_page": 30,
+        "calamity": 2000
+      },
+      "lore_text": "通天教主的残影，碧游宫主，截教教主。他手持诛仙四剑，一剑一世界。四剑轮转，每一剑都是独立的杀招——诛仙剑斩仙、戮仙剑戮神、陷仙剑陷圣、绝仙剑绝道。",
+      "victory_text": "四剑一一崩碎，通天残影化为一道青烟。他最后看了你一眼：'有教无类，你记住了。'然后散了。",
+      "visual_keywords": [
+        "通天教主",
+        "诛仙四剑",
+        "碧游宫",
+        "截教",
+        "四剑轮转"
+      ],
+      "mechanics": "four_swords: 4阶段，每阶段一把剑（诛仙→戮仙→陷仙→绝仙），每把剑有独立意图池。击碎一把剑后下一把满血显化。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_016",
+      "boss_name": "元始天尊残影",
+      "unlock_condition": "ty_01",
+      "map_id": "map_008",
+      "recommended_power": 500000000,
+      "reward_daoxing": 40000,
+      "reward_mana": 800000,
+      "reward_items": {
+        "merit": 2000,
+        "treasure_shard": 25
+      },
+      "lore_text": "元始天尊的残影，玉虚宫主，阐教教主。他手持盘古幡，一幡挥出，开天辟地之力倾泻而下。他不屑于用术法——一幡就够了。",
+      "victory_text": "盘古幡影散去，元始残影微微颔首：'顺天应人，你做到了。'然后化为一道清光没入九天。",
+      "visual_keywords": [
+        "元始天尊",
+        "盘古幡",
+        "玉虚宫",
+        "阐教",
+        "开天"
+      ],
+      "mechanics": "pangu_strike: 每 3 回合蓄力一次'开天一击'（伤害×10），蓄力期间可被眩晕打断。普通回合只释放罡气护体（罡气+30%）。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_017",
+      "boss_name": "女娲残影",
+      "unlock_condition": "ty_05",
+      "map_id": "map_008",
+      "recommended_power": 600000000,
+      "reward_daoxing": 50000,
+      "reward_mana": 1000000,
+      "reward_items": {
+        "merit": 3000,
+        "refine_material": 20
+      },
+      "lore_text": "女娲的残影，人皇之母，补天造人者。她手持山河社稷图，图中自有天地。她不攻击——她把你拉入图中，让你在图中自生自灭。",
+      "victory_text": "山河社稷图碎裂，女娲残影微微一笑：'你比图强。好。'她化为一缕五彩光散去。",
+      "visual_keywords": [
+        "女娲",
+        "山河社稷图",
+        "补天",
+        "造人",
+        "图中天地"
+      ],
+      "mechanics": "picture_world: 每 4 回合将玩家拉入'图中'（3回合内玩家伤害-50%，但受到的伤害也-50%）。需在图中存活并输出。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_018",
+      "boss_name": "太上老君残影",
+      "unlock_condition": "ty_08",
+      "map_id": "map_008",
+      "recommended_power": 800000000,
+      "reward_daoxing": 60000,
+      "reward_mana": 1200000,
+      "reward_items": {
+        "refine_material": 30,
+        "treasure_shard": 30
+      },
+      "lore_text": "太上老君的残影，人教教主，八卦炉主。他手持太极图，阴阳轮转，万物归一。他不急——他有的是时间。每一回合，他都在炼丹。炼成的丹，他吃一颗，你挨一颗。",
+      "victory_text": "太极图缓缓合拢，老君残影打了个哈欠：'不错。比那猴子强。'然后化为一道紫气东去。",
+      "visual_keywords": [
+        "太上老君",
+        "太极图",
+        "八卦炉",
+        "炼丹",
+        "紫气东来"
+      ],
+      "mechanics": "alchemy: 每 2 回合炼成一丹（随机效果：回血/增伤/护盾），老君自服一丹（回复 10% HP）。需在炼丹间隙爆发输出。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_019",
+      "boss_name": "赵公明残影",
+      "unlock_condition": "jx_05",
+      "map_id": "map_006",
+      "recommended_power": 200000000,
+      "reward_daoxing": 12000,
+      "reward_mana": 350000,
+      "reward_items": {
+        "treasure_shard": 15,
+        "calamity": 1000
+      },
+      "lore_text": "赵公明的残影，峨眉山散仙，二十四颗定海珠在手。他不用术法——二十四颗珠子砸下来，就是二十四道天雷。每一颗都是一座山的重量。",
+      "victory_text": "二十四颗定海珠一一落地，赵公明残影大笑：'痛快！比封神那会儿痛快！'然后散了。",
+      "visual_keywords": [
+        "赵公明",
+        "定海珠",
+        "二十四颗",
+        "峨眉山",
+        "财神"
+      ],
+      "mechanics": "pearl_barrage: 每回合投掷 3 颗定海珠（每颗独立攻击），24 颗用完后进入虚弱（受伤+50%）2回合，然后重置。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_020",
+      "boss_name": "三霄残影",
+      "unlock_condition": "jx_08",
+      "map_id": "map_006",
+      "recommended_power": 250000000,
+      "reward_daoxing": 15000,
+      "reward_mana": 400000,
+      "reward_items": {
+        "refine_material": 15,
+        "merit": 1000
+      },
+      "lore_text": "三霄娘娘的残影——云霄、碧霄、琼霄三人合体。混元金斗、金蛟剪、混元珠三件法宝同时出手。削境、斩杀、轰击，三重杀招同时落下。",
+      "victory_text": "三霄残影化为三道清光散去，混元金斗落地。你听到云霄最后一句话：'别用它害人。'",
+      "visual_keywords": [
+        "三霄",
+        "混元金斗",
+        "金蛟剪",
+        "混元珠",
+        "九曲黄河"
+      ],
+      "mechanics": "trio_attack: 3体同时存在（云霄/碧霄/琼霄），各有独立HP和意图。每回合三体同时行动。需逐个击破。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_021",
+      "boss_name": "孔宣残影",
+      "unlock_condition": "jx_08",
+      "map_id": "map_007",
+      "recommended_power": 300000000,
+      "reward_daoxing": 18000,
+      "reward_mana": 500000,
+      "reward_items": {
+        "spell_page": 20,
+        "refine_material": 15
+      },
+      "lore_text": "孔宣的残影，孔雀大明王，五色神光在手。五色神光一刷，万物皆收——你的法宝、你的术法、你的罡气，统统被刷走。你打出的每一招，都可能变成它的。",
+      "victory_text": "五色神光黯淡，孔宣残影化为一只孔雀虚影，振翅而去。你感到被刷走的法力缓缓回流。",
+      "visual_keywords": [
+        "孔宣",
+        "五色神光",
+        "孔雀大明王",
+        "刷物",
+        "万法不侵"
+      ],
+      "mechanics": "five_light: 每 3 回合释放五色神光（禁用玩家牌库中随机 1 张牌 2 回合）。被禁用的牌变灰不可出。",
+      "daily_limit": 1
+    },
+    {
+      "boss_id": "boss_022",
+      "boss_name": "多宝道人残影",
+      "unlock_condition": "jx_10",
+      "map_id": "map_007",
+      "recommended_power": 400000000,
+      "reward_daoxing": 22000,
+      "reward_mana": 600000,
+      "reward_items": {
+        "treasure_shard": 25,
+        "calamity": 1500
+      },
+      "lore_text": "多宝道人的残影，截教大弟子，六魂幡在手。六魂幡一摇，六魂皆散——你的罡气、圣盾、增益状态，统统被摇散。你叠的 buff 越多，它摇得越欢。",
+      "victory_text": "六魂幡碎裂，多宝残影哈哈大笑：'好！比通天那老头子强！'然后化为一道金光散去。",
+      "visual_keywords": [
+        "多宝道人",
+        "六魂幡",
+        "截教大弟子",
+        "摇魂",
+        "万宝"
+      ],
+      "mechanics": "six_soul: 每 2 回合摇动六魂幡（清除玩家所有增益状态：罡气/圣盾/增伤buff）。需在摇幡间隙叠buff并爆发。",
+      "daily_limit": 1
     }
   ]
 }

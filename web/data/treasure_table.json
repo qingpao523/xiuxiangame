@@ -1066,6 +1066,726 @@
       "icon_key": "icon_treasure_018",
       "card_asset_key": "card_treasure_018",
       "obtain_text": "获得本命法宝：轩辕镜\n古铜圆镜，缘刻日月星辰。镜面幽邃，似能照见人心底最深的秘密。\n战力大幅提升，解锁法宝技：照胆玄光。"
+    },
+    {
+      "treasure_id": "treasure_019",
+      "treasure_name": "乾坤圈（残影）",
+      "treasure_type": "attack",
+      "unlock_realm": "dx_05",
+      "related_spell_type": "thunder",
+      "base_power_bonus": 1.2,
+      "main_effect": {
+        "combat_power_bonus": 1.2,
+        "thunder_damage_bonus": 0.15,
+        "multi_target_bonus": 0.1
+      },
+      "skill_name": "乾坤弹射",
+      "skill_desc": "攻击弹射至 3 个目标，每个目标受 60% 伤害。",
+      "origin_desc": "哪吒乾坤圈的残影，弹射之力犹在，只是少了三分灵性。",
+      "fengshen_relation": "哪吒·乾坤圈",
+      "visual_keywords": [
+        "金圈",
+        "弹射",
+        "三太子",
+        "金光弧线"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_010",
+      "card_asset_key": "card_treasure_010",
+      "obtain_text": "获得法宝：乾坤圈（残影）\n哪吒乾坤圈的残影，弹射之力犹在。\n解锁法宝技：乾坤弹射。"
+    },
+    {
+      "treasure_id": "treasure_020",
+      "treasure_name": "混天绫（残影）",
+      "treasure_type": "protect",
+      "unlock_realm": "dx_05",
+      "related_spell_type": "neutral",
+      "base_power_bonus": 0.4,
+      "main_effect": {
+        "breakthrough_success_bonus": 0.05,
+        "shield_bonus": 1,
+        "fail_compensation_bonus": 0.15
+      },
+      "skill_name": "绫护",
+      "skill_desc": "抵挡一次致命伤害（每战 1 次），触发后回复 20% 气血。",
+      "origin_desc": "哪吒混天绫的一缕残影，红绫虽残，护主之意犹存。",
+      "fengshen_relation": "哪吒·混天绫",
+      "visual_keywords": [
+        "红绫",
+        "护体",
+        "缠绕",
+        "残光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_011",
+      "card_asset_key": "card_treasure_011",
+      "obtain_text": "获得法宝：混天绫（残影）\n哪吒混天绫的一缕残影，红绫虽残，护主之意犹存。\n解锁法宝技：绫护。"
+    },
+    {
+      "treasure_id": "treasure_021",
+      "treasure_name": "番天印（仿品）",
+      "treasure_type": "attack_control",
+      "unlock_realm": "dx_08",
+      "related_spell_type": "boss",
+      "base_power_bonus": 1.5,
+      "main_effect": {
+        "combat_power_bonus": 1.5,
+        "boss_damage_bonus": 0.2,
+        "stun_chance": 0.1
+      },
+      "skill_name": "翻天镇岳",
+      "skill_desc": "巨印砸落，对 Boss 造成巨额伤害并镇压 1 回合（跳过敌方行动）。",
+      "origin_desc": "广成子番天印的仿品，虽无原版镇压天地之威，砸个妖将还是够用的。",
+      "fengshen_relation": "广成子·番天印",
+      "visual_keywords": [
+        "巨印",
+        "山岳",
+        "镇压",
+        "金色印纹"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_012",
+      "card_asset_key": "card_treasure_012",
+      "obtain_text": "获得法宝：番天印（仿品）\n广成子番天印的仿品，砸个妖将还是够用的。\n解锁法宝技：翻天镇岳。"
+    },
+    {
+      "treasure_id": "treasure_022",
+      "treasure_name": "阴阳镜（碎片）",
+      "treasure_type": "control",
+      "unlock_realm": "dx_08",
+      "related_spell_type": "soul",
+      "base_power_bonus": 0.8,
+      "main_effect": {
+        "soul_damage_bonus": 0.15,
+        "boss_power_reduce": 0.08,
+        "stun_duration_bonus": 1
+      },
+      "skill_name": "阴阳照定",
+      "skill_desc": "照住敌方，定身 2 回合（跳过 2 次行动）。对 Boss 定身 1 回合。",
+      "origin_desc": "赤精子阴阳镜的碎片，半阴半阳，照人则定。",
+      "fengshen_relation": "赤精子·阴阳镜",
+      "visual_keywords": [
+        "半面镜",
+        "阴阳",
+        "定身",
+        "黑白光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 10,
+          "mana_cost": 5000,
+          "effect_multiplier": 1.2
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 20,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.5
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 35,
+          "mana_cost": 40000,
+          "effect_multiplier": 1.9
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 60,
+          "mana_cost": 90000,
+          "effect_multiplier": 2.4
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_013",
+      "card_asset_key": "card_treasure_013",
+      "obtain_text": "获得法宝：阴阳镜（碎片）\n赤精子阴阳镜的碎片，照人则定。\n解锁法宝技：阴阳照定。"
+    },
+    {
+      "treasure_id": "treasure_023",
+      "treasure_name": "定海珠（散）",
+      "treasure_type": "attack",
+      "unlock_realm": "dx_05",
+      "related_spell_type": "treasure",
+      "base_power_bonus": 1.8,
+      "main_effect": {
+        "combat_power_bonus": 1.8,
+        "multi_hit_bonus": 0.15,
+        "loot_bonus": 0.1
+      },
+      "skill_name": "二十四连击",
+      "skill_desc": "连续攻击 24 次，每次 30% 基础伤害。",
+      "origin_desc": "燃灯道人二十四颗定海珠的散珠，聚则成阵，散则成雨。",
+      "fengshen_relation": "燃灯道人·定海珠",
+      "visual_keywords": [
+        "定海珠",
+        "二十四颗",
+        "连击",
+        "金色珠雨"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_023",
+      "card_asset_key": "card_treasure_023",
+      "obtain_text": "获得法宝：定海珠（散）\n燃灯道人二十四颗定海珠的散珠。\n解锁法宝技：二十四连击。"
+    },
+    {
+      "treasure_id": "treasure_024",
+      "treasure_name": "五色神光（羽）",
+      "treasure_type": "control",
+      "unlock_realm": "jx_08",
+      "related_spell_type": "treasure",
+      "base_power_bonus": 1.5,
+      "main_effect": {
+        "combat_power_bonus": 1.0,
+        "disable_chance": 0.15,
+        "all_resist": 0.1
+      },
+      "skill_name": "五色刷物",
+      "skill_desc": "刷走敌方一个增益状态，并禁用敌方一个技能 2 回合。",
+      "origin_desc": "孔宣五色神光的一缕羽光，刷物无物不刷。",
+      "fengshen_relation": "孔宣·五色神光",
+      "visual_keywords": [
+        "五色神光",
+        "孔雀羽",
+        "刷物",
+        "五彩光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_024",
+      "card_asset_key": "card_treasure_024",
+      "obtain_text": "获得法宝：五色神光（羽）\n孔宣五色神光的一缕羽光。\n解锁法宝技：五色刷物。"
+    },
+    {
+      "treasure_id": "treasure_025",
+      "treasure_name": "金蛟剪（残影）",
+      "treasure_type": "attack",
+      "unlock_realm": "jx_05",
+      "related_spell_type": "weapon",
+      "base_power_bonus": 2.0,
+      "main_effect": {
+        "combat_power_bonus": 2.0,
+        "execute_bonus": 0.1,
+        "boss_damage_bonus": 0.15
+      },
+      "skill_name": "蛟剪断魂",
+      "skill_desc": "对 HP<30% 的敌人造成 3 倍伤害（斩杀线）。",
+      "origin_desc": "赵公明金蛟剪的残影，两条蛟龙盘旋，剪人如剪纸。",
+      "fengshen_relation": "赵公明·金蛟剪",
+      "visual_keywords": [
+        "金蛟剪",
+        "蛟龙",
+        "斩杀",
+        "金色剪影"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_025",
+      "card_asset_key": "card_treasure_025",
+      "obtain_text": "获得法宝：金蛟剪（残影）\n赵公明金蛟剪的残影。\n解锁法宝技：蛟剪断魂。"
+    },
+    {
+      "treasure_id": "treasure_026",
+      "treasure_name": "混元金斗（残影）",
+      "treasure_type": "control",
+      "unlock_realm": "jx_08",
+      "related_spell_type": "soul",
+      "base_power_bonus": 1.2,
+      "main_effect": {
+        "combat_power_bonus": 0.8,
+        "realm_cut_resist": 0.2,
+        "control_duration_bonus": 1
+      },
+      "skill_name": "金斗削境",
+      "skill_desc": "削去敌方 15% 战力，持续 3 回合。对 Boss 削 8%。",
+      "origin_desc": "三霄娘娘混元金斗的残影，削人修为，毁人道基。",
+      "fengshen_relation": "三霄·混元金斗",
+      "visual_keywords": [
+        "混元金斗",
+        "削境",
+        "金色斗影",
+        "三霄"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_026",
+      "card_asset_key": "card_treasure_026",
+      "obtain_text": "获得法宝：混元金斗（残影）\n三霄娘娘混元金斗的残影。\n解锁法宝技：金斗削境。"
+    },
+    {
+      "treasure_id": "treasure_027",
+      "treasure_name": "六魂幡（影）",
+      "treasure_type": "attack_control",
+      "unlock_realm": "jx_10",
+      "related_spell_type": "calamity",
+      "base_power_bonus": 2.2,
+      "main_effect": {
+        "combat_power_bonus": 2.2,
+        "buff_clear": true,
+        "calamity_damage_bonus": 0.2
+      },
+      "skill_name": "六魂摇散",
+      "skill_desc": "清除敌方全部增益状态，并造成 20+5lv 伤害。",
+      "origin_desc": "多宝道人六魂幡的影子，一摇六魂散，万法归虚。",
+      "fengshen_relation": "多宝道人·六魂幡",
+      "visual_keywords": [
+        "六魂幡",
+        "摇魂",
+        "黑幡",
+        "万法归虚"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_027",
+      "card_asset_key": "card_treasure_027",
+      "obtain_text": "获得法宝：六魂幡（影）\n多宝道人六魂幡的影子。\n解锁法宝技：六魂摇散。"
+    },
+    {
+      "treasure_id": "treasure_028",
+      "treasure_name": "山河社稷图（影）",
+      "treasure_type": "cultivation",
+      "unlock_realm": "ty_05",
+      "related_spell_type": "neutral",
+      "base_power_bonus": 1.0,
+      "main_effect": {
+        "offline_daoxing_bonus": 0.2,
+        "all_reward_bonus": 0.1,
+        "merit_bonus": 0.15
+      },
+      "skill_name": "图中天地",
+      "skill_desc": "本场战斗全收益 +15%，且每回合回复 3% HP。",
+      "origin_desc": "女娲山河社稷图的影子，图中自有天地，万物生化。",
+      "fengshen_relation": "女娲·山河社稷图",
+      "visual_keywords": [
+        "山河社稷图",
+        "图中天地",
+        "五彩",
+        "万物生化"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_028",
+      "card_asset_key": "card_treasure_028",
+      "obtain_text": "获得法宝：山河社稷图（影）\n女娲山河社稷图的影子。\n解锁法宝技：图中天地。"
+    },
+    {
+      "treasure_id": "treasure_029",
+      "treasure_name": "太极图（影）",
+      "treasure_type": "protect",
+      "unlock_realm": "ty_08",
+      "related_spell_type": "merit",
+      "base_power_bonus": 1.5,
+      "main_effect": {
+        "breakthrough_success_bonus": 0.1,
+        "control_immune": 1,
+        "merit_bonus": 0.2
+      },
+      "skill_name": "太极护体",
+      "skill_desc": "免疫一切控制效果（眩晕/虚弱/锁定/削境），持续 2 回合。",
+      "origin_desc": "太上老君太极图的影子，阴阳轮转，万法不侵。",
+      "fengshen_relation": "太上老君·太极图",
+      "visual_keywords": [
+        "太极图",
+        "阴阳",
+        "万法不侵",
+        "黑白光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_029",
+      "card_asset_key": "card_treasure_029",
+      "obtain_text": "获得法宝：太极图（影）\n太上老君太极图的影子。\n解锁法宝技：太极护体。"
+    },
+    {
+      "treasure_id": "treasure_030",
+      "treasure_name": "盘古幡（影）",
+      "treasure_type": "attack",
+      "unlock_realm": "ty_01",
+      "related_spell_type": "boss",
+      "base_power_bonus": 3.0,
+      "main_effect": {
+        "combat_power_bonus": 3.0,
+        "ignore_defense": 0.3,
+        "boss_damage_bonus": 0.25
+      },
+      "skill_name": "开天一击",
+      "skill_desc": "无视一切防御（罡气/圣盾/护体），造成 50+15lv 伤害。每战 1 次。",
+      "origin_desc": "元始天尊盘古幡的影子，一幡挥出，开天辟地。",
+      "fengshen_relation": "元始天尊·盘古幡",
+      "visual_keywords": [
+        "盘古幡",
+        "开天",
+        "清光",
+        "辟地"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 10000,
+          "effect_multiplier": 1.3
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 50,
+          "mana_cost": 80000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 80,
+          "mana_cost": 180000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_030",
+      "card_asset_key": "card_treasure_030",
+      "obtain_text": "获得法宝：盘古幡（影）\n元始天尊盘古幡的影子。\n解锁法宝技：开天一击。"
     }
   ]
 }

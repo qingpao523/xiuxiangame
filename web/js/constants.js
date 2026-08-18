@@ -61,6 +61,35 @@ const CARD_DEFS = {
   nezha_spear: { name: "火尖枪", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(14 + 4 * lv) * m} 伤害，燃烧 ${(4 + lv) * m}` },
   yangjian_blade: { name: "三尖两刃", kind: "attack_all", element: "weapon", target: "none", text: (lv, m = 1) => `全体 ${(8 + 2 * lv) * m} 伤害` },
   ziya_whip: { name: "打神鞭", kind: "attack", element: "merit", target: "enemy", text: (lv, m = 1) => `${(12 + 3 * lv) * m} 伤害，对榜文与阵法残影威力 +50%` },
+  // --- P0.5 新增术法卡 ---
+  spell_thunder_02: { name: "五雷术", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(12 + 5 * lv) * m} 雷伤，标记≥3 引爆 +${8 * m}` },
+  spell_thunder_03: { name: "雷部敕令", kind: "attack", element: "thunder", target: "enemy", text: (lv, m = 1) => `${(16 + 6 * lv) * m} 雷伤，眩晕 1 回合` },
+  spell_fire_02: { name: "赤火术", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(8 + 3 * lv) * m} 伤害，燃烧 ${(5 + lv) * m}，扩散 +2` },
+  spell_fire_03: { name: "三昧真火", kind: "attack", element: "fire", target: "enemy", text: (lv, m = 1) => `${(12 + 4 * lv) * m} 伤害，燃烧 ${(8 + lv) * m}（不可净化）` },
+  spell_weapon_02: { name: "御剑术", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(10 + 4 * lv) * m} 伤害，破罡 30%` },
+  spell_weapon_03: { name: "斩妖剑气", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(16 + 5 * lv) * m} 伤害，克妖 +40%，破阵 +20%` },
+  spell_soul_01: { name: "摄魂咒", kind: "attack", element: "soul", target: "enemy", text: (lv, m = 1) => `${(6 + 2 * lv) * m} 真伤（无视罡气），虚弱 1 回合` },
+  spell_soul_02: { name: "落魂术", kind: "attack", element: "soul", target: "enemy", text: (lv, m = 1) => `${(10 + 3 * lv) * m} 真伤，敌攻 -15% 持续 2 回合` },
+  spell_calamity_01: { name: "劫火入体", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(12 + 3 * lv) * m} 伤害，自损 5%，劫气 +20` },
+  spell_calamity_02: { name: "杀劫缠身", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(16 + 5 * lv) * m} 伤害，自损 8%，本场增伤 +15%（叠加）` },
+  // --- P0.5 新增道友卡 ---
+  tuxingsun_drill: { name: "地行术", kind: "skill", element: "earth", target: "none", text: () => "闪避下次攻击（遁入地底）" },
+  huangtianhua_sword: { name: "莫邪剑", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(20 + 6 * lv) * m} 伤害，30% 暴击（×2）` },
+  leizhenzi_wing: { name: "风雷翅", kind: "skill", element: "thunder", target: "none", text: (lv, m = 1) => `本回合雷系伤害 +50%` },
+  // --- P1/P2/P3 道友卡 ---
+  yinjiao_seal: { name: "番天印（残）", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `${(18 + 5 * lv) * m} 伤害，镇压 1 回合（Boss 跳过行动）` },
+  shengongbao_whip: { name: "黑虎鞭", kind: "skill", element: "calamity", target: "enemy", text: () => "偷取敌方 1 个增益状态（罡气/圣盾/燃烧）" },
+  zhaogongming_pearl: { name: "定海珠", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `连击 3 次，每次 ${(8 + 2 * lv) * m} 伤害` },
+  yunxiao_dou: { name: "混元金斗", kind: "skill", element: "treasure", target: "enemy", text: () => "削境：敌方战力 -10% 持续 2 回合" },
+  duobao_banner: { name: "六魂幡（影）", kind: "attack", element: "calamity", target: "enemy", text: (lv, m = 1) => `${(15 + 4 * lv) * m} 伤害，清除敌方全部增益` },
+  guangchengzi_seal: { name: "番天印", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `${(22 + 7 * lv) * m} 伤害，破罡 50%` },
+  randeng_pearls: { name: "定海珠（全）", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `连击 5 次，每次 ${(6 + 2 * lv) * m} 伤害` },
+  kongxuan_light: { name: "五色神光", kind: "skill", element: "treasure", target: "enemy", text: () => "禁用敌方 1 个技能 2 回合（随机）" },
+  luya_blade: { name: "斩仙飞刀", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(35 + 10 * lv) * m} 伤害，HP<25% 斩杀` },
+  tongtian_sword: { name: "诛仙剑意", kind: "attack", element: "weapon", target: "enemy", text: (lv, m = 1) => `${(50 + 15 * lv) * m} 伤害，破罡 + 破阵` },
+  yuanshi_banner: { name: "盘古幡（影）", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `${(60 + 20 * lv) * m} 伤害，无视一切防御` },
+  nuwa_picture: { name: "山河社稷图", kind: "skill", element: "treasure", target: "none", text: () => "本场战斗全收益 +10%（被动生效）" },
+  laojun_chart: { name: "太极图（影）", kind: "skill", element: "treasure", target: "none", text: () => "免疫下次控制效果（眩晕/虚弱/锁定）" },
 };
 
 const RELIC_EFFECTS = {

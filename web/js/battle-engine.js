@@ -138,6 +138,8 @@ const BattleEngine = {
       manual: !!state.flags.battle_manual,
       done: false,
       win: false,
+      mechanic: cfg.mechanic || null,
+      mechanicState: { turnCount: 0, pearlsUsed: 0, rotateIndex: 0 },
     };
     battle.playerStatuses.shield = this.relic(state, "startShield");
     this._startPlayerTurn(state, battle);
@@ -189,6 +191,10 @@ const BattleEngine = {
     battle.playerBlock = 0;
     battle.relicThunderUsed = false;
     battle.refreshUsed = false;
+    battle.thunderBoost = 0;
+    for (const c of battle.hand) { if (c.disabled > 0) c.disabled -= 1; }
+    if (battle.pictureWorld > 0) battle.pictureWorld -= 1;
+    this._processMechanicTurnStart(state, battle);
     const heal = Math.round(battle.playerHpMax * num(this.relic(state, "turnHealRatio") + godSeat(state, "turnHealRatio")));
     if (heal > 0) battle.playerHp = Math.min(battle.playerHpMax, battle.playerHp + heal);
     // 每回合抽 6 张（牌库不足时允许重复）；每回合可免费重洗一次
@@ -261,11 +267,23 @@ const BattleEngine = {
   },
 
   _dealDamage(state, battle, enemy, base, element) {
+    // Boss mechanic: element immunity
+    const mech = battle.mechanic;
+    if (mech === "thunder_immune" && element === "thunder") return 0;
+    if (mech === "fire_immune" && element === "fire") return 0;
+    if (mech === "five_rotate") {
+      const els = ["thunder", "fire", "weapon", "soul", "calamity"];
+      if (element === els[battle.mechanicState.rotateIndex % 5]) return 0;
+    }
+    if (mech === "array_eyes" && enemy.isMain && battle.enemies.some(e => e.hp > 0 && !e.isMain)) return 0;
+    let pictureMult = 1;
+    if (mech === "picture_world" && battle.pictureWorld > 0) pictureMult = 0.5;
     // 卡牌基础值很小，按玩家战力放大到与敌方血量同一量级
     let mult = this._powerMult(battle) * (1 + this.relic(state, "dmgBonus") + godSeat(state, "dmgBonus"));
     if (battle.guaranteeBuff) mult *= 1.25;
     if (element === "thunder") {
       mult += this._omenThunderBonus(state);
+      if (battle.thunderBoost > 0) mult += battle.thunderBoost;
       if (!battle.relicThunderUsed && this.relic(state, "firstThunderBonus") > 0) {
         base += this.relic(state, "firstThunderBonus");
         battle.relicThunderUsed = true;
@@ -276,7 +294,7 @@ const BattleEngine = {
       }
     }
     if (enemy.statuses.vuln > 0) mult *= 1.5;
-    let dmg = Math.max(1, Math.round(base * mult));
+    let dmg = Math.max(1, Math.round(base * mult * pictureMult));
     if (enemy.block > 0) {
       const absorbed = Math.min(enemy.block, dmg);
       enemy.block -= absorbed;
@@ -289,7 +307,7 @@ const BattleEngine = {
   playCard(state, battle, handIndex, targetIndex = 0) {
     if (battle.done || battle.ap <= 0) return [];
     const card = battle.hand[handIndex];
-    if (!card || card.used) return [];
+    if (!card || card.used || card.disabled > 0) return [];
     const def = CARD_DEFS[card.id];
     if (!def) return [];
     if (def.kind === "treasure" && battle.treasureUsed) return [];
@@ -381,6 +399,214 @@ const BattleEngine = {
         battle.ap += 2;
         events.push("你凝神运气，真气 +2。");
         break;
+        // --- P0.5 新增术法卡 ---
+        case "spell_thunder_02": {
+          hit(target, 12 + 5 * lv, "thunder", "五雷术");
+          if (target.hp > 0) {
+            target.statuses.mark += 1;
+            if (target.statuses.mark >= 3) {
+              const bonus = Math.round(8 * this._powerMult(battle));
+              target.hp = Math.max(0, target.hp - bonus);
+              target.statuses.mark = 0;
+              events.push(`雷殛标记引爆！${target.name}额外受 ${bonus} 雷伤。`);
+            } else {
+              events.push(`${target.name}身上烙下雷殛标记（${target.statuses.mark}/3）。`);
+            }
+          }
+          break;
+        }
+        case "spell_thunder_03": {
+          hit(target, 16 + 6 * lv, "thunder", "雷部敕令");
+          if (target.hp > 0) {
+            target.statuses.stun = 1;
+            events.push(`雷网束缚！${target.name}下回合无法行动。`);
+          }
+          break;
+        }
+        case "spell_fire_02": {
+          hit(target, 8 + 3 * lv, "fire", "赤火术");
+          if (target.hp > 0) {
+            target.statuses.burn += Math.round((5 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle));
+            events.push(`${target.name}被赤火缠绕（燃烧 ${target.statuses.burn}）。`);
+            for (const e of battle.enemies.filter((x) => x.hp > 0 && x !== target)) {
+              e.statuses.burn += 2;
+              events.push(`火焰蔓延至${e.name}（燃烧 +2）。`);
+            }
+          }
+          break;
+        }
+        case "spell_fire_03": {
+          hit(target, 12 + 4 * lv, "fire", "三昧真火");
+          if (target.hp > 0) {
+            target.statuses.burn += Math.round((8 + lv + this.relic(state, "burnBonus") + godSeat(state, "burnBonus")) * this._powerMult(battle));
+            target.statuses.burnUnpurgeable = true;
+            events.push(`三昧真火沾身（燃烧 ${target.statuses.burn}），非水可灭！`);
+          }
+          break;
+        }
+        case "spell_weapon_02": {
+          const ignoreBlock = Math.round(target.block * 0.3);
+          target.block = Math.max(0, target.block - ignoreBlock);
+          hit(target, 10 + 4 * lv, "weapon", "御剑术");
+          if (ignoreBlock > 0) events.push(`剑气破罡，无视 ${ignoreBlock} 罡气。`);
+          break;
+        }
+        case "spell_weapon_03": {
+          const isYao = (target.tags || []).includes("yao") || (target.name || "").includes("妖");
+          const yaoMult = isYao ? 1.4 : 1;
+          hit(target, Math.round((16 + 5 * lv) * yaoMult), "weapon", "斩妖剑气");
+          if (isYao) events.push("剑气专斩妖邪，威力大增！");
+          break;
+        }
+        case "spell_soul_01": {
+          const soulDmg = Math.round((6 + 2 * lv) * this._powerMult(battle));
+          target.hp = Math.max(0, target.hp - soulDmg);
+          events.push(`摄魂咒对${target.name}造成 ${soulDmg} 真伤（无视罡气）。`);
+          if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 1); events.push(`${target.name}心神动摇（虚弱 1 回合）。`); }
+          break;
+        }
+        case "spell_soul_02": {
+          const soulDmg2 = Math.round((10 + 3 * lv) * this._powerMult(battle));
+          target.hp = Math.max(0, target.hp - soulDmg2);
+          events.push(`落魂术对${target.name}造成 ${soulDmg2} 真伤。`);
+          if (target.hp > 0) { target.statuses.weak = Math.max(target.statuses.weak, 2); events.push(`${target.name}神魂不稳，攻势衰减（虚弱 2 回合）。`); }
+          break;
+        }
+        case "spell_calamity_01": {
+          hit(target, 12 + 3 * lv, "calamity", "劫火入体");
+          const cal1Backlash = Math.max(1, Math.round(battle.playerHpMax * 0.05));
+          battle.playerHp = Math.max(1, battle.playerHp - cal1Backlash);
+          state.resources.calamity = num(state.resources.calamity) + 20;
+          SaveManager.save(state);
+          events.push(`劫火反噬，你受 ${cal1Backlash} 伤害；劫气 +20。`);
+          break;
+        }
+        case "spell_calamity_02": {
+          battle.rageStack = int(battle.rageStack) + 1;
+          const rageMult = 1 + 0.15 * battle.rageStack;
+          hit(target, Math.round((16 + 5 * lv) * rageMult), "calamity", "杀劫缠身");
+          const cal2Backlash = Math.max(1, Math.round(battle.playerHpMax * 0.08));
+          battle.playerHp = Math.max(1, battle.playerHp - cal2Backlash);
+          events.push(`杀劫缠身（第 ${battle.rageStack} 叠，×${rageMult.toFixed(2)}），你受 ${cal2Backlash} 反噬。`);
+          break;
+        }
+        // --- P0.5 新增道友卡 ---
+        case "tuxingsun_drill": {
+          battle.playerStatuses.dodge = (battle.playerStatuses.dodge || 0) + 1;
+          events.push("你遁入地底，下次攻击将被闪避。");
+          break;
+        }
+        case "huangtianhua_sword": {
+          const crit = Math.random() < 0.3;
+          const swordBase = Math.round((20 + 6 * lv) * (crit ? 2 : 1) * this._powerMult(battle));
+          hit(target, swordBase, "weapon", "莫邪剑");
+          if (crit) events.push("莫邪剑暴击！伤害翻倍！");
+          break;
+        }
+        case "leizhenzi_wing": {
+          battle.thunderBoost = (battle.thunderBoost || 0) + 0.5;
+          events.push("风雷翅展开！本回合雷系伤害 +50%。");
+          break;
+        }
+        // --- P1/P2/P3 道友卡 ---
+        case "yinjiao_seal": {
+          hit(target, 18 + 5 * lv, "treasure", "番天印（残）");
+          if (target.hp > 0) {
+            target.statuses.stun = 1;
+            events.push("番天印镇压！敌方下回合无法行动。");
+          }
+          break;
+        }
+        case "shengongbao_whip": {
+          if (target.block > 0) {
+            const stolen = Math.max(1, Math.round(target.block * 0.3));
+            target.block -= stolen;
+            battle.playerBlock += stolen;
+            events.push(`黑虎鞭卷走敌方 ${stolen} 罡气！`);
+          } else if (target.statuses.burn > 0) {
+            const stolenBurn = Math.min(3, target.statuses.burn);
+            target.statuses.burn -= stolenBurn;
+            battle.playerBlock += 10;
+            events.push(`黑虎鞭夺走敌方燃烧之力，罡气 +10。`);
+          } else {
+            events.push("敌方无增益可偷。");
+          }
+          break;
+        }
+        case "zhaogongming_pearl": {
+          for (let i = 0; i < 3 && target.hp > 0; i++) hit(target, 8 + 2 * lv, "treasure", "定海珠");
+          events.push("定海珠连击！");
+          break;
+        }
+        case "yunxiao_dou": {
+          target.statuses.weak = Math.max(target.statuses.weak, 2);
+          target.powerMult = 0.9;
+          target.powerMultTurns = 2;
+          events.push("混元金斗削境！敌方战力 -10%。");
+          break;
+        }
+        case "duobao_banner": {
+          hit(target, 15 + 4 * lv, "calamity", "六魂幡");
+          target.block = 0;
+          target.statuses.burn = 0;
+          target.statuses.shield = 0;
+          events.push("六魂幡摇动，敌方增益尽散！");
+          break;
+        }
+        case "guangchengzi_seal": {
+          const ignoreBlock = Math.round(target.block * 0.5);
+          target.block = Math.max(0, target.block - ignoreBlock);
+          hit(target, 22 + 7 * lv, "treasure", "番天印");
+          events.push("番天印破罡！");
+          break;
+        }
+        case "randeng_pearls": {
+          for (let i = 0; i < 5 && target.hp > 0; i++) hit(target, 6 + 2 * lv, "treasure", "定海珠（全）");
+          events.push("二十四颗定海珠！");
+          break;
+        }
+        case "kongxuan_light": {
+          const usable = battle.hand.filter((c) => !c.used && c !== card && !c.disabled);
+          if (usable.length > 0) {
+            const picked = usable[Math.floor(Math.random() * usable.length)];
+            picked.disabled = 2;
+            events.push(`五色神光刷走了你的一张牌（${CARD_DEFS[picked.id]?.name || picked.id}）！`);
+          } else {
+            events.push("五色神光落空，无可刷之牌。");
+          }
+          break;
+        }
+        case "luya_blade": {
+          hit(target, 35 + 10 * lv, "weapon", "斩仙飞刀");
+          if (target.hp > 0 && target.hp <= target.maxHp * 0.25) {
+            target.hp = 0;
+            events.push("斩仙飞刀——一击必杀！");
+          }
+          break;
+        }
+        case "tongtian_sword": {
+          target.block = 0;
+          hit(target, 50 + 15 * lv, "weapon", "诛仙剑意");
+          events.push("诛仙剑意，破罡破阵！");
+          break;
+        }
+        case "yuanshi_banner": {
+          target.block = 0;
+          target.statuses.shield = 0;
+          hit(target, 60 + 20 * lv, "treasure", "盘古幡");
+          events.push("盘古幡——开天一击！");
+          break;
+        }
+        case "nuwa_picture": {
+          battle.passiveBonus = (battle.passiveBonus || 0) + 0.1;
+          events.push("山河社稷图展开，本场收益 +10%。");
+          break;
+        }
+        case "laojun_chart": {
+          battle.playerStatuses.immune = (battle.playerStatuses.immune || 0) + 1;
+          events.push("太极图护体，免疫下次控制。");
+          break;
+        }
       case "treasure_skill": {
         const tid = state.first_treasure_id;
         const skill = TREASURE_SKILLS[tid];
@@ -440,6 +666,11 @@ const BattleEngine = {
     const events = [];
     // 敌方阶段：执行意图
     for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+        if (e.statuses.stun > 0) {
+          e.statuses.stun -= 1;
+          events.push(`${e.name}被雷网束缚，无法行动！`);
+          continue;
+        }
       if (e.charged) {
         const dmg = this._damagePlayer(state, battle, Math.max(1, Math.round(e.power * 0.35)));
         e.charged = false;
@@ -487,6 +718,7 @@ const BattleEngine = {
     }
     battle.playerStatuses.weak = Math.max(0, battle.playerStatuses.weak - 1);
 
+    this._processMechanicEnemyPhase(state, battle);
     this._checkEnd(state, battle);
     events.push(...battle.pendingEvents.splice(0));
     if (!battle.done) this._startPlayerTurn(state, battle);
@@ -494,7 +726,12 @@ const BattleEngine = {
   },
 
   _damagePlayer(state, battle, value) {
+    if (battle.mechanic === "picture_world" && battle.pictureWorld > 0) value = Math.round(value * 0.5);
     if (battle.playerStatuses.shield > 0) {
+      if (battle.playerStatuses.dodge > 0) {
+        battle.playerStatuses.dodge -= 1;
+        return 0;
+      }
       battle.playerStatuses.shield -= 1;
       return 0;
     }
@@ -509,6 +746,10 @@ const BattleEngine = {
   },
 
   _checkEnd(state, battle) {
+    if (battle.mechanic === "immortal") {
+      const main = battle.enemies.find(e => e.isMain || true);
+      if (main && main.hp <= 0 && !main._oneShotKill) { main._oneShotKill = true; }
+    }
     if (battle.enemies.every((e) => e.hp <= 0)) {
       // 破劫多阶段：击碎当前金影后，榜文显化下一阶段
       if (battle.phases && battle.phaseIndex < battle.phases.length - 1) {
@@ -530,6 +771,133 @@ const BattleEngine = {
     const phase = battle.phases[battle.phaseIndex];
     battle.enemies = [this._mkEnemy(phase.name, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)), phase.pool)];
     battle.pendingEvents.push(phase.intro || `${phase.name}显化而出！`);
+  },
+
+  // ---------- Boss 特殊机制 ----------
+
+  _processMechanicTurnStart(state, battle) {
+    const mech = battle.mechanic;
+    if (!mech) return;
+    const ms = battle.mechanicState;
+    ms.turnCount += 1;
+    switch (mech) {
+      case "block_regen": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main) { const regen = Math.round(main.hpMax * 0.2); main.block += regen; battle.pendingEvents.push(`${main.name}罡气自复（+${regen}）。`); }
+        break;
+      }
+      case "realm_cut": {
+        const cut = ms.turnCount >= 6 ? 0.08 : 0.05;
+        battle.playerHpMax = Math.max(1, Math.round(battle.playerHpMax * (1 - cut)));
+        battle.playerHp = Math.min(battle.playerHp, battle.playerHpMax);
+        battle.pendingEvents.push(`削境之力侵蚀，你的气血上限 -${Math.round(cut * 100)}%。`);
+        break;
+      }
+      case "five_rotate": {
+        ms.rotateIndex = (ms.rotateIndex + 1) % 5;
+        const names = ["雷", "火", "剑", "魂", "劫"];
+        battle.pendingEvents.push(`万仙阵灵切换形态——本回合免疫${names[ms.rotateIndex]}系。`);
+        break;
+      }
+      case "alchemy": {
+        if (ms.turnCount % 2 === 0) {
+          const main = battle.enemies.find(e => e.hp > 0);
+          if (main) { const heal = Math.round(main.hpMax * 0.1); main.hp = Math.min(main.hpMax, main.hp + heal); battle.pendingEvents.push(`老君残影炼成一丹，服下后回复 ${heal} 气血。`); }
+        }
+        break;
+      }
+      case "pearl_barrage": {
+        if (ms.pearlsUsed >= 24 && ms.pearlsUsed < 26) {
+          const main = battle.enemies.find(e => e.hp > 0);
+          if (main && main.statuses.weak <= 0) { main.statuses.weak = 2; battle.pendingEvents.push("二十四颗定海珠用尽，赵公明残影陷入虚弱！"); }
+        }
+        if (ms.pearlsUsed >= 26) ms.pearlsUsed = 0;
+        break;
+      }
+      default: break;
+    }
+  },
+
+  _processMechanicEnemyPhase(state, battle) {
+    const mech = battle.mechanic;
+    if (!mech) return;
+    const ms = battle.mechanicState;
+    switch (mech) {
+      case "summon": {
+        if (ms.turnCount % 2 === 0) {
+          const main = battle.enemies.find(e => e.hp > 0 && !e.isAdd);
+          if (main && battle.enemies.filter(e => e.hp > 0).length < 4) {
+            const add = this._mkEnemy("小妖", Math.round(main.hpMax * 0.2)); add.isAdd = true;
+            battle.enemies.push(add);
+            battle.pendingEvents.push(`${main.name}召唤了一只小妖！`);
+          }
+        }
+        break;
+      }
+      case "army_formation": {
+        if (ms.turnCount % 3 === 0) {
+          const main = battle.enemies.find(e => e.hp > 0 && !e.isAdd);
+          if (main) {
+            for (let i = 0; i < 3 && battle.enemies.filter(e => e.hp > 0).length < 5; i++) {
+              const add = this._mkEnemy("甲士", Math.round(main.hpMax * 0.15)); add.isAdd = true;
+              battle.enemies.push(add);
+            }
+            battle.pendingEvents.push(`${main.name}重新召集甲士列阵！`);
+          }
+        }
+        break;
+      }
+      case "double_strike": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main && main.intent && main.intent.type === "attack") {
+          const extraDmg = this._damagePlayer(state, battle, Math.max(1, Math.round(main.power * 0.12)));
+          if (extraDmg > 0) battle.pendingEvents.push(`${main.name}连刺第二枪！你额外受 ${extraDmg} 伤害。`);
+        }
+        break;
+      }
+      case "six_soul": {
+        if (ms.turnCount % 2 === 0) {
+          battle.playerBlock = 0; battle.playerStatuses.shield = 0; battle.rageStack = 0; battle.thunderBoost = 0;
+          battle.pendingEvents.push("六魂幡摇动——你的罡气、圣盾、增益尽散！");
+        }
+        break;
+      }
+      case "five_light": {
+        if (ms.turnCount % 3 === 0) {
+          const usable = battle.hand.filter(c => !c.used && !(c.disabled > 0));
+          if (usable.length) {
+            const pick = usable[Math.floor(Math.random() * usable.length)];
+            pick.disabled = 2;
+            battle.pendingEvents.push(`五色神光刷走了「${CARD_DEFS[pick.id]?.name || pick.id}」！该牌 2 回合内不可用。`);
+          }
+        }
+        break;
+      }
+      case "pearl_barrage": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main && ms.pearlsUsed < 24) {
+          for (let i = 0; i < 3; i++) { ms.pearlsUsed += 1; const d = this._damagePlayer(state, battle, Math.max(1, Math.round(main.power * 0.08))); }
+          battle.pendingEvents.push(`赵公明残影投出定海珠（已用 ${ms.pearlsUsed}/24）！`);
+        }
+        break;
+      }
+      case "picture_world": {
+        if (ms.turnCount % 4 === 0) {
+          battle.pictureWorld = 3;
+          battle.pendingEvents.push("女娲残影展开山河社稷图——你被拉入图中！3 回合内伤害 -50%，但受到的伤害也 -50%。");
+        }
+        break;
+      }
+      case "immortal": {
+        const main = battle.enemies.find(e => e.hp > 0);
+        if (main && !main._oneShotKill) {
+          main.hp = main.hpMax;
+          battle.pendingEvents.push(`${main.name}被榜文照身，满血复活！唯有单回合打出超过其气血上限的伤害才能击杀。`);
+        }
+        break;
+      }
+      default: break;
+    }
   },
 
   // 自动模式：从前往后出第一张可用牌

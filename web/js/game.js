@@ -171,6 +171,7 @@ const Game = {
     const id = String(row.action_id);
     this.state.action_counts_total[id] = int(this.state.action_counts_total[id]) + 1;
     this.state.action_counts_today[id] = int(this.state.action_counts_today[id]) + 1;
+      if (row.map_id) { if (!this.state.map_explores) this.state.map_explores = {}; this.state.map_explores[String(row.map_id)] = int(this.state.map_explores[String(row.map_id)]) + 1; }
     let rewardText = "", blessText = "";
     const minutes = int(row.reward_minutes_equivalent);
     if (minutes > 0) {
@@ -301,6 +302,12 @@ const Game = {
   resolveEncounter(encounterId, optionIndex) {
     const enc = DataManager.getById("encounter_table", encounterId);
     if (!Object.keys(enc).length) return;
+    // --- New format (encounter_type field) ---
+    if (enc.encounter_type) {
+      this._resolveNewEncounter(enc, optionIndex);
+      return;
+    }
+    // --- Old format (options array) ---
     const option = (enc.options || [])[optionIndex];
     if (!option) return;
     if (option.kind === "battle") {
@@ -319,6 +326,50 @@ const Game = {
     }
     const ok = Math.random() <= clamp(chance, 0.05, 0.95);
     this._applyEncounterOutcome(enc, ok ? option.success : option.fail, ok);
+  },
+
+  _resolveNewEncounter(enc, optionIndex) {
+    const type = String(enc.encounter_type);
+    const name = String(enc.encounter_name || "遭遇");
+    if (type === "battle") {
+      const cfg = enc.battle_config || {};
+      const map = DataManager.getById("map_table", String(enc.map_id));
+      const ratio = num(cfg.power_ratio, 0.2);
+      const enemyPower = Math.max(50, Math.round(num(map.recommended_power, 300) * ratio));
+      this.startBattle({ name: String(cfg.enemy_name || name), enemy_power: enemyPower, source: "encounter", payload: { encounterId: enc.encounter_id, optionIndex } });
+      return;
+    }
+    if (type === "choice") {
+      const choices = enc.choices || [];
+      const choice = choices[optionIndex];
+      if (!choice) return;
+      const result = choice.result || {};
+      const resources = { ...(result.resources || {}) };
+      this._applyFactionMeritBonus(resources);
+      if (Object.keys(resources).length) this._applyResourceDelta(resources);
+      const deltaText = this._formatResourceDelta(resources);
+      this._log(`遭遇「${name}」：${choice.label}。`);
+      this.toast(`遭遇·${name}`, `${result.log || ""}${deltaText ? "\n\n获得：\n" + deltaText : ""}`);
+      this._afterMutated();
+      return;
+    }
+    if (type === "gather") {
+      const reward = enc.gather_reward || {};
+      const resources = {};
+      for (const k of Object.keys(reward)) { if (k !== "log") resources[k] = num(reward[k]); }
+      this._applyFactionMeritBonus(resources);
+      if (Object.keys(resources).length) this._applyResourceDelta(resources);
+      const deltaText = this._formatResourceDelta(resources);
+      this._log(`遭遇「${name}」：采集。`);
+      this.toast(`遭遇·${name}`, `${reward.log || ""}${deltaText ? "\n\n获得：\n" + deltaText : ""}`);
+      this._afterMutated();
+      return;
+    }
+    if (type === "narrative") {
+      this._log(`遭遇「${name}」。`);
+      this._afterMutated();
+      return;
+    }
   },
 
   _applyEncounterOutcome(enc, outcome, ok) {
@@ -346,7 +397,8 @@ const Game = {
     this._log(`你踏入${boss.boss_name}的巢穴，妖气扑面而来。`);
     const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
       boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }] }[bossId] || [];
-    this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", payload: { bossId } });
+    const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
+    this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, payload: { bossId } });
     this._afterMutated();
   },
 
@@ -498,12 +550,35 @@ const Game = {
   },
 
   _companionConditionMet(cond = {}) {
+    const s = this.state;
     switch (cond.type) {
       case "auto": return true;
-      case "realm": return DataManager.isRealmAtLeast(this.state.realm_id, String(cond.realm_id));
-      case "boss_cleared": return int(this.state.boss_clears[String(cond.boss_id)]) > 0;
-      case "array_win": return Object.values(this.state.array_wins).some((n) => int(n) > 0);
-      case "event_seen": return this.state.seen_events.includes(String(cond.event_id));
+      case "realm": return DataManager.isRealmAtLeast(s.realm_id, String(cond.realm_id));
+      case "boss_cleared": {
+        const clears = int(s.boss_clears[String(cond.boss_id)]);
+        return clears >= int(cond.count, 1);
+      }
+      case "array_win": return Object.values(s.array_wins).some((n) => int(n) > 0);
+      case "array_win_count": {
+        const total = Object.values(s.array_wins).reduce((sum, n) => sum + int(n), 0);
+        return total >= int(cond.value, 1);
+      }
+      case "event_seen": return s.seen_events.includes(String(cond.event_id));
+      // --- P0.5/P1/P2/P3 new condition types ---
+      case "action_count": return int(s.action_counts_total[String(cond.action_id)]) >= int(cond.count, 1);
+      case "map_explore": return int((s.map_explores || {})[String(cond.map_id)]) >= int(cond.count, 1);
+      case "spell_level": {
+        const school = String(cond.spell_school);
+        return Object.entries(s.spells || {}).some(([sid, st]) => {
+          const row = DataManager.getById("spell_table", sid);
+          return String(row.spell_school || "") === school && int(st.level) >= int(cond.level, 1);
+        });
+      }
+      case "faction": return String(s.faction_id || "") === String(cond.faction_id);
+      case "no_faction": return !str(s.faction_id, "");
+      case "calamity_min": return num(s.resources.calamity) >= num(cond.value, 0);
+      case "merit_min": return num(s.resources.merit) >= num(cond.value, 0);
+      case "race": return String(s.race_id || "") === String(cond.race_id);
       default: return false;
     }
   },
