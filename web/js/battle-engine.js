@@ -78,6 +78,10 @@ const BattleEngine = {
       const cardId = String(crow.bond_card || "");
       if (cardId) deck.push({ id: cardId, level: 1 + int(ups[cardId]) });
     }
+    // P1 生活技艺·画符：一次性符咒卡入牌库（每张符一枚）
+    for (const t of state.talismans || []) {
+      deck.push({ id: "talisman_" + t.type, level: int(t.lv, 1) });
+    }
     return deck;
   },
 
@@ -632,6 +636,22 @@ const BattleEngine = {
           events.push("太极图护体，免疫下次控制。");
           break;
         }
+        case "talisman_fire":
+          hit(target, 10 + 5 * lv, "fire", "火符");
+          if (target.hp > 0) { target.statuses.burn += (4 + lv) * this._powerMult(battle); events.push(`${target.name}被符火缠身（燃烧 ${target.statuses.burn}）。`); }
+          events.push("火符燃尽，化为飞灰。");
+          break;
+        case "talisman_thunder":
+          hit(target, 12 + 6 * lv, "thunder", "雷符");
+          if (target.hp > 0) { target.statuses.mark += 1; events.push(`${target.name}烙下雷殛标记。`); }
+          events.push("雷符炸裂，电光消散。");
+          break;
+        case "talisman_guard": {
+          const gblk = (10 + 6 * lv) * this._powerMult(battle);
+          battle.playerBlock += gblk; battle.playerStatuses.shield += 1;
+          events.push(`护身符亮起：罡气 +${gblk}，圣盾 1 层。`);
+          break;
+        }
       case "treasure_skill": {
         const tid = state.first_treasure_id;
         const skill = TREASURE_SKILLS[tid];
@@ -680,6 +700,13 @@ const BattleEngine = {
         }
         break;
       }
+    }
+    // P1 生活技艺·画符：符咒打出即消耗一枚存货
+    if (CARD_DEFS[card.id] && CARD_DEFS[card.id].kind === "talisman") {
+      const ttype = CARD_DEFS[card.id].talisman;
+      const arr = state.talismans || [];
+      const ti = arr.findIndex((x) => x.type === ttype);
+      if (ti >= 0) { arr.splice(ti, 1); SaveManager.save(state); }
     }
     battle.cardsPlayed = int(battle.cardsPlayed) + 1;
     this._checkEnd(state, battle);

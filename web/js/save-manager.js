@@ -60,6 +60,8 @@ const SaveManager = {
       array_wins: {},
       companions: {},
         lineup: [],
+        talismans: [],
+        divination: {},
       card_upgrades: {},
       battle_blessing: null,
     };
@@ -120,6 +122,9 @@ const SaveManager = {
     state.array_wins = state.array_wins || {};
     // 封神人物因缘
     state.companions = state.companions || {};
+    // P1 生活技艺：符咒存货（[{type,lv}]）/ 占卜记录
+    if (!Array.isArray(state.talismans)) state.talismans = [];
+    state.divination = state.divination || {};
     // P1 阵容：上场道友（最多 3）。旧档无此字段则补齐，并自动填入前 3 位已结缘道友。
     if (!Array.isArray(state.lineup)) state.lineup = [];
     state.lineup = state.lineup.filter((id) => state.companions[id] && state.companions[id].bonded).slice(0, 3);

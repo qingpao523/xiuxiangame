@@ -90,7 +90,28 @@ const CARD_DEFS = {
   yuanshi_banner: { name: "盘古幡（影）", kind: "attack", element: "treasure", target: "enemy", text: (lv, m = 1) => `${(60 + 20 * lv) * m} 伤害，无视一切防御` },
   nuwa_picture: { name: "山河社稷图", kind: "skill", element: "treasure", target: "none", text: () => "本场战斗全收益 +10%（被动生效）" },
   laojun_chart: { name: "太极图（影）", kind: "skill", element: "treasure", target: "none", text: () => "免疫下次控制效果（眩晕/虚弱/锁定）" },
+  // P1 生活技艺·画符：一次性符咒卡（打出即消耗 state.talismans）
+  talisman_fire: { name: "火符", kind: "talisman", element: "fire", target: "enemy", talisman: "fire", text: (lv, m = 1) => `${(10 + 5 * lv) * m} 火伤，燃烧 ${(4 + lv) * m}` },
+  talisman_thunder: { name: "雷符", kind: "talisman", element: "thunder", target: "enemy", talisman: "thunder", text: (lv, m = 1) => `${(12 + 6 * lv) * m} 雷伤，雷殛标记` },
+  talisman_guard: { name: "护身符", kind: "talisman", element: "charm", target: "none", talisman: "guard", text: (lv, m = 1) => `罡气 +${(10 + 6 * lv) * m}，圣盾 1 层` },
 };
+
+// P1 生活技艺·品质（炼丹/画符的火候时机条结果）
+const CRAFT_QUALITY = {
+  shang: { name: "上品", mult: 2, cls: "gold" },
+  zhong: { name: "中品", mult: 1, cls: "" },
+  xia: { name: "下品", mult: 1, cls: "faint" },
+};
+
+// P1 生活技艺·占卜谶语（给线索，不给数字；effect 为隐性引导）
+const DIVINATION_CLUES = [
+  { text: "签上画着一缕灵光没入山中。明日入山，恐有奇遇。", effect: "event_boost", desc: "次日机缘率提升" },
+  { text: "东方潮雾里有血光浮动。陈塘方向，不太平。", effect: "boss_hint", target: "map_002", desc: "陈塘关 Boss 提示" },
+  { text: "白骨阴火向北蔓延。骷髅山深处，有东西在动。", effect: "boss_hint", target: "map_003", desc: "骷髅山 Boss 提示" },
+  { text: "那页金榜，比昨日近了三寸。它在看你。", effect: "seal_omen", desc: "榜文感应叙事" },
+  { text: "炉中丹药之气未散。今日炼丹，火候易得。", effect: "craft_boost", desc: "今日炼丹/画符更易出上品" },
+  { text: "风平，云静。是个宜于静修的日子。", effect: "calm", desc: "闭关收益微增" },
+];
 
 const RELIC_EFFECTS = {
   treasure_001: { firstThunderBonus: 3, desc: "雷纹：每回合第一张雷牌 +3 伤害" },

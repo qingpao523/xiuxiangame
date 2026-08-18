@@ -196,6 +196,7 @@ const Game = {
     if (!this.state.pending_event_id) {
       let eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
       if (this.state.flags.insight_event_boost) { eventChance *= 2; delete this.state.flags.insight_event_boost; }
+        if (this.hasDivinationBoost("event_boost")) eventChance *= 1.8; // P1 占卜「明日机缘」
       if (row.force_event && EventManager.canOffer(this.state, String(row.force_event))) {
         this._setPendingEvent(String(row.force_event)); eventTriggered = true;
       } else if (eventChance > 0 && Math.random() <= eventChance) {
@@ -643,6 +644,69 @@ const Game = {
   // ---------- 丹房 ----------
 
   isAlchemyUnlocked() { return DataManager.isRealmAtLeast(this.state.realm_id, "rq_07"); },
+
+  // ---------- P1 生活技艺：炼丹火候 / 画符 / 占卜 ----------
+
+  // 炼丹（火候品质版）：quality 由 UI 时机条决定（shang/zhong/xia），影响产出/药效
+  brewPillWithQuality(pillId, quality) {
+    if (!this.isAlchemyUnlocked()) return { ok: false };
+    const def = PILL_DEFS.find((p) => p.id === pillId);
+    if (!def) return { ok: false };
+    for (const rid of Object.keys(def.cost)) {
+      if (num(this.state.resources[rid]) < num(def.cost[rid])) { this.queuePopup({ kind: "text", title: def.name, body: "炉火虽在，材料不足。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    }
+    for (const rid of Object.keys(def.cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(def.cost[rid]);
+    const q = String(quality || "zhong");
+    const qname = (typeof CRAFT_QUALITY !== "undefined" && CRAFT_QUALITY[q]) ? CRAFT_QUALITY[q].name : "中品";
+    if (pillId === "due") { const n = q === "shang" ? 2 : 1; this.state.pills.due = int(this.state.pills.due) + n; this._log(`炉火纯青，炼成${qname}渡厄丹 ${n} 枚（存 ${this.state.pills.due}）。`); }
+    else if (pillId === "peiyuan") { const hours = q === "shang" ? 3 : q === "xia" ? 1.5 : 2; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`服下${qname}培元丹，丹田暖意流转——${hours} 时辰内收益 +15%。`); }
+    else if (pillId === "ningfa") { const mins = q === "shang" ? 45 : q === "xia" ? 20 : 30; const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, mins, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`${qname}凝法丹化开，法力转为道行 +${formatInt(g.daoxing)}。`); }
+    this._afterMutated();
+    return { ok: true, quality: q };
+  },
+
+  // 画符：quality 决定符咒等级（上=3/中=2/下=1）与数量
+  drawTalisman(type, quality) {
+    if (!this.isAlchemyUnlocked()) return { ok: false };
+    if (!["fire", "thunder", "guard"].includes(type)) return { ok: false };
+    const cost = { spell_page: 3, mana: 2000 };
+    for (const rid of Object.keys(cost)) {
+      if (num(this.state.resources[rid]) < num(cost[rid])) { this.queuePopup({ kind: "text", title: "画符", body: "朱砂与法力不足，难以成符。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    }
+    for (const rid of Object.keys(cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(cost[rid]);
+    const q = String(quality || "zhong");
+    const lv = q === "shang" ? 3 : q === "xia" ? 1 : 2;
+    const n = q === "shang" ? 2 : 1;
+    if (!Array.isArray(this.state.talismans)) this.state.talismans = [];
+    for (let i = 0; i < n; i++) this.state.talismans.push({ type, lv });
+    const tname = { fire: "火符", thunder: "雷符", guard: "护身符" }[type];
+    const qname = (typeof CRAFT_QUALITY !== "undefined" && CRAFT_QUALITY[q]) ? CRAFT_QUALITY[q].name : "中品";
+    this._log(`笔走龙蛇，画成${qname}${tname} ${n} 枚，收入袖中。`);
+    this._afterMutated();
+    return { ok: true, quality: q, count: n };
+  },
+
+  // 占卜：每日一次，给谶语线索（非数字），并设隐性引导
+  divine() {
+    if (!this.isAlchemyUnlocked()) return { ok: false };
+    const today = todayString();
+    if (str(this.state.divination.last_day, "") === today) { this.queuePopup({ kind: "text", title: "占卜", body: "今日已占过一签。天机不可屡窥，明日再来。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    const clues = (typeof DIVINATION_CLUES !== "undefined") ? DIVINATION_CLUES : [];
+    if (!clues.length) return { ok: false };
+    const clue = clues[Math.floor(Math.random() * clues.length)];
+    this.state.divination = { last_day: today, effect: clue.effect, target: clue.target || "" };
+    this._log(`你焚香摇签，得一句谶语：${clue.text}`);
+    this.queuePopup({ kind: "text", style: "chance", title: "占卜·谶语", body: `炉烟袅袅，签上写着——\n\n「${clue.text}」\n\n（${clue.desc}）`, buttons: [{ label: "记下了" }] });
+    this._afterMutated();
+    return { ok: true, clue };
+  },
+
+  // 占卜「明日机缘」buff 是否生效（次日有效）
+  hasDivinationBoost(effect) {
+    const d = this.state.divination || {};
+    if (str(d.effect, "") !== effect) return false;
+    return true; // 简化：本次会话内有效
+  },
 
   brewPill(pillId) {
     if (!this.isAlchemyUnlocked()) return;

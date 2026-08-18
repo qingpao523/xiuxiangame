@@ -2386,3 +2386,72 @@ body {
   filter: grayscale(0.75) brightness(0.55);
   opacity: 0.7;
 }
+
+/* ---- P1 生活技艺·火候时机条（炼丹/画符手感操作） ---- */
+#craft-layer {
+  position: fixed; inset: 0; z-index: 180;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(4, 5, 7, 0.86);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+#craft-layer.on { opacity: 1; }
+#craft-panel {
+  width: 86%; max-width: 400px;
+  padding: 28px 24px 24px;
+  background: rgba(14, 16, 18, 0.96);
+  border: 1px solid rgba(217, 164, 65, 0.5);
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+#craft-title {
+  font-size: 21px; letter-spacing: 0.3em; color: #e8c877;
+  text-shadow: 0 0 18px rgba(232, 200, 119, 0.4);
+}
+#craft-prompt {
+  margin-top: 12px; font-size: 13px; letter-spacing: 0.2em; color: #9a9488;
+}
+#craft-bar {
+  position: relative; height: 34px; margin: 30px 0 18px;
+  background: rgba(8, 10, 12, 0.95);
+  border: 1px solid rgba(160, 135, 85, 0.4);
+  border-radius: 17px; overflow: hidden; cursor: pointer;
+}
+/* 中品带（中心 60%），内嵌上品带（中心 30%） */
+#craft-zone {
+  position: absolute; top: 0; bottom: 0; left: 20%; width: 60%;
+  background: rgba(217, 164, 65, 0.14);
+  transition: background 0.2s ease;
+}
+#craft-zone::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 25%; width: 50%;
+  background: rgba(232, 200, 119, 0.22);
+}
+#craft-zone.flash-shang { background: rgba(255, 217, 122, 0.55); }
+#craft-zone.flash-zhong { background: rgba(217, 164, 65, 0.4); }
+#craft-zone.flash-xia { background: rgba(140, 90, 70, 0.4); }
+#craft-marker {
+  position: absolute; top: -3px; bottom: -3px; width: 4px; left: 0;
+  transform: translateX(-50%);
+  background: #fff0c4; border-radius: 2px;
+  box-shadow: 0 0 12px 3px rgba(255, 240, 196, 0.8);
+}
+#craft-result {
+  font-size: 26px; letter-spacing: 0.4em; padding-left: 0.4em;
+  opacity: 0; transition: opacity 0.3s ease; min-height: 34px;
+}
+#craft-result.show { opacity: 1; }
+#craft-result.q-shang { color: #ffd97a; text-shadow: 0 0 22px rgba(255, 217, 122, 0.7); }
+#craft-result.q-zhong { color: #d9c0a0; }
+#craft-result.q-xia { color: #8a7468; }
+#craft-stop {
+  margin-top: 14px; padding: 10px 40px;
+  background: rgba(40, 32, 14, 0.9);
+  border: 1px solid rgba(255, 214, 120, 0.6);
+  border-radius: 8px; color: #ffe3a1;
+  font-size: 16px; letter-spacing: 0.3em; font-family: inherit; cursor: pointer;
+}
+#craft-stop:active { background: rgba(70, 54, 16, 0.95); }
+
+/* 生活技艺分区小标题 */
+.craft-section-note { color: #d9a441; }

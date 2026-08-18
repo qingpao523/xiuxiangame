@@ -1006,9 +1006,12 @@ function renderLogPanel(body, state) {
     }
   }
 
-  // 丹房区（rq_07 解锁）
+  // 丹房区（rq_07 解锁）—— P1 生活技艺：炼丹控火候 / 画符蓄力 / 占卜
   if (Game.isAlchemyUnlocked()) {
-    body.appendChild(note("丹房：炉火常明，法力与材料在此化作丹药。"));
+    const craftBoost = Game.hasDivinationBoost("craft_boost");
+    body.appendChild(note("丹房：炉火常明。炼丹画符皆看火候——光标行至中段停手得上品，偏外则中品、下品。" + (craftBoost ? "（今日占卜得签，火候易得。）" : "")));
+
+    // 炼丹（控火候）
     for (const def of PILL_DEFS) {
       const pillCard = document.createElement("div"); pillCard.className = "card";
       const pInfo = document.createElement("div"); pInfo.className = "card-info";
@@ -1017,12 +1020,59 @@ function renderLogPanel(body, state) {
       costLine.textContent = `耗：${Object.keys(def.cost).map((rid) => { const rn = DataManager.getById("resource_table", rid).resource_name || rid; return `${rn} ${formatInt(def.cost[rid])}`; }).join("，")}｜${def.effectText(Game.state)}`;
       pInfo.append(pName, costLine);
       const craftBtn = document.createElement("button"); craftBtn.className = "card-btn";
-      craftBtn.textContent = def.id === "due" ? "开炉" : def.id === "peiyuan" ? "服用" : "炼化";
+      craftBtn.textContent = "开炉";
       const canAfford = Object.keys(def.cost).every((rid) => num(Game.state.resources[rid]) >= num(def.cost[rid]));
       craftBtn.disabled = !canAfford;
-      craftBtn.addEventListener("click", () => { Game.brewPill(def.id); renderPanelBody("log"); });
+      craftBtn.addEventListener("click", () => {
+        CraftMinigame.open({ title: `炼丹·${def.name}`, prompt: "看准火候，停在中段得上品", boost: craftBoost }, (quality) => {
+          Game.brewPillWithQuality(def.id, quality);
+          renderPanelBody("log");
+        });
+      });
       pillCard.append(pInfo, craftBtn); body.appendChild(pillCard);
     }
+
+    // 画符（蓄力）
+    const talismans = Game.state.talismans || [];
+    const tCount = (t) => talismans.filter((x) => x.type === t).length;
+    body.appendChild(note(`画符（朱砂 3｜法力 2000）：符成可带入斗法，打出即焚。现有 火符 ${tCount("fire")}｜雷符 ${tCount("thunder")}｜护身符 ${tCount("guard")}。`));
+    const talismanTypes = [
+      { type: "fire", name: "火符", desc: "火伤 + 燃烧" },
+      { type: "thunder", name: "雷符", desc: "雷伤 + 雷殛标记" },
+      { type: "guard", name: "护身符", desc: "罡气 + 圣盾" },
+    ];
+    for (const tt of talismanTypes) {
+      const tCard = document.createElement("div"); tCard.className = "card";
+      const tInfo = document.createElement("div"); tInfo.className = "card-info";
+      const tName = document.createElement("div"); tName.className = "card-name"; tName.textContent = `${tt.name}——${tt.desc}`;
+      const tSub = document.createElement("div"); tSub.className = "card-cost"; tSub.textContent = "上品得 2 枚（lv3）｜中品 1 枚（lv2）｜下品 1 枚（lv1）";
+      tInfo.append(tName, tSub);
+      const drawBtn = document.createElement("button"); drawBtn.className = "card-btn"; drawBtn.textContent = "画";
+      const canDraw = num(Game.state.resources.spell_page) >= 3 && num(Game.state.resources.mana) >= 2000;
+      drawBtn.disabled = !canDraw;
+      drawBtn.addEventListener("click", () => {
+        CraftMinigame.open({ title: `画符·${tt.name}`, prompt: "笔走龙蛇，蓄力停在中段得上品", boost: craftBoost }, (quality) => {
+          Game.drawTalisman(tt.type, quality);
+          renderPanelBody("log");
+        });
+      });
+      tCard.append(tInfo, drawBtn); body.appendChild(tCard);
+    }
+
+    // 占卜（给线索，非数字）
+    const div = Game.state.divination || {};
+    const divined = str(div.last_day, "") === todayString();
+    body.appendChild(note("占卜：焚香摇签，每日一签。签文给的是线索，不是数字——信则灵。"));
+    const divCard = document.createElement("div"); divCard.className = "card";
+    const divInfo = document.createElement("div"); divInfo.className = "card-info";
+    const divName = document.createElement("div"); divName.className = "card-name"; divName.textContent = "焚香占卜";
+    const divSub = document.createElement("div"); divSub.className = "card-desc";
+    divSub.textContent = divined ? "今日已占。天机不可屡窥，明日再来。" : "求一签，看看明日气运。";
+    divInfo.append(divName, divSub);
+    const divBtn = document.createElement("button"); divBtn.className = "card-btn"; divBtn.textContent = "摇签";
+    divBtn.disabled = divined;
+    divBtn.addEventListener("click", () => { Game.divine(); renderPanelBody("log"); });
+    divCard.append(divInfo, divBtn); body.appendChild(divCard);
   }
 
   // 历世录
