@@ -604,8 +604,28 @@ const Game = {
     const c = this.state.companions[id];
     if (!c || c.bonded) return;
     c.bonded = true;
+    // P1 阵容：结缘后若上场位未满（<3），自动补位
+    if (!Array.isArray(this.state.lineup)) this.state.lineup = [];
+    if (this.state.lineup.length < 3 && !this.state.lineup.includes(id)) this.state.lineup.push(id);
     this._log(`道友结缘：${row.name}——${row.bond_passive_desc}。`);
-    this.queuePopup({ kind: "text", style: "goal", title: `道友结缘：${row.name}`, body: `${row.bond_text || ""}\n\n护持：${row.bond_passive_desc}\n专属斗法牌已入你的牌库。`, buttons: [{ label: "志同道合" }] });
+    this.queuePopup({ kind: "text", style: "goal", title: `道友结缘：${row.name}`, body: `${row.bond_text || ""}\n\n护持：${row.bond_passive_desc}\n专属斗法牌已就绪，可在洞府「道友阵容」安排上场（最多 3 位）。`, buttons: [{ label: "志同道合" }] });
+  },
+
+  // P1 阵容：切换某位道友上场/下场（上限 3 位，仅已结缘可选）
+  toggleLineup(companionId) {
+    const id = String(companionId);
+    if (!this.state.companions[id]?.bonded) return { ok: false, reason: "尚未结缘" };
+    if (!Array.isArray(this.state.lineup)) this.state.lineup = [];
+    const idx = this.state.lineup.indexOf(id);
+    if (idx >= 0) {
+      this.state.lineup.splice(idx, 1);
+      this._afterMutated();
+      return { ok: true, on: false };
+    }
+    if (this.state.lineup.length >= 3) return { ok: false, reason: "上场位已满（3 位），请先撤下一位" };
+    this.state.lineup.push(id);
+    this._afterMutated();
+    return { ok: true, on: true };
   },
 
   // ---------- 真灵上榜 ----------

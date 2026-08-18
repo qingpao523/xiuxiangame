@@ -59,6 +59,7 @@ const SaveManager = {
       array_counts_today: {},
       array_wins: {},
       companions: {},
+        lineup: [],
       card_upgrades: {},
       battle_blessing: null,
     };
@@ -119,6 +120,13 @@ const SaveManager = {
     state.array_wins = state.array_wins || {};
     // 封神人物因缘
     state.companions = state.companions || {};
+    // P1 阵容：上场道友（最多 3）。旧档无此字段则补齐，并自动填入前 3 位已结缘道友。
+    if (!Array.isArray(state.lineup)) state.lineup = [];
+    state.lineup = state.lineup.filter((id) => state.companions[id] && state.companions[id].bonded).slice(0, 3);
+    if (state.lineup.length < 3) {
+      const bonded = Object.keys(state.companions).filter((id) => state.companions[id].bonded);
+      for (const id of bonded) { if (state.lineup.length >= 3) break; if (!state.lineup.includes(id)) state.lineup.push(id); }
+    }
     // 旧档兼容：无种族的老存档默认人族
     if (state.race_id === "" && nowUnix() - int(state.created_at, now) > 120) {
       state.race_id = "human";

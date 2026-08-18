@@ -975,24 +975,34 @@ function renderLogPanel(body, state) {
     body.appendChild(popupButton("择势力入局", false, () => { closePanelSheet(); Game._maybeQueueFactionChoice(); drainPopupQueue(); }));
   }
 
-  // 道友区
+  // 道友区（P1 阵容：上场位管理，最多 3 位）
   const companions = state.companions || {};
   const bonded = Object.keys(companions).filter((id) => companions[id].bonded);
   if (bonded.length) {
-    body.appendChild(note("道友结缘："));
-    for (const cid of Object.keys(companions)) {
-      const c = companions[cid];
-      if (!c.bonded) continue;
+    const lineup = Array.isArray(state.lineup) ? state.lineup : [];
+    body.appendChild(note(`道友阵容（上场 ${lineup.length}/3）：专属斗法牌只有上场道友才会带入战斗。对着内容选阵容——打火弱点带上哪吒，打榜文残影带上姜子牙。`));
+    for (const cid of bonded) {
       const row = DataManager.getById("companion_table", cid);
       if (!Object.keys(row).length) continue;
-      const card = document.createElement("div"); card.className = "card selected";
+      const on = lineup.includes(cid);
+      const card = document.createElement("div"); card.className = "card" + (on ? " selected" : "");
       let glyph;
-        if (NPC_ICONS[cid]) { glyph = document.createElement("img"); glyph.className = "npc-portrait"; glyph.src = NPC_ICONS[cid]; glyph.alt = ""; }
-        else { glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "友"; }
+      if (NPC_ICONS[cid]) { glyph = document.createElement("img"); glyph.className = "npc-portrait"; glyph.src = NPC_ICONS[cid]; glyph.alt = ""; }
+      else { glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "友"; }
       const info = document.createElement("div"); info.className = "card-info";
-      const name = document.createElement("div"); name.className = "card-name"; name.textContent = row.name || cid;
+      const name = document.createElement("div"); name.className = "card-name"; name.textContent = `${row.name || cid}${on ? " ★上场" : ""}`;
       const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = row.bond_passive_desc || "";
-      info.append(name, desc); card.append(glyph, info); body.appendChild(card);
+      const cardName = CARD_DEFS[String(row.bond_card)]?.name || row.bond_card || "";
+      const cardLine = document.createElement("div"); cardLine.className = "card-cost"; cardLine.textContent = `专属斗法牌：${cardName}`;
+      info.append(name, desc, cardLine);
+      const btn = document.createElement("button"); btn.className = "card-btn";
+      btn.textContent = on ? "撤下" : "上场";
+      btn.addEventListener("click", () => {
+        const r = Game.toggleLineup(cid);
+        if (!r.ok && r.reason) Game.toast("阵容", r.reason);
+        renderPanelBody("log");
+      });
+      card.append(glyph, info, btn); body.appendChild(card);
     }
   }
 

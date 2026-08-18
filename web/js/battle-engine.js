@@ -71,10 +71,13 @@ const BattleEngine = {
     // 功德/劫气主题卡：资源满百入牌库
     if (num(state.resources.merit) >= 100) deck.push({ id: "merit_gold", level: 1 });
     if (num(state.resources.calamity) >= 100) deck.push({ id: "calamity_edge", level: 1 });
-    // 道友专属卡：封神人物结缘后入库
-    if (state.companions?.nezha?.bonded) deck.push({ id: "nezha_spear", level: 1 + int(ups.nezha_spear) });
-    if (state.companions?.yangjian?.bonded) deck.push({ id: "yangjian_blade", level: 1 + int(ups.yangjian_blade) });
-    if (state.companions?.ziya?.bonded) deck.push({ id: "ziya_whip", level: 1 + int(ups.ziya_whip) });
+    // P1 阵容：只有"上场"道友的专属卡入库（最多 3 位），bond_card 从数据表读取
+    for (const cid of state.lineup || []) {
+      if (!state.companions?.[cid]?.bonded) continue;
+      const crow = DataManager.getById("companion_table", cid);
+      const cardId = String(crow.bond_card || "");
+      if (cardId) deck.push({ id: cardId, level: 1 + int(ups[cardId]) });
+    }
     return deck;
   },
 
