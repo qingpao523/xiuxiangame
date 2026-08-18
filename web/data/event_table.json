@@ -3397,6 +3397,136 @@
         "牌桌",
         "道誓"
       ]
+    },
+    {
+      "event_id": "event_401",
+      "event_name": "妖巢余党",
+      "source": "travel",
+      "unlock_condition": {
+        "realm_min": "rq_01"
+      },
+      "weight": 0,
+      "daily_limit": 1,
+      "lifetime_limit": 1,
+      "title": "妖巢余党",
+      "body": "妖巢深处腥气冲天。你惊动了妖首留下的余党——一群双目赤红的小妖，围着巢中一枚未孵化的妖卵，嘶吼着扑来。",
+      "choices": [
+        {
+          "label": "剿灭余党",
+          "result": {
+            "resources": {
+              "calamity": 50,
+              "daoxing": 100
+            },
+            "log": "你剑光扫过，余党尽诛。妖卵碎裂，一股劫气入体。"
+          }
+        },
+        {
+          "label": "取符而退",
+          "result": {
+            "resources": {
+              "spell_page": 8
+            },
+            "log": "你趁乱取了巢中残符，悄然退去。"
+          }
+        }
+      ],
+      "reward": {
+        "resources": {}
+      },
+      "visual_keywords": [
+        "妖巢",
+        "小妖",
+        "妖卵",
+        "赤目"
+      ]
+    },
+    {
+      "event_id": "event_402",
+      "event_name": "海眼异动",
+      "source": "travel",
+      "unlock_condition": {
+        "realm_min": "rq_01"
+      },
+      "weight": 0,
+      "daily_limit": 1,
+      "lifetime_limit": 1,
+      "title": "海眼异动",
+      "body": "海眼漩涡骤然加速，海水倒卷。漩涡深处浮起一道幽蓝身影——是溺亡于此的东海修士残魂，被海眼之力困了百年。它向你伸出手，似在求救，又似在索命。",
+      "choices": [
+        {
+          "label": "超度残魂",
+          "result": {
+            "resources": {
+              "merit": 100,
+              "daoxing": 150
+            },
+            "log": "你以清光超度残魂。它颔首致谢，化作一缕功德金光。"
+          }
+        },
+        {
+          "label": "汲取海眼之力",
+          "result": {
+            "resources": {
+              "daoxing": 300,
+              "calamity": 30
+            },
+            "log": "你汲取海眼之力，道行暴涨，但一股寒意缠上真灵。"
+          }
+        }
+      ],
+      "reward": {
+        "resources": {}
+      },
+      "visual_keywords": [
+        "海眼",
+        "漩涡",
+        "残魂",
+        "幽蓝"
+      ]
+    },
+    {
+      "event_id": "event_403",
+      "event_name": "白骨洞·石矶残韵",
+      "source": "travel",
+      "unlock_condition": {
+        "realm_min": "rq_01"
+      },
+      "weight": 0,
+      "daily_limit": 1,
+      "lifetime_limit": 1,
+      "title": "白骨洞·石矶残韵",
+      "body": "白骨洞深处，阴火成阵。阵眼悬着一缕截教残韵——是石矶娘娘陨落前留下的道韵。它感应到你的到来，幽幽转动，似在择主。",
+      "choices": [
+        {
+          "label": "参悟截教残韵",
+          "result": {
+            "resources": {
+              "spell_page": 12,
+              "daoxing": 200
+            },
+            "log": "你参悟残韵，截教阵法的皮毛浮现心头。"
+          }
+        },
+        {
+          "label": "以阴火炼器",
+          "result": {
+            "resources": {
+              "refine_material": 10
+            },
+            "log": "你引阴火炼器，白骨阴火凝成炼器良材。"
+          }
+        }
+      ],
+      "reward": {
+        "resources": {}
+      },
+      "visual_keywords": [
+        "白骨洞",
+        "阴火",
+        "石矶",
+        "截教残韵"
+      ]
     }
   ],
   "rarity_config": {

@@ -152,7 +152,12 @@ const Game = {
   _setupActionExtras(row, action) {
     const duration = int(row.duration_sec);
     if (row.map_id) {
-      const pool = DataManager.getRows("encounter_table").filter((e) => String(e.map_id) === String(row.map_id));
+      const pool = DataManager.getRows("encounter_table").filter((e) => {
+        if (String(e.map_id) !== String(row.map_id)) return false;
+        const rp = e.requires_point; // 探索点接遭遇（design/6.6）：未发现该秘境则不刷出
+        if (rp && !(this.state.explored_points || []).includes(String(rp))) return false;
+        return true;
+      });
       const picked = []; const copy = [...pool];
       while (copy.length && picked.length < 2) picked.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
       action.encounters = picked.map((e, i) => ({ id: String(e.encounter_id), at: num(action.start_time_ms) + (i === 0 ? 8000 : 20000), fired: false }));
@@ -1003,6 +1008,11 @@ const Game = {
       const rewardText = this._formatResourceDelta(reward);
       this._log(`你在${mapName}发现了「${p.name}」。`);
       this.toast(`发现·${p.name}`, `${p.flavor || ""}${rewardText ? `\n\n（${rewardText}）` : ""}`);
+      // 探索点接事件（design/6.6）：发现深层秘境触发 tied 事件（seen 去重）
+      if (p.trigger_event && !this.state.seen_events.includes(String(p.trigger_event))) {
+        this._setPendingEvent(String(p.trigger_event));
+        this._queueEventPopup();
+      }
     }
   },
 

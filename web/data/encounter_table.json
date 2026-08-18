@@ -14,15 +14,39 @@
           "kind": "battle",
           "enemy_name": "独角小妖",
           "enemy_power_ratio": 0.25,
-          "success": { "resources": { "daoxing": 12, "mana": 600 }, "chance_extra": { "chance": 0.4, "resources": { "spell_page": 2 } }, "text": "小妖化作黑烟散去，你在原地拾得残符与灵气。" },
-          "fail": { "text": "小妖凶性大发，你且战且退，未有所获。" }
+          "success": {
+            "resources": {
+              "daoxing": 12,
+              "mana": 600
+            },
+            "chance_extra": {
+              "chance": 0.4,
+              "resources": {
+                "spell_page": 2
+              }
+            },
+            "text": "小妖化作黑烟散去，你在原地拾得残符与灵气。"
+          },
+          "fail": {
+            "text": "小妖凶性大发，你且战且退，未有所获。"
+          }
         },
         {
           "text": "绕行避让",
           "kind": "check",
           "chance": 0.8,
-          "success": { "resources": { "daoxing": 4 }, "text": "你借山石掩身悄然绕过，途中顺手采得几缕灵气。" },
-          "fail": { "resources": { "mana": -200 }, "text": "脚下枯枝一响，小妖追来，你仓皇施法脱身，耗了些法力。" }
+          "success": {
+            "resources": {
+              "daoxing": 4
+            },
+            "text": "你借山石掩身悄然绕过，途中顺手采得几缕灵气。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -200
+            },
+            "text": "脚下枯枝一响，小妖追来，你仓皇施法脱身，耗了些法力。"
+          }
         }
       ]
     },
@@ -38,13 +62,28 @@
           "chance": 0.65,
           "bonus_spell_type": "weapon",
           "bonus_per_level": 0.05,
-          "success": { "resources": { "spell_page": 3 }, "text": "你以法力隔空摄符，残页入袖，庙中尘埃未惊。" },
-          "fail": { "resources": { "mana": -300 }, "text": "残符触手即燃，一缕劫火烧上袖口，你急忙以法力扑灭。" }
+          "success": {
+            "resources": {
+              "spell_page": 3
+            },
+            "text": "你以法力隔空摄符，残页入袖，庙中尘埃未惊。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -300
+            },
+            "text": "残符触手即燃，一缕劫火烧上袖口，你急忙以法力扑灭。"
+          }
         },
         {
           "text": "拜庙而去",
           "kind": "safe",
-          "success": { "resources": { "daoxing": 6 }, "text": "你整衣一拜，转身离去。心境澄明，道行反有所进。" }
+          "success": {
+            "resources": {
+              "daoxing": 6
+            },
+            "text": "你整衣一拜，转身离去。心境澄明，道行反有所进。"
+          }
         }
       ]
     },
@@ -59,8 +98,16 @@
           "kind": "battle",
           "enemy_name": "黑毛野妖",
           "enemy_power_ratio": 0.2,
-          "success": { "resources": { "daoxing": 15, "mana": 400 }, "text": "野妖遁走，樵夫连连叩谢。你心头微暖，道行更稳。" },
-          "fail": { "text": "野妖悍不畏死，你护着樵夫且战且退，总算保他无恙。" }
+          "success": {
+            "resources": {
+              "daoxing": 15,
+              "mana": 400
+            },
+            "text": "野妖遁走，樵夫连连叩谢。你心头微暖，道行更稳。"
+          },
+          "fail": {
+            "text": "野妖悍不畏死，你护着樵夫且战且退，总算保他无恙。"
+          }
         },
         {
           "text": "隔崖喝止",
@@ -68,8 +115,15 @@
           "chance": 0.6,
           "bonus_spell_type": "thunder",
           "bonus_per_level": 0.06,
-          "success": { "resources": { "daoxing": 10 }, "text": "你一声雷喝震落崖上碎石，野妖夹尾而逃。" },
-          "fail": { "text": "妖物毫不理会，你只得亲自下场驱赶，费了番手脚。" }
+          "success": {
+            "resources": {
+              "daoxing": 10
+            },
+            "text": "你一声雷喝震落崖上碎石，野妖夹尾而逃。"
+          },
+          "fail": {
+            "text": "妖物毫不理会，你只得亲自下场驱赶，费了番手脚。"
+          }
         }
       ]
     },
@@ -85,9 +139,18 @@
         "enemy_name": "黑雾小妖",
         "power_ratio": 0.15,
         "intent_pool": [
-          { "intent": "attack", "weight": 60 },
-          { "intent": "charge", "weight": 20 },
-          { "intent": "block", "weight": 20 }
+          {
+            "intent": "attack",
+            "weight": 60
+          },
+          {
+            "intent": "charge",
+            "weight": 20
+          },
+          {
+            "intent": "block",
+            "weight": 20
+          }
         ]
       }
     },
@@ -103,8 +166,14 @@
         "enemy_name": "山魈",
         "power_ratio": 0.25,
         "intent_pool": [
-          { "intent": "attack", "weight": 70 },
-          { "intent": "charge", "weight": 30 }
+          {
+            "intent": "attack",
+            "weight": 70
+          },
+          {
+            "intent": "charge",
+            "weight": 30
+          }
         ]
       }
     },
@@ -119,11 +188,18 @@
       "choices": [
         {
           "label": "指引山路",
-          "result": { "merit": 10, "log": "你以灵光为樵夫照路，他千恩万谢而去。" }
+          "result": {
+            "merit": 10,
+            "log": "你以灵光为樵夫照路，他千恩万谢而去。"
+          }
         },
         {
           "label": "赠一枚护身符",
-          "result": { "merit": 20, "mana": -100, "log": "你撕下一角符纸递给他，樵夫跪地叩首。" }
+          "result": {
+            "merit": 20,
+            "mana": -100,
+            "log": "你撕下一角符纸递给他，樵夫跪地叩首。"
+          }
         }
       ]
     },
@@ -135,7 +211,10 @@
       "unlock_condition": "open",
       "weight": 0.7,
       "text": "半山腰有一座塌了半边的山神庙，神像脸上裂了一道缝。缝里透出微弱灵光，像是有人藏了东西。",
-      "gather_reward": { "mana": 200, "log": "你从神像裂缝中取出一团凝缩灵气，聊胜于无。" }
+      "gather_reward": {
+        "mana": 200,
+        "log": "你从神像裂缝中取出一团凝缩灵气，聊胜于无。"
+      }
     },
     {
       "encounter_id": "enc_105",
@@ -148,11 +227,17 @@
       "choices": [
         {
           "label": "吸纳灵机",
-          "result": { "daoxing": 50, "calamity": 30, "log": "你张口一吸，灵机入腹，但一缕黑气也顺着经脉钻了进去。" }
+          "result": {
+            "daoxing": 50,
+            "calamity": 30,
+            "log": "你张口一吸，灵机入腹，但一缕黑气也顺着经脉钻了进去。"
+          }
         },
         {
           "label": "绕道而行",
-          "result": { "log": "你绕开漩涡。有些便宜，不占也罢。" }
+          "result": {
+            "log": "你绕开漩涡。有些便宜，不占也罢。"
+          }
         }
       ]
     },
@@ -168,8 +253,14 @@
         "enemy_name": "野狐精",
         "power_ratio": 0.12,
         "intent_pool": [
-          { "intent": "attack", "weight": 40 },
-          { "intent": "flee", "weight": 60 }
+          {
+            "intent": "attack",
+            "weight": 40
+          },
+          {
+            "intent": "flee",
+            "weight": 60
+          }
         ],
         "special": "flee: 2回合后若HP>50%则逃跑，战斗结束给半额奖励"
       }
@@ -182,7 +273,10 @@
       "unlock_condition": "open",
       "weight": 0.9,
       "text": "溪边石缝里长着一株散发微光的草药，叶片上有露珠滚动，灵气内敛。",
-      "gather_reward": { "mana": 300, "log": "你小心摘下灵草，收入袖中。" }
+      "gather_reward": {
+        "mana": 300,
+        "log": "你小心摘下灵草，收入袖中。"
+      }
     },
     {
       "encounter_id": "enc_108",
@@ -205,15 +299,34 @@
           "kind": "battle",
           "enemy_name": "巡海残兵",
           "enemy_power_ratio": 0.3,
-          "success": { "resources": { "daoxing": 40, "mana": 2000, "treasure_shard": 2 }, "text": "雷火落处残影俱碎，浪花里翻出几枚陈塘遗宝碎片。" },
-          "fail": { "text": "残兵结阵而进，你退回礁石之上，暂避锋芒。" }
+          "success": {
+            "resources": {
+              "daoxing": 40,
+              "mana": 2000,
+              "treasure_shard": 2
+            },
+            "text": "雷火落处残影俱碎，浪花里翻出几枚陈塘遗宝碎片。"
+          },
+          "fail": {
+            "text": "残兵结阵而进，你退回礁石之上，暂避锋芒。"
+          }
         },
         {
           "text": "施礼借道",
           "kind": "check",
           "chance": 0.75,
-          "success": { "resources": { "daoxing": 15 }, "text": "你执礼甚恭，残影迟疑片刻，让开一条水路。" },
-          "fail": { "resources": { "mana": -1000 }, "text": "残影不辨礼数，长戟横扫，你破费法力护身而退。" }
+          "success": {
+            "resources": {
+              "daoxing": 15
+            },
+            "text": "你执礼甚恭，残影迟疑片刻，让开一条水路。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -1000
+            },
+            "text": "残影不辨礼数，长戟横扫，你破费法力护身而退。"
+          }
         }
       ]
     },
@@ -229,13 +342,29 @@
           "chance": 0.55,
           "bonus_spell_type": "thunder",
           "bonus_per_level": 0.08,
-          "success": { "resources": { "daoxing": 60, "mana": 1500 }, "text": "雷气入体走了一个周天，你浑身酥麻，道行大进。" },
-          "fail": { "resources": { "mana": -1500 }, "text": "雷气暴烈难驯，你强行压下，气机紊乱，损了法力。" }
+          "success": {
+            "resources": {
+              "daoxing": 60,
+              "mana": 1500
+            },
+            "text": "雷气入体走了一个周天，你浑身酥麻，道行大进。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -1500
+            },
+            "text": "雷气暴烈难驯，你强行压下，气机紊乱，损了法力。"
+          }
         },
         {
           "text": "拓印雷纹",
           "kind": "safe",
-          "success": { "resources": { "spell_page": 3 }, "text": "你以符纸拓下坑中雷纹，得残页数张。" }
+          "success": {
+            "resources": {
+              "spell_page": 3
+            },
+            "text": "你以符纸拓下坑中雷纹，得残页数张。"
+          }
         }
       ]
     },
@@ -249,13 +378,27 @@
           "text": "诵咒超度",
           "kind": "check",
           "chance": 0.7,
-          "success": { "resources": { "merit": 80, "daoxing": 20 }, "text": "怨魂随咒声散入月光，一缕功德金光落入灵台。" },
-          "fail": { "text": "怨魂执念太深，咒声难渡，你只得退开。" }
+          "success": {
+            "resources": {
+              "merit": 80,
+              "daoxing": 20
+            },
+            "text": "怨魂随咒声散入月光，一缕功德金光落入灵台。"
+          },
+          "fail": {
+            "text": "怨魂执念太深，咒声难渡，你只得退开。"
+          }
         },
         {
           "text": "炼化怨潮",
           "kind": "safe",
-          "success": { "resources": { "calamity": 60, "mana": 2500 }, "text": "你张手引怨潮入体炼化，法力暴涨，一丝劫气也随之入了命门。" }
+          "success": {
+            "resources": {
+              "calamity": 60,
+              "mana": 2500
+            },
+            "text": "你张手引怨潮入体炼化，法力暴涨，一丝劫气也随之入了命门。"
+          }
         }
       ]
     },
@@ -271,9 +414,18 @@
         "enemy_name": "巡海妖兵",
         "power_ratio": 0.2,
         "intent_pool": [
-          { "intent": "attack", "weight": 60 },
-          { "intent": "block", "weight": 20 },
-          { "intent": "curse_weak", "weight": 20 }
+          {
+            "intent": "attack",
+            "weight": 60
+          },
+          {
+            "intent": "block",
+            "weight": 20
+          },
+          {
+            "intent": "curse_weak",
+            "weight": 20
+          }
         ]
       }
     },
@@ -285,7 +437,10 @@
       "unlock_condition": "zr_03",
       "weight": 0.8,
       "text": "礁石上残留着一片焦黑痕迹，空气中弥漫着臭氧味。那是哪吒风火轮碾过时留下的风雷余气，至今未散。",
-      "gather_reward": { "spell_page": 2, "log": "你以法力牵引风雷残机，凝成两页术法残页。" }
+      "gather_reward": {
+        "spell_page": 2,
+        "log": "你以法力牵引风雷残机，凝成两页术法残页。"
+      }
     },
     {
       "encounter_id": "enc_203",
@@ -299,9 +454,18 @@
         "enemy_name": "东海怨魂",
         "power_ratio": 0.18,
         "intent_pool": [
-          { "intent": "attack", "weight": 40 },
-          { "intent": "curse_burn", "weight": 30 },
-          { "intent": "curse_weak", "weight": 30 }
+          {
+            "intent": "attack",
+            "weight": 40
+          },
+          {
+            "intent": "curse_burn",
+            "weight": 30
+          },
+          {
+            "intent": "curse_weak",
+            "weight": 30
+          }
         ],
         "special": "soul_attack: 伤害为真伤，无视罡气"
       }
@@ -324,7 +488,10 @@
       "unlock_condition": "zr_03",
       "weight": 0.5,
       "text": "潮水退去后，沙滩上露出一片巴掌大的鳞片，泛着青幽光泽。那是敖丙的鳞——哪吒闹海时碎落海中的。",
-      "gather_reward": { "treasure_shard": 3, "log": "你拾起龙鳞碎片，其中残留的龙族灵机可作法器材料。" }
+      "gather_reward": {
+        "treasure_shard": 3,
+        "log": "你拾起龙鳞碎片，其中残留的龙族灵机可作法器材料。"
+      }
     },
     {
       "encounter_id": "enc_206",
@@ -339,8 +506,14 @@
         "power_ratio": 0.15,
         "enemy_count": 3,
         "intent_pool": [
-          { "intent": "attack", "weight": 70 },
-          { "intent": "curse_burn", "weight": 30 }
+          {
+            "intent": "attack",
+            "weight": 70
+          },
+          {
+            "intent": "curse_burn",
+            "weight": 30
+          }
         ]
       }
     },
@@ -355,11 +528,19 @@
       "choices": [
         {
           "label": "出手相救",
-          "result": { "merit": 100, "daoxing": 30, "log": "你一道雷法劈下，妖兵四散。渔人跪地叩谢，一缕功德金光落入你眉心。" }
+          "result": {
+            "merit": 100,
+            "daoxing": 30,
+            "log": "你一道雷法劈下，妖兵四散。渔人跪地叩谢，一缕功德金光落入你眉心。"
+          }
         },
         {
           "label": "绕道采集",
-          "result": { "calamity": 30, "spell_page": 2, "log": "你趁乱绕到礁石背面，拾得几页风雷残页。身后的呼救声渐渐远了。" }
+          "result": {
+            "calamity": 30,
+            "spell_page": 2,
+            "log": "你趁乱绕到礁石背面，拾得几页风雷残页。身后的呼救声渐渐远了。"
+          }
         }
       ]
     },
@@ -384,11 +565,18 @@
       "choices": [
         {
           "label": "赠药救治",
-          "result": { "merit": 50, "mana": -200, "spell_page": 1, "log": "你渡了一道法力过去，散修伤好大半，从怀里掏出一页残符：'无以为报，这个给你。'" }
+          "result": {
+            "merit": 50,
+            "mana": -200,
+            "spell_page": 1,
+            "log": "你渡了一道法力过去，散修伤好大半，从怀里掏出一页残符：'无以为报，这个给你。'"
+          }
         },
         {
           "label": "摇头离去",
-          "result": { "log": "你摇了摇头。修行界自有修行界的规矩，不是谁都能帮的。" }
+          "result": {
+            "log": "你摇了摇头。修行界自有修行界的规矩，不是谁都能帮的。"
+          }
         }
       ]
     },
@@ -414,13 +602,29 @@
           "chance": 0.6,
           "bonus_spell_type": "fire",
           "bonus_per_level": 0.07,
-          "success": { "resources": { "refine_material": 3, "mana": 3000 }, "text": "阴火乖顺入瓶，正是上好的祭炼之材。" },
-          "fail": { "resources": { "mana": -3000 }, "text": "阴火忽然反噬，你以法力强压，方才无恙。" }
+          "success": {
+            "resources": {
+              "refine_material": 3,
+              "mana": 3000
+            },
+            "text": "阴火乖顺入瓶，正是上好的祭炼之材。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -3000
+            },
+            "text": "阴火忽然反噬，你以法力强压，方才无恙。"
+          }
         },
         {
           "text": "绕火而行",
           "kind": "safe",
-          "success": { "resources": { "daoxing": 40 }, "text": "你避开阴火细观其性，于火中悟得几分地脉之理。" }
+          "success": {
+            "resources": {
+              "daoxing": 40
+            },
+            "text": "你避开阴火细观其性，于火中悟得几分地脉之理。"
+          }
         }
       ]
     },
@@ -435,15 +639,34 @@
           "kind": "battle",
           "enemy_name": "照魂残影",
           "enemy_power_ratio": 0.3,
-          "success": { "resources": { "refine_material": 4, "treasure_shard": 3, "daoxing": 80 }, "text": "镜光崩碎，散作漫天照魂碎玉。" },
-          "fail": { "text": "镜光森寒难敌，你以法宝护住魂影，退出山道。" }
+          "success": {
+            "resources": {
+              "refine_material": 4,
+              "treasure_shard": 3,
+              "daoxing": 80
+            },
+            "text": "镜光崩碎，散作漫天照魂碎玉。"
+          },
+          "fail": {
+            "text": "镜光森寒难敌，你以法宝护住魂影，退出山道。"
+          }
         },
         {
           "text": "闭目静守",
           "kind": "check",
           "chance": 0.7,
-          "success": { "resources": { "daoxing": 60 }, "text": "你灵台不动，镜光照身而过，反照见自身道行深浅。" },
-          "fail": { "resources": { "mana": -4000 }, "text": "镜光勾动神魂，你急运法力守住灵台，出了一身冷汗。" }
+          "success": {
+            "resources": {
+              "daoxing": 60
+            },
+            "text": "你灵台不动，镜光照身而过，反照见自身道行深浅。"
+          },
+          "fail": {
+            "resources": {
+              "mana": -4000
+            },
+            "text": "镜光勾动神魂，你急运法力守住灵台，出了一身冷汗。"
+          }
         }
       ]
     },
@@ -457,13 +680,26 @@
           "text": "探身深入",
           "kind": "check",
           "chance": 0.55,
-          "success": { "resources": { "daoxing": 120, "mana": 6000 }, "text": "你顺裂隙下探数十丈，饱饮地脉灵机而返。" },
-          "fail": { "text": "裂隙深处阴风骤起，你不敢再进，原路退出。" }
+          "success": {
+            "resources": {
+              "daoxing": 120,
+              "mana": 6000
+            },
+            "text": "你顺裂隙下探数十丈，饱饮地脉灵机而返。"
+          },
+          "fail": {
+            "text": "裂隙深处阴风骤起，你不敢再进，原路退出。"
+          }
         },
         {
           "text": "标记而去",
           "kind": "safe",
-          "success": { "resources": { "refine_material": 2 }, "text": "你在裂隙旁堆石为记，顺手采了些溢出的祭炼之材。" }
+          "success": {
+            "resources": {
+              "refine_material": 2
+            },
+            "text": "你在裂隙旁堆石为记，顺手采了些溢出的祭炼之材。"
+          }
         }
       ]
     },
@@ -1261,6 +1497,90 @@
       "weight": 0.3,
       "text": "你站在混元道场的边缘，向外望去。外面是三界——封神榜悬在九天，天庭在云端，人间在脚下。你看了很久。然后你转身，走回道场中央，继续打坐。外面很热闹，但跟你无关了。你是三界之外的存在。这就够了。",
       "narrative_only": true
+    },
+    {
+      "encounter_id": "enc_941",
+      "map_id": "map_001",
+      "encounter_name": "妖巢守卫",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 1.0,
+      "requires_point": "point_104",
+      "text": "妖巢中扑出一头守卫，是妖首生前的坐骑，双目赤红，认主而噬。",
+      "battle_config": {
+        "enemy_name": "妖巢守卫",
+        "power_ratio": 0.3,
+        "intent_pool": [
+          {
+            "intent": "attack",
+            "weight": 60
+          },
+          {
+            "intent": "charge",
+            "weight": 25
+          },
+          {
+            "intent": "block",
+            "weight": 15
+          }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_942",
+      "map_id": "map_002",
+      "encounter_name": "海眼漩涡精",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 1.0,
+      "requires_point": "point_204",
+      "text": "海眼漩涡中卷出一道水影，是海眼之力凝成的漩涡精，吸人真灵。",
+      "battle_config": {
+        "enemy_name": "漩涡精",
+        "power_ratio": 0.3,
+        "intent_pool": [
+          {
+            "intent": "attack",
+            "weight": 40
+          },
+          {
+            "intent": "curse_weak",
+            "weight": 35
+          },
+          {
+            "intent": "charge",
+            "weight": 25
+          }
+        ]
+      }
+    },
+    {
+      "encounter_id": "enc_943",
+      "map_id": "map_003",
+      "encounter_name": "白骨阴兵",
+      "encounter_type": "battle",
+      "unlock_condition": "open",
+      "weight": 1.0,
+      "requires_point": "point_304",
+      "text": "白骨洞中列队走出白骨阴兵，是石矶娘娘陨落后不散的麾下，结阵而战。",
+      "battle_config": {
+        "enemy_name": "白骨阴兵",
+        "power_ratio": 0.35,
+        "intent_pool": [
+          {
+            "intent": "attack",
+            "weight": 50
+          },
+          {
+            "intent": "block",
+            "weight": 30
+          },
+          {
+            "intent": "curse_burn",
+            "weight": 20
+          }
+        ]
+      }
     }
   ]
 }

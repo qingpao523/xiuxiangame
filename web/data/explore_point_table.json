@@ -9,7 +9,9 @@
       "name": "荒庙",
       "discover_after": 1,
       "flavor": "山野中一座塌了半边的山神庙，神像裂了缝，缝里透出微光。你在香灰下翻出几页前人留下的残符。",
-      "reward": { "spell_page": 3 }
+      "reward": {
+        "spell_page": 3
+      }
     },
     {
       "point_id": "point_102",
@@ -17,7 +19,9 @@
       "name": "溪涧",
       "discover_after": 3,
       "flavor": "一道清溪从石缝渗出，水底沉着碎玉般的灵机。你掬一捧水，凉意顺着经脉游走。",
-      "reward": { "mana": 800 }
+      "reward": {
+        "mana": 800
+      }
     },
     {
       "point_id": "point_103",
@@ -25,7 +29,9 @@
       "name": "古洞",
       "discover_after": 6,
       "flavor": "洞府深处有一方天然石室，四壁刻着模糊的吐纳图。你照着图调息，气息比平日更沉。",
-      "reward": { "daoxing": 60 }
+      "reward": {
+        "daoxing": 60
+      }
     },
     {
       "point_id": "point_104",
@@ -33,7 +39,11 @@
       "name": "妖巢",
       "discover_after": 10,
       "flavor": "黑雾最浓处是一处妖巢，腥气扑鼻。巢中散落着被妖物拖来的法器残片。",
-      "reward": { "artifact_shard": 5 }
+      "reward": {
+        "artifact_shard": 5
+      },
+      "trigger_event": "event_401",
+      "unlock_encounter": "enc_941"
     },
     {
       "point_id": "point_105",
@@ -41,7 +51,9 @@
       "name": "雷劈木",
       "discover_after": 15,
       "flavor": "一截被天雷劈中的枯木，焦黑中藏着一缕未散的雷意。你伸手触碰，指尖噼啪作响。",
-      "reward": { "spell_page": 6 }
+      "reward": {
+        "spell_page": 6
+      }
     },
     {
       "point_id": "point_201",
@@ -49,7 +61,9 @@
       "name": "礁石滩",
       "discover_after": 1,
       "flavor": "海岸礁石嶙峋，潮水退去后留下几枚泛着幽光的贝壳。",
-      "reward": { "mana": 1500 }
+      "reward": {
+        "mana": 1500
+      }
     },
     {
       "point_id": "point_202",
@@ -57,7 +71,9 @@
       "name": "龙王庙",
       "discover_after": 3,
       "flavor": "一座面向东海的龙王庙，香火已断。庙祝留下的签文里，藏着护海的旧法。",
-      "reward": { "spell_page": 5 }
+      "reward": {
+        "spell_page": 5
+      }
     },
     {
       "point_id": "point_203",
@@ -65,7 +81,9 @@
       "name": "风火痕",
       "discover_after": 6,
       "flavor": "礁石上一道焦黑的碾痕，是风火轮留下的。痕里残存的风火之气，灼灼逼人。",
-      "reward": { "spell_page": 6 }
+      "reward": {
+        "spell_page": 6
+      }
     },
     {
       "point_id": "point_204",
@@ -73,7 +91,11 @@
       "name": "海眼",
       "discover_after": 10,
       "flavor": "海面有一处漩涡不散，传说是东海的海眼。你靠近时，感到一股吸力直拽真灵。",
-      "reward": { "daoxing": 200 }
+      "reward": {
+        "daoxing": 200
+      },
+      "trigger_event": "event_402",
+      "unlock_encounter": "enc_942"
     },
     {
       "point_id": "point_205",
@@ -81,7 +103,9 @@
       "name": "巡海旧营",
       "discover_after": 15,
       "flavor": "巡海妖兵废弃的营帐，帐中遗落着鳞甲与法宝碎片。",
-      "reward": { "treasure_shard": 6 }
+      "reward": {
+        "treasure_shard": 6
+      }
     },
     {
       "point_id": "point_301",
@@ -89,7 +113,9 @@
       "name": "白骨径",
       "discover_after": 1,
       "flavor": "一条由白骨铺成的小径，阴气森森。径旁散落着照魂的碎玉。",
-      "reward": { "refine_material": 4 }
+      "reward": {
+        "refine_material": 4
+      }
     },
     {
       "point_id": "point_302",
@@ -97,7 +123,9 @@
       "name": "阴火穴",
       "discover_after": 3,
       "flavor": "地穴中燃着幽幽阴火，不烫反寒。这是石矶娘娘留下的白骨阴火。",
-      "reward": { "refine_material": 6 }
+      "reward": {
+        "refine_material": 6
+      }
     },
     {
       "point_id": "point_303",
@@ -105,7 +133,9 @@
       "name": "照魂崖",
       "discover_after": 6,
       "flavor": "崖壁如镜，能照见魂影。你在崖前驻足，看见了自己的真灵模样。",
-      "reward": { "daoxing": 400 }
+      "reward": {
+        "daoxing": 400
+      }
     },
     {
       "point_id": "point_304",
@@ -113,7 +143,11 @@
       "name": "白骨洞",
       "discover_after": 10,
       "flavor": "石矶娘娘修行的白骨洞，洞深处阴火成阵。阵眼处有一缕截教残韵。",
-      "reward": { "spell_page": 10 }
+      "reward": {
+        "spell_page": 10
+      },
+      "trigger_event": "event_403",
+      "unlock_encounter": "enc_943"
     },
     {
       "point_id": "point_305",
@@ -121,7 +155,9 @@
       "name": "地脉眼",
       "discover_after": 15,
       "flavor": "骷髅山的地脉之眼，灵机与阴气在此交汇。你在此调息，事半功倍。",
-      "reward": { "daoxing": 600 }
+      "reward": {
+        "daoxing": 600
+      }
     }
   ]
 }
