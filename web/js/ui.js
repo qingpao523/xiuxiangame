@@ -872,6 +872,21 @@ function renderMapPanel(body, state) {
     }
     card.appendChild(btnBox);
     body.appendChild(card);
+
+    // 可探索空间（design/6.0 第三层）：此地图的探索点（已发现 + 未至之境）
+    const epAll = DataManager.getRows("explore_point_table").filter((p) => String(p.map_id) === id);
+    if (epAll.length) {
+      const epDone = epAll.filter((p) => (state.explored_points || []).includes(String(p.point_id)));
+      const epFog = epAll.length - epDone.length;
+      body.appendChild(note(`此地秘境：已发现 ${epDone.length}/${epAll.length} 处${epFog > 0 ? `，尚有 ${epFog} 处未至之境` : "，已尽览"}`));
+      for (const p of epDone) {
+        const pCard = document.createElement("div"); pCard.className = "card selected";
+        const pInfo = document.createElement("div"); pInfo.className = "card-info";
+        const pName = document.createElement("div"); pName.className = "card-name"; pName.textContent = `◆ ${p.name}`;
+        const pFlavor = document.createElement("div"); pFlavor.className = "card-desc"; pFlavor.textContent = p.flavor || "";
+        pInfo.append(pName, pFlavor); pCard.appendChild(pInfo); body.appendChild(pCard);
+      }
+    }
   }
 }
 

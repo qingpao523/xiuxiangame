@@ -49,6 +49,7 @@ const SaveManager = {
       current_action: null,
       current_goal_id: "goal_001",
       completed_goals: [],
+      explored_points: [],
       seen_resources: ["daoxing", "mana"],
       seen_unlock_popups: [],
       flags: { battle_manual: true },
@@ -94,6 +95,7 @@ const SaveManager = {
     state.current_action = state.current_action || null;
     state.current_goal_id = str(state.current_goal_id, "goal_001");
     state.completed_goals = state.completed_goals || [];
+    state.explored_points = state.explored_points || [];
     state.seen_resources = state.seen_resources || ["daoxing", "mana"];
     state.seen_unlock_popups = state.seen_unlock_popups || [];
     state.flags = state.flags || {};

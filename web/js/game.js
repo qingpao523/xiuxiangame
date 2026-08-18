@@ -171,7 +171,7 @@ const Game = {
     const id = String(row.action_id);
     this.state.action_counts_total[id] = int(this.state.action_counts_total[id]) + 1;
     this.state.action_counts_today[id] = int(this.state.action_counts_today[id]) + 1;
-      if (row.map_id) { if (!this.state.map_explores) this.state.map_explores = {}; this.state.map_explores[String(row.map_id)] = int(this.state.map_explores[String(row.map_id)]) + 1; }
+      if (row.map_id) { if (!this.state.map_explores) this.state.map_explores = {}; this.state.map_explores[String(row.map_id)] = int(this.state.map_explores[String(row.map_id)]) + 1; this._checkExploreDiscovery(String(row.map_id)); }
     let rewardText = "", blessText = "";
     const minutes = int(row.reward_minutes_equivalent);
     if (minutes > 0) {
@@ -984,6 +984,26 @@ const Game = {
     const row = DataManager.getById("map_table", mapId);
     this._log(`你移居${row.map_name}一带修行。`);
     this._afterMutated();
+  },
+
+  // 可探索空间（design/6.0 第三层）：地图行动结算时，按游历次数逐步发现探索点
+  _checkExploreDiscovery(mapId) {
+    if (!mapId) return;
+    if (!Array.isArray(this.state.explored_points)) this.state.explored_points = [];
+    const explores = int(this.state.map_explores?.[mapId]);
+    const mapName = DataManager.getById("map_table", mapId).map_name || "此地";
+    const points = DataManager.getRows("explore_point_table").filter((p) => String(p.map_id) === String(mapId));
+    for (const p of points) {
+      const pid = String(p.point_id);
+      if (this.state.explored_points.includes(pid)) continue;
+      if (explores < int(p.discover_after, 1)) continue;
+      this.state.explored_points.push(pid);
+      const reward = p.reward || {};
+      if (Object.keys(reward).length) this._applyResourceDelta(reward);
+      const rewardText = this._formatResourceDelta(reward);
+      this._log(`你在${mapName}发现了「${p.name}」。`);
+      this.toast(`发现·${p.name}`, `${p.flavor || ""}${rewardText ? `\n\n（${rewardText}）` : ""}`);
+    }
   },
 
   // ---------- 封顶 ----------

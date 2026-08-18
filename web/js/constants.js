@@ -17,6 +17,7 @@ const ID_FIELDS = {
   faction_table: "faction_id",
   array_table: "array_id",
   companion_table: "companion_id",
+  explore_point_table: "point_id",
 };
 
 const REALM_NAME_TO_ID = {

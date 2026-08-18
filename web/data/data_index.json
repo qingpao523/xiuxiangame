@@ -19,7 +19,8 @@
     "race_table.json",
     "faction_table.json",
     "array_table.json",
-    "companion_table.json"
+    "companion_table.json",
+    "explore_point_table.json"
   ],
   "notes": [
     "MVP 范围：炼气士一重到地仙一重。",
