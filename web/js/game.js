@@ -185,6 +185,12 @@ const Game = {
         blessText = `\n气机加持：${parts.join("，")}，收益 +${Math.round(b * 100)}%`;
       }
       this._applyResourceDelta(reward.resources);
+      // 麒麟·瑞兽感应：游历感应隐藏灵机，30% 额外道行（design/7.0 身份层）
+      if (str(this.state.race_id, "") === "qilin" && row.map_id && num(reward.resources.daoxing) > 0 && Math.random() < 0.3) {
+        const qb = Math.round(num(reward.resources.daoxing) * 0.3);
+        this._applyResourceDelta({ daoxing: qb });
+        this._log(`瑞兽感应：你感应到一处隐藏灵机，额外获得道行 +${formatInt(qb)}。`);
+      }
       rewardText = this._formatResourceDelta(reward.resources);
     }
     let extraRewardText = "";
@@ -450,6 +456,11 @@ const Game = {
           const afterScene = () => {
             this._queueNewUnlockPopups(before);
             this._maybeTriggerBenming(btId);
+            // 先天生灵·大道遗泽：破劫后伴生灵宝自动升 1 级（design/7.0 身份层）
+            if (str(this.state.race_id, "") === "xiantian") {
+              const tb = this.state.treasures["treasure_009"];
+              if (tb && int(tb.level) > 0) { tb.level = int(tb.level) + 1; this._log(`大道遗泽：破劫之后，伴生灵宝自行升华为 ${int(tb.level)} 重。`); }
+            }
             if (this.hasPendingTreasureChoice()) this.queuePopup({ kind: "treasure_choice" });
             if (String(this.state.realm_id) === "dx_01") this.showCapNotice();
             this._afterMutated();
@@ -486,6 +497,11 @@ const Game = {
         const firstClear = int(this.state.boss_clears[bossId]) === 0;
         this.state.boss_clears[bossId] = int(this.state.boss_clears[bossId]) + 1;
         this._log(`你击败了${boss.boss_name}。`);
+        // 妖族·吞噬：击败 Boss 吞噬精血，永久对妖伤害 +3%（design/7.0 身份层）
+        if (str(this.state.race_id, "") === "yao") {
+          this.state.devour_stacks = int(this.state.devour_stacks) + 1;
+          this._log(`万灵之体·吞噬：你吞噬${boss.boss_name}精血，对妖伤害永久 +3%（累计 ${int(this.state.devour_stacks) * 3}%）。`);
+        }
         const lootLines = [];
         if (omenLoot > 1) lootLines.push(`${omen.name}：战利 +${Math.round((omenLoot - 1) * 100)}%`);
         if (raceLoot > 1) lootLines.push(`万灵之体·吞噬：战利 +${Math.round((raceLoot - 1) * 100)}%`);
@@ -892,13 +908,15 @@ const Game = {
 
   getSpellState(spellId) { if (!this.state.spells[spellId]) this.state.spells[spellId] = { level: 0, unlocked: false }; return this.state.spells[spellId]; },
   getSpellUpgradeCost(spellRow, toLevel) {
+    // 人族·先天道体：术法升级消耗 -10%（design/7.0 身份层）
+    const humanDisc = str(this.state.race_id, "") === "human" ? 0.9 : 1;
     if (toLevel <= 1) {
       // 第一门术法免费；之后每多参悟一门，都要消耗残页与法力——玩家自由选择，不强制学满。
       const learned = Object.values(this.state.spells).filter((s) => int(s.level) > 0).length;
       if (learned === 0) return { spell_page_cost: 0, mana_cost: 0 };
-      return { spell_page_cost: 2 + learned * 2, mana_cost: 250 * learned };
+      return { spell_page_cost: Math.round((2 + learned * 2) * humanDisc), mana_cost: Math.round(250 * learned * humanDisc) };
     }
-    for (const cost of spellRow.upgrade_costs || []) { if (int(cost.to_level) === toLevel) return cost; }
+    for (const cost of spellRow.upgrade_costs || []) { if (int(cost.to_level) === toLevel) return { spell_page_cost: Math.round(num(cost.spell_page_cost) * humanDisc), mana_cost: Math.round(num(cost.mana_cost) * humanDisc) }; }
     return null;
   },
   getSpellMaxLevel(spellRow) { const major = String(RealmManager.getCurrentRealm(this.state).major_realm || "炼气士"); return int(spellRow.max_level_by_realm?.[major], 5); },

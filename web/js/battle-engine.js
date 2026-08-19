@@ -174,6 +174,10 @@ const BattleEngine = {
         battle.pendingEvents.push("你服下渡厄丹：圣盾 2 层，罡气护住周身大穴。");
         SaveManager.save(state);
       }
+      // 势力破劫护持（design/7.0 身份层）
+      const faction = str(state.faction_id, "");
+      if (faction === "chan") { battle.playerStatuses.shield += 1; battle.pendingEvents.push("玉虚护持：阐教道法护体，开局圣盾 +1。"); }
+      if (faction === "jie") { const jb = Math.round(battle.playerHpMax * 0.15); battle.playerBlock += jb; battle.pendingEvents.push(`万仙气机：截教万仙助威，开局罡气 +${formatInt(jb)}。`); }
       // 破劫因果链决算：成功率化为你开局的气机护持
       const rate = num(cfg.payload?.rate);
       if (rate > 0) {
@@ -335,6 +339,10 @@ const BattleEngine = {
       const absorbed = Math.min(enemy.block, dmg);
       enemy.block -= absorbed;
       dmg -= absorbed;
+    }
+    // 妖族·吞噬：对妖伤害永久 +3%/叠（design/7.0 身份层）
+    if (str(state.race_id, "") === "yao" && int(state.devour_stacks) > 0 && String(enemy.name || "").includes("妖")) {
+      dmg = Math.round(dmg * (1 + 0.03 * int(state.devour_stacks)));
     }
     enemy.hp = Math.max(0, enemy.hp - dmg);
     return dmg;

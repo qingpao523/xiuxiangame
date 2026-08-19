@@ -33,12 +33,14 @@ const BreakthroughManager = {
     const calamityPenalty = Math.min(Math.floor(calamity / 100) * 0.003, num(data.calamity_penalty_cap, 0.15));
     // 先天道体：人族破劫基础率 +3%
     const raceBonus = str(state.race_id, "") === "human" ? 0.03 : 0;
+    // 天庭敕令庇护：破劫成功率 +5%（design/7.0 身份层）
+    const factionBonus = str(state.faction_id, "") === "tianting" ? 0.05 : 0;
     const rate = clamp(
-      base + storyBonus + meritBonus + treasureBonus + pulseBonus + failBonus + raceBonus - calamityPenalty,
+      base + storyBonus + meritBonus + treasureBonus + pulseBonus + failBonus + raceBonus + factionBonus - calamityPenalty,
       num(data.min_success_rate),
       num(data.max_success_rate, 1)
     );
-    return { base, storyBonus, meritBonus, treasureBonus, pulseBonus, failBonus, calamityPenalty, raceBonus, rate };
+    return { base, storyBonus, meritBonus, treasureBonus, pulseBonus, failBonus, calamityPenalty, raceBonus, factionBonus, rate };
   },
 
   getSuccessRate(state, data) {
@@ -64,7 +66,9 @@ const BreakthroughManager = {
   // 破劫斗法失利：劫火淬体（失败补偿累计）+ 法力小补，道行不散
   applyDefeat(state, data) {
     const id = String(data.breakthrough_id || "");
-    state.breakthrough_fail_counts[id] = int(state.breakthrough_fail_counts[id]) + 1;
+    // 五庄观地仙之祖护持：破劫失败补偿翻倍（fail_counts +2，design/7.0 身份层）
+    const failInc = str(state.faction_id, "") === "wuzhuang" ? 2 : 1;
+    state.breakthrough_fail_counts[id] = int(state.breakthrough_fail_counts[id]) + failInc;
     const manaPercent = num(data.fail_rewards?.mana_percent);
     if (manaPercent > 0) {
       state.resources.mana = num(state.resources.mana) + Math.max(100, num(state.resources.mana) * manaPercent);
