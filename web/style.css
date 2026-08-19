@@ -352,7 +352,7 @@ body {
 }
 
 .nav-name {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .nav-btn.locked {
@@ -381,7 +381,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: #cf8a8a;
   justify-content: center;
 }
@@ -394,7 +394,7 @@ body {
   border-radius: 6px;
   padding: 2px 8px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -493,13 +493,13 @@ body {
 }
 
 .card .card-desc {
-  font-size: 12px;
+  font-size: 14px;
   color: #b9cdc5;
   margin-top: 2px;
 }
 
 .card .card-cost {
-  font-size: 12px;
+  font-size: 13px;
   color: #96b3cd;
   margin-top: 2px;
 }
@@ -647,7 +647,7 @@ body {
 .rate-row .rate-hint {
   flex: 1;
   min-width: 0;
-  font-size: 11px;
+  font-size: 12px;
   color: #8fa398;
   text-align: right;
 }
@@ -935,7 +935,7 @@ body {
 
 #omen-line {
   margin-top: 2px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: #b9a0d8;
   letter-spacing: 1px;
 }
@@ -1071,7 +1071,7 @@ body {
 }
 
 .intent-icon {
-  font-size: 11px;
+  font-size: 12px;
   color: #ffb3a6;
   border: 1px solid rgba(255, 150, 130, 0.5);
   border-radius: 6px;
@@ -1083,7 +1083,7 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   color: #cbb8b2;
   margin-top: 5px;
 }
@@ -1122,7 +1122,7 @@ body {
 }
 
 .block-chip {
-  font-size: 11px;
+  font-size: 12px;
   color: #a8d8f0;
   border: 1px solid rgba(120, 180, 220, 0.5);
   border-radius: 6px;
@@ -1130,7 +1130,7 @@ body {
 }
 
 .turn-num {
-  font-size: 11px;
+  font-size: 12px;
   color: #9fb4a8;
   margin-left: auto;
 }
@@ -1180,7 +1180,7 @@ body {
 }
 
 .battle-card .bc-text {
-  font-size: 11px;
+  font-size: 12px;
   color: #c8d4cc;
   margin-top: 3px;
   line-height: 1.35;
@@ -1244,7 +1244,7 @@ body {
 
 .rate-hint-block {
   margin-top: 8px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   line-height: 1.6;
   color: #b9a878;
   white-space: pre-line;
@@ -1631,7 +1631,7 @@ body {
 }
 
 .scroll-foot-tip {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: #9fb4a8;
 }
 
@@ -1646,7 +1646,7 @@ body {
 
 .scroll-horizon-caption {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 3px;
   color: #9b8d6d;
   margin-bottom: 10px;
@@ -1664,7 +1664,7 @@ body {
   min-width: 0;
   padding: 14px 4px 8px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1px;
   border-top: 1px solid rgba(160, 135, 85, 0.5);
   position: relative;
@@ -1855,7 +1855,7 @@ body {
 
 .scroll-node-desc {
   margin-top: 2px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   line-height: 1.6;
   color: #8fa398;
 }
@@ -2083,7 +2083,7 @@ body {
 }
 
 .world-map-node-label {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1px;
   white-space: nowrap;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
@@ -2136,7 +2136,7 @@ body {
 
 .world-map-foot-tip {
   margin-top: 3px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: #9fb4a8;
   line-height: 1.6;
 }
@@ -2151,7 +2151,7 @@ body {
 }
 
 .battle-queue-head {
-  font-size: 11px;
+  font-size: 12px;
   color: #c8b98a;
   letter-spacing: 1px;
   margin-bottom: 6px;
@@ -2169,7 +2169,7 @@ body {
   border-radius: 8px;
   background: rgba(8, 10, 11, 0.55);
   color: #8d978e;
-  font-size: 11px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2211,7 +2211,7 @@ body {
 /* 战斗直出：点卡即出招 */
 .battle-flow-hint {
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: #ffe3a1;
   border: 1px dashed rgba(255, 214, 120, 0.45);
@@ -2471,4 +2471,16 @@ body {
   color: #ffe3a1;
   font-weight: bold;
   box-shadow: 0 0 10px rgba(255, 210, 120, 0.25);
+}
+
+/* ===== BUG-F5: 可访问性·尊重系统"减少动效"设置（前庭风险防护）=====
+   尊重 prefers-reduced-motion：关闭装饰性动画/过渡，保留功能性反馈。
+   火候时机条等核心交互用 JS requestAnimationFrame，不受此 CSS 影响。 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
