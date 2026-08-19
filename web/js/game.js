@@ -73,13 +73,9 @@ const Game = {
     if (showPrologue) this.queuePopup({ kind: "prologue" });
     if (fresh) {
       this._log("你于山野洞府中睁开眼，开始修行。");
+      // BUG-A12-S1 修复：开局弹窗减负。世界观已由卷首 4 幕建立（含"一页金榜悬天"自见榜文），
+      // 删除多余的「封神修道录」「榜文远眺」讲解弹窗——榜文被看见，而非被弹窗讲解。开局仅留 卷首 + 择跟脚。
       this.queuePopup({ kind: "race_choice" });
-      this.queuePopup({ kind: "text", style: "seal", title: "封神修道录",
-        body: "商周兵火尚远，封神榜未显。\n你只是山野洞府中一名无名炼气士。\n若想在将来的大劫中活下去，先从吐纳一轮周天开始。",
-        buttons: [{ label: "开始修行" }] });
-      this.queuePopup({ kind: "text", style: "chance", title: "榜文远眺",
-        body: "吐纳之余，你登岩远眺——\n极东天际，悬着一页残破的金色榜文，日月之光都要绕它而行。\n\n哪吒尚未闹海，姜子牙尚未下山，但那页榜文已开始收拢天下的气数。\n山中妖物一日比一日躁动，像是被什么东西催着赶路。\n\n你不知道那是什么。\n只知道从今往后，修行不只是为了长生——是为了在榜文照到你之前，有护住自己的本钱。",
-        buttons: [{ label: "回洞修行" }] });
     } else if (!str(this.state.race_id, "") && !this.state.flags.race_choice_done) {
       this.queuePopup({ kind: "race_choice" });
     } else if (int(this.pendingOfflineReward.minutes) >= 5) {

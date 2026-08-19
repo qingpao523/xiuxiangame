@@ -2455,3 +2455,20 @@ body {
 
 /* 生活技艺分区小标题 */
 .craft-section-note { color: #d9a441; }
+
+/* BUG-C1-S1: 首次战斗教学横幅 + 显眼的自动/手动切换按钮 */
+.battle-tutorial {
+  margin: 8px 0; padding: 10px 12px;
+  background: rgba(217, 164, 65, 0.12);
+  border: 1px solid rgba(217, 164, 65, 0.5);
+  border-radius: 8px;
+  font-size: 13px; line-height: 1.7; color: #e8d8b0;
+}
+.battle-tutorial b { color: #ffd97a; }
+.popup-btn.battle-toggle {
+  border: 1px solid rgba(255, 214, 120, 0.8);
+  background: rgba(70, 54, 16, 0.6);
+  color: #ffe3a1;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 210, 120, 0.25);
+}

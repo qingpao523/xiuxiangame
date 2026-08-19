@@ -376,6 +376,14 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
   const logBox = document.createElement("div"); logBox.className = "battle-log"; body.appendChild(logBox);
   appendBattleLine(logBox, `你与${battle.name}对上了气机，斗法开始！`);
   for (const t of battle.pendingEvents.splice(0)) appendBattleLine(logBox, t);
+  // BUG-C1-S1 修复：首次战斗一次性教学，避免新手误以为"打不动"
+  if (!Game.state.flags.battle_tutorial_seen) {
+    Game.state.flags.battle_tutorial_seen = true;
+    const tut = document.createElement("div"); tut.className = "battle-tutorial";
+    tut.innerHTML = "【斗法教学】<b>点击下方卡牌即可出招</b>，每回合 3 点真气出 3 张；出满自动进入敌方回合。" +
+      "手牌不佳可点「刷新卡牌」（每回合 1 次）；不想手动可点「自动托管」。";
+    zone.appendChild(tut);
+  }
 
   const cardName = (card) => {
     const def = CARD_DEFS[card.id];
@@ -527,6 +535,7 @@ function renderBattlePopup(panel, title, body, buttons, battle) {
     Game.battleToggleManual(battle);
     updateControls(); render();
   });
+  toggleBtn.classList.add("battle-toggle");
   buttons.append(refreshBtn, endTurnBtn, toggleBtn);
   updateControls(); render();
   if (battleTimer) clearInterval(battleTimer);
