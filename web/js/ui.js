@@ -288,6 +288,7 @@ function showPopup(popup) {
   else if (popup.kind === "breakthrough_confirm") renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
   else if (popup.kind === "rest") renderRestPopup(panel, title, body, buttons, popup.payload || {});
   else if (popup.kind === "insight") renderInsightPopup(panel, title, body, buttons, popup.payload || {});
+  else if (popup.kind === "audio_settings") { title.textContent = "声音设置"; renderAudioSettings(panel, body, buttons); }
 }
 
 function closePopup() { currentPopup = null; $("popup-layer").classList.add("hidden"); drainPopupQueue(); render(); }
@@ -298,6 +299,60 @@ function popupButton(label, secondary, handler, extraClass = "") {
   btn.textContent = label; btn.addEventListener("click", handler);
   return btn;
 }
+
+// ---------------- 声音设置弹窗 ----------------
+function renderAudioSettings(panel, body, buttons) {
+  const S = AudioManager.settings;
+  const persist = () => { AudioManager.writeSettings(Game.state); SaveManager.save(Game.state); };
+
+  const row = document.createElement("div"); row.className = "audio-row";
+  const mkSlider = (label, key, setter) => {
+    const wrap = document.createElement("div"); wrap.className = "audio-slider";
+    const lab = document.createElement("label"); lab.textContent = label;
+    const val = document.createElement("span"); val.className = "audio-val";
+    val.textContent = Math.round(num(S[key], 0) * 100);
+    const input = document.createElement("input");
+    input.type = "range"; input.min = "0"; input.max = "100"; input.step = "1";
+    input.value = String(Math.round(num(S[key], 0) * 100));
+    input.addEventListener("input", () => {
+      const v = int(input.value, 0) / 100;
+      setter(v); val.textContent = input.value; persist();
+    });
+    lab.appendChild(val); wrap.appendChild(lab); wrap.appendChild(input);
+    return wrap;
+  };
+
+  row.appendChild(mkSlider("主音量", "master", (v) => AudioManager.setMasterVolume(v)));
+  row.appendChild(mkSlider("音效", "sfx", (v) => AudioManager.setSfxVolume(v)));
+  row.appendChild(mkSlider("环境音", "ambient", (v) => AudioManager.setAmbientVolume(v)));
+  row.appendChild(mkSlider("音乐", "music", (v) => AudioManager.setMusicVolume(v)));
+  body.appendChild(row);
+
+  const muteRow = document.createElement("div"); muteRow.className = "audio-mute";
+  const mute = document.createElement("label"); mute.className = "audio-mute-label";
+  const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!S.muted;
+  cb.addEventListener("change", () => { AudioManager.setMuted(cb.checked); persist(); });
+  mute.appendChild(cb); mute.appendChild(document.createTextNode("静音"));
+  muteRow.appendChild(mute);
+  const testBtn = document.createElement("button"); testBtn.className = "popup-btn secondary audio-test";
+  testBtn.textContent = "试听"; testBtn.addEventListener("click", () => AudioManager.playSfx("ui_click"));
+  muteRow.appendChild(testBtn);
+  body.appendChild(muteRow);
+
+  if (AudioManager.reducedMotion) {
+    const note = document.createElement("div"); note.className = "audio-note";
+    note.textContent = "检测到「减弱动效」偏好：环境音的周期闪烁（滴水/雷声/阴火）已自动关闭，仅保留稳定音床。";
+    body.appendChild(note);
+  }
+  if (!AudioManager.isReady()) {
+    const note = document.createElement("div"); note.className = "audio-note";
+    note.textContent = "音频引擎将在你首次点击/按键后启动（浏览器自动播放策略）。";
+    body.appendChild(note);
+  }
+
+  buttons.appendChild(popupButton("完成", false, () => closePopup()));
+}
+
 
 // ---------------- 遭遇弹窗 ----------------
 
@@ -1390,6 +1445,8 @@ async function boot() {
   $("world-map-btn").addEventListener("click", () => WorldMap.open());
   $("world-map-close").addEventListener("click", () => WorldMap.close());
   $("world-map-layer").addEventListener("click", (e) => { if (e.target === $("world-map-layer")) WorldMap.close(); });
+    const audioBtn = $("audio-settings-btn");
+    if (audioBtn) audioBtn.addEventListener("click", () => { if (typeof AudioManager !== "undefined") AudioManager.playSfx("ui_click"); Game.queuePopup({ kind: "audio_settings" }); drainPopupQueue(); });
   Game.onChange = render;
   Game.init();
   if (Game.debug) { $("debug-bar").classList.remove("hidden"); $("debug-ff").addEventListener("click", () => Game.fastForward(360)); $("debug-res").addEventListener("click", () => Game.debugAddResources()); }

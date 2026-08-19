@@ -129,6 +129,7 @@ const ScrollScene = {
     this.holding = true;
     this.holdStart = performance.now();
     if (this._holdWord) this._holdWord.textContent = "……";
+    if (typeof AudioManager !== "undefined") AudioManager.playSfx("breath_in"); // SFX-02 吸气渐强
     this._tickHold();
   },
 
@@ -158,6 +159,7 @@ const ScrollScene = {
   _completeHold() {
     this.holding = false;
     cancelAnimationFrame(this.holdRAF);
+    if (typeof AudioManager !== "undefined") AudioManager.playSfx("breath_out"); // SFX-02 呼气释放
     if (this._ring) { this._ring.style.transform = "translate(-50%,-50%) scale(2)"; this._ring.style.opacity = "0"; }
     if (this._holdWord) this._holdWord.classList.remove("show");
     // 展示 hold 拍的文字

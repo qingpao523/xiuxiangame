@@ -142,6 +142,12 @@ const WorldScroll = {
       scene.classList.toggle("leaving", i < index);
     });
     layer.dataset.scene = String(index);
+      // SFX-01 开局卷首声音闭环（design/6.0 水滴→雷声→按住首息）：与 4 幕节奏同步。
+      if (typeof AudioManager !== "undefined") {
+        if (index === 1) AudioManager.playSfx("water_drop");            // 山野洞府醒来 · 滴水
+        else if (index === 2) AudioManager.playSfx("seal_hum");         // 金榜悬天 · 榜文嗡鸣
+        else if (index === PROLOGUE_SCENES.length - 1) AudioManager.playSfx("thunder", { dur: 2.2 }); // 陈塘风雷 · 远雷
+      }
     const enter = this._el("prologue-enter");
     if (enter) enter.classList.toggle("hidden", index !== PROLOGUE_SCENES.length - 1);
     const hint = this._el("prologue-hint");

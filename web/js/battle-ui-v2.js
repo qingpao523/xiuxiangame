@@ -414,6 +414,14 @@ const BattleUIV2 = {
           const cls = evt.combo ? "combo-hit" : "normal-hit";
           const comboText = evt.combo ? ` <span class="combo-badge">${this._elementName(evt.element)}系共鸣！×${evt.comboMult}</span>` : "";
           this._appendLog(logBox, `${evt.skillName} → ${evt.targetName} <b>${formatInt(evt.damage)}</b>${comboText}`, cls);
+            // SFX-03 五系出招音色（雷/火/剑/魂/劫），高速时节流避免连珠刺耳。
+            if (typeof AudioManager !== "undefined") {
+              const now = performance.now();
+              if (!this._lastCastSfx || now - this._lastCastSfx > 130) {
+                this._lastCastSfx = now;
+                AudioManager.playSfx(AudioManager.elementSfx(evt.element), { gain: evt.combo ? 1.0 : 0.8 });
+              }
+            }
           break;
         }
         case "kill":
@@ -421,6 +429,7 @@ const BattleUIV2 = {
           break;
         case "ultimate":
           this._showUltimateOverlay(evt, zone);
+          if (typeof AudioManager !== "undefined") AudioManager.playSfx("tribulation_rumble", { dur: 1.0, gain: 0.5 }); // SFX-04 终极声势
           this._appendLog(logBox, `【${evt.name}】${evt.visual_text}`, "ultimate-line");
           if (evt.total_damage) this._appendLog(logBox, `造成 ${formatInt(evt.total_damage)} 伤害！`, "ultimate-dmg");
           if (evt.damage) this._appendLog(logBox, `造成 ${formatInt(evt.damage)} 伤害！`, "ultimate-dmg");

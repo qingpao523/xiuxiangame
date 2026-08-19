@@ -80,6 +80,8 @@ const SaveManager = {
       unlocked_skills: [],
       skill_levels: {},
       battle_v2_enabled: false,
+      // ===== 音频设置（AudioManager，音效需求.md §4）=====
+      audio: { master: 0.8, sfx: 0.85, ambient: 0.45, music: 0.6, muted: false },
     };
   },
 
@@ -138,6 +140,13 @@ const SaveManager = {
     state.unlocked_skills = state.unlocked_skills || [];
     state.skill_levels = state.skill_levels || {};
     if (state.battle_v2_enabled == null) state.battle_v2_enabled = false;
+    // ===== 音频设置迁移（AudioManager）=====
+    state.audio = state.audio || {};
+    if (state.audio.master == null) state.audio.master = 0.8;
+    if (state.audio.sfx == null) state.audio.sfx = 0.85;
+    if (state.audio.ambient == null) state.audio.ambient = 0.45;
+    if (state.audio.music == null) state.audio.music = 0.6;
+    if (state.audio.muted == null) state.audio.muted = false;
     if (!state.flags.battle_v2_migrated) {
       state.flags.battle_v2_migrated = true;
       const starter = ["skill_body_01", "skill_body_02", "skill_body_03"];

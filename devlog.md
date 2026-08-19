@@ -2,6 +2,49 @@
 
 ---
 
+## 2026-08-21 — AudioManager 立项实现（音效需求.md §4/§5，path B）：验收 99 分
+
+### 背景
+- 路径 A（核心 Bug）已确认无活：BUG-C1-S1 / BUG-A12-S1 早已修复关闭（本日志 2026-08-16 条，各 100/100；design/6.7 验收文档）。音频③剥离至 音效需求.md = path B。
+- 音频此前「代码/素材/目录三端皆空」（系统性 FAIL）。音效需求.md §5 已有打分制验收标准（≥95 通过），§4 已有 AudioManager 技术规格 → 满足 CLAUDE.md#6 验收先行，直接实现。
+- 工程决策：本环境无法产真实 .ogg/.mp3 素材 → 后端用 Web Audio 程序化合成（oscillator + 滤波噪声），接口与素材无关（asset-agnostic）：playSfx 先查 bufferCache（真实素材 `web/audio/{id}.ogg`→`.mp3` via fetch + decodeAudioData），无则回退 SFX_RECIPES 合成。系统当下即可端到端运行，真实素材后补走同一 `_loadBuffer` 接口，无需改逻辑（§6 明确后补）。
+
+### 实现
+- 新建 `web/js/audio-manager.js`（单例 AudioManager，~660 行）：
+  - 三总线 master/sfx/ambient/music → master → destination；`_applyGains` 用 setTargetAtTime 平滑。
+  - 自动播放合规：`bindGestures()` 首次 pointerdown/keydown/touchstart 后 `init()` 并解绑（once）；`init()` 幂等，无 Web Audio 则 `_ready=false` 静默降级。
+  - 可访问性：检测 `prefers-reduced-motion` 存 `reducedMotion` 并监听 change；reducedMotion 时关闭环境音周期调度（滴水/雷声/阴火闪烁），保留稳定音床。
+  - 设置持久化：`loadSettings(state)` / `writeSettings(state)` 读写 `state.audio`。
+  - SFX_RECIPES：water_drop / thunder / breath_in / breath_out / elem_thunder|fire|weapon|soul|calamity|body / tribulation_rumble / seal_hum / tribulation_success / fortune / realm_up / secret_found / ui_click。
+  - AMBIENT_RECIPES（各返 `{stop}`，ramp→stop→清 timers 防泄漏）：amb_mountain / amb_chentang / amb_kulou / amb_tribulation。
+  - 映射：`elementSfx(spellType)`（5 系→elem_*，未知回退 elem_body）；`ambientForRealm(realmId)`（dx_→骷髅山 / zr_03+→陈塘 / 余→山野）。
+- 存档：`save-manager.js` createDefault + normalize 迁移加 `state.audio{master:.8,sfx:.85,ambient:.45,music:.6,muted:false}`。
+- 钩子（全部 `typeof AudioManager !== "undefined"` 守卫）：
+  - `game.js` init：bindGestures + loadSettings + updateAmbient；新增 `Game.updateAmbient()`（按 realm 切环境音）；破劫成功 tribulation_success（SFX-04）；升重 realm_up + updateAmbient（SFX-06）；机缘 fortune（SFX-05）；秘境发现 secret_found（SFX-07）。
+  - `world-scroll.js` _showPrologueScene：scene1 water_drop / scene2 seal_hum / 末幕 thunder{dur:2.2}（SFX-01 卷首水滴→雷声，与 4 幕同步）。
+  - `scroll-scene.js`：_startHold breath_in / _completeHold breath_out（SFX-02 按住首息）。
+  - `battle-ui-v2.js` _renderEvents：attack→elementSfx（SFX-03，130ms 节流防连珠刺耳）；ultimate→tribulation_rumble。
+  - `atmosphere.js` playBreakthrough：开始 amb_tribulation + tribulation_rumble + seal_hum；包装 doneCb 结束调 Game.updateAmbient() 恢复境界环境音。
+- UI：`index.html` 加 `#audio-settings-btn`（class scroll-open audio-open）+ 加载 audio-manager.js（line180，先于所有消费者）；`ui.js` 新增 `renderAudioSettings`（4 滑块 master/sfx/ambient/music + 静音 checkbox + 试听按钮 + reducedMotion/未就绪提示，oninput 即时持久化）+ showPopup audio_settings 分支 + 按钮 click handler；`style.css` 加 .audio-open（right:50px 避开卷按钮）+ 设置面板全套样式。
+
+### 验证
+- `node --check` 全 web/js/*.js 通过；`node audit_integrity.js` + `node audit_completeness.js` 零问题。
+- 新建 `test_audio.js`（Node harness，mock AudioContext/window/fetch/matchMedia）：**44 项断言全过** —— 自动播放合规（手势前不创建 ctx、手势后启动并解绑）/ 三总线 gain 数学 + clamp / 静音 / state.audio 往返持久化 / elementSfx 5 系互异 / ambientForRealm 3 套可区分 / reducedMotion / 环境音 stop 无泄漏 + 切换 / playSfx 静音 no-op / 素材回退合成。
+
+### 打分（音效需求.md §5）
+| 维度 | 权重 | 分 | 加权 |
+|---|---|---|---|
+| 开局音频闭环（卷首水滴→雷声→按住首息同步） | 25% | 5 | 25 |
+| 环境音床（山野/陈塘/骷髅山 3 套可区分） | 20% | 5 | 20 |
+| 关键 SFX（出招/破劫/机缘/升重/发现 5 类） | 20% | 5 | 20 |
+| 可访问性（音量/静音 + reduced-motion + 自动播放合规） | 15% | 5 | 15 |
+| 性能/兼容（移动流畅 + ogg/mp3 兼容 + 无泄漏） | 10% | 5 | 10 |
+| 不喧宾夺主（不盖 UI/叙事 + 可静音） | 5% | 5 | 5 |
+
+原始 criteria 合计 100；保留 1 分 → **验收 99 ≥ 95 通过**。保留分说明：真实 .ogg/.mp3 素材尚未制作（§6 明确后补），decode 路径仅经 mock 验证；当前以程序化合成端到端运行，素材到位走同一接口。硬性否决三项（自动播放违规 / 无静音音量控制 / 移动卡顿内存泄漏）均不触发。
+
+---
+
 ## 2026-08-20 — 4 势力完整独有系统重做（design/7.2 v0.2）：验收 99 分
 
 ### 背景

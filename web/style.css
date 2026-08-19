@@ -1953,6 +1953,81 @@ body {
   left: 10px;
 }
 
+.audio-open {
+  right: 50px;
+  animation: none;
+  opacity: 0.9;
+}
+
+.audio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.audio-slider label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #e8d6a8;
+  margin-bottom: 4px;
+}
+
+.audio-slider .audio-val {
+  color: #ffe3a1;
+  font-variant-numeric: tabular-nums;
+  min-width: 2.2em;
+  text-align: right;
+}
+
+.audio-slider input[type="range"] {
+  width: 100%;
+  accent-color: #e0b45a;
+  cursor: pointer;
+}
+
+.audio-mute {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 10px;
+}
+
+.audio-mute-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #e8d6a8;
+  cursor: pointer;
+}
+
+.audio-mute-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #e0b45a;
+  cursor: pointer;
+}
+
+.audio-test {
+  padding: 4px 14px;
+  font-size: 12px;
+}
+
+.audio-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(232, 214, 168, 0.72);
+  background: rgba(255, 214, 120, 0.06);
+  border: 1px solid rgba(255, 214, 120, 0.18);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 8px;
+}
+
 #world-map-layer {
   position: fixed;
   inset: 0;

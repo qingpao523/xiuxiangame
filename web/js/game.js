@@ -84,8 +84,21 @@ const Game = {
         buttons: [{ label: "出关领取", action: "claim_offline" }, { label: "继续闭关" }] });
     }
     this._checkWorldMapReveal();
+    // ===== 音频初始化（AudioManager，音效需求.md）=====
+    // 自动播放合规：AudioContext 仅在首次用户手势后启动；设置从存档恢复；环境音床随境界。
+    if (typeof AudioManager !== "undefined") {
+      AudioManager.bindGestures();
+      AudioManager.loadSettings(this.state);
+      this.updateAmbient();
+    }
     SaveManager.save(this.state);
     this._emit();
+  },
+
+  // 按当前境界切换环境音床（山野/陈塘/骷髅山）。供境界变化/场景切换调用。
+  updateAmbient() {
+    if (typeof AudioManager === "undefined") return;
+    AudioManager.playAmbient(AudioManager.ambientForRealm(this.state.realm_id));
   },
 
   _checkWorldMapReveal() {
@@ -512,6 +525,7 @@ const Game = {
       if (battle.win) {
           BreakthroughManager.applyVictory(this.state, data); UnlockManager.refresh(this.state);
           this._log(String(data.success_text || "破劫成功。"));
+          if (typeof AudioManager !== "undefined") AudioManager.playSfx("tribulation_success"); // SFX-04 破劫成功清越音
           // 第三层·大画卷：破劫是质变，给一整幅沉浸演出；机械结算延后到画卷结束（design/6.0）
           const afterScene = () => {
             this._queueNewUnlockPopups(before);
@@ -887,6 +901,8 @@ const Game = {
     const powerGain = num(to.combat_power_base) - num(from.combat_power_base);
     const tips = (to.feature_tips || []).map((t) => `解锁：${t}`).join("\n");
     this._log(`你突破至${getPhaseRealmName(to)}。`);
+    if (typeof AudioManager !== "undefined") AudioManager.playSfx("realm_up"); // SFX-06 升重清越音
+    this.updateAmbient(); // 境界变化 → 切换环境音床（山野/陈塘/骷髅山）
       // 第二层·小仪式：阶段转换（每3重）给呼吸时刻；普通升重只给气韵，不弹窗（design/6.0）
       const ritualText = Atmosphere.phaseRitual(String(to.realm_id));
       if (Atmosphere.isPhaseTransition(from, to) && ritualText) {
@@ -940,6 +956,7 @@ const Game = {
     const deltaText = this._formatResourceDelta(reward.resources || {});
     this._log(`机缘「${eventRow.event_name}」：${option.text || option.label}。`);
     const flavor = (option.reward && option.reward.log) || (option.result && option.result.log) || `你选择了「${option.text || option.label}」。`;
+    if (typeof AudioManager !== "undefined") AudioManager.playSfx("fortune"); // SFX-05 机缘清脆提示
     this.queuePopup({ kind: "text", style: "chance", title: String(eventRow.event_name || "机缘"), body: `${flavor}${deltaText ? `\n\n获得：\n${deltaText}` : ""}`, buttons: [{ label: "收下机缘" }] });
     this._afterMutated();
     return { ok: true };
@@ -1344,6 +1361,7 @@ const Game = {
       const rewardText = this._formatResourceDelta(reward);
       this._log(`你在${mapName}发现了「${p.name}」。`);
       this.toast(`发现·${p.name}`, `${p.flavor || ""}${rewardText ? `\n\n（${rewardText}）` : ""}`);
+      if (typeof AudioManager !== "undefined") AudioManager.playSfx("secret_found"); // SFX-07 发现秘境提示
       // 探索点接事件（design/6.6）：发现深层秘境触发 tied 事件（seen 去重）
       if (p.trigger_event && !this.state.seen_events.includes(String(p.trigger_event))) {
         this._setPendingEvent(String(p.trigger_event));

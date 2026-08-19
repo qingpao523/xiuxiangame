@@ -204,6 +204,17 @@ const Atmosphere = {
   playBreakthrough(btId, doneCb) {
     const script = this.breakthroughScene(btId);
     if (!script) { if (doneCb) doneCb(); return; }
+      // SFX-04 破劫演出：劫云压顶环境音床 + 开场劫雷；结束后恢复境界环境音床。
+      if (typeof AudioManager !== "undefined") {
+        AudioManager.playAmbient("amb_tribulation");
+        AudioManager.playSfx("tribulation_rumble", { dur: 2.2 });
+        AudioManager.playSfx("seal_hum");
+      }
+      const _btDone = doneCb;
+      doneCb = () => {
+        if (typeof Game !== "undefined" && Game.updateAmbient) Game.updateAmbient();
+        if (_btDone) _btDone();
+      };
     ScrollScene.play(script, doneCb);
   },
 };
