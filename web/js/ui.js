@@ -660,6 +660,155 @@ function renderFactionChoicePopup(panel, title, body, buttons) {
   }
 }
 
+// ---------------- 势力完整独有系统 UI（design/7.2 v0.2）----------------
+
+function _resName(rid) { const r = DataManager.getById("resource_table", rid); return (r && r.resource_name) ? r.resource_name : rid; }
+function _costText(cost) { return Object.keys(cost || {}).map((rid) => `${_resName(rid)} ${formatInt(num(cost[rid]))}`).join("，"); }
+function _canAfford(state, cost) { return Object.keys(cost || {}).every((rid) => num(state.resources[rid]) >= num(cost[rid])); }
+function _factionSysHeader(body, title, desc) {
+  const h = document.createElement("div"); h.className = "card faction-sys-header";
+  const t = document.createElement("div"); t.className = "card-name"; t.textContent = title;
+  const d = document.createElement("div"); d.className = "card-desc"; d.textContent = desc;
+  h.append(t, d); body.appendChild(h);
+}
+
+function renderFactionSystem(body, state) {
+  const fid = str(state.faction_id, "");
+  if (fid === "chan") renderChanSynth(body, state);
+  else if (fid === "jie") renderJieArray(body, state);
+  else if (fid === "tianting") renderTiantingEdict(body, state);
+  else if (fid === "wuzhuang") renderWuzhuangFeast(body, state);
+}
+
+// 阐教·玉虚炼器：配方列表 → 开炉（火候时机条）→ 品质定产出法宝品级
+function renderChanSynth(body, state) {
+  const craftBoost = Game.hasDivinationBoost("craft_boost");
+  _factionSysHeader(body, "玉虚炼器（合成）",
+    "以法宝碎片为骨、法力为魂，炉火纯青处合成高阶法宝。火候停在中段得上品——上品初成 3 重、中品 2 重、下品 1 重；已炼成则淬炼 +1 重。合成法宝入法宝之列，可继续温养。" + (craftBoost ? "（今日占卜得签，火候易得。）" : ""));
+  const recipes = Game.getSynthRecipes();
+  if (!recipes.length) { body.appendChild(note("尚无可用配方（提升境界以解锁更多炼器之法）。")); return; }
+  for (const r of recipes) {
+    const out = DataManager.getById("treasure_table", String(r.output_treasure));
+    const tState = Game.getTreasureState(String(r.output_treasure));
+    const owned = int(tState.level) > 0;
+    const card = document.createElement("div"); card.className = "card";
+    const info = document.createElement("div"); info.className = "card-info";
+    const name = document.createElement("div"); name.className = "card-name";
+    name.textContent = `${r.recipe_name} → ${out.treasure_name || r.output_treasure}${owned ? `（已炼成 ${int(tState.level)} 重）` : ""}`;
+    const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = r.intro || "";
+    const cost = document.createElement("div"); cost.className = "card-cost";
+    cost.textContent = `耗：${_costText(r.cost)}｜产出：${out.treasure_name || ""}（${out.main_effect || "高阶法宝"}）`;
+    info.append(name, desc, cost);
+    const btn = document.createElement("button"); btn.className = "card-btn";
+    btn.textContent = owned ? "淬炼" : "开炉";
+    const chk = Game.canCraftSynth(String(r.recipe_id));
+    btn.disabled = !chk.ok;
+    btn.addEventListener("click", () => {
+      CraftMinigame.open({ title: `玉虚炼器·${r.recipe_name}`, prompt: "看准火候，停在中段得上品", boost: craftBoost }, (quality) => {
+        Game.craftSynthFinish(String(r.recipe_id), quality);
+        renderPanelBody("log");
+      });
+    });
+    card.append(info, btn); body.appendChild(card);
+  }
+}
+
+// 截教·万仙阵法：阵法卡（学习 / 温养升级 / 携带入栏），斗法首回合敌方全体受伤加成
+function renderJieArray(body, state) {
+  const slots = Game.arraySlots();
+  const equipped = state.array_equipped || [];
+  const totalBonus = Game.getArrayFirstRoundBonus(state);
+  _factionSysHeader(body, "万仙阵法（阵法卡）",
+    `悟阵耗功德与劫气，可携入阵法栏（${equipped.length}/${slots} 位）。携入之阵于斗法首回合使敌方全体受伤加成${totalBonus > 0 ? `（当前 +${Math.round(totalBonus * 100)}%）` : ""}。地仙（zr_06）后阵法栏 +1。`);
+  const cards = Game.getArrayCards();
+  if (!cards.length) { body.appendChild(note("尚无可用阵法卡（提升境界以解锁更多大阵）。")); return; }
+  for (const c of cards) {
+    const lv = Game.arrayCardLevel(String(c.card_id));
+    const learned = lv > 0;
+    const isEq = equipped.includes(String(c.card_id));
+    const card = document.createElement("div"); card.className = "card" + (isEq ? " selected" : "");
+    const info = document.createElement("div"); info.className = "card-info";
+    const name = document.createElement("div"); name.className = "card-name";
+    name.textContent = `${c.card_name}${learned ? `（${lv} 级·受伤 +${Math.round(Game.arrayCardBonus(c, lv) * 100)}%）` : ""}${isEq ? " ★携行" : ""}`;
+    const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = c.desc || "";
+    const cost = document.createElement("div"); cost.className = "card-cost";
+    cost.textContent = learned
+      ? (lv >= int(c.max_level, 5) ? "已悟至极" : `温养耗：${_costText(c.upgrade_cost)}`)
+      : `悟阵耗：${_costText(c.learn_cost)}`;
+    info.append(name, desc, cost);
+    const btnWrap = document.createElement("div"); btnWrap.className = "card-btn-col";
+    if (!learned) {
+      const b = document.createElement("button"); b.className = "card-btn"; b.textContent = "悟阵";
+      b.disabled = !_canAfford(state, c.learn_cost);
+      b.addEventListener("click", () => { Game.learnArrayCard(String(c.card_id)); renderPanelBody("log"); });
+      btnWrap.appendChild(b);
+    } else {
+      const up = document.createElement("button"); up.className = "card-btn"; up.textContent = "温养";
+      up.disabled = lv >= int(c.max_level, 5) || !_canAfford(state, c.upgrade_cost);
+      up.addEventListener("click", () => { Game.upgradeArrayCard(String(c.card_id)); renderPanelBody("log"); });
+      const eq = document.createElement("button"); eq.className = "card-btn"; eq.textContent = isEq ? "撤下" : "携行";
+      eq.addEventListener("click", () => { Game.toggleArrayEquip(String(c.card_id)); renderPanelBody("log"); });
+      btnWrap.append(up, eq);
+    }
+    card.append(info, btnWrap); body.appendChild(card);
+  }
+}
+
+// 天庭·功德敕令：每日领敕入库（上限 3）→ 发敕指定行动 → 该行动下一次收益 ×2
+function renderTiantingEdict(body, state) {
+  const count = int(state.edict_count);
+  const target = state.edict_target ? EDICT_TARGETS.find((t) => t.scope === state.edict_target) : null;
+  _factionSysHeader(body, "功德敕令（库存）",
+    `每日可领一道敕令入库（存 ${count}/${EDICT_MAX} 道）。发敕指定一项行动，其下一次收益 ×2。${target ? `当前敕令所指：「${target.name}」。` : "尚未发敕。"}`);
+  const claimCard = document.createElement("div"); claimCard.className = "card";
+  const cInfo = document.createElement("div"); cInfo.className = "card-info";
+  const cName = document.createElement("div"); cName.className = "card-name"; cName.textContent = "领敕令";
+  const cDesc = document.createElement("div"); cDesc.className = "card-desc";
+  const claimedToday = str(state.edict_last_claim, "") === todayString();
+  cDesc.textContent = claimedToday ? "今日已领，明日再来。" : "领一道天庭敕令入库。";
+  cInfo.append(cName, cDesc);
+  const cBtn = document.createElement("button"); cBtn.className = "card-btn"; cBtn.textContent = "领敕";
+  cBtn.disabled = claimedToday || count >= EDICT_MAX;
+  cBtn.addEventListener("click", () => { Game.edictClaim(); renderPanelBody("log"); });
+  claimCard.append(cInfo, cBtn); body.appendChild(claimCard);
+  body.appendChild(note("发敕令：指定下一项行动，收益 ×2（同时只能指定一项；新发敕令会替换旧指定）。"));
+  for (const t of EDICT_TARGETS) {
+    const card = document.createElement("div"); card.className = "card" + (target && target.scope === t.scope ? " selected" : "");
+    const info = document.createElement("div"); info.className = "card-info";
+    const name = document.createElement("div"); name.className = "card-name";
+    name.textContent = `敕令·${t.name}${target && target.scope === t.scope ? " ★已指定" : ""}`;
+    const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = t.desc;
+    info.append(name, desc);
+    const btn = document.createElement("button"); btn.className = "card-btn"; btn.textContent = "发敕";
+    btn.disabled = count <= 0;
+    btn.addEventListener("click", () => { Game.edictDesignate(t.scope); renderPanelBody("log"); });
+    card.append(info, btn); body.appendChild(card);
+  }
+}
+
+// 五庄观·人参果会：每周赴会全属性 +10% 持续 1 天，果会期间炼丹产出 ×2
+function renderWuzhuangFeast(body, state) {
+  const now = nowUnix();
+  const active = Game.factionBuffActive("feast");
+  const alchemy = Game.feastAlchemyActive(state);
+  _factionSysHeader(body, "人参果会（果会 + 炼丹）",
+    "七日一开果会，赴会则全属性 +10% 持续 1 天；果会余韵期间，炼丹产出 ×2。" + (active ? "（果会余韵中）" : "") + (alchemy ? "（炼丹 ×2 生效中）" : ""));
+  const card = document.createElement("div"); card.className = "card";
+  const info = document.createElement("div"); info.className = "card-info";
+  const name = document.createElement("div"); name.className = "card-name"; name.textContent = "赴人参果会";
+  const desc = document.createElement("div"); desc.className = "card-desc";
+  const cd = int(state.faction_feast_cooldown);
+  if (active) desc.textContent = "果会余韵犹在，七日后再赴。";
+  else if (cd > now) desc.textContent = `果会七日一开，距下次约 ${Math.ceil((cd - now) / 86400)} 天。`;
+  else desc.textContent = "果会已开，可赴。";
+  info.append(name, desc);
+  const btn = document.createElement("button"); btn.className = "card-btn"; btn.textContent = "赴会";
+  btn.disabled = active || cd > now;
+  btn.addEventListener("click", () => { Game.factionFeast(); renderPanelBody("log"); });
+  card.append(info, btn); body.appendChild(card);
+  body.appendChild(note("炼丹产出 ×2 仅在果会余韵（赴会后 1 天）内生效；可于丹房炼丹时享用。"));
+}
+
 // ---------------- 战后休整弹窗 ----------------
 
 function renderRestPopup(panel, title, body, buttons, payload) {

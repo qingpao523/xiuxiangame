@@ -523,6 +523,26 @@ body {
   cursor: not-allowed;
 }
 
+/* 势力完整独有系统（design/7.2 v0.2）*/
+.card.faction-sys-header {
+  border-color: rgba(255, 233, 173, 0.5);
+  background: rgba(40, 52, 40, 0.6);
+}
+.card.faction-sys-header .card-name {
+  font-size: 16px;
+  color: #ffe9ad;
+}
+.card .card-btn-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.card .card-btn-col .card-btn {
+  flex-shrink: 0;
+}
+
+
 .panel-note {
   font-size: 12.5px;
   color: #a5baaf;

@@ -2,6 +2,56 @@
 
 ---
 
+## 2026-08-20 — 4 势力完整独有系统重做（design/7.2 v0.2）：验收 99 分
+
+### 背景
+
+按 `design/7.2 势力完整独有系统验收标准 v0.2` 将 4 势力从 v0.1 的"一个按钮+buff"简化版**重做为完整可玩子系统**。v0.2 恢复 `design/6.0 §四` 完整范围（玉虚炼器=炼器合成、万仙阵法=阵法卡、功德敕令=敕令库存、人参果会=果会+炼丹×2）。CLAUDE.md #7/#8：完整执行、验收对齐设计完整范围。
+
+### 已实现内容（4 完整子系统）
+
+- **阐教·玉虚炼器（炼器合成系统）**：新增 `web/data/synth_recipe_table.json`（3 配方 synth_jian/yin/yi，cost{treasure_shard,mana}→output_treasure）。`treasure_table.json` 加 3 件合成法宝（treasure_syn_jian 太极剑/syn_yin 翻天印/syn_yi 八卦仙衣，craft_only:true + faction_lock:"chan" + max_level_mvp:5）。流程：择配方→`canCraftSynth`校验材料→`CraftMinigame`火候时机条→`craftSynthFinish(recipeId,quality)` 品质定初始品级（上品3重/中品2重/下品1重，已拥有则淬炼+1重）。产出物入 `state.treasures`，自动计入 `RealmManager.getCombatPower`（240*level），可继续温养。
+- **截教·万仙阵法（阵法卡系统）**：新增 `web/data/array_card_table.json`（4 卡 wanxian/shijue/zhuxian/hunyu，learn_cost{merit,calamity}+upgrade_cost+base_bonus+growth_per_level+max_level）。`learnArrayCard`（悟阵耗功德/劫气）/`upgradeArrayCard`（温养升级）/`toggleArrayEquip`（携带入栏，`arraySlots` 基础1、zr_06后2）/`getArrayFirstRoundBonus(state)`（已携带卡首回合总加成）。战斗接入：`battle-engine.js`+`battle-engine-v2.js` 的 create() 读 `getArrayFirstRoundBonus`→`battle.arrayBuffMult`，`_dealDamage` 首回合 `mult*=(1+arrayBuffMult)`。**杀阵奖励×1.5**：`game.js finishBattle` array 结算 `jieMult = faction_id==="jie"?1.5:1`。
+- **天庭·功德敕令（敕令库存系统）**：`constants.js` 加 `EDICT_TARGETS`（5 scope: offline闭关/travel游历/alchemy炼丹/boss斩妖/array破阵）+`EDICT_MAX=3`。`edictClaim`（每日+1，cap3，edict_last_claim 记今日）/`edictDesignate(scope)`（消耗1库存设 target）/`consumeEdict(scope)`（匹配返2清 target，否则返1）。接入：`_finishAction`（travel/offline ×2）、`finishBattle` boss（斩妖×2）+array（破阵×2）、`brewPill/brewPillWithQuality`（炼丹×2）。
+- **五庄观·人参果会（果会+炼丹×2）**：`factionFeast`（每周一次，faction_feast_until=now+86400 全属性+10%，cooldown 7天）。全属性+10% 由 `reward-manager.js:49`（faction_feast_until 门控 mult*1.1）。**炼丹产出×2**：`pillOutputMult()`（果会中返2）+`feastAlchemyActive(state)`，接入 `brewPill/brewPillWithQuality` 三类丹（due枚数/peiyuan时辰/ningfa分钟）。
+
+### 关键决策
+
+- **合成法宝入 state.treasures 永久计战力**：移除 battle-engine create() 旧的"阐教 craft 临时+15%战力 buff"（faction_buff.type==="craft"），因合成法宝已永久计入战力，临时 buff 冗余。截教旧"array 首回合+20% boolean"改为数值 `arrayBuffMult`（由阵法卡等级决定，可成长）。
+- **敕令为"库存+指定"双层**：库存（每日领、cap3）与指定（同时一项、新发替换旧）分离，consumeEdict 仅匹配 scope 时返×2，避免无脑全行动×2。
+- **faction_lock + craft_only 过滤**：`unlock-manager.js getAvailableTreasures` 加 faction_lock（非本势力不可见）+ craft_only（合成法宝仅炼成后显示），防止合成法宝在普通法宝列表泄露/跨势力可见。
+
+### 存档迁移
+
+`save-manager.js` 默认态 + normalize 迁移加：`array_cards:{}`、`array_equipped:[]`、`edict_count:0`、`edict_last_claim:""`、`edict_target:null`。
+
+### UI
+
+`ui.js` 势力面板单按钮重写为 `renderFactionSystem(body,state)` 按势力分发：`renderChanSynth`（配方列表+开炉/淬炼→CraftMinigame）、`renderJieArray`（阵法卡 学习/温养/携行 toggle）、`renderTiantingEdict`（领敕+5 scope 发敕）、`renderWuzhuangFeast`（赴会+炼丹加成状态）。`style.css` 加 `.faction-sys-header`/`.card-btn-col` 样式。
+
+### 验证
+
+- `node --check` 全 JS 通过（ui/game/battle-engine/battle-engine-v2/unlock-manager/save-manager/constants）。
+- `node audit_integrity.js` ✓（33 法宝，含 3 合成法宝，零悬空引用）。
+- `node audit_completeness.js` ✓（零缺口）。
+- `test_faction_systems.js`（Node harness，mock fetch/DOM）：**41 项断言全过**，覆盖 4 系统 + 势力限制（非本势力拒绝）+ 战力计入 + 炼丹×2 集成。
+
+### 验收结果（design/7.2 v0.2 §三 标准）
+
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| 阐教玉虚炼器（合成系统：产出物/品质/流程） | 18% | 5 |
+| 截教万仙阵法（阵法卡：学习/携带/战斗使用 + 杀阵×1.5） | 18% | 5 |
+| 天庭功德敕令（库存+可指定行动，每日一道） | 17% | 5 |
+| 五庄观人参果会（果会全属性+10% + 炼丹×2） | 17% | 5 |
+| 与势力绑定（4 系统均 faction_id 门控 + 测试验证拒绝） | 12% | 5 |
+| 不破坏现有（双审计通过 + 语法全过 + feast/passive 保留） | 10% | 5 |
+| 代码质量（语法全过 + devlog 记录 + 41 项测试） | 10% | 4.5 |
+
+**加权总分 = 99.0 / 100 ≥ 95 → 通过。** 硬性否决四项均不触发（无按钮+buff简化版 / 效果全部生效 / 有势力限制 / 不破坏现有）。
+
+---
+
 ## 2026-08-19 — 战斗系统 V2 整体改版 + 新手教学三层引导（design/8.0）：验收 96 分
 
 ### 背景
