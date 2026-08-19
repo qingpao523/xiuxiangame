@@ -2,6 +2,41 @@
 
 ---
 
+## 2026-08-16 — 根除双引擎：移除 Godot，统一为单一 Web 技术栈
+
+### 背景
+
+项目长期维持 Web + Godot 双引擎，每次改数据都要同步 `web/data/` 与根 `data/`（Godot 副本）两份，是持续的维护负担。实际可玩版本始终是网页版（HTML/CSS/JS），Godot 端从未跑通。本批次根除双引擎问题，删除 Godot，统一为单一 Web 技术栈，数据唯一来源为 `web/data/`。
+
+### 删除内容
+
+- `project.godot` — Godot 工程文件
+- `scripts/` — Godot GDScript（autoload/、ui/，9 个 .gd）
+- `scenes/` — Godot 场景（main/Main.tscn）
+- `data/`（根目录）— Godot 数据副本（data_index.json 的 `recommended_path: res://data/` 即 Godot 资源路径）
+- `design/1.7 Godot Web MVP 技术方案与开发任务拆分 v0.1.md` — Godot 技术方案（已废弃）
+
+### 更新内容
+
+- `CLAUDE.md`：Commands 由 Godot 命令改为 Web 命令（本地服务/审计/语法检查）；项目简介注明纯网页版、数据唯一来源 web/data/。
+- `.gitignore`：移除 Godot 段（.godot/、*.import、export_presets.cfg）。
+- `.gitattributes`：移除 Godot 文件类型行（*.gd、*.gdshader、*.tscn、*.tres、*.godot）。
+- `web/assets/README.md`：由"Godot MVP Art Pack"重写为 Web 导向，指向实际代码引用路径（ui-constants.js）。
+- `web/data/data_index.json`：`recommended_path` 由 `res://data/` 改为 `web/data/`；移除 Godot 加载说明。
+
+### 验证记录
+
+- `web/` 中已无 Godot / `res://` 引用。
+- 删除根 `data/` 后网页版与审计不受影响（均用 web/data/）：跨系统审计零问题、实现完整性审计零缺口、21 个 JS 文件语法全过、web/data 20 张表完整。
+- 历史设计文档（design/3.0/4.0/1.8）与 devlog 中的 Godot 提及为历史记录，保留不改（改写会篡改历史）。
+
+### 关键决策理由
+
+- 双引擎的核心成本是数据双份同步；既然 Godot 端从未跑通、可玩版始终是 Web，删除 Godot 是去除死重，不是砍功能。
+- 历史设计文档保留 Godot 提及（那是当时的技术设想记录），只删除引擎实体与活动配置中的 Godot 引用。
+
+---
+
 ## 2026-08-16 — 实现完整性审计：根除"数据有但实现无"模式（代码审查后续）
 
 ### 背景

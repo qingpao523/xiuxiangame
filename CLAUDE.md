@@ -22,7 +22,7 @@ This file provides guidance to Claude Code when working with this project.
 
 ## 项目简介
 
-封神·放置修仙
+封神·放置修仙（竖屏文字修仙放置游戏）。纯网页版：HTML/CSS/JS，位于 web/，浏览器打开 web/index.html 即玩。已移除 Godot 引擎，统一为单一 Web 技术栈，数据唯一来源为 web/data/。
 
 ## 核心规范
 
@@ -36,6 +36,13 @@ This file provides guidance to Claude Code when working with this project.
 ## Commands
 
 ```bash
-open -a Godot project.godot    # 在编辑器中打开项目
-godot --path . --check-only    # 静态检查全部脚本语法
+# 运行网页版（浏览器打开 http://localhost:8090）
+cd web && python3 -m http.server 8090
+
+# 数据审计（跨系统引用一致性 + 实现完整性）
+node audit_integrity.js
+node audit_completeness.js
+
+# JS 语法检查
+for f in web/js/*.js; do node --check "$f"; done
 ```

@@ -1,99 +1,30 @@
-# Godot MVP Art Pack
+# 美术资源（Web Art Pack）
 
-This folder contains the Godot-ready art assets generated from `design/1.7 Godot Web MVP 技术方案与开发任务拆分 v0.1.md`.
+本目录存放网页版（web/）使用的美术资源。代码引用见 `web/js/ui-constants.js`
+（BACKGROUND_PATHS / CHARACTER_PATHS / SPELL_ICONS / TREASURE_ICONS / ICON_PATHS）。
 
-Total files in this pack: 43 PNGs.
+资源按类型分目录，代码以相对路径 `assets/...` 引用（相对于 web/index.html）。
 
-Required by 1.7:
-
-- 3 backgrounds
-- 3 character portraits
-- 8 treasure icons
-- 3 spell icons
-- 7 resource icons
-- 12 UI decoration assets
-- 5 VFX assets
-
-Bonus extras:
-
-- `ui/icons/ui_red_dot.png`
-- `ui/icons/ui_unlock_flash.png`
-
-These two files live in `ui/icons/` alongside the required `ui_lock_icon.png`.
-
-Recommended `res://` structure:
+目录结构：
 
 ```text
-res://assets/godot_mvp/
-  backgrounds/
-  characters/
-  treasures/
-  spells/
-  resources/
+assets/
+  backgrounds/    背景图
+  characters/     主角立绘
+  treasures/      法宝图标
+  spells/         术法图标
+  resources/      资源图标
   ui/
-    banners/
-    borders/
-    buttons/
-    bars/
-    icons/
-    popups/
-  vfx/
+    banners/      顶部横幅
+    borders/      边框
+    buttons/      按钮边框
+    bars/         进度条
+    icons/        图标
+    popups/       弹窗背景
+  vfx/            特效
 ```
 
-File list:
+说明：
 
-```text
-backgrounds/bg_mountain_cave.png
-backgrounds/bg_chentang_pass.png
-backgrounds/bg_bone_mountain_edge.png
-
-characters/char_cultivator.png
-characters/char_realman.png
-characters/char_earth_immortal.png
-
-treasures/treasure_lightwood_sword.png
-treasures/treasure_spirit_gourd.png
-treasures/treasure_xuanhuang_protective_talisman.png
-treasures/treasure_subduing_demon_bell.png
-treasures/treasure_windfire_meditation_mat.png
-treasures/treasure_bronze_soul_mirror.png
-treasures/treasure_gold_light_seal.png
-treasures/treasure_calm_jade_pendant.png
-
-spells/spell_palm_thunder.png
-spells/spell_spirit_fire.png
-spells/spell_artifact_control.png
-
-resources/resource_daoxing.png
-resources/resource_mana.png
-resources/resource_merit.png
-resources/resource_calamity.png
-resources/resource_spell_page.png
-resources/resource_treasure_shard.png
-resources/resource_refine_material.png
-
-ui/banners/ui_top_seal_banner.png
-ui/borders/ui_seal_border.png
-ui/buttons/ui_merit_button_border.png
-ui/buttons/ui_calamity_button_border.png
-ui/popups/ui_breakthrough_popup_bg.png
-ui/popups/ui_chance_popup_bg.png
-ui/popups/ui_treasure_popup_bg.png
-ui/borders/ui_map_card_border.png
-ui/bars/ui_realm_progress_bar.png
-ui/bars/ui_daoxing_progress_bar.png
-ui/bars/ui_resource_bar_bg.png
-ui/icons/ui_lock_icon.png
-
-vfx/vfx_collect_reward.png
-vfx/vfx_level_up.png
-vfx/vfx_breakthrough.png
-vfx/vfx_treasure_get.png
-vfx/vfx_chance_event.png
-```
-
-Notes:
-
-- All required art assets are already copied into this folder tree.
-- The bonus UI icons are kept in `ui/icons/` so they are easy to use, but they are not required by 1.7.
-- The images are ready to import directly into Godot as texture resources.
+- 当前为占位/初版素材，正式美术到位后按层替换，不改逻辑代码（见 CLAUDE.md 美术素材流程）。
+- 部分 UI 皮肤与 VFX 尚未接入，详见 `美术需求.md`。
