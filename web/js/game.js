@@ -184,6 +184,12 @@ const Game = {
         const parts = []; if (caught > 0) parts.push(`拾得 ${caught} 缕灵光`); if (beats > 0) parts.push(`完美吐纳 ${beats} 次`);
         blessText = `\n气机加持：${parts.join("，")}，收益 +${Math.round(b * 100)}%`;
       }
+      // 天庭·功德敕令：下一个行动收益 ×2（design/7.2）
+      if (str(this.state.faction_id, "") === "tianting" && this.state.faction_buff && this.state.faction_buff.type === "edict") {
+        for (const rid of Object.keys(reward.resources)) reward.resources[rid] = Math.round(num(reward.resources[rid]) * 2);
+        this.state.faction_buff = null;
+        this._log("功德敕令生效：此次行动收益 ×2。");
+      }
       this._applyResourceDelta(reward.resources);
       // 麒麟·瑞兽感应：游历感应隐藏灵机，30% 额外道行（design/7.0 身份层）
       if (str(this.state.race_id, "") === "qilin" && row.map_id && num(reward.resources.daoxing) > 0 && Math.random() < 0.3) {
@@ -885,6 +891,66 @@ const Game = {
   },
 
   _maybeQueueFactionChoice() { if (this.state.faction_id) return; if (this.popupQueue.some((p) => p.kind === "faction_choice")) return; this.queuePopup({ kind: "faction_choice" }); },
+
+  // ---------- 势力完整独有系统（design/7.2）----------
+
+  // 阐教·玉虚炼器：消耗法宝碎片，获得临时战力护持（持续 3 场斗法）
+  factionCraft() {
+    if (str(this.state.faction_id, "") !== "chan") return;
+    const cost = 10;
+    if (num(this.state.resources.treasure_shard) < cost) { this.queuePopup({ kind: "text", title: "玉虚炼器", body: `法宝碎片不足（需 ${cost}）。`, buttons: [{ label: "知道了" }] }); return; }
+    this.state.resources.treasure_shard -= cost;
+    this.state.faction_buff = { type: "craft", battles: 3 };
+    this._log("玉虚炼器：你以法宝碎片炼成一道护持，接下来 3 场斗法战力 +15%。");
+    this.queuePopup({ kind: "text", style: "seal", title: "玉虚炼器", body: "你以法宝碎片炼成一道玉虚护持。\n接下来 3 场斗法，战力 +15%。", buttons: [{ label: "领受" }] });
+    this._afterMutated();
+  },
+
+  // 截教·万仙阵法：布阵后下一场斗法第一回合敌方全体受伤 +20%
+  factionArray() {
+    if (str(this.state.faction_id, "") !== "jie") return;
+    if (this.state.faction_buff && this.state.faction_buff.type === "array") { this.queuePopup({ kind: "text", title: "万仙阵法", body: "阵法已布，待下一场斗法生效。", buttons: [{ label: "知道了" }] }); return; }
+    this.state.faction_buff = { type: "array", battles: 1 };
+    this._log("万仙阵法：你布下万仙阵，下一场斗法第一回合敌方全体受伤 +20%。");
+    this.queuePopup({ kind: "text", style: "seal", title: "万仙阵法", body: "你布下万仙阵。\n下一场斗法第一回合，敌方全体受伤 +20%。", buttons: [{ label: "阵成" }] });
+    this._afterMutated();
+  },
+
+  // 天庭·功德敕令：每日一道敕令，下一个行动收益 ×2
+  factionEdict() {
+    if (str(this.state.faction_id, "") !== "tianting") return;
+    const today = todayString();
+    if (str(this.state.faction_edict_day, "") === today) { this.queuePopup({ kind: "text", title: "功德敕令", body: "今日敕令已发，明日再来。", buttons: [{ label: "知道了" }] }); return; }
+    this.state.faction_edict_day = today;
+    this.state.faction_buff = { type: "edict" };
+    this._log("功德敕令：你领一道天庭敕令，下一个行动收益 ×2。");
+    this.queuePopup({ kind: "text", style: "seal", title: "功德敕令", body: "你领一道天庭敕令。\n下一个行动，收益 ×2。", buttons: [{ label: "领敕" }] });
+    this._afterMutated();
+  },
+
+  // 五庄观·人参果会：每周一次果会，全属性临时 +10% 持续 1 天
+  factionFeast() {
+    if (str(this.state.faction_id, "") !== "wuzhuang") return;
+    const now = nowUnix();
+    if (int(this.state.faction_feast_until) > now) { this.queuePopup({ kind: "text", title: "人参果会", body: "果会余韵犹在，七日后再赴。", buttons: [{ label: "知道了" }] }); return; }
+    this.state.faction_feast_until = now + 86400;
+    this.state.faction_feast_cooldown = now + 86400 * 7;
+    this.state.faction_buff = { type: "feast", until: now + 86400 };
+    this._log("人参果会：你赴五庄观果会，全属性 +10% 持续 1 天。");
+    this.queuePopup({ kind: "text", style: "seal", title: "人参果会", body: "清风明月引你入座，人参果入口生津。\n全属性 +10%，持续 1 天。", buttons: [{ label: "谢过镇元子" }] });
+    this._afterMutated();
+  },
+
+  // 势力 buff 是否激活（供 UI/逻辑查询）
+  factionBuffActive(type) {
+    const fb = this.state.faction_buff;
+    if (!fb || fb.type !== type) return false;
+    if (type === "feast") return int(fb.until) > nowUnix();
+    if (type === "craft") return int(fb.battles) > 0;
+    if (type === "array") return int(fb.battles) > 0;
+    if (type === "edict") return true;
+    return false;
+  },
 
   // ---------- 本命法宝择主 ----------
 

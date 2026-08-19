@@ -1032,8 +1032,38 @@ function renderLogPanel(body, state) {
       const avail = ActionManager.getAvailability(state, task); goBtn.textContent = avail.ok ? "前往" : avail.reason; goBtn.disabled = !avail.ok;
       goBtn.addEventListener("click", () => { closePanelSheet(); Game.startAction(String(task.action_id)); });
       taskCard.append(tInfo, goBtn); body.appendChild(taskCard);
-    }
-  } else if (RealmManager.isCapped(state)) {
+      }
+      // 势力完整独有系统（design/7.2）
+      const fid = str(state.faction_id, "");
+      const fb = state.faction_buff;
+      const sysCard = document.createElement("div"); sysCard.className = "card";
+      const sInfo = document.createElement("div"); sInfo.className = "card-info";
+      const sName = document.createElement("div"); sName.className = "card-name";
+      const sDesc = document.createElement("div"); sDesc.className = "card-desc";
+      const sBtn = document.createElement("button"); sBtn.className = "card-btn";
+      if (fid === "chan") {
+        sName.textContent = "玉虚炼器";
+        sDesc.textContent = "消耗法宝碎片 10，炼成护持，接下来 3 场斗法战力 +15%。" + (Game.factionBuffActive("craft") ? `（生效中：余 ${int(fb.battles)} 场）` : "");
+        sBtn.textContent = "炼器"; sBtn.disabled = num(state.resources.treasure_shard) < 10;
+        sBtn.addEventListener("click", () => { Game.factionCraft(); renderPanelBody("log"); });
+      } else if (fid === "jie") {
+        sName.textContent = "万仙阵法";
+        sDesc.textContent = "布阵后下一场斗法第一回合敌方全体受伤 +20%。" + (Game.factionBuffActive("array") ? "（已布阵）" : "");
+        sBtn.textContent = "布阵"; sBtn.disabled = Game.factionBuffActive("array");
+        sBtn.addEventListener("click", () => { Game.factionArray(); renderPanelBody("log"); });
+      } else if (fid === "tianting") {
+        sName.textContent = "功德敕令";
+        sDesc.textContent = "每日一道敕令，下一个行动收益 ×2。" + (Game.factionBuffActive("edict") ? "（敕令待发）" : "");
+        sBtn.textContent = "领敕"; sBtn.disabled = Game.factionBuffActive("edict") || str(state.faction_edict_day, "") === todayString();
+        sBtn.addEventListener("click", () => { Game.factionEdict(); renderPanelBody("log"); });
+      } else if (fid === "wuzhuang") {
+        sName.textContent = "人参果会";
+        sDesc.textContent = "每周一次果会，全属性 +10% 持续 1 天。" + (Game.factionBuffActive("feast") ? "（果会余韵中）" : "");
+        sBtn.textContent = "赴会"; sBtn.disabled = int(state.faction_feast_cooldown) > nowUnix();
+        sBtn.addEventListener("click", () => { Game.factionFeast(); renderPanelBody("log"); });
+      }
+      sInfo.append(sName, sDesc); sysCard.append(sInfo, sBtn); body.appendChild(sysCard);
+    } else if (RealmManager.isCapped(state)) {
     body.appendChild(note("地仙之后无散修。你已立身天仙之境，尚未择势力入局。"));
     body.appendChild(popupButton("择势力入局", false, () => { closePanelSheet(); Game._maybeQueueFactionChoice(); drainPopupQueue(); }));
   }

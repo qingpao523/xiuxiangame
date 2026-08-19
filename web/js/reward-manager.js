@@ -45,6 +45,8 @@ const RewardManager = {
     mult *= 1 + 0.03 * int(rb.daohen) + 0.01 * (rb.races_seen || []).length;
     // R2-B：五庄观被动——闭关/离线收益 +10%
     if (str(state.faction_id, "") === "wuzhuang") mult *= 1.1;
+    // 五庄观·人参果会：全属性 +10% 持续 1 天（design/7.2）
+    if (str(state.faction_id, "") === "wuzhuang" && int(state.faction_feast_until) > nowUnix()) mult *= 1.1;
     // R1-A：人族天赋——道行类收益 +5%；杨戬结缘讲道 +5%
     const daoxingRaceMult = (str(state.race_id, "") === "human" ? 1.05 : 1) * (state.companions?.yangjian?.bonded ? 1.05 : 1);
     const resources = {

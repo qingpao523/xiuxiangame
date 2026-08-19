@@ -47,6 +47,10 @@ const SaveManager = {
         map_explores: {},
         benming_school: null,
         devour_stacks: 0,
+        faction_buff: null,
+        faction_edict_day: "",
+        faction_feast_until: 0,
+        faction_feast_cooldown: 0,
       current_action: null,
       current_goal_id: "goal_001",
       completed_goals: [],
@@ -93,6 +97,10 @@ const SaveManager = {
     state.map_explores = state.map_explores || {};
     if (!("benming_school" in state)) state.benming_school = null;
     state.devour_stacks = int(state.devour_stacks);
+    if (!("faction_buff" in state)) state.faction_buff = null;
+    state.faction_edict_day = str(state.faction_edict_day, "");
+    state.faction_feast_until = int(state.faction_feast_until);
+    state.faction_feast_cooldown = int(state.faction_feast_cooldown);
     state.action_counts_today = state.action_counts_today || {};
     state.current_action = state.current_action || null;
     state.current_goal_id = str(state.current_goal_id, "goal_001");
