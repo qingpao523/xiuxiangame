@@ -2,6 +2,40 @@
 
 ---
 
+## 2026-08-16 — 修复实测 Bug：机缘弹窗无按钮卡死（事件 schema 不一致，78 事件受影响）
+
+### 用户实测报告
+
+触发机缘「妖巢余党」（event_401）后，弹窗无点击按钮，全程游戏卡住。
+
+### 根因（系统性，非单点）
+
+事件系统渲染（renderEventPopup/chooseEventOption）读取 `options`/`narrative_text`/`text`/`reward` 字段，但内容批次新增的 **78 个事件**（event_101–340 + 401–403）用了另一套 schema：`choices`/`body`/`label`/`result`。字段名不匹配 → `eventRow.options` 为空 → **不渲染任何按钮 → 弹窗无法关闭 → 卡死**。
+
+- 仅 20 个原始事件（event_001–020）用正确 schema。
+- Playwright 泡测未暴露此 bug：测试台用 `popupQueue.shift()` 强制关闭弹窗，绕过了"无按钮"问题；真人点击才会卡死。
+- 75 个随机事件（101–340）因缺 `trigger_source` 实际从未被随机触发（潜伏）；3 个探索事件（401–403）由发现机制直接触发 → 必然卡死（用户撞见的即此类）。
+
+### 修复
+
+1. **数据迁移**：把 78 个事件从错误 schema 迁移到正确 schema——`body→narrative_text`、`choices→options`（`label→text`、`result→reward`，保留 flavor log 于 `reward.log`）、`unlock_condition` 对象 `{realm_min}` → 字符串、`source` 字符串 → `trigger_source` 数组、补 `merit_or_calamity`。迁移后 98 个事件 schema 统一。
+2. **代码防御（双 schema 兼容）**：renderEventPopup / chooseEventOption / describeEventReward 改为 `options||choices`、`narrative_text||body`、`text||label`、`reward||result`，未来任何错 schema 事件也能渲染。
+3. **conditionMet 兼容对象 unlock_condition**（`{realm_min}`），canOffer 传原始值不再 String 包装。
+4. **chooseEventOption 显示 flavor log**：选择后弹窗用 `reward.log` 风味文案（如"你剑光扫过，余党尽诛"），无则回退通用文案。
+
+### 验证记录
+
+- 模拟 event_401 渲染：标题 + 51 字正文 + 2 个带奖励与 flavor 的按钮（修复前 0 按钮）。
+- 迁移后 98 事件无错误 schema、全部有 options + narrative_text。
+- 21 个 JS 文件 node --check 全过；跨系统审计零问题；实现完整性审计零缺口。
+
+### 关键决策理由
+
+- 选"数据迁移到单一 schema + 代码双 schema 兼容"双管齐下：迁移消除根因（schema 统一），代码兼容作防御纵深（防未来再犯）。
+- 保留 `reward.log` 风味并在选择后展示，不因迁移丢失叙事 flavor。
+
+---
+
 ## 2026-08-16 — 根除双引擎：移除 Godot，统一为单一 Web 技术栈
 
 ### 背景

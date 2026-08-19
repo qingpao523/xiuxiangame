@@ -835,15 +835,16 @@ const Game = {
     const eventId = this.state.pending_event_id;
     const eventRow = EventManager.getEvent(eventId);
     if (!Object.keys(eventRow).length) return { ok: false };
-    const options = eventRow.options || [];
+    const options = eventRow.options || eventRow.choices || [];
     if (optionIndex < 0 || optionIndex >= options.length) return { ok: false };
     const option = options[optionIndex];
-    const reward = this._applyEventReward(option.reward || {});
+    const reward = this._applyEventReward(option.reward || option.result || {});
     EventManager.markSeen(this.state, eventId);
     this.state.pending_event_id = ""; this.eventPopupActive = false;
     const deltaText = this._formatResourceDelta(reward.resources || {});
-    this._log(`机缘「${eventRow.event_name}」：${option.text}。`);
-    this.queuePopup({ kind: "text", style: "chance", title: String(eventRow.event_name || "机缘"), body: `你选择了「${option.text}」。${deltaText ? `\n\n获得：\n${deltaText}` : "\n\n一缕气机悄然入体。"}`, buttons: [{ label: "收下机缘" }] });
+    this._log(`机缘「${eventRow.event_name}」：${option.text || option.label}。`);
+    const flavor = (option.reward && option.reward.log) || (option.result && option.result.log) || `你选择了「${option.text || option.label}」。`;
+    this.queuePopup({ kind: "text", style: "chance", title: String(eventRow.event_name || "机缘"), body: `${flavor}${deltaText ? `\n\n获得：\n${deltaText}` : ""}`, buttons: [{ label: "收下机缘" }] });
     this._afterMutated();
     return { ok: true };
   },

@@ -548,18 +548,19 @@ function renderEventPopup(panel, title, body, buttons) {
   if (!Object.keys(eventRow).length) { closePopup(); return; }
   panel.classList.add("style-chance"); title.textContent = `机缘触发：${eventRow.event_name || ""}`;
   const tag = eventRow.fengshen_tag ? `封神锚点：${eventRow.fengshen_tag}\n\n` : "";
-  body.textContent = `${tag}${eventRow.narrative_text || ""}`;
+  body.textContent = `${tag}${eventRow.narrative_text || eventRow.body || ""}`;
   const isChoice = eventRow.merit_or_calamity === "choice";
-  (eventRow.options || []).forEach((option, index) => {
+  const evOptions = eventRow.options || eventRow.choices || [];
+  evOptions.forEach((option, index) => {
     const btn = document.createElement("button"); btn.className = "popup-btn" + (isChoice ? (index === 0 ? " merit" : " calamity") : "");
-    btn.innerHTML = "<span>" + (option.text || "选择") + '</span><span class="popup-option-sub">' + describeEventReward(option) + "</span>";
+    btn.innerHTML = "<span>" + (option.text || option.label || "选择") + '</span><span class="popup-option-sub">' + describeEventReward(option) + "</span>";
     btn.addEventListener("click", () => { closePopup(); Game.chooseEventOption(index); });
     buttons.appendChild(btn);
   });
 }
 
 function describeEventReward(option) {
-  const parts = []; const reward = option.reward || {};
+  const parts = []; const reward = option.reward || option.result || {};
   for (const id of Object.keys(reward.resources || {})) { const row = DataManager.getById("resource_table", id); parts.push(`${row.resource_name || id} +${formatInt(reward.resources[id])}`); }
   if (reward.spell_pages_by_type) { let t = 0; for (const k of Object.keys(reward.spell_pages_by_type)) t += num(reward.spell_pages_by_type[k]); parts.push(`术法残页 +${t}`); }
   if (reward.treasure_shards_by_id) { let t = 0; for (const k of Object.keys(reward.treasure_shards_by_id)) t += num(reward.treasure_shards_by_id[k]); parts.push(`法宝碎片 +${t}`); }
