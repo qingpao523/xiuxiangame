@@ -89,6 +89,8 @@ const Game = {
     if (typeof AudioManager !== "undefined") {
       AudioManager.bindGestures();
       AudioManager.loadSettings(this.state);
+      const self = this;
+      AudioManager.onUnmute = function () { self.updateAmbient(); }; // 取消静音时恢复境界环境音
       this.updateAmbient();
     }
     SaveManager.save(this.state);

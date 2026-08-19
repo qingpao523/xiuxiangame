@@ -144,10 +144,13 @@ const AudioManager = {
   setVolume(v) { this.setMasterVolume(v); },
 
   setMuted(m) {
+    const wasMuted = this.settings.muted;
     this.settings.muted = !!m;
     this._applyGains();
-    // 静音时停掉环境音调度（避免空转）；取消静音不自动恢复（由场景切换触发）。
+    // 静音时停掉环境音调度（避免空转）。
     if (this.settings.muted) this.stopAmbient();
+    // 取消静音：恢复当前境界环境音（否则 playAmbient 会因 silent 句柄早退，用户听不到）。
+    else if (wasMuted && typeof this.onUnmute === "function") this.onUnmute();
   },
   isMuted() { return this.settings.muted; },
 
@@ -454,9 +457,10 @@ AudioManager.elementSfx = function (spellType) {
 // 每个配方返回 { stop() }：ramp 顶层 gain 到 0 → stop sources → 清调度。
 // reducedMotion 时关闭周期调度（滴水/噼啪闪烁），保留稳定音床。
 
-AudioManager._makeAmbientStop = function (topGain, sources, timers) {
+AudioManager._makeAmbientStop = function (topGain, sources, timers, stopped) {
   const self = this;
   return function () {
+    if (stopped) stopped.stopped = true; // 通知周期回调（drip/roll/crackle）停止自重排
     timers.forEach((tm) => clearTimeout(tm));
     timers.length = 0;
     if (!self.ctx) { sources.forEach((s) => { try { s.stop(); } catch (e) {} }); return; }
@@ -497,9 +501,11 @@ const AMBIENT_RECIPES = {
     lfo.start(); sources.push(lfo);
     // 洞内滴水（周期调度，reducedMotion 时关闭）
     const timers = [];
+    const stopped = { stopped: false };
     const self = this;
     if (!this.reducedMotion) {
       const drip = () => {
+        if (stopped.stopped) return;
         const dt = ctx.currentTime;
         const o = ctx.createOscillator();
         const g = ctx.createGain();
@@ -515,7 +521,7 @@ const AMBIENT_RECIPES = {
       };
       timers.push(setTimeout(drip, 1500));
     }
-    return { stop: this._makeAmbientStop(top, sources, timers) };
+    return { stop: this._makeAmbientStop(top, sources, timers, stopped) };
   },
 
   // AMB-02 陈塘关外围：海风 + 潮声 + 远处雷声
@@ -542,9 +548,11 @@ const AMBIENT_RECIPES = {
     lfo.start(); sources.push(lfo);
     // 远处雷声（周期，reducedMotion 关闭）
     const timers = [];
+    const stopped = { stopped: false };
     const self = this;
     if (!this.reducedMotion) {
       const roll = () => {
+        if (stopped.stopped) return;
         const dt = ctx.currentTime;
         const src = ctx.createBufferSource();
         src.buffer = self.noiseBuffer;
@@ -561,7 +569,7 @@ const AMBIENT_RECIPES = {
       };
       timers.push(setTimeout(roll, 3000));
     }
-    return { stop: this._makeAmbientStop(top, sources, timers) };
+    return { stop: this._makeAmbientStop(top, sources, timers, stopped) };
   },
 
   // AMB-03 骷髅山边界：阴风 + 低频压迫 + 阴火噼啪
@@ -592,9 +600,11 @@ const AMBIENT_RECIPES = {
     lfo.start(); sources.push(lfo);
     // 阴火噼啪（周期高通短爆，reducedMotion 关闭）
     const timers = [];
+    const stopped = { stopped: false };
     const self = this;
     if (!this.reducedMotion) {
       const crackle = () => {
+        if (stopped.stopped) return;
         const dt = ctx.currentTime;
         const src = ctx.createBufferSource();
         src.buffer = self.noiseBuffer;
@@ -609,7 +619,7 @@ const AMBIENT_RECIPES = {
       };
       timers.push(setTimeout(crackle, 1000));
     }
-    return { stop: this._makeAmbientStop(top, sources, timers) };
+    return { stop: this._makeAmbientStop(top, sources, timers, stopped) };
   },
 
   // AMB-04 破劫/杀阵：劫云低频 + 紧张颤音

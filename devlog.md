@@ -43,6 +43,13 @@
 
 原始 criteria 合计 100；保留 1 分 → **验收 99 ≥ 95 通过**。保留分说明：真实 .ogg/.mp3 素材尚未制作（§6 明确后补），decode 路径仅经 mock 验证；当前以程序化合成端到端运行，素材到位走同一接口。硬性否决三项（自动播放违规 / 无静音音量控制 / 移动卡顿内存泄漏）均不触发。
 
+### 对抗性代码审查（CLAUDE.md#4，用户要求"完成后 code review"）
+通读 audio-manager.js 全文 + 全部接入点，整体质量高（节点自动 stop、exponential ramp 用 0.0001 避 0、gain 数学正确、autoplay guard、stop ramp→stop→disconnect 防泄漏）。发现并修复 2 处真实缺陷：
+1. **周期回调幻影节点（健壮性）**：amb_mountain/chentang/kulou 的滴水/远雷/阴火回调经 `setTimeout` 自重排；`stop()` 虽清空 timers 数组，但已排程的回调仍可能在 stop 后触发，向已 disconnect 的 top 创建幻影节点并 push 进死数组。修复：`_makeAmbientStop(top,sources,timers,stopped)` 持有共享 `stopped` 标志，stop 时置位；三个周期回调首行 `if (stopped.stopped) return;` 拦截。
+2. **取消静音不恢复环境音（UX）**：`setMuted(true)` 经 stopAmbient 清空 currentAmbient；取消静音后无任何调用重触发 playAmbient，用户听不到环境音直到切境界。修复：AudioManager 增 `onUnmute` 钩子，`setMuted(false)` 且 wasMuted 时调用；game.js init 注册 `AudioManager.onUnmute = () => this.updateAmbient()` 恢复当前境界环境音。
+- 测试：test_audio.js 新增 §11（setTimeout mock 捕获 drip 回调，stop 后手动触发，断言零新增 oscillator）+ §12（静音清空 / onUnmute 恢复 / 静音期间 playAmbient 返 silent 句柄）。**53 项断言全过**（原 44 + 新 9）。
+- 复核：node --check 全 web/js/*.js 通过；audit_integrity + audit_completeness 零问题。
+
 ---
 
 ## 2026-08-20 — 4 势力完整独有系统重做（design/7.2 v0.2）：验收 99 分

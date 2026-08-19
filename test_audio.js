@@ -192,6 +192,50 @@ fetchCalls = [];
 AM.playSfx("water_drop"); // 无缓存→尝试加载素材失败→回退合成
 ok(true, "素材缺失时回退合成路径无异常");
 
+console.log("== 11. stopped 标志：stop 后周期回调不再创建幻影节点 ==");
+AM.stopAmbient();
+AM.reducedMotion = false; // 确保周期调度开启
+// 用 setTimeout mock 捕获周期回调（drip），以便 stop 后手动触发它
+const captured = [];
+sandbox.setTimeout = function (fn) { captured.push(fn); return captured.length; };
+AM.playAmbient("amb_mountain");
+const handle11 = AM.currentAmbient;
+ok(handle11 && typeof handle11.stop === "function", "amb_mountain 返回 {stop} 句柄");
+ok(captured.length >= 1, "周期滴水回调已排程");
+const dripCb = captured[captured.length - 1];
+handle11.stop();
+// 捕获 stop 后的 oscillator 创建（幻影 drip 会新增）
+const ctx11 = AM.ctx;
+let createdAfterStop = 0;
+const origOsc = ctx11.createOscillator.bind(ctx11);
+ctx11.createOscillator = function () { createdAfterStop++; return origOsc(); };
+dripCb(); // 模拟在 stop 之前已排程、stop 之后才执行的回调
+ctx11.createOscillator = origOsc;
+sandbox.setTimeout = setTimeout; // 还原
+eq(createdAfterStop, 0, "stop 后周期回调被 stopped 标志拦截（无幻影 oscillator）");
+AM.stopAmbient();
+
+console.log("== 12. onUnmute：取消静音恢复环境音 ==");
+AM.stopAmbient();
+AM.playAmbient("amb_chentang");
+eq(AM.currentAmbient.id, "amb_chentang", "环境音播放中");
+AM.setMuted(true);
+eq(AM.currentAmbient, null, "静音时 stopAmbient 清空 currentAmbient");
+let unmuteCalled = 0;
+AM.onUnmute = function () { unmuteCalled++; AM.playAmbient(AM.ambientForRealm("zr_03")); };
+AM.setMuted(false);
+eq(unmuteCalled, 1, "取消静音触发 onUnmute 钩子");
+ok(AM.currentAmbient && AM.currentAmbient.silent !== true, "onUnmute 后环境音恢复（非 null、非 silent）");
+eq(AM.currentAmbient.id, "amb_chentang", "恢复到当前境界环境音");
+AM.onUnmute = null;
+// 对照：静音期间调用 playAmbient 应得 silent 句柄（不发声、不报错）
+AM.setMuted(true);
+AM.playAmbient("amb_mountain");
+ok(AM.currentAmbient && AM.currentAmbient.silent === true, "静音期间 playAmbient 返回 silent 句柄");
+AM.setMuted(false);
+AM.onUnmute = null;
+AM.stopAmbient();
+
 console.log("\n========================================");
 console.log("通过 " + pass + " / 失败 " + fail);
 console.log("========================================");
