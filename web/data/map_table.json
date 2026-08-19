@@ -11,7 +11,7 @@
       "unlock_realm": "rq_03",
       "recommended_power": 300,
       "daoxing_per_min": 1.5,
-      "mana_per_min": 100,
+      "mana_per_min": 17,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -63,7 +63,7 @@
       "unlock_realm": "zr_03",
       "recommended_power": 19000,
       "daoxing_per_min": 7.0,
-      "mana_per_min": 800,
+      "mana_per_min": 133,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -130,7 +130,7 @@
       "unlock_realm": "dx_01",
       "recommended_power": 450000,
       "daoxing_per_min": 25.0,
-      "mana_per_min": 3000,
+      "mana_per_min": 500,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -189,7 +189,7 @@
       "unlock_realm": "dx_05",
       "recommended_power": 1500000,
       "daoxing_per_min": 50.0,
-      "mana_per_min": 8000,
+      "mana_per_min": 1333,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -264,7 +264,7 @@
       "unlock_realm": "jx_01",
       "recommended_power": 8000000,
       "daoxing_per_min": 120.0,
-      "mana_per_min": 20000,
+      "mana_per_min": 3333,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -330,7 +330,7 @@
       "unlock_realm": "jx_05",
       "recommended_power": 20000000,
       "daoxing_per_min": 200.0,
-      "mana_per_min": 35000,
+      "mana_per_min": 5833,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -396,7 +396,7 @@
       "unlock_realm": "ty_01",
       "recommended_power": 100000000,
       "daoxing_per_min": 400.0,
-      "mana_per_min": 60000,
+      "mana_per_min": 10000,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -462,7 +462,7 @@
       "unlock_realm": "ty_05",
       "recommended_power": 300000000,
       "daoxing_per_min": 600.0,
-      "mana_per_min": 90000,
+      "mana_per_min": 15000,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {
@@ -528,7 +528,7 @@
       "unlock_realm": "dx_01",
       "recommended_power": 999999999,
       "daoxing_per_min": 1000.0,
-      "mana_per_min": 150000,
+      "mana_per_min": 25000,
       "drop_roll_interval_minutes": 10,
       "drop_table": [
         {

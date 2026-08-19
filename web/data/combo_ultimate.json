@@ -1,0 +1,61 @@
+{
+  "schema_version": "2.0.0",
+  "table": "combo_ultimate",
+  "description": "六系三连终极效果配置。连续三格同系触发，每场战斗最多触发一次。",
+  "ultimates": {
+    "body": {
+      "name": "肉身成圣",
+      "effect_type": "invincible_reflect",
+      "reflect_rate": 0.5,
+      "duration": 1,
+      "desc": "本轮无敌，反弹受到伤害的50%",
+      "visual_text": "金光护体，万法不侵！",
+      "visual_color": "#FFD700"
+    },
+    "thunder": {
+      "name": "五雷轰顶",
+      "effect_type": "paralyze_detonate",
+      "paralyze_turns": 1,
+      "detonate_stored": true,
+      "desc": "全体麻痹1轮，引爆累计雷殛标记",
+      "visual_text": "五雷轰顶，天罚降世！",
+      "visual_color": "#4FC3F7"
+    },
+    "fire": {
+      "name": "三昧焚天",
+      "effect_type": "dot_multiply",
+      "multiplier": 2,
+      "duration": 3,
+      "desc": "灼烧DOT伤害翻倍，持续3轮",
+      "visual_text": "三昧焚天，万物皆烬！",
+      "visual_color": "#FF5722"
+    },
+    "weapon": {
+      "name": "万剑归宗",
+      "effect_type": "multi_hit",
+      "hit_count": 5,
+      "each_ratio": 0.6,
+      "each_crit": true,
+      "desc": "连续5段攻击，每段独立计算暴击",
+      "visual_text": "万剑归宗，剑雨倾泻！",
+      "visual_color": "#B0BEC5"
+    },
+    "soul": {
+      "name": "六魂尽灭",
+      "effect_type": "lifesteal",
+      "steal_rate": 1.0,
+      "desc": "本轮所有伤害100%转化为生命回复",
+      "visual_text": "六魂尽灭，生死逆转！",
+      "visual_color": "#7C4DFF"
+    },
+    "calamity": {
+      "name": "万劫不复",
+      "effect_type": "sacrifice_burst",
+      "hp_cost": 0.5,
+      "damage_mult": 3.0,
+      "desc": "牺牲50%当前血量，造成300%攻击力伤害",
+      "visual_text": "万劫不复，玉石俱焚！",
+      "visual_color": "#D32F2F"
+    }
+  }
+}

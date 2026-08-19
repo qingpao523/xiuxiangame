@@ -184,11 +184,11 @@ const Game = {
         const parts = []; if (caught > 0) parts.push(`拾得 ${caught} 缕灵光`); if (beats > 0) parts.push(`完美吐纳 ${beats} 次`);
         blessText = `\n气机加持：${parts.join("，")}，收益 +${Math.round(b * 100)}%`;
       }
-      // 天庭·功德敕令：下一个行动收益 ×2（design/7.2）
-      if (str(this.state.faction_id, "") === "tianting" && this.state.faction_buff && this.state.faction_buff.type === "edict") {
-        for (const rid of Object.keys(reward.resources)) reward.resources[rid] = Math.round(num(reward.resources[rid]) * 2);
-        this.state.faction_buff = null;
-        this._log("功德敕令生效：此次行动收益 ×2。");
+      // 天庭·功德敕令：指定行动收益 ×2（design/7.2 v0.2，按行动类型匹配 scope）
+      const edictScope = row.reward_type === "map_equivalent" ? "travel" : "offline";
+      const edictMult = this.consumeEdict(edictScope);
+      if (edictMult > 1) {
+        for (const rid of Object.keys(reward.resources)) reward.resources[rid] = Math.round(num(reward.resources[rid]) * edictMult);
       }
       this._applyResourceDelta(reward.resources);
       // 麒麟·瑞兽感应：游历感应隐藏灵机，30% 额外道行（design/7.0 身份层）
@@ -275,7 +275,7 @@ const Game = {
     const comboMult = Math.min(2, 1 + 0.25 * (Math.max(1, combo) - 1));
     const daoxingRaceMult = str(this.state.race_id, "") === "human" ? 1.05 : 1;
     const gain = {};
-    if (type === "mana") { gain.mana = Math.max(20, Math.round(num(realm.base_mana_per_min) * 4 * comboMult)); }
+    if (type === "mana") { gain.mana = Math.max(8, Math.round(num(realm.base_mana_per_min) * 2 * comboMult)); }
     else if (type === "tianji") {
       if (this.state.seen_resources.includes("spell_page")) { gain.spell_page = combo >= 3 ? 2 : 1; }
       else { gain.daoxing = Math.max(2, Math.round(num(realm.base_daoxing_per_min) * 6 * comboMult * daoxingRaceMult)); }
@@ -407,6 +407,7 @@ const Game = {
   startBattle(cfg) { const battle = BattleEngine.create(this.state, cfg); this.queuePopup({ kind: "battle", battle }); this._emit(); return battle; },
 
   startBossBattle(bossId) {
+    if (this.isBattleV2()) return this.startBossBattleV2(bossId);
     const boss = DataManager.getById("boss_table", bossId);
     if (!Object.keys(boss).length) return;
     if (!BossManager.canChallenge(this.state, bossId)) { this.queuePopup({ kind: "text", title: "挑战", body: "此地妖气未聚，明日再来。", buttons: [{ label: "知道了" }] }); return; }
@@ -447,6 +448,59 @@ const Game = {
   battleAutoStep(battle) { const result = BattleEngine.autoStep(this.state, battle); this._emit(); return result; },
   battleToggleManual(battle) { BattleEngine.toggleManual(this.state, battle); this._emit(); return battle.manual; },
   battleRefreshHand(battle) { const result = BattleEngine.refreshHand(this.state, battle); this._emit(); return result; },
+
+  // ---------- 斗法 V2：斗法栏连锁制 ----------
+
+  isBattleV2() { return !!this.state.battle_v2_enabled; },
+
+  toggleBattleV2() {
+    this.state.battle_v2_enabled = !this.state.battle_v2_enabled;
+    SaveManager.save(this.state);
+    this._log(this.state.battle_v2_enabled ? "斗法V2（斗法栏连锁制）已开启。" : "斗法V2已关闭，回到卡牌斗法。");
+    this._emit();
+    // 首次开启V2：触发新手教学（三层递进引导）
+    if (this.state.battle_v2_enabled && !this.state.flags.battle_v2_tutorial_done) {
+      this._log("初窥斗法栏之妙——且随我来，悟一招「道法共鸣」。");
+      BattleUIV2.startTutorial(this.state);
+      drainPopupQueue();
+    }
+    return this.state.battle_v2_enabled;
+  },
+
+  openSlotConfig() {
+    this.queuePopup({ kind: "slot_config" });
+    this._emit();
+  },
+
+  setBattleSlots(slotIds) {
+    const max = BattleEngineV2.getSlotCount(this.state);
+    this.state.battle_slots = (slotIds || []).slice(0, max);
+    SaveManager.save(this.state);
+    this._emit();
+  },
+
+  startBattleV2(cfg) {
+    const battle = BattleEngineV2.create(this.state, cfg);
+    this.queuePopup({ kind: "battle_v2", battle });
+    this._emit();
+    return battle;
+  },
+
+  startBossBattleV2(bossId) {
+    const boss = DataManager.getById("boss_table", bossId);
+    if (!Object.keys(boss).length) return;
+    if (!BossManager.canChallenge(this.state, bossId)) { this.queuePopup({ kind: "text", title: "挑战", body: "此地妖气未聚，明日再来。", buttons: [{ label: "知道了" }] }); return; }
+    this.state.boss_counts_today[bossId] = int(this.state.boss_counts_today[bossId]) + 1;
+    this._log(`你踏入${boss.boss_name}的巢穴，妖气扑面而来。`);
+    const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
+      boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }],
+      boss_020: [{ name: "碧霄", power: num(boss.recommended_power) * 0.5 }, { name: "琼霄", power: num(boss.recommended_power) * 0.5 }] }[bossId] || [];
+    const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
+    // V2：Boss抗性/弱点从boss_table读取（resistance/weakness对象 或 weakness数组）
+    const cfg = { name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, weakness: boss.weakness || null, payload: { bossId } };
+    this.startBattleV2(cfg);
+    this._afterMutated();
+  },
 
   finishBattle(battle) {
     const omen = getTodayOmen();
@@ -498,7 +552,8 @@ const Game = {
         const omenLoot = num(omen.lootMult, 1);
         const raceLoot = str(this.state.race_id, "") === "yao" ? 1.25 : 1;
         const seatLoot = 1 + godSeat(this.state, "lootBonus");
-        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot * seatLoot);
+        const edictLoot = this.consumeEdict("boss"); // 天庭·功德敕令·斩妖 ×2（design/7.2 v0.2）
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot * seatLoot * edictLoot);
         this._applyResourceDelta(rewards);
         const firstClear = int(this.state.boss_clears[bossId]) === 0;
         this.state.boss_clears[bossId] = int(this.state.boss_clears[bossId]) + 1;
@@ -511,6 +566,7 @@ const Game = {
         const lootLines = [];
         if (omenLoot > 1) lootLines.push(`${omen.name}：战利 +${Math.round((omenLoot - 1) * 100)}%`);
         if (raceLoot > 1) lootLines.push(`万灵之体·吞噬：战利 +${Math.round((raceLoot - 1) * 100)}%`);
+        if (edictLoot > 1) lootLines.push(`功德敕令·斩妖：战利 ×${edictLoot}`);
         this.queuePopup({ kind: "text", style: "breakthrough", title: "挑战胜利！",
           body: `${boss.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${lootLines.length ? `\n\n${lootLines.join("\n")}` : ""}`,
           buttons: [{ label: "收取战利" }] });
@@ -538,15 +594,31 @@ const Game = {
         this.state.array_wins[arrId] = int(this.state.array_wins[arrId]) + 1;
         const rewards = { daoxing: daoxingReward, merit: 30 + (firstWin ? 50 : 0), calamity: 20 };
         if (firstWin) rewards.treasure_shard = 5;
+        // 截教·万仙阵法：杀阵奖励 ×1.5（design/7.2 v0.2）
+        const jieMult = str(this.state.faction_id, "") === "jie" ? 1.5 : 1;
+        const edictArray = this.consumeEdict("array"); // 天庭·功德敕令·破阵 ×2
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * jieMult * edictArray);
         this._applyResourceDelta(rewards);
+        const arrLines = [];
+        if (jieMult > 1) arrLines.push(`万仙阵法·杀阵：奖励 ×${jieMult}`);
+        if (edictArray > 1) arrLines.push(`功德敕令·破阵：奖励 ×${edictArray}`);
         this._log(`你破阵而出：${this._formatResourceDelta(rewards)}。`);
         this.queuePopup({ kind: "text", style: "breakthrough", title: "破阵而出！",
-          body: `阵纹消散，杀劫暂退。\n\n获得：\n${this._formatResourceDelta(rewards)}${firstWin ? "\n\n首通之阵，法宝碎片落入囊中。" : ""}`,
+          body: `阵纹消散，杀劫暂退。\n\n获得：\n${this._formatResourceDelta(rewards)}${arrLines.length ? `\n\n${arrLines.join("\n")}` : ""}${firstWin ? "\n\n首通之阵，法宝碎片落入囊中。" : ""}`,
           buttons: [{ label: "收功" }] });
       } else {
         const seatText = this.awardGodSeat();
         this._log(`你被${battle.name}击退，阵势余波将你震出。`);
         this.queuePopup({ kind: "text", title: "败阵", body: `你被阵势余波震出，虽败不伤。\n${seatText}\n\n待修为再进，可重闯此阵。`, buttons: [{ label: "暂且退去" }] });
+      }
+      this._afterMutated(); return;
+    }
+    /* 新手教学斗法结算（design/8.0 三层引导） */
+    if (battle.payload && battle.payload.tutorial) {
+      if (battle.win) {
+        this.queuePopup({ kind: "text", title: "悟", body: "你悟到：同系道法相邻施展，气机共鸣，威力倍增。\n此乃——道法共鸣。", buttons: [{ label: "妙哉" }] });
+      } else {
+        this.queuePopup({ kind: "text", title: "教学", body: "山野妖猪皮糙肉厚，这一战未能取胜。\n不妨调整斗法栏，让同系道法相邻，再试一次。", buttons: [{ label: "知道了" }] });
       }
       this._afterMutated(); return;
     }
@@ -682,9 +754,12 @@ const Game = {
     for (const rid of Object.keys(def.cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(def.cost[rid]);
     const q = String(quality || "zhong");
     const qname = (typeof CRAFT_QUALITY !== "undefined" && CRAFT_QUALITY[q]) ? CRAFT_QUALITY[q].name : "中品";
-    if (pillId === "due") { const n = q === "shang" ? 2 : 1; this.state.pills.due = int(this.state.pills.due) + n; this._log(`炉火纯青，炼成${qname}渡厄丹 ${n} 枚（存 ${this.state.pills.due}）。`); }
-    else if (pillId === "peiyuan") { const hours = q === "shang" ? 3 : q === "xia" ? 1.5 : 2; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`服下${qname}培元丹，丹田暖意流转——${hours} 时辰内收益 +15%。`); }
-    else if (pillId === "ningfa") { const mins = q === "shang" ? 45 : q === "xia" ? 20 : 30; const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, mins, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`${qname}凝法丹化开，法力转为道行 +${formatInt(g.daoxing)}。`); }
+    // 炼丹产出倍率：五庄观果会 ×2（pillOutputMult）· 天庭敕令·炼丹 ×2（consumeEdict，消耗库存指定）
+    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy");
+    const boostNote = outMult > 1 ? `（产出 ×${outMult}）` : "";
+    if (pillId === "due") { const n = (q === "shang" ? 2 : 1) * outMult; this.state.pills.due = int(this.state.pills.due) + n; this._log(`炉火纯青，炼成${qname}渡厄丹 ${n} 枚${boostNote}（存 ${this.state.pills.due}）。`); }
+    else if (pillId === "peiyuan") { const hours = (q === "shang" ? 3 : q === "xia" ? 1.5 : 2) * outMult; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`服下${qname}培元丹，丹田暖意流转——${hours} 时辰内收益 +15%${boostNote}。`); }
+    else if (pillId === "ningfa") { const mins = (q === "shang" ? 45 : q === "xia" ? 20 : 30) * outMult; const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, mins, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`${qname}凝法丹化开，法力转为道行 +${formatInt(g.daoxing)}${boostNote}。`); }
     this._afterMutated();
     return { ok: true, quality: q };
   },
@@ -740,9 +815,12 @@ const Game = {
       if (num(this.state.resources[rid]) < num(def.cost[rid])) { this.queuePopup({ kind: "text", title: def.name, body: "炉火虽在，材料不足。", buttons: [{ label: "知道了" }] }); return; }
     }
     for (const rid of Object.keys(def.cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(def.cost[rid]);
-    if (pillId === "due") { this.state.pills.due = int(this.state.pills.due) + 1; this._log(`你炼成一枚渡厄丹（存 ${this.state.pills.due} 枚）——破劫斗法开局得护持。`); }
-    else if (pillId === "peiyuan") { this.state.pills.peiyuan_until = nowUnix() + 7200; this._log("你服下培元丹，丹田暖意流转——2 时辰内闭关与行动收益 +15%。"); }
-    else if (pillId === "ningfa") { const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, 30, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`你炼化凝法丹，法力转为道行 +${formatInt(g.daoxing)}。`); }
+    // 炼丹产出倍率：五庄观果会 ×2 · 天庭敕令·炼丹 ×2（design/7.2 v0.2）
+    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy");
+    const boostNote = outMult > 1 ? `（产出 ×${outMult}）` : "";
+    if (pillId === "due") { const n = 1 * outMult; this.state.pills.due = int(this.state.pills.due) + n; this._log(`你炼成渡厄丹 ${n} 枚${boostNote}（存 ${this.state.pills.due} 枚）——破劫斗法开局得护持。`); }
+    else if (pillId === "peiyuan") { const hours = 2 * outMult; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`你服下培元丹，丹田暖意流转——${hours} 时辰内闭关与行动收益 +15%${boostNote}。`); }
+    else if (pillId === "ningfa") { const mins = 30 * outMult; const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, mins, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`你炼化凝法丹，法力转为道行 +${formatInt(g.daoxing)}${boostNote}。`); }
     this._afterMutated();
   },
 
@@ -892,64 +970,207 @@ const Game = {
 
   _maybeQueueFactionChoice() { if (this.state.faction_id) return; if (this.popupQueue.some((p) => p.kind === "faction_choice")) return; this.queuePopup({ kind: "faction_choice" }); },
 
-  // ---------- 势力完整独有系统（design/7.2）----------
+  // ---------- 势力完整独有系统（design/7.2 v0.2 完整范围）----------
 
-  // 阐教·玉虚炼器：消耗法宝碎片，获得临时战力护持（持续 3 场斗法）
-  factionCraft() {
-    if (str(this.state.faction_id, "") !== "chan") return;
-    const cost = 10;
-    if (num(this.state.resources.treasure_shard) < cost) { this.queuePopup({ kind: "text", title: "玉虚炼器", body: `法宝碎片不足（需 ${cost}）。`, buttons: [{ label: "知道了" }] }); return; }
-    this.state.resources.treasure_shard -= cost;
-    this.state.faction_buff = { type: "craft", battles: 3 };
-    this._log("玉虚炼器：你以法宝碎片炼成一道护持，接下来 3 场斗法战力 +15%。");
-    this.queuePopup({ kind: "text", style: "seal", title: "玉虚炼器", body: "你以法宝碎片炼成一道玉虚护持。\n接下来 3 场斗法，战力 +15%。", buttons: [{ label: "领受" }] });
-    this._afterMutated();
+  // ===== 阐教·玉虚炼器（炼器合成系统）=====
+  // 流程：择配方 → 消耗法宝碎片+法力 → 火候时机条（CraftMinigame）→ 品质定产出法宝初始品级。
+  // 产出物为合成高阶法宝（treasure_syn_*），入法宝系统（state.treasures），可继续温养。
+
+  getSynthRecipes() {
+    const fid = str(this.state.faction_id, "");
+    return DataManager.getRows("synth_recipe_table").filter((r) =>
+      fid === "chan" && DataManager.isRealmAtLeast(this.state.realm_id, String(r.unlock_realm || ""))
+    );
   },
 
-  // 截教·万仙阵法：布阵后下一场斗法第一回合敌方全体受伤 +20%
-  factionArray() {
+  // 炼器第一步（UI 调用）：校验材料与势力，返回是否可开炉（实际开炉由 UI 触发 CraftMinigame）
+  canCraftSynth(recipeId) {
+    if (str(this.state.faction_id, "") !== "chan") return { ok: false, reason: "非阐教弟子" };
+    const recipe = DataManager.getById("synth_recipe_table", recipeId);
+    if (!Object.keys(recipe).length) return { ok: false, reason: "无此配方" };
+    for (const rid of Object.keys(recipe.cost || {})) {
+      if (num(this.state.resources[rid]) < num(recipe.cost[rid])) return { ok: false, reason: "材料不足" };
+    }
+    return { ok: true, recipe };
+  },
+
+  // 炼器第二步（火候停手后回调）：消耗材料，按品质产出法宝
+  craftSynthFinish(recipeId, quality) {
+    const check = this.canCraftSynth(recipeId);
+    if (!check.ok) { this.queuePopup({ kind: "text", title: "玉虚炼器", body: check.reason, buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    const recipe = check.recipe;
+    const outId = String(recipe.output_treasure);
+    const outRow = DataManager.getById("treasure_table", outId);
+    for (const rid of Object.keys(recipe.cost || {})) this.state.resources[rid] = num(this.state.resources[rid]) - num(recipe.cost[rid]);
+    const q = String(quality || "zhong");
+    const qname = (typeof CRAFT_QUALITY !== "undefined" && CRAFT_QUALITY[q]) ? CRAFT_QUALITY[q].name : "中品";
+    const tState = this.getTreasureState(outId);
+    const alreadyOwned = int(tState.level) > 0;
+    // 品质定初始品级：上品=3 重 / 中品=2 重 / 下品=1 重；已炼成则在此基础上淬炼 +1 重（不超上限）
+    let newLevel;
+    if (!alreadyOwned) {
+      newLevel = q === "shang" ? 3 : q === "xia" ? 1 : 2;
+    } else {
+      newLevel = Math.min(int(tState.level) + 1, int(outRow.max_level_mvp, 5));
+    }
+    tState.level = newLevel; tState.owned = true;
+    if (!alreadyOwned) {
+      this._log(`玉虚炼器·${qname}：炉火纯青，「${outRow.treasure_name}」炼成，初成 ${newLevel} 重。`);
+      this.queuePopup({ kind: "text", style: "treasure", title: `玉虚炼器·${qname}`, body: `炉火停于${qname}之处，宝光凝聚成形。\n\n炼成「${outRow.treasure_name}」（${newLevel} 重）。\n此宝已入你的法宝之列，可于法宝面板继续温养。`, buttons: [{ label: "收宝" }] });
+    } else {
+      this._log(`玉虚炼器·${qname}：「${outRow.treasure_name}」淬炼至 ${newLevel} 重。`);
+      this.queuePopup({ kind: "text", style: "treasure", title: `玉虚炼器·${qname}`, body: `你以炉火淬炼旧宝。\n\n「${outRow.treasure_name}」${int(tState.level) - 1} 重 → ${newLevel} 重。`, buttons: [{ label: "收功" }] });
+    }
+    this._afterMutated();
+    return { ok: true, quality: q, level: newLevel };
+  },
+
+  // ===== 截教·万仙阵法（阵法卡系统）=====
+  // 可学习（耗功德/劫气）、可携带（装备入阵法栏，有栏位上限）、战斗中生效（首回合敌方全体受伤加成）。
+
+  getArrayCards() {
+    const fid = str(this.state.faction_id, "");
+    return DataManager.getRows("array_card_table").filter((r) =>
+      fid === "jie" && DataManager.isRealmAtLeast(this.state.realm_id, String(r.unlock_realm || ""))
+    );
+  },
+
+  arraySlots() {
+    // 阵法栏位：基础 1，地仙（zr_06）后 +1
+    return DataManager.isRealmAtLeast(this.state.realm_id, "zr_06") ? 2 : 1;
+  },
+
+  arrayCardLevel(cardId) { return int(this.state.array_cards[String(cardId)]); },
+
+  arrayCardBonus(cardRow, level) {
+    return num(cardRow.base_bonus) + num(cardRow.growth_per_level) * (int(level) - 1);
+  },
+
+  learnArrayCard(cardId) {
     if (str(this.state.faction_id, "") !== "jie") return;
-    if (this.state.faction_buff && this.state.faction_buff.type === "array") { this.queuePopup({ kind: "text", title: "万仙阵法", body: "阵法已布，待下一场斗法生效。", buttons: [{ label: "知道了" }] }); return; }
-    this.state.faction_buff = { type: "array", battles: 1 };
-    this._log("万仙阵法：你布下万仙阵，下一场斗法第一回合敌方全体受伤 +20%。");
-    this.queuePopup({ kind: "text", style: "seal", title: "万仙阵法", body: "你布下万仙阵。\n下一场斗法第一回合，敌方全体受伤 +20%。", buttons: [{ label: "阵成" }] });
+    const card = DataManager.getById("array_card_table", cardId);
+    if (!Object.keys(card).length) return;
+    if (this.arrayCardLevel(cardId) > 0) { this.queuePopup({ kind: "text", title: card.card_name, body: "此阵已悟，可于阵中温养。", buttons: [{ label: "知道了" }] }); return; }
+    const cost = card.learn_cost || {};
+    for (const rid of Object.keys(cost)) {
+      if (num(this.state.resources[rid]) < num(cost[rid])) { this.queuePopup({ kind: "text", title: card.card_name, body: "功德与劫气不足，难以悟阵。", buttons: [{ label: "知道了" }] }); return; }
+    }
+    for (const rid of Object.keys(cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(cost[rid]);
+    this.state.array_cards[String(cardId)] = 1;
+    this._log(`万仙阵法：你于碧游宫阵图中悟得「${card.card_name}」。`);
+    this.queuePopup({ kind: "text", style: "seal", title: "悟阵", body: `阵图展开，你于其中悟得「${card.card_name}」。\n可携入阵法栏，斗法首回合敌方全体受伤 +${Math.round(this.arrayCardBonus(card, 1) * 100)}%。`, buttons: [{ label: "记下了" }] });
     this._afterMutated();
   },
 
-  // 天庭·功德敕令：每日一道敕令，下一个行动收益 ×2
-  factionEdict() {
+  upgradeArrayCard(cardId) {
+    if (str(this.state.faction_id, "") !== "jie") return;
+    const card = DataManager.getById("array_card_table", cardId);
+    if (!Object.keys(card).length) return;
+    const lv = this.arrayCardLevel(cardId);
+    if (lv <= 0) return;
+    if (lv >= int(card.max_level, 5)) { this.queuePopup({ kind: "text", title: card.card_name, body: "此阵已悟至极。", buttons: [{ label: "知道了" }] }); return; }
+    const cost = card.upgrade_cost || {};
+    for (const rid of Object.keys(cost)) {
+      if (num(this.state.resources[rid]) < num(cost[rid])) { this.queuePopup({ kind: "text", title: card.card_name, body: "功德与劫气不足，难以精进。", buttons: [{ label: "知道了" }] }); return; }
+    }
+    for (const rid of Object.keys(cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(cost[rid]);
+    this.state.array_cards[String(cardId)] = lv + 1;
+    this._log(`万仙阵法：「${card.card_name}」精进至 ${lv + 1} 级。`);
+    this._afterMutated();
+  },
+
+  toggleArrayEquip(cardId) {
+    if (str(this.state.faction_id, "") !== "jie") return;
+    if (this.arrayCardLevel(cardId) <= 0) return;
+    const equipped = this.state.array_equipped;
+    const idx = equipped.indexOf(String(cardId));
+    if (idx >= 0) { equipped.splice(idx, 1); }
+    else {
+      if (equipped.length >= this.arraySlots()) { this.queuePopup({ kind: "text", title: "阵法栏", body: `阵法栏已满（${this.arraySlots()} 位）。先撤下一阵，再携新阵。`, buttons: [{ label: "知道了" }] }); return; }
+      equipped.push(String(cardId));
+    }
+    this._afterMutated();
+  },
+
+  // 截教已携带阵法卡的首回合总加成（供 battle-engine 调用）
+  getArrayFirstRoundBonus(state) {
+    if (str(state.faction_id, "") !== "jie") return 0;
+    let bonus = 0;
+    for (const cardId of (state.array_equipped || [])) {
+      const card = DataManager.getById("array_card_table", cardId);
+      const lv = int(state.array_cards[String(cardId)]);
+      if (Object.keys(card).length && lv > 0) bonus += this.arrayCardBonus(card, lv);
+    }
+    return bonus;
+  },
+
+  // ===== 天庭·功德敕令（敕令库存 + 可指定行动）=====
+
+  edictClaim() {
     if (str(this.state.faction_id, "") !== "tianting") return;
     const today = todayString();
-    if (str(this.state.faction_edict_day, "") === today) { this.queuePopup({ kind: "text", title: "功德敕令", body: "今日敕令已发，明日再来。", buttons: [{ label: "知道了" }] }); return; }
-    this.state.faction_edict_day = today;
-    this.state.faction_buff = { type: "edict" };
-    this._log("功德敕令：你领一道天庭敕令，下一个行动收益 ×2。");
-    this.queuePopup({ kind: "text", style: "seal", title: "功德敕令", body: "你领一道天庭敕令。\n下一个行动，收益 ×2。", buttons: [{ label: "领敕" }] });
+    if (str(this.state.edict_last_claim, "") === today) { this.queuePopup({ kind: "text", title: "功德敕令", body: "今日已领过敕令，明日再来。", buttons: [{ label: "知道了" }] }); return; }
+    if (int(this.state.edict_count) >= EDICT_MAX) { this.queuePopup({ kind: "text", title: "功德敕令", body: `敕令库存已满（${EDICT_MAX} 道）。先发敕令，再领新敕。`, buttons: [{ label: "知道了" }] }); return; }
+    this.state.edict_last_claim = today;
+    this.state.edict_count = int(this.state.edict_count) + 1;
+    this._log(`功德敕令：你领一道天庭敕令入库（存 ${this.state.edict_count} 道）。`);
     this._afterMutated();
   },
 
-  // 五庄观·人参果会：每周一次果会，全属性临时 +10% 持续 1 天
+  edictDesignate(scope) {
+    if (str(this.state.faction_id, "") !== "tianting") return;
+    if (int(this.state.edict_count) <= 0) { this.queuePopup({ kind: "text", title: "功德敕令", body: "库存无敕令。先领敕令。", buttons: [{ label: "知道了" }] }); return; }
+    const target = EDICT_TARGETS.find((t) => t.scope === scope);
+    if (!target) return;
+    this.state.edict_count = int(this.state.edict_count) - 1;
+    this.state.edict_target = scope;
+    this._log(`功德敕令：你发一道敕令，指定「${target.name}」——下一次${target.name}收益 ×2。`);
+    this.queuePopup({ kind: "text", style: "seal", title: "功德敕令", body: `你发一道敕令，指定「${target.name}」。\n${target.desc}。`, buttons: [{ label: "领敕" }] });
+    this._afterMutated();
+  },
+
+  // 消耗敕令：若当前指定行动匹配 scope，返回 ×2 并清除指定；否则返回 1
+  consumeEdict(scope) {
+    if (str(this.state.faction_id, "") !== "tianting") return 1;
+    if (str(this.state.edict_target, "") === scope) {
+      this.state.edict_target = null;
+      this._log("功德敕令生效：此次行动收益 ×2。");
+      return 2;
+    }
+    return 1;
+  },
+
+  // ===== 五庄观·人参果会（果会 + 炼丹加成）=====
+
   factionFeast() {
     if (str(this.state.faction_id, "") !== "wuzhuang") return;
     const now = nowUnix();
+    if (int(this.state.faction_feast_cooldown) > now && int(this.state.faction_feast_until) <= now) { this.queuePopup({ kind: "text", title: "人参果会", body: "果会七日一开，时日未到。", buttons: [{ label: "知道了" }] }); return; }
     if (int(this.state.faction_feast_until) > now) { this.queuePopup({ kind: "text", title: "人参果会", body: "果会余韵犹在，七日后再赴。", buttons: [{ label: "知道了" }] }); return; }
     this.state.faction_feast_until = now + 86400;
     this.state.faction_feast_cooldown = now + 86400 * 7;
     this.state.faction_buff = { type: "feast", until: now + 86400 };
-    this._log("人参果会：你赴五庄观果会，全属性 +10% 持续 1 天。");
-    this.queuePopup({ kind: "text", style: "seal", title: "人参果会", body: "清风明月引你入座，人参果入口生津。\n全属性 +10%，持续 1 天。", buttons: [{ label: "谢过镇元子" }] });
+    this._log("人参果会：你赴五庄观果会，全属性 +10% 持续 1 天，期间炼丹产出 ×2。");
+    this.queuePopup({ kind: "text", style: "seal", title: "人参果会", body: "清风明月引你入座，人参果入口生津。\n全属性 +10%，持续 1 天；\n果会期间，炼丹产出 ×2。", buttons: [{ label: "谢过镇元子" }] });
     this._afterMutated();
   },
 
-  // 势力 buff 是否激活（供 UI/逻辑查询）
+  // 五庄观果会炼丹加成是否生效
+  feastAlchemyActive(state) {
+    return str((state || this.state).faction_id, "") === "wuzhuang" && int((state || this.state).faction_feast_until) > nowUnix();
+  },
+
+  // 炼丹产出倍率（五庄观果会 ×2；天庭敕令·炼丹另在 brew 中消耗）
+  pillOutputMult() {
+    return this.feastAlchemyActive(this.state) ? 2 : 1;
+  },
+
+  // 势力 buff 是否激活（供 UI/逻辑查询；现主要用于果会）
   factionBuffActive(type) {
     const fb = this.state.faction_buff;
+    if (type === "feast") return int(this.state.faction_feast_until) > nowUnix();
     if (!fb || fb.type !== type) return false;
-    if (type === "feast") return int(fb.until) > nowUnix();
-    if (type === "craft") return int(fb.battles) > 0;
-    if (type === "array") return int(fb.battles) > 0;
-    if (type === "edict") return true;
-    return false;
+    return true;
   },
 
   // ---------- 本命法宝择主 ----------
@@ -974,8 +1195,8 @@ const Game = {
 
   getSpellState(spellId) { if (!this.state.spells[spellId]) this.state.spells[spellId] = { level: 0, unlocked: false }; return this.state.spells[spellId]; },
   getSpellUpgradeCost(spellRow, toLevel) {
-    // 人族·先天道体：术法升级消耗 -10%（design/7.0 身份层）
-    const humanDisc = str(this.state.race_id, "") === "human" ? 0.9 : 1;
+    // 人族·苦修之躯：术法升级消耗 -15%（练气终稿种族被动）
+    const humanDisc = str(this.state.race_id, "") === "human" ? 0.85 : 1;
     if (toLevel <= 1) {
       // 第一门术法免费；之后每多参悟一门，都要消耗残页与法力——玩家自由选择，不强制学满。
       const learned = Object.values(this.state.spells).filter((s) => int(s.level) > 0).length;
@@ -1006,6 +1227,39 @@ const Game = {
     spellState.level = nextLevel; spellState.unlocked = true;
     if (nextLevel === 1) { this._log(`你悟得术法「${spellRow.spell_name}」。`); this.queuePopup({ kind: "text", style: "seal", title: `悟得术法：${spellRow.spell_name}`, body: `${spellRow.lore_text || ""}\n\n此术虽浅，却已能惊退山野妖邪。`, buttons: [{ label: "谨记于心" }] }); }
     else { this._log(`「${spellRow.spell_name}」提升至${nextLevel}重。`); }
+    this._afterMutated(); return { ok: true };
+  },
+
+  // ---------- 练气术法（V2 skill_table，30术法六系） ----------
+
+  getSkillLevel(skillId) { return int(this.state.skill_levels?.[skillId], 0); },
+
+  getSkillUpgradeCost(skillRow, toLevel) {
+    // 人族·苦修之躯：术法升级消耗 -15%（练气终稿种族被动）
+    const humanDisc = str(this.state.race_id, "") === "human" ? 0.85 : 1;
+    if (toLevel <= 1) return { spell_page_cost: 0, mana_cost: 0 }; // 境界到了即悟得，base 1重免费
+    const rarityMult = { common: 1, uncommon: 1.3, rare: 1.7 }[str(skillRow.rarity, "common")] || 1;
+    return {
+      spell_page_cost: Math.round(3 * toLevel * rarityMult * humanDisc),
+      mana_cost: Math.round(200 * toLevel * rarityMult * humanDisc),
+    };
+  },
+
+  getSkillMaxLevel(skillRow) { return int(skillRow.max_level, 5); },
+
+  upgradeSkill(skillId) {
+    const skillRow = DataManager.getById("skill_table", skillId);
+    if (!Object.keys(skillRow).length) return { ok: false };
+    if (!(this.state.unlocked_skills || []).includes(skillId)) { this.queuePopup({ kind: "text", title: skillRow.name, body: "此术尚未到你参悟的境界。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    const curLevel = Math.max(1, this.getSkillLevel(skillId));
+    const nextLevel = curLevel + 1;
+    if (nextLevel > this.getSkillMaxLevel(skillRow)) { this.queuePopup({ kind: "text", title: skillRow.name, body: "此术已至圆满，待破境后再求精进。", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+    const cost = this.getSkillUpgradeCost(skillRow, nextLevel);
+    if (num(this.state.resources.spell_page) < num(cost.spell_page_cost) || num(this.state.resources.mana) < num(cost.mana_cost)) return { ok: false, message: "材料不足" };
+    this.state.resources.spell_page -= num(cost.spell_page_cost); this.state.resources.mana -= num(cost.mana_cost);
+    if (!this.state.skill_levels || typeof this.state.skill_levels !== "object") this.state.skill_levels = {};
+    this.state.skill_levels[skillId] = nextLevel;
+    this._log("「" + skillRow.name + "」精进至" + nextLevel + "重。");
     this._afterMutated(); return { ok: true };
   },
 

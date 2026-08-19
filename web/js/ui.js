@@ -204,7 +204,7 @@ function renderNav(state) {
     if (unlocked) {
       if (key === "chance" && state.pending_event_id) need = true;
       if (key === "realm" && (RealmManager.canLevelUp(state) || BreakthroughManager.canAttempt(state) || Game.canReincarnate())) need = true;
-      if (key === "spell" && hasAffordableSpell(state)) need = true;
+      if (key === "spell" && (hasAffordableSpell(state) || (state.battle_v2_enabled && hasAffordableSkill(state)))) need = true;
       if (key === "treasure" && (Game.hasPendingTreasureChoice() || hasAffordableTreasure(state))) need = true;
       if (key === "map" && hasChallengeableBoss(state)) need = true;
     }
@@ -215,6 +215,7 @@ function renderNav(state) {
 }
 
 function hasAffordableSpell(state) { return UnlockManager.getAvailableSpells(state).some((spell) => { const level = int(Game.getSpellState(String(spell.spell_id)).level), nextLevel = level + 1; if (nextLevel > Game.getSpellMaxLevel(spell)) return false; const cost = Game.getSpellUpgradeCost(spell, nextLevel); return cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
+function hasAffordableSkill(state) { const unlocked = state.unlocked_skills || []; return UnlockManager.getAvailableSkills(state).some((skill) => { const id = String(skill.id); if (!unlocked.includes(id)) return false; const level = Math.max(1, Game.getSkillLevel(id)), nextLevel = level + 1; if (nextLevel > Game.getSkillMaxLevel(skill)) return false; const cost = Game.getSkillUpgradeCost(skill, nextLevel); return cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
 function hasAffordableTreasure(state) { return UnlockManager.getAvailableTreasures(state).some((treasure) => { const level = int(Game.getTreasureState(String(treasure.treasure_id)).level), nextLevel = level + 1; if (nextLevel > int(treasure.max_level_mvp, 5)) return false; const cost = Game.getTreasureUpgradeCost(treasure, nextLevel); return cost && num(state.resources.treasure_shard) >= num(cost.treasure_shard_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
 function hasChallengeableBoss(state) { return BossManager.getBosses(state).some((boss) => BossManager.canChallenge(state, String(boss.boss_id)) && BossManager.getWinRate(state, boss) >= 0.5); }
 
@@ -278,6 +279,8 @@ function showPopup(popup) {
   } else if (popup.kind === "event") renderEventPopup(panel, title, body, buttons);
   else if (popup.kind === "encounter") renderEncounterPopup(panel, title, body, buttons, popup.encounterId);
   else if (popup.kind === "battle") renderBattlePopup(panel, title, body, buttons, popup.battle);
+  else if (popup.kind === "battle_v2") { title.textContent = "斗法"; BattleUIV2.renderBattlePopup(panel, popup.battle, Game.state); }
+  else if (popup.kind === "slot_config") { title.textContent = "斗法栏·配招"; BattleUIV2.renderSlotConfig(body, Game.state, () => { closePopup(); }, { tutorial: !!popup.tutorial }); }
   else if (popup.kind === "treasure_choice") renderTreasureChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "race_choice") renderRaceChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "benming_choice") renderBenmingChoicePopup(panel, title, body, buttons);
@@ -902,6 +905,27 @@ function renderMapPanel(body, state) {
 
 // 术法面板
 function renderSpellPanel(body, state) {
+  // ===== 战斗系统V2 入口 =====
+  const v2box = document.createElement("div"); v2box.className = "card v2-entry";
+  const v2title = document.createElement("div"); v2title.className = "card-name";
+  v2title.textContent = state.battle_v2_enabled ? "斗法V2·斗法栏连锁制（已开启）" : "斗法V2·斗法栏连锁制（未开启）";
+  const v2desc = document.createElement("div"); v2desc.className = "card-desc";
+  v2desc.textContent = "配招5分钟，斗法全自动。同系相邻触发共鸣×1.3，三连触发终极神通。";
+  const v2btns = document.createElement("div"); v2btns.className = "v2-btns";
+  const toggleBtn = document.createElement("button"); toggleBtn.className = "card-btn";
+  toggleBtn.textContent = state.battle_v2_enabled ? "关闭V2" : "开启V2";
+  toggleBtn.addEventListener("click", () => { Game.toggleBattleV2(); renderPanelBody("spell"); });
+  const cfgBtn = document.createElement("button"); cfgBtn.className = "card-btn";
+  cfgBtn.textContent = "配置斗法栏";
+  cfgBtn.disabled = !state.battle_v2_enabled;
+  cfgBtn.addEventListener("click", () => { closePanelSheet(); Game.openSlotConfig(); drainPopupQueue(); });
+  v2btns.append(toggleBtn, cfgBtn);
+  v2box.append(v2title, v2desc, v2btns);
+  body.appendChild(v2box);
+
+  // ===== 练气术法（V2 skill_table，30术法六系） =====
+  if (state.battle_v2_enabled) renderSkillV2Section(body, state);
+
   const spells = UnlockManager.getAvailableSpells(state);
   if (!spells.length) { body.appendChild(note("术法尚未开启。炼气士四重可观残符悟法。")); return; }
   body.appendChild(note("真仙之前，你所修仍是术法，不是神通。"));
@@ -933,6 +957,55 @@ function renderSpellPanel(body, state) {
       btn.disabled = schoolCapped || schoolLocked || !cost || num(state.resources.spell_page) < num(cost?.spell_page_cost) || num(state.resources.mana) < num(cost?.mana_cost);
     btn.addEventListener("click", () => { Game.upgradeSpell(id); renderPanelBody("spell"); });
     card.append(img, info, btn); body.appendChild(card);
+  }
+}
+
+// 练气术法V2：30术法六系，按系分组，境界到了即悟得，可升重
+const SKILL_TYPE_LABEL = { body: "体", thunder: "雷", fire: "火", weapon: "器", soul: "魂", calamity: "劫" };
+const SKILL_TYPE_ORDER = ["body", "thunder", "fire", "weapon", "soul", "calamity"];
+const RARITY_LABEL = { common: "凡", uncommon: "灵", rare: "玄" };
+function skillIcon(id, spellType) {
+  if (SPELL_ICONS[id]) return SPELL_ICONS[id];
+  const legacy = "spell_" + spellType + "_01";
+  return SPELL_ICONS[legacy] || "";
+}
+function renderSkillV2Section(body, state) {
+  const available = UnlockManager.getAvailableSkills(state);
+  const unlocked = state.unlocked_skills || [];
+  body.appendChild(note("练气唯术法，无法宝、无神通、无势力。境界到了即悟得，残页与法力可升重。种族之别，仅在被动加成。"));
+  for (const type of SKILL_TYPE_ORDER) {
+    const rows = available.filter((r) => str(r.spell_type, "") === type);
+    if (!rows.length) continue;
+    const header = document.createElement("div"); header.className = "card-name v2-skill-header";
+    header.textContent = "【" + (SKILL_TYPE_LABEL[type] || type) + "系】";
+    body.appendChild(header);
+    for (const skill of rows) {
+      const id = String(skill.id);
+      const isUnlocked = unlocked.includes(id);
+      const level = Math.max(isUnlocked ? 1 : 0, Game.getSkillLevel(id));
+      const maxLevel = Game.getSkillMaxLevel(skill);
+      const nextLevel = level + 1;
+      const cost = isUnlocked && nextLevel <= maxLevel ? Game.getSkillUpgradeCost(skill, nextLevel) : null;
+      const card = document.createElement("div"); card.className = "card" + (level > 0 ? " selected" : "");
+      const img = document.createElement("img"); img.src = skillIcon(id, str(skill.spell_type, "")); img.alt = "";
+      const info = document.createElement("div"); info.className = "card-info";
+      const name = document.createElement("div"); name.className = "card-name";
+      name.textContent = skill.name + " " + (RARITY_LABEL[str(skill.rarity, "common")] || "") + " " + (level > 0 ? level + "重" : "未悟");
+      const desc = document.createElement("div"); desc.className = "card-desc";
+      desc.textContent = (skill.lore_text || "") + (skill.source_chapter ? "（" + skill.source_chapter + "）" : "");
+      const dmgLine = document.createElement("div"); dmgLine.className = "card-cost";
+      const lv = Math.max(1, level);
+      dmgLine.textContent = "威力 " + (num(skill.damage_base) + num(skill.damage_growth) * (lv - 1)) + "（每重+" + num(skill.damage_growth) + "）";
+      const costLine = document.createElement("div"); costLine.className = "card-cost";
+      if (!isUnlocked) costLine.textContent = "未至参悟境界";
+      else costLine.textContent = cost ? "升至" + nextLevel + "重：残页 " + formatInt(cost.spell_page_cost) + "｜法力 " + formatInt(cost.mana_cost) : "已至圆满";
+      info.append(name, desc, dmgLine, costLine);
+      const btn = document.createElement("button"); btn.className = "card-btn";
+      btn.textContent = "升重";
+      btn.disabled = !cost || num(state.resources.spell_page) < num(cost.spell_page_cost) || num(state.resources.mana) < num(cost.mana_cost);
+      btn.addEventListener("click", () => { Game.upgradeSkill(id); renderPanelBody("spell"); });
+      card.append(img, info, btn); body.appendChild(card);
+    }
   }
 }
 
@@ -1033,36 +1106,8 @@ function renderLogPanel(body, state) {
       goBtn.addEventListener("click", () => { closePanelSheet(); Game.startAction(String(task.action_id)); });
       taskCard.append(tInfo, goBtn); body.appendChild(taskCard);
       }
-      // 势力完整独有系统（design/7.2）
-      const fid = str(state.faction_id, "");
-      const fb = state.faction_buff;
-      const sysCard = document.createElement("div"); sysCard.className = "card";
-      const sInfo = document.createElement("div"); sInfo.className = "card-info";
-      const sName = document.createElement("div"); sName.className = "card-name";
-      const sDesc = document.createElement("div"); sDesc.className = "card-desc";
-      const sBtn = document.createElement("button"); sBtn.className = "card-btn";
-      if (fid === "chan") {
-        sName.textContent = "玉虚炼器";
-        sDesc.textContent = "消耗法宝碎片 10，炼成护持，接下来 3 场斗法战力 +15%。" + (Game.factionBuffActive("craft") ? `（生效中：余 ${int(fb.battles)} 场）` : "");
-        sBtn.textContent = "炼器"; sBtn.disabled = num(state.resources.treasure_shard) < 10;
-        sBtn.addEventListener("click", () => { Game.factionCraft(); renderPanelBody("log"); });
-      } else if (fid === "jie") {
-        sName.textContent = "万仙阵法";
-        sDesc.textContent = "布阵后下一场斗法第一回合敌方全体受伤 +20%。" + (Game.factionBuffActive("array") ? "（已布阵）" : "");
-        sBtn.textContent = "布阵"; sBtn.disabled = Game.factionBuffActive("array");
-        sBtn.addEventListener("click", () => { Game.factionArray(); renderPanelBody("log"); });
-      } else if (fid === "tianting") {
-        sName.textContent = "功德敕令";
-        sDesc.textContent = "每日一道敕令，下一个行动收益 ×2。" + (Game.factionBuffActive("edict") ? "（敕令待发）" : "");
-        sBtn.textContent = "领敕"; sBtn.disabled = Game.factionBuffActive("edict") || str(state.faction_edict_day, "") === todayString();
-        sBtn.addEventListener("click", () => { Game.factionEdict(); renderPanelBody("log"); });
-      } else if (fid === "wuzhuang") {
-        sName.textContent = "人参果会";
-        sDesc.textContent = "每周一次果会，全属性 +10% 持续 1 天。" + (Game.factionBuffActive("feast") ? "（果会余韵中）" : "");
-        sBtn.textContent = "赴会"; sBtn.disabled = int(state.faction_feast_cooldown) > nowUnix();
-        sBtn.addEventListener("click", () => { Game.factionFeast(); renderPanelBody("log"); });
-      }
-      sInfo.append(sName, sDesc); sysCard.append(sInfo, sBtn); body.appendChild(sysCard);
+      // 势力完整独有系统（design/7.2 v0.2）——按势力分发完整系统 UI
+      renderFactionSystem(body, state);
     } else if (RealmManager.isCapped(state)) {
     body.appendChild(note("地仙之后无散修。你已立身天仙之境，尚未择势力入局。"));
     body.appendChild(popupButton("择势力入局", false, () => { closePanelSheet(); Game._maybeQueueFactionChoice(); drainPopupQueue(); }));

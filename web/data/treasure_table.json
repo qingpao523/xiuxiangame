@@ -1786,6 +1786,186 @@
       "icon_key": "icon_treasure_030",
       "card_asset_key": "card_treasure_030",
       "obtain_text": "获得法宝：盘古幡（影）\n元始天尊盘古幡的影子。\n解锁法宝技：开天一击。"
+    },
+    {
+      "treasure_id": "treasure_syn_jian",
+      "treasure_name": "玉虚·太极剑",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_03",
+      "related_spell_type": "weapon",
+      "base_power_bonus": 1.4,
+      "main_effect": {
+        "combat_power_bonus": 1.4,
+        "weapon_damage_bonus": 0.25
+      },
+      "skill_name": "太极剑意",
+      "skill_desc": "玉虚炼器所成之剑，剑意圆融，斗法战力随品级而增。",
+      "origin_desc": "以法宝碎片为骨、法力为魂，经玉虚炉火炼成的太极剑胚。火候越纯青，剑胚品级越高。",
+      "fengshen_relation": "玉虚炼器·广成子传法",
+      "craft_only": true,
+      "faction_lock": "chan",
+      "visual_keywords": [
+        "太极",
+        "玉虚",
+        "剑胚",
+        "清光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 15,
+          "mana_cost": 12000,
+          "effect_multiplier": 1.25
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 30,
+          "mana_cost": 24000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 45,
+          "mana_cost": 48000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 75,
+          "mana_cost": 84000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_syn_jian",
+      "obtain_text": "玉虚炼器成功：太极剑胚\n炉火纯青，剑胚自成，悬于身侧。\n战力大幅提升，解锁法宝技：太极剑意。"
+    },
+    {
+      "treasure_id": "treasure_syn_yin",
+      "treasure_name": "玉虚·翻天印",
+      "treasure_type": "attack",
+      "unlock_realm": "zr_05",
+      "related_spell_type": "thunder",
+      "base_power_bonus": 1.6,
+      "main_effect": {
+        "combat_power_bonus": 1.6,
+        "thunder_damage_bonus": 0.2
+      },
+      "skill_name": "翻天印势",
+      "skill_desc": "玉虚炼器所成之印，印成可翻天地，斗法战力随品级而增。",
+      "origin_desc": "以更多法宝碎片堆叠其势、法力凝其重，经玉虚炉火炼成的翻天印胚。",
+      "fengshen_relation": "玉虚炼器·玉虚宫秘法",
+      "craft_only": true,
+      "faction_lock": "chan",
+      "visual_keywords": [
+        "翻天印",
+        "玉虚",
+        "厚重",
+        "金光"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 20,
+          "mana_cost": 18000,
+          "effect_multiplier": 1.25
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 40,
+          "mana_cost": 36000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 60,
+          "mana_cost": 72000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 100,
+          "mana_cost": 126000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_syn_yin",
+      "obtain_text": "玉虚炼器成功：翻天印胚\n火候到时，印成可翻天地。\n战力大幅提升，解锁法宝技：翻天印势。"
+    },
+    {
+      "treasure_id": "treasure_syn_yi",
+      "treasure_name": "玉虚·八卦仙衣",
+      "treasure_type": "defense",
+      "unlock_realm": "zr_04",
+      "related_spell_type": "soul",
+      "base_power_bonus": 1.3,
+      "main_effect": {
+        "combat_power_bonus": 1.3,
+        "damage_reduce": 0.1
+      },
+      "skill_name": "八卦护体",
+      "skill_desc": "玉虚炼器所成之衣，八卦纹护体，斗法战力随品级而增。",
+      "origin_desc": "织法宝碎片为纹、引法力为线，经玉虚炉火炼成的八卦仙衣胚。",
+      "fengshen_relation": "玉虚炼器·十二金仙遗法",
+      "craft_only": true,
+      "faction_lock": "chan",
+      "visual_keywords": [
+        "八卦",
+        "仙衣",
+        "玉虚",
+        "护体"
+      ],
+      "upgrade_cost_type": "treasure_shard",
+      "level_growth": [
+        {
+          "level": 1,
+          "treasure_shard_cost": 0,
+          "mana_cost": 0,
+          "effect_multiplier": 1.0
+        },
+        {
+          "level": 2,
+          "treasure_shard_cost": 18,
+          "mana_cost": 15000,
+          "effect_multiplier": 1.25
+        },
+        {
+          "level": 3,
+          "treasure_shard_cost": 36,
+          "mana_cost": 30000,
+          "effect_multiplier": 1.6
+        },
+        {
+          "level": 4,
+          "treasure_shard_cost": 54,
+          "mana_cost": 60000,
+          "effect_multiplier": 2.0
+        },
+        {
+          "level": 5,
+          "treasure_shard_cost": 90,
+          "mana_cost": 105000,
+          "effect_multiplier": 2.5
+        }
+      ],
+      "max_level_mvp": 5,
+      "icon_key": "icon_treasure_syn_yi",
+      "obtain_text": "玉虚炼器成功：八卦仙衣胚\n仙衣护体，万法难侵。\n战力大幅提升，解锁法宝技：八卦护体。"
     }
   ]
 }

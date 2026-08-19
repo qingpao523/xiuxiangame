@@ -2,6 +2,118 @@
 
 ---
 
+## 2026-08-19 — 战斗系统 V2 整体改版 + 新手教学三层引导（design/8.0）：验收 96 分
+
+### 背景
+
+按 `design/8.0 战斗系统整体性改版设计文档 V1` 将卡牌战斗改为"配招 5 分钟，斗法全自动"的斗法栏槽位制。本会话完成新手教学三层引导（设计第二步～第五步），并接入 `finishBattle` 教学结算分支；同时对整棵工作树做对抗性代码审查（CLAUDE.md #4）。
+
+### 已实现内容
+
+- **斗法栏引擎**（`battle-engine-v2.js`，1292 行）：`create/executePlayerRound/executeEnemyRound/runFullAuto`；相邻同系 ×1.3、连续三同系触发终极（按 `spell_type` 元素判定，6 系终极：肉身成圣/五雷轰顶/三昧焚天/万剑归宗/六魂尽灭/万劫不复）；Boss 抗性/弱点、本命流派加成、19 种 Boss 机制、格数随境界扩展（rq=3 / zr<5=4 / zr≥5=5 / dx+=6）。
+- **配招/演出 UI**（`battle-ui-v2.js`，571 行）：槽位配置（点选交换排序 + ✕移除 + 去重）、战斗弹窗、自动循环 1×/2×/4×/跳过、终极全屏演出。
+- **新手教学三层引导**（本会话）：默认槽 `[炼体拳, 掌心雷, 铜头诀]`（body 不相邻）→ Layer1 高亮抖动 body 槽 → Layer2(3s) 文案"同系术法相邻，或有奇效……" → Layer3(8s) 箭头"把第③格换到第②格"；玩家交换触发 combo → 金色横幅 + "开始斗法" → 教学战 vs 山野妖猪(enemy_power:350) → 胜则 `finishBattle` 弹"你悟到：同系道法相邻施展，气机共鸣，威力倍增。此乃——道法共鸣。"。修正教学箭头文案「气劲击」→「铜头诀/掌心雷」（与 skill_body_02 实名一致）。
+- **迁移**（`save-manager.js`）：默认态 `battle_slots/unlocked_skills/skill_levels/battle_v2_enabled`；normalize 迁移（`battle_v2_migrated` 标志 + spell→skill 映射 +  starter `[skill_body_01..03]`）。`unlock-manager.js` 增 `_refreshSkills/getAvailableSkills`（按 `unlock_realm` 解锁）。
+- **入口**：`game.js` `isBattleV2/toggleBattleV2/openSlotConfig/setBattleSlots/startBattleV2/startBossBattleV2`；`toggleBattleV2` 首次开启且未教学 → `BattleUIV2.startTutorial`。`ui.js` 增 `battle_v2`/`slot_config` 弹窗与法术面板 V2 入口卡。
+
+### 关键决策
+
+- **skill_table 收敛为 30 纯术法（schema 3.0.0）**：`skill_table.json` 已重定义为"练气阶段术法终稿：六系各 5，练气=只有术法、无法宝/无神通"。原 39 技能（含 ability/treasure 三类）草稿移至 `skill_table.json.bak`（已加入 `.gitignore`，不提交）。引擎终极/连锁只判 `spell_type`，与类别无关，故收敛不破坏核心机制；代码中所有 starter/教学/迁移映射引用的技能 ID（各系 01–03）均存在于新表。
+- **教学结算分支前置**：`finishBattle` 在"遭遇斗法结算"之前插入 `battle.payload.tutorial` 分支（胜/败各自弹文案后 `_afterMutated(); return;`），避免教学战误入普通遭遇逻辑。
+
+### 验收结果（design/8.0 §十五 标准）
+
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| 斗法栏配招（去重/交换排序/格数 3→4→5→6） | 14% | 5 |
+| 相邻同系 ×1.3 连锁 + 变色 | 12% | 5 |
+| 连续三同系终极全屏演出（6 系） | 15% | 5 |
+| Boss 抗性/弱点 + 19 种机制 | 14% | 5 |
+| 本命流派加成 | 8% | 5 |
+| 新手教学三层引导完整触发 | 12% | 5 |
+| 旧存档迁移 | 8% | 5 |
+| 速度 1×/2×/4×/跳过 | 7% | 5 |
+| 数值验收（三连>70%/弱点差>30%/本命 DPS 差>20%） | 10% | 3 |
+| **总分** | | **96** |
+
+≥95 通过。数值验收记 3 分：连锁/终极/抗性/本命各机制计算已逐项验证正确，但具体胜率/DPS 差目标属内容铺满后的调参项，未跑大规模模拟（练气仅 30 术法，留待真人阶段内容补齐后调参）。
+
+### 验证记录
+
+- 6 个 JS 文件 `node --check` 全过；24 个 JSON 全部 `JSON.parse` 通过；`style.css` 大括号 560/560 平衡。
+- **对抗性审查捕获并修复 1 个运行时 BUG**：`ui.js:207` 在 `battle_v2_enabled` 下调用 `hasAffordableSkill(state)`，但函数定义缺失 → V2 玩家 `renderNav` 会抛 `ReferenceError`。已补上定义（仿 `hasAffordableSpell`，依赖 `Game.getSkillLevel/getSkillMaxLevel/getSkillUpgradeCost`，均存在）。`node --check` 仅查语法、查不出未定义引用，故额外做了引用完整性核查。
+- `/tmp/tut_test.js` 功能测试全过：初始 `[炼体拳,掌心雷,铜头诀]` 无连锁(false) → 交换③② → `[炼体拳,铜头诀,掌心雷]` 触发连锁(true)；`finishBattle` 教学分支 胜/败/穿透 三路正确。
+- 6 系终极正确触发、combo ×1.3、本命雷 ×1.5、格数、Boss 机制、`finishBattle` 兼容（battle.win/source/payload.bossId 均在）此前会话已验证。
+- 教学三层为逻辑/单元测试验证，未做真机浏览器演出确认（记入数值/体验待办）。
+
+---
+
+## 2026-08-19 — 势力独有系统 v0.2 完整重做（design/7.2 v0.2）：验收 98 分
+
+### 背景
+
+`design/7.2 v0.2` 修订声明指出 v0.1 把 `design/6.0 §四` 的完整系统在验收标准里就缩小了（玉虚炼器缩成临时 buff、万仙阵法缩成首回合 +20%），违反 CLAUDE.md #7/#8。v0.2 恢复完整范围并重做。
+
+### 已实现内容（四势力各一完整子系统）
+
+- **阐教·玉虚炼器**（`getSynthRecipes/canCraftSynth/craftSynthFinish`）：法宝碎片合成为高阶法宝，品质→初始等级（上 3/中 2/下 1），已拥有则 +1（封顶 `max_level_mvp`）。`synth_recipe_table.json` 3 配方（太极剑胚/翻天印胚/八卦仙衣胚）→ `treasure_syn_jian/yin/yi`（`treasure_table.json` +180 行，含 `level_growth[5]`、`craft_only`、`faction_lock:'chan'`）。
+- **截教·万仙阵法**（`getArrayCards/arraySlots/arrayCardLevel/arrayCardBonus/learnArrayCard/upgradeArrayCard/toggleArrayEquip/getArrayFirstRoundBonus`）：可学习/携带/升级阵法卡，战斗首回合敌方全体受伤加成（按卡等级），杀阵奖励 ×1.5。`array_card_table.json` 4 卡（万仙阵/十绝阵/诛仙阵/混元金斗阵）。`arraySlots` zr_06→2 否则 1。
+- **天庭·功德敕令**（`edictClaim/edictDesignate/consumeEdict`，`EDICT_MAX=3`）：敕令库存 + 可指定行动，每日一道。5 个作用域（offline/travel/alchemy/boss/array）经核查**全部被消费**（game.js:189/749/810/556/599）。
+- **五庄观·人参果会**（`factionFeast/feastAlchemyActive/pillOutputMult`）：每周果会全属性 +10% + 炼丹产出 ×2。
+- **V1 引擎适配**（`battle-engine.js`）：原临时 `faction_buff`（阐教 craft +15%/截教 array +20%）重构为 `arrayBuffMult`（截教首回合加成由阵法卡等级决定）；阐教合成法宝已永久计入 `state.treasures` 战力，无需临时 buff。
+
+### 验收结果（design/7.2 v0.2 §三 标准，按完整范围逐项核对）
+
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| 阐教玉虚炼器（合成系统：产出物/品质/流程） | 18% | 5 |
+| 截教万仙阵法（可学习/携带/战斗使用，杀阵 ×1.5） | 18% | 5 |
+| 天庭功德敕令（库存/可指定行动，每日一道） | 17% | 5 |
+| 五庄观人参果会（果会 +10% + 炼丹 ×2） | 17% | 5 |
+| 与势力绑定（仅对应 faction_id 开放） | 12% | 5 |
+| 不破坏现有（战斗/破劫/势力被动审计通过） | 10% | 4 |
+| 代码质量（JS 语法全过 + devlog） | 10% | 5 |
+| **总分** | | **98** |
+
+≥95 通过。硬性否决项（简化版/效果不生效/无势力限制/破坏现有）全部未触发。"不破坏现有"记 4 分：V1 引擎 `arrayBuff→arrayBuffMult` 重构有守卫且语法通过，但 V1 战斗路径未做运行时回归（仅 V2 路径功能测试覆盖）。
+
+### 备注（非阻断）
+
+- `craft_only`/`faction_lock` 标志当前无代码引用（grep 为空），属声明式/前瞻字段；合成法宝仅经阐教 gating 的 `craftSynthFinish` 产出、不入掉落池，风险低。后续法宝面板若按 `faction_lock` 过滤可消除潜在跨势力展示。
+
+---
+
+## 2026-08-19 — 法力经济再平衡 + 种族战斗被动：验收 95 分
+
+### 背景
+
+用户反馈"前期法力值太多，5 分钟就上来了"。根因：`base_mana_per_min=80`(rq_01) × 新手护持 ×1.5 × 时间压缩（行动给 2–30 分钟等效收入仅花 0–30 秒）= 5 分钟约 28,000 法力，而术法 L2 仅 500，通胀约 10–14×。
+
+### 已实现内容
+
+- **法力再平衡**：`realm_table.json` 全 100 境界 `base_mana_per_min` ÷6（rq_01 80→13、zr_01 1200→200、dx_01 15000→2500）；`map_table.json` 全 9 图 `mana_per_min` ÷6（map_001 100→17、map_009 150000→25000）；`action_table.json` 天衍 `reward_minutes_equivalent` 30→8；`game.js:278` 灵光法力 `Math.max(8, round(base_mana_per_min*2*comboMult))`（原 ×4、下限 20）。
+- **种族战斗被动**（`race_table.json` + 引擎硬编码，表为声明式文档）：人族术法升级 -0.15（`getSpellUpgradeCost` 0.85）、妖族本命系伤 +0.15（engine-v2:528）、先天 crit +0.10（:530）、麒麟低血(<30%)减伤 0.3（:590）。
+
+### 验收结果
+
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| 5 分钟休闲法力回落至合理量级（≈2,124，原 28,000） | 30% | 5 |
+| 30 分钟主动/4 小时离线节奏（≈8,210 / ≈4,680） | 25% | 5 |
+| 道行节奏不受影响（仍 1.0/min；天衍 30→8 顺带修正 5 分钟到 rq_04） | 20% | 5 |
+| 100 境界 × 18 键完整、9 图完整 | 15% | 5 |
+| 种族被动数值与表一致、无错配 | 10% | 4 |
+| **总分** | | **95** |
+
+≥95 通过。种族被动记 4 分：表值与引擎硬编码逐项核对一致，但被动为硬编码逻辑（表仅声明式），未来改表需同步改码，记为技术债。
+
+### 备注（非阻断）
+
+- 真人(zr_01) 30 分钟主动约 60,000 法力，中期略宽松但可接受；已向用户提示，待定。
+
+---
+
+
 ## 2026-08-16 — 非线性叙事验证（design/7.3）：洞府手札已实现，验证 100 分
 
 ### 背景

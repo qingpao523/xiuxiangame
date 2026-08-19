@@ -73,7 +73,7 @@
       "unlock_realm": "rq_04",
       "duration_sec": 0,
       "reward_type": "offline_equivalent",
-      "reward_minutes_equivalent": 30,
+      "reward_minutes_equivalent": 8,
       "map_id": "",
       "daily_limit": 5,
       "lifetime_limit": 5,

@@ -51,6 +51,11 @@ const SaveManager = {
         faction_edict_day: "",
         faction_feast_until: 0,
         faction_feast_cooldown: 0,
+          array_cards: {},
+          array_equipped: [],
+          edict_count: 0,
+          edict_last_claim: "",
+          edict_target: null,
       current_action: null,
       current_goal_id: "goal_001",
       completed_goals: [],
@@ -70,6 +75,11 @@ const SaveManager = {
         divination: {},
       card_upgrades: {},
       battle_blessing: null,
+      // ===== 战斗系统V2：斗法栏连锁制 =====
+      battle_slots: [],
+      unlocked_skills: [],
+      skill_levels: {},
+      battle_v2_enabled: false,
     };
   },
 
@@ -101,6 +111,12 @@ const SaveManager = {
     state.faction_edict_day = str(state.faction_edict_day, "");
     state.faction_feast_until = int(state.faction_feast_until);
     state.faction_feast_cooldown = int(state.faction_feast_cooldown);
+    // ===== 4 势力完整系统（design/7.2 v0.2）存档迁移 =====
+    state.array_cards = state.array_cards || {};
+    state.array_equipped = Array.isArray(state.array_equipped) ? state.array_equipped : [];
+    state.edict_count = int(state.edict_count);
+    state.edict_last_claim = str(state.edict_last_claim, "");
+    if (!("edict_target" in state)) state.edict_target = null;
     state.action_counts_today = state.action_counts_today || {};
     state.current_action = state.current_action || null;
     state.current_goal_id = str(state.current_goal_id, "goal_001");
@@ -117,6 +133,34 @@ const SaveManager = {
     // 战后休整：单卡永久淬炼等级 / 调息祝福（下 N 场斗法开局护持）
     state.card_upgrades = state.card_upgrades || {};
     state.battle_blessing = state.battle_blessing || null;
+    // ===== 战斗系统V2：斗法栏连锁制 存档迁移 =====
+    state.battle_slots = state.battle_slots || [];
+    state.unlocked_skills = state.unlocked_skills || [];
+    state.skill_levels = state.skill_levels || {};
+    if (state.battle_v2_enabled == null) state.battle_v2_enabled = false;
+    if (!state.flags.battle_v2_migrated) {
+      state.flags.battle_v2_migrated = true;
+      const starter = ["skill_body_01", "skill_body_02", "skill_body_03"];
+      for (const id of starter) {
+        if (!state.unlocked_skills.includes(id)) state.unlocked_skills.push(id);
+        if (!state.skill_levels[id]) state.skill_levels[id] = 1;
+      }
+      const spellToSkill = {
+        spell_thunder_01: "skill_thunder_01", spell_thunder_02: "skill_thunder_02", spell_thunder_03: "skill_thunder_03",
+        spell_fire_01: "skill_fire_01", spell_fire_02: "skill_fire_02", spell_fire_03: "skill_fire_03",
+        spell_weapon_01: "skill_weapon_01", spell_weapon_02: "skill_weapon_02", spell_weapon_03: "skill_weapon_03",
+        spell_soul_01: "skill_soul_01", spell_soul_02: "skill_soul_02",
+        spell_calamity_01: "skill_calamity_01", spell_calamity_02: "skill_calamity_02",
+      };
+      for (const sid of Object.keys(state.spells || {})) {
+        if (int(state.spells[sid]?.level) > 0 && spellToSkill[sid]) {
+          const vid = spellToSkill[sid];
+          if (!state.unlocked_skills.includes(vid)) state.unlocked_skills.push(vid);
+          state.skill_levels[vid] = Math.max(int(state.skill_levels[vid], 1), int(state.spells[sid].level));
+        }
+      }
+      if (state.battle_slots.length === 0) state.battle_slots = starter.slice();
+    }
     // 丹房：渡厄丹存货 / 培元丹药效截止时间
     state.pills = state.pills || {};
     state.pills.due = int(state.pills.due);

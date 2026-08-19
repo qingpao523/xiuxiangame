@@ -110,20 +110,10 @@ const BattleEngine = {
   create(state, cfg) {
     const omen = getTodayOmen();
     let playerPower = RealmManager.getCombatPower(state);
-    // 势力独有系统（design/7.2）
-    const fb = state.faction_buff;
-    let arrayBuff = false;
-    if (str(state.faction_id, "") === "chan" && fb && fb.type === "craft" && int(fb.battles) > 0) {
-      playerPower = Math.round(playerPower * 1.15);
-      fb.battles = int(fb.battles) - 1;
-      if (int(fb.battles) <= 0) state.faction_buff = null;
-      SaveManager.save(state);
-    }
-    if (str(state.faction_id, "") === "jie" && fb && fb.type === "array" && int(fb.battles) > 0) {
-      arrayBuff = true;
-      state.faction_buff = null;
-      SaveManager.save(state);
-    }
+    // 势力独有系统（design/7.2 v0.2）
+    // 阐教·玉虚炼器：合成法宝已永久计入 state.treasures 战力，无需临时 buff。
+    // 截教·万仙阵法：携带阵法卡 → 首回合敌方全体受伤加成（数值由阵法卡等级决定）。
+    const arrayBuffMult = (typeof Game !== "undefined" && Game.getArrayFirstRoundBonus) ? num(Game.getArrayFirstRoundBonus(state), 0) : 0;
     const phases = cfg.phases || null;
     const enemies = [];
     if (phases) {
@@ -164,7 +154,7 @@ const BattleEngine = {
       mechanicState: { turnCount: 0, pearlsUsed: 0, rotateIndex: 0 },
     };
     battle.playerStatuses.shield = this.relic(state, "startShield");
-    battle.arrayBuff = arrayBuff; // 截教万仙阵法：首回合敌方受伤+20%
+    battle.arrayBuffMult = arrayBuffMult; // 截教万仙阵法：首回合敌方受伤 +bonus（design/7.2 v0.2）
     this._startPlayerTurn(state, battle);
     // 以下护持类效果必须在 _startPlayerTurn 之后应用（回合开始会重置罡气）
     // 斗部正神位：斗法开局罡气 +8%
@@ -349,8 +339,8 @@ const BattleEngine = {
     }
     if (enemy.statuses.vuln > 0) mult *= 1.5;
     if (int(battle.rageAllTurns) > 0) mult *= 1.5; // 万劫归一：后续诸牌 ×1.5
-    // 截教·万仙阵法：首回合敌方全体受伤 +20%（design/7.2）
-    if (battle.arrayBuff && battle.turn === 1) mult *= 1.2;
+    // 截教·万仙阵法：首回合敌方全体受伤 +arrayBuffMult（design/7.2 v0.2）
+    if (num(battle.arrayBuffMult, 0) > 0 && battle.turn === 1) mult *= (1 + num(battle.arrayBuffMult, 0));
     let dmg = Math.max(1, Math.round(base * mult * pictureMult * weaknessMult * this._benmingMult(state, battle, element)));
     if (enemy.block > 0) {
       const absorbed = Math.min(enemy.block, dmg);

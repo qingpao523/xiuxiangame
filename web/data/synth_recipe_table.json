@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1.0",
+  "table": "synth_recipe_table",
+  "generated_at": "2026-08-16T00:00:00.000000Z",
+  "description": "阐教·玉虚炼器配方（design/7.2 v0.2 完整系统）。消耗法宝碎片+法力，经火候时机条炼器，品质（上/中/下）决定产出法宝的初始品级（3/2/1 重）。产出物为 synth_treasure（合成高阶法宝，入法宝系统，可继续温养）。仅阐教可用。",
+  "rows": [
+    {
+      "recipe_id": "synth_jian",
+      "recipe_name": "太极剑胚",
+      "output_treasure": "treasure_syn_jian",
+      "unlock_realm": "zr_03",
+      "cost": { "treasure_shard": 30, "mana": 20000 },
+      "intro": "玉虚宫中藏有太极剑胚之法：以法宝碎片为骨、法力为魂，炉火纯青处，剑胚自成。",
+      "fengshen_anchor": "玉虚炼器·太极剑胚（广成子传法）"
+    },
+    {
+      "recipe_id": "synth_yin",
+      "recipe_name": "翻天印胚",
+      "output_treasure": "treasure_syn_yin",
+      "unlock_realm": "zr_05",
+      "cost": { "treasure_shard": 45, "mana": 35000 },
+      "intro": "翻天印胚，需以更多碎片堆叠其势、法力凝其重。火候到时，印成可翻天地。",
+      "fengshen_anchor": "玉虚炼器·翻天印胚（玉虚宫秘法）"
+    },
+    {
+      "recipe_id": "synth_yi",
+      "recipe_name": "八卦仙衣胚",
+      "output_treasure": "treasure_syn_yi",
+      "unlock_realm": "zr_04",
+      "cost": { "treasure_shard": 38, "mana": 28000 },
+      "intro": "八卦仙衣胚，织碎片为纹、引法力为线。火候纯青，则仙衣护体，万法难侵。",
+      "fengshen_anchor": "玉虚炼器·八卦仙衣胚（十二金仙遗法）"
+    }
+  ]
+}

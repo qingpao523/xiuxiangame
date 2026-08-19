@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1.0",
+  "table": "array_card_table",
+  "generated_at": "2026-08-16T00:00:00.000000Z",
+  "description": "截教·万仙阵法卡（design/7.2 v0.2 完整系统）。可学习（耗功德/劫气）、可携带（装备入阵法栏，有栏位上限）、战斗中生效（首回合敌方全体受伤加成，按卡牌等级成长）。截教破杀阵奖励另 ×1.5（在 game.js 杀阵结算）。仅截教可用。",
+  "rows": [
+    {
+      "card_id": "array_card_wanxian",
+      "card_name": "万仙阵",
+      "unlock_realm": "zr_01",
+      "learn_cost": { "merit": 80, "calamity": 30 },
+      "upgrade_cost": { "merit": 60, "calamity": 25 },
+      "base_bonus": 0.20,
+      "growth_per_level": 0.04,
+      "max_level": 5,
+      "desc": "通天教主万仙阵之残意。布阵后斗法首回合，敌方全体受伤 +20%（每升 1 级 +4%）。",
+      "fengshen_anchor": "万仙阵·截教镇教大阵"
+    },
+    {
+      "card_id": "array_card_shijue",
+      "card_name": "十绝阵",
+      "unlock_realm": "zr_03",
+      "learn_cost": { "merit": 130, "calamity": 50 },
+      "upgrade_cost": { "merit": 90, "calamity": 35 },
+      "base_bonus": 0.22,
+      "growth_per_level": 0.04,
+      "max_level": 5,
+      "desc": "闻仲太师十绝阵之残意。布阵后斗法首回合，敌方全体受伤 +22%（每升 1 级 +4%）。",
+      "fengshen_anchor": "十绝阵·闻仲布于西岐"
+    },
+    {
+      "card_id": "array_card_zhuxian",
+      "card_name": "诛仙阵",
+      "unlock_realm": "zr_05",
+      "learn_cost": { "merit": 200, "calamity": 80 },
+      "upgrade_cost": { "merit": 140, "calamity": 55 },
+      "base_bonus": 0.28,
+      "growth_per_level": 0.05,
+      "max_level": 5,
+      "desc": "诛仙、戮仙、陷仙、绝仙四剑之意。布阵后斗法首回合，敌方全体受伤 +28%（每升 1 级 +5%）。",
+      "fengshen_anchor": "诛仙阵·通天教主亲布"
+    },
+    {
+      "card_id": "array_card_hunyu",
+      "card_name": "混元金斗阵",
+      "unlock_realm": "zr_07",
+      "learn_cost": { "merit": 260, "calamity": 100 },
+      "upgrade_cost": { "merit": 180, "calamity": 70 },
+      "base_bonus": 0.25,
+      "growth_per_level": 0.05,
+      "max_level": 5,
+      "desc": "三霄混元金斗之阵意。布阵后斗法首回合，敌方全体受伤 +25%（每升 1 级 +5%），并为我方加护。",
+      "fengshen_anchor": "混元金斗·三霄娘娘法宝"
+    }
+  ]
+}

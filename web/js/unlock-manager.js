@@ -14,7 +14,17 @@ const UnlockManager = {
     for (const id of realm.unlock_ids || []) {
       if (!unlocked.includes(String(id))) unlocked.push(String(id));
     }
+    this._refreshSkills(state);
     this._ensureDefaultMap(state);
+  },
+
+  _refreshSkills(state) {
+    if (!Array.isArray(state.unlocked_skills)) state.unlocked_skills = [];
+    if (!state.skill_levels || typeof state.skill_levels !== "object") state.skill_levels = {};
+    for (const row of this.getAvailableSkills(state)) {
+      const id = String(row.id || "");
+      if (id && !state.unlocked_skills.includes(id)) state.unlocked_skills.push(id);
+    }
   },
 
   add(state, ids) {
@@ -57,10 +67,22 @@ const UnlockManager = {
     );
   },
 
-  getAvailableTreasures(state) {
-    return DataManager.getRows("treasure_table").filter((row) =>
+  getAvailableSkills(state) {
+    return DataManager.getRows("skill_table").filter((row) =>
       this.conditionMet(state, String(row.unlock_realm || ""))
     );
+  },
+
+  getAvailableTreasures(state) {
+    const fid = str(state.faction_id, "");
+    return DataManager.getRows("treasure_table").filter((row) => {
+      if (!this.conditionMet(state, String(row.unlock_realm || ""))) return false;
+      // 势力限定法宝：非本势力不可见（design/7.2 v0.2）
+      if (row.faction_lock && str(row.faction_lock, "") !== fid) return false;
+      // 合成法宝（craft_only）：仅合成后（已拥有）才在列表中显示
+      if (row.craft_only && int((state.treasures[String(row.treasure_id)] || {}).level) <= 0) return false;
+      return true;
+    });
   },
 
   getVisibleResources(state) {

@@ -18,6 +18,9 @@ const ID_FIELDS = {
   array_table: "array_id",
   companion_table: "companion_id",
   explore_point_table: "point_id",
+  skill_table: "id",
+  synth_recipe_table: "recipe_id",
+  array_card_table: "card_id",
 };
 
 const REALM_NAME_TO_ID = {
@@ -253,6 +256,17 @@ const SCHOOL_PASSIVES = {
 };
 const SCHOOL_LIST = ["thunder", "fire", "weapon", "soul", "calamity"];
 const SCHOOL_NAME = { thunder: "雷", fire: "火", weapon: "剑", soul: "魂", calamity: "劫" };
+
+// 天庭·功德敕令：可指定的行动（design/7.2 v0.2 完整系统）
+// 发敕令时择一行动，下一次该类行动收益 ×2，消耗库存 1 道。
+const EDICT_TARGETS = [
+  { scope: "offline", name: "闭关", desc: "下一次闭关（吐纳/入定/推演/听法等）收益 ×2" },
+  { scope: "travel", name: "游历", desc: "下一次游历（山野/陈塘/骷髅山等）收益 ×2" },
+  { scope: "alchemy", name: "炼丹", desc: "下一次炼丹产出 ×2" },
+  { scope: "boss", name: "斩妖", desc: "下一场 Boss 斗法奖励 ×2" },
+  { scope: "array", name: "破阵", desc: "下一场杀阵奖励 ×2" },
+];
+const EDICT_MAX = 3; // 敕令库存上限
 
 const PILL_DEFS = [
   {
