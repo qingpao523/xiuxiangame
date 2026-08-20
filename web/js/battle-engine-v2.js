@@ -66,6 +66,7 @@ const BattleEngineV2 = {
       mechanic: cfg.mechanic || null,
       weakness: cfg.weakness || null,
       mechanicState: { turnCount: 0 },
+      spellDmgReduction: 0, // Boss机制：术法伤害减免（0-1）
       // 终极
       ultimateUsed: false,
       // 劫修叠加

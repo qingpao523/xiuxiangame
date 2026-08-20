@@ -2,6 +2,34 @@
 
 ---
 
+## 2026-08-21 — 设定思考资料入库（design/设定思考/）
+
+### 变更摘要
+将外部 deep-research 设定思考产物（源目录 `/Users/qingpao/封神人物五维盘点`）整体纳入仓库 `design/设定思考/`，共 5 件：封神人物五维盘点.md/.html（design/9.0 的原始底本）、封神山海经地理志.md/.html、封神四大部洲融合地理图.html。其中山海经地理志、四大部洲融合地理图为此前未入库的新内容，作为世界观地理设定的思考底本。
+
+### 验收
+参考资料/设定思考入库，非新系统/功能批次，不走 CLAUDE.md #6 功能验收评分。.html 经核验为自包含（仅内联 SVG `url(#soft)`/`url(#arr)`，无外部 assets 依赖），可独立打开。用途：后续地图/地理/世界观设定的取材底本。
+
+---
+
+## 2026-08-21 — Boss批次·设计+数据层落地（design/8.1 完整设定 v1.3 + design/8.2 验收标准 v0.1 + boss_table 9 Boss 数据）【进行中·先推远端存档】
+
+### 变更摘要
+- 新增 `design/8.1 封神修道录·Boss完整设定 v1.3.md`：9 个 Boss（张桂芳/敖丙/石矶/魔礼青/魔礼海/魔礼寿/魔礼红/火灵圣母/罗宣）完整设定——境界解锁（rq_04→zr_10）、推荐战力（600→160000）、9 个专属机制、掉落（全部合法资源 ID）、魔家四将连战（chain_id:'mo_family'）。
+- 新增 `design/8.2 Boss批次一验收标准 v0.1.md`：整批 ≥95 分通过的验收维度。
+- `web/data/boss_table.json`：新增 boss_023..boss_031 共 9 行（总 31 行）。weakness/掉落均用合法资源 ID（refine_material/treasure_shard/artifact_shard/merit），魔家四将带 chain_order:1-4。
+- `web/js/battle-engine-v2.js`：battle 对象新增 `spellDmgReduction: 0` 字段（机制 groundwork，暂未消费）。
+
+### 状态：进行中（用户指示先推远端存档，随后「重构 page」并今日试玩）
+- **尚未实现**：per-slot 冷却子系统（slot._cd）、9 个机制的引擎接线、_trueDamagePlayer、护甲层、连战自动推进、UI（_mechanicText/slot_cooling/CD 显示）、skill_table 冷却值。
+- 当前 9 Boss 在战斗中按普通敌人行为（机制 key 无匹配 switch case，不报错、不崩溃），可正常挑战与结算。
+
+### 验收
+设计+数据层批次，机制接线未完成，暂不走 CLAUDE.md #6 功能验收评分；待机制+冷却+UI 全部接线后按 design/8.2 整批验收。
+
+---
+
+
 ## 2026-08-21 — 封神人物五维盘点入库（design/9.0 角色设定资料库）
 
 ### 变更摘要

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "table": "boss_table",
   "generated_at": "2026-06-30T00:22:16.000128Z",
-  "description": "MVP 三个 Boss 结算挑战。",
+  "description": "封神Boss完整设定。含MVP三Boss、封神残影系列、封神修道录Boss终稿v1.3（boss_023-031：张桂芳/敖丙/石矶/魔家四将/火灵圣母/罗宣）。",
   "rows": [
     {
       "boss_id": "boss_001",
@@ -588,6 +588,267 @@
       "daily_limit": 1,
       "weakness": [
         "fire"
+      ]
+    },
+    {
+      "boss_id": "boss_023",
+      "boss_name": "张桂芳",
+      "unlock_condition": "rq_04",
+      "map_id": "map_001",
+      "recommended_power": 600,
+      "reward_daoxing": 50,
+      "reward_mana": 2000,
+      "reward_items": {
+        "refine_material": 3,
+        "artifact_shard": 1
+      },
+      "lore_text": "一声厉喝从远处传来，你脑中嗡鸣，刚凝聚的法力瞬间溃散——有人在叫你的道号。张桂芳，殷商青龙关总兵，呼名落马术大败周营。",
+      "victory_text": "张桂芳的呼名术再也无法动摇你的心神。'不可能……你怎会没有魂魄！'他跌下马去，枪落地。你获得了魂系精华与一枚奇异残响。",
+      "visual_keywords": [
+        "张桂芳",
+        "青龙关",
+        "长枪",
+        "呼名术",
+        "殷商总兵"
+      ],
+      "mechanics": "zhangguifang_interrupt: 每3回合施展呼名术，随机打断玩家一个术法槽并重置其冷却。血量<30%时频率变为每2回合。破解：配多个短CD术法或纯暴力速杀。",
+      "daily_limit": 3,
+      "weakness": [
+        "body"
+      ]
+    },
+    {
+      "boss_id": "boss_024",
+      "boss_name": "敖丙",
+      "unlock_condition": "rq_06",
+      "map_id": "map_001",
+      "recommended_power": 1200,
+      "reward_daoxing": 80,
+      "reward_mana": 3500,
+      "reward_items": {
+        "refine_material": 3,
+        "artifact_shard": 2
+      },
+      "lore_text": "一股腥咸的水汽从东海方向涌来。一个少年将军骑浪而至——'陈塘关的修士？我东海龙族的帐，该算了。'敖丙，东海龙王三太子，画戟在手。",
+      "victory_text": "敖丙的龙形崩解，少年跌落在地，画戟断为两截。'父王……'他化为一道水光遁去。你抽出一根龙筋——这是炼制缚龙索的绝好材料。",
+      "visual_keywords": [
+        "敖丙",
+        "东海龙宫",
+        "画戟",
+        "龙形",
+        "少年将军",
+        "水光"
+      ],
+      "mechanics": "aobing_transform: 血量<50%时化身龙形，物理防御翻倍但每回合攻击次数从2降为1，龙尾横扫附带延迟效果（玩家下一术法延迟1回合）。破解：火/雷系术法绕过物理抗性。",
+      "daily_limit": 3,
+      "weakness": [
+        "fire",
+        "thunder"
+      ]
+    },
+    {
+      "boss_id": "boss_025",
+      "boss_name": "石矶娘娘",
+      "unlock_condition": "rq_09",
+      "map_id": "map_001",
+      "recommended_power": 3500,
+      "reward_daoxing": 150,
+      "reward_mana": 6000,
+      "reward_items": {
+        "refine_material": 5,
+        "treasure_shard": 2
+      },
+      "lore_text": "骷髅山白骨洞的妖气越来越浓——一个女修盘坐在山巅，周身环绕阴冷法器光芒。'小辈，碎我碧云童儿，来偿命吧。'石矶娘娘，八卦云光帕在手。",
+      "victory_text": "八卦云光帕碎裂，石矶娘娘面色大变。'太乙……你竟教出这般弟子！'她化为一道阴风遁走。帕子碎片在你手中微微发光——真人阶段或可重铸。",
+      "visual_keywords": [
+        "石矶娘娘",
+        "骷髅山",
+        "白骨洞",
+        "八卦云光帕",
+        "太阿剑",
+        "阴冷法器"
+      ],
+      "mechanics": "shiji_parasol: 每4回合展开八卦云光帕笼罩全场2回合（玩家术法伤害-40%）。对帕子累积伤害达Boss总血量15%可破帕，破帕后Boss眩晕1回合。血量<25%狂暴：帕子频率变为每2回合。破解：集中爆发破帕/DoT术法/体系物理。",
+      "daily_limit": 3,
+      "weakness": [
+        "body"
+      ]
+    },
+    {
+      "boss_id": "boss_026",
+      "boss_name": "魔礼青",
+      "unlock_condition": "zr_01",
+      "map_id": "map_002",
+      "recommended_power": 8000,
+      "reward_daoxing": 200,
+      "reward_mana": 10000,
+      "reward_items": {
+        "refine_material": 3,
+        "treasure_shard": 2
+      },
+      "lore_text": "汜水关前，第一面旗帜插在关口。一个巨汉拔剑——剑光冲天，一道青芒朝你斩来。魔礼青，魔家四将之首，青云剑在手。",
+      "victory_text": "青云剑哀鸣一声，剑身出现裂纹。魔礼青单膝跪地：'好……好一个修士。'他化为一面旗帜飘散。剑碎片在你手中嗡鸣不止。",
+      "visual_keywords": [
+        "魔礼青",
+        "汜水关",
+        "青云剑",
+        "巨汉",
+        "剑光冲天"
+      ],
+      "mechanics": "mo_liqing_sword: 每5回合祭出青云剑自动追击3回合（额外器系伤害，无视护盾类术法减伤）。血量<30%时剑不回鞘，每回合都有额外剑伤。破解：5回合间隔期集中输出/高回复硬扛/体系近身速战。",
+      "daily_limit": 3,
+      "weakness": [
+        "body"
+      ],
+      "chain_id": "mo_family",
+      "chain_order": 1
+    },
+    {
+      "boss_id": "boss_027",
+      "boss_name": "魔礼海",
+      "unlock_condition": "zr_01",
+      "map_id": "map_002",
+      "recommended_power": 8000,
+      "reward_daoxing": 200,
+      "reward_mana": 10000,
+      "reward_items": {
+        "refine_material": 3,
+        "treasure_shard": 2
+      },
+      "lore_text": "第二面旗帜后，琵琶声响起。音波肉眼可见地扭曲空气——你的思绪开始模糊。魔礼海，碧玉琵琶在手，四弦各含杀机。",
+      "victory_text": "四弦齐断，琵琶声戛然而止。魔礼海捂着耳朵倒退：'我的琵琶！'他化为第二面旗帜飘散。一根琵琶弦在你指间震颤，余音绕梁。",
+      "visual_keywords": [
+        "魔礼海",
+        "碧玉琵琶",
+        "四弦",
+        "音波",
+        "汜水关"
+      ],
+      "mechanics": "mo_lihai_strings: 每回合弹一弦循环：一弦=攻击-15%、二弦=防御-15%、三弦=术法CD+1回合、四弦齐鸣=三效果全叠加持续2回合。第5回合重置。血量<40%直接从三弦起弹。破解：数节奏第4回合前开防御/持续输出型/速战。",
+      "daily_limit": 3,
+      "weakness": [
+        "calamity"
+      ],
+      "chain_id": "mo_family",
+      "chain_order": 2
+    },
+    {
+      "boss_id": "boss_028",
+      "boss_name": "魔礼寿",
+      "unlock_condition": "zr_02",
+      "map_id": "map_002",
+      "recommended_power": 12000,
+      "reward_daoxing": 250,
+      "reward_mana": 12000,
+      "reward_items": {
+        "refine_material": 3,
+        "treasure_shard": 2
+      },
+      "lore_text": "第三面旗帜后，一只异兽咆哮着扑来——而它的主人站在后方，双手抱胸，冷笑着看你。魔礼寿，花狐貂化为护甲覆体。",
+      "victory_text": "花狐貂哀嚎一声被击飞，魔礼寿暴怒着挥拳——但已无护甲的他不过如此。'我的貂儿！'他化为第三面旗帜。一张完整的毛皮落在你面前。",
+      "visual_keywords": [
+        "魔礼寿",
+        "花狐貂",
+        "异兽",
+        "护甲",
+        "汜水关"
+      ],
+      "mechanics": "mo_lishou_armor: Boss拥有额外护甲层（=总血量30%），护甲存在时本体减伤50%。打破护甲=花狐貂被击退=Boss暴怒（减伤消失，攻击力×2）。破解：高爆发先碎甲趁暴怒输出/DoT慢磨/回复硬扛暴怒期。",
+      "daily_limit": 3,
+      "weakness": [
+        "fire"
+      ],
+      "chain_id": "mo_family",
+      "chain_order": 3
+    },
+    {
+      "boss_id": "boss_029",
+      "boss_name": "魔礼红",
+      "unlock_condition": "zr_02",
+      "map_id": "map_002",
+      "recommended_power": 12000,
+      "reward_daoxing": 300,
+      "reward_mana": 15000,
+      "reward_items": {
+        "refine_material": 5,
+        "treasure_shard": 3,
+        "merit": 200
+      },
+      "lore_text": "最后一面旗帜。那道人举起一把黑伞——天，暗了。你抬头，日月星辰消失殆尽。'在我伞下，无人能胜。'魔礼红，混元珍珠伞翻转乾坤。",
+      "victory_text": "混元珍珠伞裂开一道缝，天光重新洒落。魔礼红跪倒在地：'四将……竟败于一人之手。'他化为最后一面旗帜。四面旗帜合一，化为一枚令牌落入你掌中——四大天王令牌。",
+      "visual_keywords": [
+        "魔礼红",
+        "混元珍珠伞",
+        "暗天",
+        "黑伞",
+        "汜水关",
+        "四大天王"
+      ],
+      "mechanics": "mo_lihong_umbrella: 开场第1回合展开混元珍珠伞，全场进入暗天状态（玩家术法伤害-25%，持续整场不可解除）。每6回合伞旋转造成全场劫系AOE高伤害。血量<20%时每2回合一次AOE。破解：DoT/反伤/体系物理/AOE前叠防御。",
+      "daily_limit": 3,
+      "weakness": [
+        "body"
+      ],
+      "chain_id": "mo_family",
+      "chain_order": 4
+    },
+    {
+      "boss_id": "boss_030",
+      "boss_name": "火灵圣母",
+      "unlock_condition": "zr_05",
+      "map_id": "map_003",
+      "recommended_power": 35000,
+      "reward_daoxing": 500,
+      "reward_mana": 30000,
+      "reward_items": {
+        "refine_material": 5,
+        "treasure_shard": 4
+      },
+      "lore_text": "一辆金霞战车从南方飞来，车上女修周身缠绕不灭之火——'截教火龙岛座下，来领教阐教的本事。'火灵圣母，金霞冠灼灼，混元锤在手。",
+      "victory_text": "金霞冠的火焰终于熄灭，火灵圣母跌落战车。'广成子……番天印……'她喃喃着化为一道火光南遁。冠上碎片犹带余温，一枚火龙岛坐标浮现其中。",
+      "visual_keywords": [
+        "火灵圣母",
+        "金霞冠",
+        "火龙岛",
+        "混元锤",
+        "金霞战车",
+        "不灭之火"
+      ],
+      "mechanics": "huoling_burnstack: 每次攻击叠1层灼烧（每层每回合火系小额持续伤害），叠满5层自动引爆=玩家总血量25%真实伤害后清零重叠。血量<30%时每次攻击叠2层。破解：体系防御降DoT/4-5层时爆发/高生命硬扛/火抗法宝。",
+      "daily_limit": 3,
+      "weakness": [
+        "calamity"
+      ]
+    },
+    {
+      "boss_id": "boss_031",
+      "boss_name": "罗宣",
+      "unlock_condition": "zr_10",
+      "map_id": "map_004",
+      "recommended_power": 160000,
+      "reward_daoxing": 800,
+      "reward_mana": 50000,
+      "reward_items": {
+        "refine_material": 8,
+        "treasure_shard": 6
+      },
+      "lore_text": "西岐城头火光冲天。一个红袍道人悬浮在烈焰之上，五件法宝环绕周身——'贫道罗宣，今日替天行道，火净西岐。'五宝连锁，焚城在即。",
+      "victory_text": "五件法宝尽数碎裂，罗宣从烈焰中跌落。'四海瓶……龙吉公主……'他化为漫天火星散去。飞烟剑与万鸦壶的碎片在你手中交鸣，一枚焰中仙传承碎片浮现——这是罗宣道友因缘的前置。",
+      "visual_keywords": [
+        "罗宣",
+        "五件法宝",
+        "飞烟剑",
+        "万鸦壶",
+        "五龙轮",
+        "照天印",
+        "万里起云烟",
+        "焚城",
+        "红袍道人"
+      ],
+      "mechanics": "luoxuan_fivefire: 每回合随机祭出5件火系法宝之一（飞烟剑=单体高伤/万鸦壶=3回合AOE/五龙轮=必中追踪/照天印=延迟2回合爆炸/万里起云烟=术法伤害-30%持续2回合）。5件各出现≥1次后触发焚城（50%最大生命火伤）→Boss冷却2回合。破解：速战/针对性应对/堆火抗硬吃焚城趁冷却反杀。",
+      "daily_limit": 3,
+      "weakness": [
+        "calamity"
       ]
     }
   ]
