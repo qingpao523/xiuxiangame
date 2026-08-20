@@ -2,6 +2,38 @@
 
 ---
 
+## 2026-08-21 — 开局种族开放限定（design/7.4 v0.1）：验收 99 分
+
+### 背景
+- 产品分阶段上线决策：开局「择跟脚」收窄至**只开放人族、妖族**；其余 7 族（先天生灵/麒麟/巫/魔/龙/凤/鸿蒙凶兽）显示「暂未开放」不可选。
+- 缺陷（第一性原理）：`renderRaceChoicePopup`（ui.js:663）把 9 族全渲染成可点按钮；`race_table.json` 的 `unlock_condition` 仅文案，代码从未强制——后期种族提前暴露、可绕过「跟脚定终身」。
+- 关键发现：`reincarnate()`（game.js:1510）用 `createDefault()` 重置 `race_id`/`race_choice_done`，**每次转世重开种族选择** → 锁定必须在逻辑层强制，不能只靠 UI。
+- 流程：先补细节设定 + 写验收标准（design/7.4 v0.1），再实现、逐项打分。
+
+### 实现（三层）
+- **数据层** `web/data/race_table.json`：每行新增显式字段 `open`（human/yao=true，其余 7 族=false）+ `lock_hint`（锁定族主题钩子，如先天生灵「大道遗泽尚未降临——伴生灵宝，静候有缘」）。保留既有 `unlock_condition` 作未来解锁路径记录。未来解锁某族 = 改 `open:true`，零代码改动。
+- **逻辑层** `web/js/game.js`：`chooseRace` 增 `if (row.open !== true) return;`（纵深防御，转世重开亦生效）；新增 `Game.isRaceOpen(raceId)`（缺省视为锁定）供 UI/测试复用。
+- **表现层** `web/js/ui.js` `renderRaceChoicePopup`：开放族照常可点；锁定族 `disabled`+`.locked` class（置灰）+ 名称行「暂未开放」徽章 + 副文案显示 `lock_hint`，无 click handler。9 族全列（开放 2 + 锁定 7）。
+- **样式** `web/style.css`：`.choice-pick.locked`（opacity/grayscale/not-allowed）+ `.choice-lock-badge` + `.choice-lock-hint`。
+
+### 验证
+- `node --check` game.js/ui.js 通过；`race_table.json` 合法 JSON；`audit_integrity` + `audit_completeness` 零问题。
+- 新建 `test_race_open.js`（Node harness，复用 faction 测试加载链）：**28 项断言全过** —— 数据层开放标记 / isRaceOpen 9 族 + 不存在族 / chooseRace 拒绝 7 锁定族 + 接受 human·yao / 锁定 xiantian 不触发伴生灵宝 / 转世重开后锁定仍生效。
+
+### 打分（design/7.4 v0.1 §三）
+| 维度 | 权重 | 分 | 加权 |
+|---|---|---|---|
+| 开放限定正确性 | 30% | 5 | 15 |
+| 锁定呈现 | 20% | 5 | 10 |
+| 防绕过（纵深防御） | 20% | 5 | 10 |
+| 数据机制完整性 | 12% | 5 | 6 |
+| 不破坏现有 | 10% | 5 | 5 |
+| 代码质量 | 8% | 5 | 4 |
+
+原始合计 100；保留 1 分（锁定卡片经代码审查 + DOM-mock 验证，未做浏览器像素级目视）→ **验收 99 ≥ 95 通过**。硬性否决三项（锁定族可选 / 人妖流程破坏 / 仅 UI 置灰无逻辑强制）均不触发。
+
+---
+
 ## 2026-08-21 — AudioManager 立项实现（音效需求.md §4/§5，path B）：验收 99 分
 
 ### 背景

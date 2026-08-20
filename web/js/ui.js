@@ -665,16 +665,31 @@ function renderRaceChoicePopup(panel, title, body, buttons) {
   body.textContent = "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。\n\n跟脚一选定终身，不可更改。";
   const rb = Game.state.rebirth || {};
   for (const row of DataManager.getRows("race_table")) {
+    const isOpen = row.open === true;
     const btn = document.createElement("button"); btn.className = "popup-btn treasure-pick choice-pick";
     const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "命";
     const info = document.createElement("span"); info.className = "choice-info";
     const name = document.createElement("span"); name.className = "choice-name";
     const seen = rb.races_seen?.includes(String(row.race_id));
     name.textContent = `${row.race_name}｜天赋·${row.talent_name}${seen ? "（前世）" : ""}`;
-    const sub = document.createElement("span"); sub.className = "popup-option-sub";
-    sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
+    if (!isOpen) {
+      const badge = document.createElement("span"); badge.className = "choice-lock-badge"; badge.textContent = "暂未开放";
+      name.appendChild(badge);
+    }
+    const sub = document.createElement("span");
+    if (isOpen) {
+      sub.className = "popup-option-sub";
+      sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
+    } else {
+      sub.className = "choice-lock-hint";
+      sub.textContent = row.lock_hint || "此跟脚暂未开放，敬请期待。";
+    }
     info.append(name, sub); btn.append(glyph, info);
-    btn.addEventListener("click", () => { closePopup(); Game.chooseRace(String(row.race_id)); });
+    if (isOpen) {
+      btn.addEventListener("click", () => { closePopup(); Game.chooseRace(String(row.race_id)); });
+    } else {
+      btn.disabled = true; btn.classList.add("locked"); btn.setAttribute("aria-disabled", "true");
+    }
     buttons.appendChild(btn);
   }
 }

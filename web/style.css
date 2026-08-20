@@ -793,6 +793,40 @@ body {
   letter-spacing: 1px;
 }
 
+/* ------- 择跟脚：暂未开放（锁定）态 ------- */
+.choice-pick.locked {
+  opacity: 0.5;
+  filter: grayscale(0.55);
+  cursor: not-allowed;
+  border-color: rgba(150, 140, 120, 0.35);
+}
+.choice-pick.locked .choice-glyph {
+  border-color: rgba(150, 140, 120, 0.4);
+  color: #b8ad97;
+  background: rgba(30, 28, 24, 0.85);
+}
+.choice-pick.locked .choice-name {
+  color: #cfc4ad;
+}
+.choice-lock-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #d8b25a;
+  border: 1px solid rgba(216, 178, 90, 0.5);
+  border-radius: 8px;
+  background: rgba(60, 48, 20, 0.6);
+  vertical-align: middle;
+}
+.choice-lock-hint {
+  font-size: 12px;
+  color: #a99e88;
+  font-style: italic;
+  line-height: 1.5;
+}
+
 /* ------- 破劫演出 ------- */
 
 #tribulation-fx {

@@ -966,10 +966,17 @@ const Game = {
 
   // ---------- 种族与势力 ----------
 
+  isRaceOpen(raceId) {
+    const row = DataManager.getById("race_table", raceId);
+    if (!Object.keys(row).length) return false;
+    return row.open === true; // 缺省（无 open 字段）视为锁定
+  },
+
   chooseRace(raceId) {
     const row = DataManager.getById("race_table", raceId);
     if (!Object.keys(row).length) return;
     if (this.state.flags.race_choice_done) return;
+    if (row.open !== true) return; // 暂未开放的种族不可选（纵深防御，转世重开选择亦生效）
     this.state.race_id = String(raceId); this.state.flags.race_choice_done = true;
     if (String(raceId) === "xiantian" && !this.state.treasures.treasure_009) this.state.treasures.treasure_009 = { level: 1, owned: true };
     this._log(`你觉醒了跟脚：${row.race_name}。`);
