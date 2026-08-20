@@ -39,7 +39,7 @@ const BattleUIV2 = {
       slotEl.dataset.index = i;
 
       if (slots[i]) {
-        const skill = BattleEngineV2.getSkillData(slots[i]);
+        const skill = BattleEngineV2.getSkillData(this._slotId(slots[i]));
         if (skill) {
           slotEl.classList.add("filled", `element-${skill.spell_type}`);
           if (this._selIdx === i) slotEl.classList.add("selected");
@@ -65,6 +65,26 @@ const BattleUIV2 = {
             SaveManager.save(state);
             this._rerenderConfig();
           });
+          // 条件触发·释放条件下拉（design/8.0 策略层）
+          const condSel = document.createElement("select");
+          condSel.className = "slot-cond";
+          condSel.title = "释放条件";
+          const curCond = this._slotCond(slots[i]);
+          for (const opt of BattleEngineV2.conditionOptions()) {
+            const o = document.createElement("option");
+            o.value = opt.value; o.textContent = opt.label;
+            if (opt.value === curCond) o.selected = true;
+            condSel.appendChild(o);
+          }
+          condSel.addEventListener("click", (ev) => ev.stopPropagation());
+          condSel.addEventListener("change", (ev) => {
+            ev.stopPropagation();
+            slots[i] = { id: this._slotId(slots[i]), condition: condSel.value };
+            state.battle_slots = slots;
+            SaveManager.save(state);
+            this._rerenderConfig();
+          });
+          slotEl.appendChild(condSel);
         }
       } else {
         slotEl.classList.add("empty");
@@ -73,8 +93,8 @@ const BattleUIV2 = {
 
       // 连锁高亮：相邻同系
       if (i > 0 && slots[i] && slots[i - 1]) {
-        const prev = BattleEngineV2.getSkillData(slots[i - 1]);
-        const curr = BattleEngineV2.getSkillData(slots[i]);
+        const prev = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
+        const curr = BattleEngineV2.getSkillData(this._slotId(slots[i]));
         if (prev && curr && prev.spell_type === curr.spell_type) {
           slotEl.classList.add("combo-active");
         }
@@ -117,7 +137,7 @@ const BattleUIV2 = {
       group.appendChild(groupLabel);
 
       for (const skill of skills) {
-        const inSlot = slots.includes(skill.id);
+        const inSlot = slots.some((e) => this._slotId(e) === skill.id);
         const item = document.createElement("div");
         item.className = `skill-item rarity-${skill.rarity}${inSlot ? " in-slot" : ""}`;
         item.innerHTML = `
@@ -128,7 +148,7 @@ const BattleUIV2 = {
         `;
         if (!inSlot && slots.length < maxSlots) {
           item.addEventListener("click", () => {
-            slots.push(skill.id);
+            slots.push({ id: skill.id, condition: "always" });
             this._selIdx = -1;
             state.battle_slots = slots;
             SaveManager.save(state);
@@ -173,7 +193,7 @@ const BattleUIV2 = {
       if (!state.skill_levels[id]) state.skill_levels[id] = 1;
     }
     // 故意把两个体系技能隔开（中间夹雷系），让玩家发现"同系相邻"
-    state.battle_slots = ["skill_body_01", "skill_thunder_01", "skill_body_02"];
+    state.battle_slots = [{ id: "skill_body_01", condition: "always" }, { id: "skill_thunder_01", condition: "always" }, { id: "skill_body_02", condition: "always" }];
     this._selIdx = -1;
     this._tutSolved = false;
     SaveManager.save(state);
@@ -228,8 +248,8 @@ const BattleUIV2 = {
 
   _tutorialHasCombo(slots) {
     for (let i = 1; i < slots.length; i++) {
-      const a = BattleEngineV2.getSkillData(slots[i - 1]);
-      const b = BattleEngineV2.getSkillData(slots[i]);
+      const a = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
+      const b = BattleEngineV2.getSkillData(this._slotId(slots[i]));
       if (a && b && a.spell_type === b.spell_type) return true;
     }
     return false;
@@ -240,7 +260,7 @@ const BattleUIV2 = {
     cells.forEach((cell) => {
       const idx = parseInt(cell.dataset.index, 10);
       const slots = (this._cfgCtx && this._cfgCtx.state.battle_slots) || [];
-      const sk = BattleEngineV2.getSkillData(slots[idx]);
+      const sk = BattleEngineV2.getSkillData(this._slotId(slots[idx]));
       if (sk && sk.spell_type === "body") cell.classList.add("tut-shake");
     });
   },
@@ -283,8 +303,8 @@ const BattleUIV2 = {
     let comboElement = null;
 
     for (let i = 1; i < slots.length; i++) {
-      const prev = BattleEngineV2.getSkillData(slots[i - 1]);
-      const curr = BattleEngineV2.getSkillData(slots[i]);
+      const prev = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
+      const curr = BattleEngineV2.getSkillData(this._slotId(slots[i]));
       if (prev && curr && prev.spell_type === curr.spell_type) {
         currentCombo++;
         comboElement = curr.spell_type;
@@ -321,7 +341,7 @@ const BattleUIV2 = {
     body.appendChild(logBox);
 
     // 初始信息
-    this._appendLog(logBox, `你与${battle.name}对上了气机，斗法开始！`, "system");
+    this._appendLog(logBox, `你与${battle.name}气机相触，斗法就此展开。`, "system");
     for (const evt of battle.pendingEvents.splice(0)) {
       if (typeof evt === "string") this._appendLog(logBox, evt, "system");
     }
@@ -413,7 +433,7 @@ const BattleUIV2 = {
         case "attack": {
           const cls = evt.combo ? "combo-hit" : "normal-hit";
           const comboText = evt.combo ? ` <span class="combo-badge">${this._elementName(evt.element)}系共鸣！×${evt.comboMult}</span>` : "";
-          this._appendLog(logBox, `${evt.skillName} → ${evt.targetName} <b>${formatInt(evt.damage)}</b>${comboText}`, cls);
+          this._appendLog(logBox, `${evt.skillName} 施于 ${evt.targetName}，伤 <b>${formatInt(evt.damage)}</b>${comboText}`, cls);
             // SFX-03 五系出招音色（雷/火/剑/魂/劫），高速时节流避免连珠刺耳。
             if (typeof AudioManager !== "undefined") {
               const now = performance.now();
@@ -425,37 +445,42 @@ const BattleUIV2 = {
           break;
         }
         case "kill":
-          this._appendLog(logBox, `${evt.targetName} 溃散！`, "kill-line");
+          this._appendLog(logBox, `${evt.targetName} 道消身陨，溃散当场！`, "kill-line");
+          break;
+        case "slot_wait":
+          this._appendLog(logBox, `${evt.skillName} 引而不发（${this._conditionLabel(evt.condition)}）。`, "wait-line");
           break;
         case "ultimate":
           this._showUltimateOverlay(evt, zone);
           if (typeof AudioManager !== "undefined") AudioManager.playSfx("tribulation_rumble", { dur: 1.0, gain: 0.5 }); // SFX-04 终极声势
           this._appendLog(logBox, `【${evt.name}】${evt.visual_text}`, "ultimate-line");
-          if (evt.total_damage) this._appendLog(logBox, `造成 ${formatInt(evt.total_damage)} 伤害！`, "ultimate-dmg");
-          if (evt.damage) this._appendLog(logBox, `造成 ${formatInt(evt.damage)} 伤害！`, "ultimate-dmg");
-          if (evt.detonate_damage) this._appendLog(logBox, `引爆雷伤 ${formatInt(evt.detonate_damage)}！`, "ultimate-dmg");
+          if (evt.total_damage) this._appendLog(logBox, `共伤 ${formatInt(evt.total_damage)}！`, "ultimate-dmg");
+          if (evt.damage) this._appendLog(logBox, `伤 ${formatInt(evt.damage)}！`, "ultimate-dmg");
+          if (evt.detonate_damage) this._appendLog(logBox, `引雷炸裂，再伤 ${formatInt(evt.detonate_damage)}！`, "ultimate-dmg");
           break;
         case "enemy_attack":
-          this._appendLog(logBox, `${evt.name}${evt.label}，你受 ${formatInt(evt.damage)} 伤害。`, "enemy-line");
+          if (battle.stats) battle.stats.lastHit = evt.name;
+          this._appendLog(logBox, `${evt.name}${evt.label}，你受创 ${formatInt(evt.damage)}。`, "enemy-line");
           break;
         case "enemy_charged_attack":
-          this._appendLog(logBox, `${evt.name}蓄势重击！你受 ${formatInt(evt.damage)} 伤害。`, "enemy-heavy");
+          if (battle.stats) battle.stats.lastHit = evt.name;
+          this._appendLog(logBox, `${evt.name}蓄势既久，骤然重击！你受创 ${formatInt(evt.damage)}。`, "enemy-heavy");
           break;
         case "enemy_stunned":
         case "enemy_paralyzed":
-          this._appendLog(logBox, `${evt.name}无法行动！`, "control-line");
+          this._appendLog(logBox, `${evt.name}气机受制，动弹不得！`, "control-line");
           break;
         case "enemy_burn_tick":
-          this._appendLog(logBox, `${evt.name}被灵火灼烧，受 ${formatInt(evt.damage)} 伤害。`, "burn-line");
+          this._appendLog(logBox, `灵火灼体，${evt.name}受焚 ${formatInt(evt.damage)}。`, "burn-line");
           break;
         case "player_burn":
-          this._appendLog(logBox, `邪火焚身，你受 ${formatInt(evt.damage)} 伤害。`, "player-hurt");
+          this._appendLog(logBox, `邪火焚身，你受灼 ${formatInt(evt.damage)}。`, "player-hurt");
           break;
         case "player_defeated":
-          this._appendLog(logBox, "你护住灵台，且战且退。", "defeat-line");
+          this._appendLog(logBox, "你勉护灵台一线，且战且退，暂避其锋。", "defeat-line");
           break;
         case "victory":
-          this._appendLog(logBox, `${battle.name}溃散！斗法胜利！`, "victory-line");
+          this._appendLog(logBox, `${battle.name}溃散！此战告捷！`, "victory-line");
           break;
         case "mechanic":
           this._appendLog(logBox, this._mechanicText(evt), "mechanic-line");
@@ -488,10 +513,33 @@ const BattleUIV2 = {
     setTimeout(() => overlay.remove(), 2800);
   },
 
+  // 败因摘要：复盘此战胜负关键，助玩家调整配招与条件
+  _renderDefeatSummary(battle, logBox) {
+    const st = battle.stats || { dealt: 0, taken: 0, lastHit: "" };
+    const foes = battle.enemies || [];
+    const remainFoes = foes.filter((e) => e.hp > 0);
+    const totalEnemyHp = foes.reduce((a, e) => a + Math.max(0, e.hp), 0);
+    const lines = [];
+    lines.push(`回合：撑至第 ${int(battle.round, 0)} 回合`);
+    lines.push(`输出：累计造成 ${formatInt(st.dealt)} 伤害`);
+    lines.push(`承伤：累计承受 ${formatInt(st.taken)} 伤害`);
+    if (st.lastHit) lines.push(`败因：${st.lastHit} 给予致命一击`);
+    if (remainFoes.length) lines.push(`残敌：尚有 ${remainFoes.length} 敌未灭（余血 ${formatInt(totalEnemyHp)}）`);
+    const box = document.createElement("div");
+    box.className = "defeat-summary";
+    box.innerHTML = `<div class="defeat-title">此战小记</div>` + lines.map((l) => `<div class="defeat-line">${l}</div>`).join("")
+      + `<div class="defeat-tip">提示：调整斗法栏顺序触发同系共鸣，或为术法设置释放条件以应对强敌。</div>`;
+    logBox.appendChild(box);
+    logBox.scrollTop = logBox.scrollHeight;
+  },
+
   _renderBattleEnd(battle, logBox, zone, panel) {
     if (battle._ended) return;
     battle._ended = true;
     if (battle._timer) clearInterval(battle._timer);
+
+    // 败因摘要（design/8.0 展示层）：仅败北时给出可复盘的战报小结
+    if (!battle.win) this._renderDefeatSummary(battle, logBox);
 
     const endRow = document.createElement("div");
     endRow.className = "battle-end-row";
@@ -507,18 +555,22 @@ const BattleUIV2 = {
   },
 
   _updateHealthBars(zone, battle) {
-    // 敌方
-    let enemyBar = zone.querySelector(".enemy-hp-bar");
-    if (!enemyBar) {
-      enemyBar = document.createElement("div");
-      enemyBar.className = "enemy-hp-bar";
-      zone.prepend(enemyBar);
+    // 敌方（多敌人：逐一显示血条，败者灰显）
+    let enemyBox = zone.querySelector(".enemy-hp-box");
+    if (!enemyBox) {
+      enemyBox = document.createElement("div");
+      enemyBox.className = "enemy-hp-box";
+      zone.prepend(enemyBox);
     }
-    const mainEnemy = battle.enemies.find((e) => e.hp > 0) || battle.enemies[0];
-    if (mainEnemy) {
-      const pct = Math.max(0, Math.round((mainEnemy.hp / mainEnemy.hpMax) * 100));
-      enemyBar.innerHTML = `<span class="bar-name">${mainEnemy.name}</span><div class="bar-track"><div class="bar-fill enemy" style="width:${pct}%"></div></div><span class="bar-num">${formatInt(mainEnemy.hp)}</span>`;
-    }
+    enemyBox.innerHTML = battle.enemies.map((e) => {
+      const dead = e.hp <= 0;
+      const pct = Math.max(0, Math.round((e.hp / Math.max(1, e.hpMax)) * 100));
+      const charging = (e.charged || e.intent === "charge") && !dead;
+      return `<div class="enemy-hp-bar${dead ? " dead" : ""}${charging ? " charging" : ""}">`
+        + `<span class="bar-name">${e.name}${charging ? " ·蓄" : ""}</span>`
+        + `<div class="bar-track"><div class="bar-fill enemy" style="width:${pct}%"></div></div>`
+        + `<span class="bar-num">${dead ? "败" : formatInt(e.hp)}</span></div>`;
+    }).join("");
 
     // 己方
     let playerBar = zone.querySelector(".player-hp-bar");
@@ -566,6 +618,21 @@ const BattleUIV2 = {
   },
 
   // ---------- 工具 ----------
+
+  // 斗法栏条目读取（兼容字符串与 {id,condition} 对象）
+  _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
+  _slotCond(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
+
+  // 条件触发·短标签（用于战报与缩略）
+  _conditionLabel(cond) {
+    const c = String(cond || "always");
+    if (c === "always" || c === "") return "常发";
+    const opt = (BattleEngineV2.conditionOptions ? BattleEngineV2.conditionOptions() : []).find((o) => o.value === c);
+    if (opt) return opt.label;
+    const [k, a] = c.split(":");
+    const zh = { every_n: `每${a}轮`, enemy_hp_below: `敌血<${a}%`, self_hp_below: `己血<${a}%`, enemy_charging: "敌蓄势", round_gte: `第${a}轮起` };
+    return zh[k] || c;
+  },
 
   _elementName(el) {
     const names = { body: "体", thunder: "雷", fire: "火", weapon: "器", soul: "魂", calamity: "劫" };

@@ -2,6 +2,37 @@
 
 ---
 
+## 2026-08-21 — 战斗统一化 + 条件触发系统 + 展示层补全（design/8.3 验收 98 分）
+
+### 变更摘要
+承接 design/8.0 与用户两轮指令（①「原来的战斗机制完全废除，删除全部内容，只用新的战斗机制」；② 战斗展示设计参考：两血条 + 逐行战报 + 0.5s 悬念 + 条件触发系统 + 半文言战报 + 败因摘要）。
+
+**A. 废除旧卡牌战斗系统（硬指令）**
+- 删除 `web/js/battle-engine.js`（旧卡牌引擎 1157 行）与孤儿遗留 `web/game.js`/`web/ui.js`（内含旧 BattleEngine，未被 index.html 加载）；`index.html` 移除旧引擎 `<script>`。
+- `game.js`：遭遇战/Boss/破劫/杀阵全部改走 `startBattleV2`；`startBossBattle` 收敛为 `startBossBattleV2` 薄包装；删除旧 `startBattle`、`battlePlayCard/battleEndTurn/battleAutoStep/battleToggleManual/battleRefreshHand`、`isBattleV2/toggleBattleV2`。
+- `ui.js`：删除旧 `renderBattlePopup`（卡牌渲染器）+ `appendBattleLine` + 弹窗路由 `kind==="battle"` 分支；术法面板「斗法栏·配招」常驻可点（移除 V2 开关与 disabled 门控）；红点判定去除 battle_v2_enabled。
+- `save-manager.js`：移除 `battle_v2_enabled` 默认值/迁移空检查。
+- grep 全库无旧引擎残留；net 删除约 1230 行。
+
+**B. 条件触发系统（★★★★★ 核心策略层）**
+- `battle-engine-v2.js`：斗法栏条目支持 `{id, condition}`（兼容旧字符串→always）；新增 `_conditionPasses`（6 类文法：always / every_n:N / enemy_hp_below:pct / self_hp_below:pct / enemy_charging / round_gte:N）+ `conditionOptions` 清单；`executePlayerRound` 逐格判定条件，不满足则跳过并 push `slot_wait`；连锁判定保持基于配置相邻（与条件正交）。
+- `battle-ui-v2.js`：配招每格新增「释放条件」下拉；战报渲染 `slot_wait`（引而不发）+ `_conditionLabel` 中文短标签。
+- `save-manager.js`：`battle_slots` 条目归一为对象（含 starter）。
+- 测试：15 条条件逻辑断言全过 + 整场战斗集成验证（门控/等待/低血触发）+ WIN/LOSS smoke。
+
+**C. 展示层补全**
+- 多敌人血条（修 P1 bug）：`_updateHealthBars` 逐一渲染所有敌人（败者灰显、蓄势高亮），旧版只显示第一个活敌。
+- 败因摘要：`_renderDefeatSummary`（回合/累计输出/累计承伤/致命一击/残敌余血 + 配招提示）；引擎 `battle.stats{dealt,taken,lastHit}` 统计。
+- 半文言战报：开战/出招/击杀/受击/蓄势/控制/灼烧/胜负/终极等关键日志改半文言 register。
+- 情绪节奏：战报行入场动画（blogIn 0.35s）+ 既有半拍延迟骨架。
+- CSS：`.slot-cond`/`.defeat-summary`/`.enemy-hp-box`（dead/charging）/blogIn 动画。
+
+### 验收（CLAUDE.md #6/#8，对照 design/8.3 完整范围逐项核对）
+A 旧系统废除 20/20 · B 条件触发 34/35 · C 展示层 24/25 · 兼容稳定 12/12 · 代码卫生 8/8 = **98/100，≥95 通过**。
+对抗审查（#4）：enemy_charging 与意图系统字段一致；lastHit 由 UI 回填、跳过模式优雅省略；多敌血条 innerHTML 全量重绘在敌人数量级（≤4）无性能问题。
+
+---
+
 ## 2026-08-21 — 设定思考资料入库（design/设定思考/）
 
 ### 变更摘要

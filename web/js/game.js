@@ -345,7 +345,7 @@ const Game = {
     if (option.kind === "battle") {
       const map = DataManager.getById("map_table", String(enc.map_id));
       const enemyPower = Math.max(50, Math.round(num(map.recommended_power, 300) * num(option.enemy_power_ratio, 0.25)));
-      this.startBattle({ name: String(option.enemy_name || enc.name), enemy_power: enemyPower, source: "encounter", payload: { encounterId, optionIndex } });
+      this.startBattleV2({ name: String(option.enemy_name || enc.name), enemy_power: enemyPower, source: "encounter", payload: { encounterId, optionIndex } });
       return;
     }
     if (option.kind === "safe") { this._applyEncounterOutcome(enc, option.success, true); return; }
@@ -368,7 +368,7 @@ const Game = {
       const map = DataManager.getById("map_table", String(enc.map_id));
       const ratio = num(cfg.power_ratio, 0.2);
       const enemyPower = Math.max(50, Math.round(num(map.recommended_power, 300) * ratio));
-      this.startBattle({ name: String(cfg.enemy_name || name), enemy_power: enemyPower, source: "encounter", payload: { encounterId: enc.encounter_id, optionIndex } });
+      this.startBattleV2({ name: String(cfg.enemy_name || name), enemy_power: enemyPower, source: "encounter", payload: { encounterId: enc.encounter_id, optionIndex } });
       return;
     }
     if (type === "choice") {
@@ -417,24 +417,9 @@ const Game = {
     this._afterMutated();
   },
 
-  // ---------- 斗法 ----------
+  // ---------- 斗法（统一走斗法栏连锁制 V2） ----------
 
-  startBattle(cfg) { const battle = BattleEngine.create(this.state, cfg); this.queuePopup({ kind: "battle", battle }); this._emit(); return battle; },
-
-  startBossBattle(bossId) {
-    if (this.isBattleV2()) return this.startBossBattleV2(bossId);
-    const boss = DataManager.getById("boss_table", bossId);
-    if (!Object.keys(boss).length) return;
-    if (!BossManager.canChallenge(this.state, bossId)) { this.queuePopup({ kind: "text", title: "挑战", body: "此地妖气未聚，明日再来。", buttons: [{ label: "知道了" }] }); return; }
-    this.state.boss_counts_today[bossId] = int(this.state.boss_counts_today[bossId]) + 1;
-    this._log(`你踏入${boss.boss_name}的巢穴，妖气扑面而来。`);
-    const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
-      boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }],
-      boss_020: [{ name: "碧霄", power: num(boss.recommended_power) * 0.5 }, { name: "琼霄", power: num(boss.recommended_power) * 0.5 }] }[bossId] || []; // boss_020 trio_attack 机制：三霄三体同时
-    const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
-    this.startBattle({ name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, weakness: boss.weakness || null, payload: { bossId } });
-    this._afterMutated();
-  },
+  startBossBattle(bossId) { return this.startBossBattleV2(bossId); },
 
   getArrayAvailability() {
     const today = getTodayArray();
@@ -454,32 +439,8 @@ const Game = {
     this.state.array_counts_today[id] = int(this.state.array_counts_today[id]) + 1;
     this._log(`你踏入${arr.array_name}，杀劫阵势轰然合拢。`);
     const phases = (arr.phases || []).map((p) => ({ name: String(p.name), power_ratio: num(p.power_ratio, 0.7), intro: String(p.intro || ""), pool: ARRAY_INTENTS[String(p.pool)] || ARRAY_INTENTS.zhenshi }));
-    this.startBattle({ name: arr.array_name, source: "array", phases, bannerLabel: "阵势", payload: { arrayId: id } });
+    this.startBattleV2({ name: arr.array_name, source: "array", phases, bannerLabel: "阵势", payload: { arrayId: id } });
     this._afterMutated();
-  },
-
-  battlePlayCard(battle, handIndex, targetIndex = 0) { const events = BattleEngine.playCard(this.state, battle, handIndex, targetIndex); this._emit(); return events; },
-  battleEndTurn(battle) { const events = BattleEngine.endPlayerTurn(this.state, battle); this._emit(); return events; },
-  battleAutoStep(battle) { const result = BattleEngine.autoStep(this.state, battle); this._emit(); return result; },
-  battleToggleManual(battle) { BattleEngine.toggleManual(this.state, battle); this._emit(); return battle.manual; },
-  battleRefreshHand(battle) { const result = BattleEngine.refreshHand(this.state, battle); this._emit(); return result; },
-
-  // ---------- 斗法 V2：斗法栏连锁制 ----------
-
-  isBattleV2() { return !!this.state.battle_v2_enabled; },
-
-  toggleBattleV2() {
-    this.state.battle_v2_enabled = !this.state.battle_v2_enabled;
-    SaveManager.save(this.state);
-    this._log(this.state.battle_v2_enabled ? "斗法V2（斗法栏连锁制）已开启。" : "斗法V2已关闭，回到卡牌斗法。");
-    this._emit();
-    // 首次开启V2：触发新手教学（三层递进引导）
-    if (this.state.battle_v2_enabled && !this.state.flags.battle_v2_tutorial_done) {
-      this._log("初窥斗法栏之妙——且随我来，悟一招「道法共鸣」。");
-      BattleUIV2.startTutorial(this.state);
-      drainPopupQueue();
-    }
-    return this.state.battle_v2_enabled;
   },
 
   openSlotConfig() {
@@ -938,7 +899,7 @@ const Game = {
     const breakdown = BreakthroughManager.getRateBreakdown(this.state, data);
     const phases = TRIBULATION_PHASES[id] || TRIBULATION_PHASES.bt_001;
     this._log(`榜文垂光，${data.display_name}的劫数显化而出。`);
-    this.startBattle({ name: "封神榜文", source: "breakthrough", phases, payload: { breakthroughId: id, rate: num(breakdown?.rate), failCount: int(this.state.breakthrough_fail_counts[id]), guarantee: int(data.guarantee_after_fail, 99) } });
+    this.startBattleV2({ name: "封神榜文", source: "breakthrough", phases, payload: { breakthroughId: id, rate: num(breakdown?.rate), failCount: int(this.state.breakthrough_fail_counts[id]), guarantee: int(data.guarantee_after_fail, 99) } });
   },
 
   // ---------- 机缘 ----------

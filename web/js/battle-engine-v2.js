@@ -67,6 +67,8 @@ const BattleEngineV2 = {
       weakness: cfg.weakness || null,
       mechanicState: { turnCount: 0 },
       spellDmgReduction: 0, // Boss机制：术法伤害减免（0-1）
+      // 战报统计（败因摘要用，design/8.0 展示层）
+      stats: { dealt: 0, taken: 0, lastHit: "" },
       // 终极
       ultimateUsed: false,
       // 劫修叠加
@@ -106,14 +108,72 @@ const BattleEngineV2 = {
     return battle;
   },
 
+  // ---------- 条件触发系统（design/8.0 策略层） ----------
+  // 条件文法：always | every_n:<N> | enemy_hp_below:< pct> | self_hp_below:<pct> | enemy_charging | round_gte:<N>
+  // 玩家借此“编程”角色AI：Boss机制是谜面，条件配置是谜底。
+  _conditionPasses(condition, battle, slotIndex) {
+    const cond = String(condition || "always").trim();
+    if (cond === "always" || cond === "") return true;
+    const round = int(battle.round, 1);
+    const [key, arg] = cond.split(":");
+    const n = parseInt(arg, 10);
+    switch (key) {
+      case "every_n": {
+        const period = Math.max(2, isNaN(n) ? 2 : n);
+        // 第1轮即释放，其后每隔 period 轮一次
+        return ((round - 1) % period) === 0;
+      }
+      case "enemy_hp_below": {
+        const pct = isNaN(n) ? 50 : n;
+        const alive = battle.enemies.filter((e) => e.hp > 0);
+        if (!alive.length) return false;
+        return alive.some((e) => (e.hp / Math.max(1, e.hpMax)) * 100 < pct);
+      }
+      case "self_hp_below": {
+        const pct = isNaN(n) ? 50 : n;
+        return (battle.playerHp / Math.max(1, battle.playerHpMax)) * 100 < pct;
+      }
+      case "enemy_charging": {
+        return battle.enemies.some((e) => e.hp > 0 && (e.charged || e.intent === "charge"));
+      }
+      case "round_gte": {
+        const threshold = isNaN(n) ? 1 : n;
+        return round >= threshold;
+      }
+      default:
+        return true;
+    }
+  },
+
+  // 条件触发·配置端可选清单（供UI下拉与文案）
+  conditionOptions() {
+    return [
+      { value: "always", label: "每轮释放" },
+      { value: "every_n:2", label: "每隔1轮" },
+      { value: "every_n:3", label: "每隔2轮" },
+      { value: "enemy_hp_below:50", label: "敌血<50%" },
+      { value: "enemy_hp_below:30", label: "敌血<30%" },
+      { value: "self_hp_below:50", label: "己血<50%" },
+      { value: "self_hp_below:30", label: "己血<30%" },
+      { value: "enemy_charging", label: "敌方蓄势时" },
+      { value: "round_gte:3", label: "第3轮起" },
+      { value: "round_gte:5", label: "第5轮起" },
+    ];
+  },
+
+  // 归一化斗法栏条目：兼容旧字符串数组与新 {id, condition} 对象
+  _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
+  _slotCondition(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
+
   _resolveSlots(state) {
-    const slotIds = state.battle_slots || [];
+    const rawSlots = state.battle_slots || [];
     const slots = [];
-    for (const id of slotIds) {
+    for (const entry of rawSlots) {
+      const id = this._slotId(entry);
       const data = this.getSkillData(id);
       if (data) {
         const lv = int(state.skill_levels?.[id], 1);
-        slots.push({ ...data, level: lv });
+        slots.push({ ...data, level: lv, condition: this._slotCondition(entry) });
       }
     }
     // 如果玩家没配（新存档），给默认体系三连
@@ -121,7 +181,7 @@ const BattleEngineV2 = {
       const defaults = ["skill_body_01", "skill_thunder_01", "skill_fire_01"];
       for (const id of defaults) {
         const data = this.getSkillData(id);
-        if (data) slots.push({ ...data, level: 1 });
+        if (data) slots.push({ ...data, level: 1, condition: "always" });
       }
     }
     return slots;
@@ -212,6 +272,11 @@ const BattleEngineV2 = {
     for (let i = 0; i < battle.slots.length; i++) {
       if (aliveEnemies().length === 0) break;
       const skill = battle.slots[i];
+      // 条件触发系统：栏位仅在其条件满足时释放（design/8.0 策略层）
+      if (!this._conditionPasses(skill.condition, battle, i)) {
+        events.push({ type: "slot_wait", slotIndex: i, skillName: skill.name, condition: skill.condition || "always" });
+        continue;
+      }
       const target = aliveEnemies().reduce((a, b) => (a.hp < b.hp ? a : b), aliveEnemies()[0]);
 
       // 基础伤害
@@ -558,6 +623,7 @@ const BattleEngineV2 = {
       dmg -= absorbed;
     }
     enemy.hp = Math.max(0, enemy.hp - dmg);
+    if (battle.stats) battle.stats.dealt += dmg;
     return dmg;
   },
 
@@ -601,6 +667,7 @@ const BattleEngineV2 = {
       }
     }
     battle.playerHp = Math.max(0, battle.playerHp - dmg);
+    if (battle.stats) { battle.stats.taken += dmg; }
     return dmg;
   },
 

@@ -75,11 +75,10 @@ const SaveManager = {
         divination: {},
       card_upgrades: {},
       battle_blessing: null,
-      // ===== 战斗系统V2：斗法栏连锁制 =====
+      // ===== 斗法栏连锁制 =====
       battle_slots: [],
       unlocked_skills: [],
       skill_levels: {},
-      battle_v2_enabled: false,
       // ===== 音频设置（AudioManager，音效需求.md §4）=====
       audio: { master: 0.8, sfx: 0.85, ambient: 0.45, music: 0.6, muted: false },
     };
@@ -137,9 +136,10 @@ const SaveManager = {
     state.battle_blessing = state.battle_blessing || null;
     // ===== 战斗系统V2：斗法栏连锁制 存档迁移 =====
     state.battle_slots = state.battle_slots || [];
+    // 条件触发系统：斗法栏条目归一为 {id, condition}（兼容旧字符串数组）
+    state.battle_slots = state.battle_slots.map((e) => (e && typeof e === "object") ? { id: String(e.id), condition: String(e.condition || "always") } : { id: String(e), condition: "always" });
     state.unlocked_skills = state.unlocked_skills || [];
     state.skill_levels = state.skill_levels || {};
-    if (state.battle_v2_enabled == null) state.battle_v2_enabled = false;
     // ===== 音频设置迁移（AudioManager）=====
     state.audio = state.audio || {};
     if (state.audio.master == null) state.audio.master = 0.8;
@@ -168,7 +168,7 @@ const SaveManager = {
           state.skill_levels[vid] = Math.max(int(state.skill_levels[vid], 1), int(state.spells[sid].level));
         }
       }
-      if (state.battle_slots.length === 0) state.battle_slots = starter.slice();
+      if (state.battle_slots.length === 0) state.battle_slots = starter.map((id) => ({ id, condition: "always" }));
     }
     // 丹房：渡厄丹存货 / 培元丹药效截止时间
     state.pills = state.pills || {};
