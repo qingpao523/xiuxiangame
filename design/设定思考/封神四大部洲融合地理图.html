@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>封神 × 山海经 · 四大部洲融合地理图</title>
+<style>
+  :root{--ink:#22283a;--inkblue:#2e5fa3;--muted:#7a8090;--parch:#f6f1e6;--sea:#e9eef2;--line:#d8d2c2;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--parch);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);}
+  .wrap{max-width:1200px;margin:0 auto;padding:32px 20px 60px;}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:.5px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+  .frame{background:var(--sea);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 2px 10px rgba(30,40,60,.06);}
+  svg{display:block;width:100%;height:auto;border-radius:8px;background:radial-gradient(circle at 50% 50%,#eef3f7 0%,#e2e9ef 70%,#d9e2e9 100%);}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12.5px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .note{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:16px;padding-top:12px;}
+  .note b{color:#b3542e;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>封神 × 山海经 · 四大部洲融合地理图</h1>
+  <div class="sub">融合设定示意图（非原著地理）· 以「西方教=佛教前身、封神榜=天庭班底」为缝合线</div>
+
+  <div class="frame">
+  <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif">
+    <defs>
+      <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="10"/></filter>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8a90a0"/></marker>
+    </defs>
+
+    <!-- 咸海波纹 -->
+    <g stroke="#c4d0da" stroke-width="1" fill="none" opacity="0.5">
+      <path d="M150 600 q30 -12 60 0 q30 12 60 0"/>
+      <path d="M700 250 q30 -12 60 0 q30 12 60 0"/>
+      <path d="M950 650 q30 -12 60 0"/>
+      <path d="M300 300 q30 -12 60 0 q30 12 60 0"/>
+      <path d="M820 180 q30 -12 60 0"/>
+    </g>
+
+    <!-- 四大部洲 -->
+    <g filter="url(#soft)" opacity="0.5">
+      <rect x="372" y="50" width="456" height="148" rx="18" fill="#d9d4e8"/>
+      <rect x="854" y="332" width="296" height="248" rx="18" fill="#d3e5db"/>
+      <rect x="50" y="332" width="296" height="248" rx="18" fill="#f0e2bd"/>
+      <rect x="312" y="642" width="576" height="204" rx="18" fill="#ecd6b8"/>
+    </g>
+
+    <!-- 北俱芦洲 -->
+    <rect x="370" y="48" width="460" height="152" rx="18" fill="#e6e1f0" stroke="#b9aecb"/>
+    <text x="600" y="86" text-anchor="middle" font-size="22" font-weight="700" fill="#5a4f7d">北俱芦洲</text>
+    <text x="600" y="108" text-anchor="middle" font-size="12" fill="#7a7095">北荒 · 妖族之地</text>
+    <g>
+      <circle cx="452" cy="156" r="6" fill="#7a4fd0"/><text x="452" y="176" text-anchor="middle" font-size="12.5" fill="#3d3557">章尾山 · 烛龙</text>
+      <circle cx="592" cy="128" r="6" fill="#7a4fd0"/><text x="592" y="148" text-anchor="middle" font-size="12.5" fill="#3d3557">北荒妖族（女娲招妖）</text>
+      <circle cx="700" cy="156" r="6" fill="#7a4fd0"/><text x="700" y="176" text-anchor="middle" font-size="12.5" fill="#3d3557">钟山 · 烛阴</text>
+      <circle cx="768" cy="112" r="6" fill="#7a4fd0"/><text x="768" y="132" text-anchor="middle" font-size="12.5" fill="#3d3557">发鸠之山 · 精卫</text>
+    </g>
+
+    <!-- 东胜神洲 -->
+    <rect x="852" y="330" width="298" height="250" rx="18" fill="#d8e9de" stroke="#a3c4b0"/>
+    <text x="1001" y="368" text-anchor="middle" font-size="22" font-weight="700" fill="#2f6b4f">东胜神洲</text>
+    <text x="1001" y="390" text-anchor="middle" font-size="12" fill="#5a8070">东海诸岛 · 截教 · 龙族</text>
+    <g>
+      <circle cx="1001" cy="440" r="6" fill="#0e8a6d"/><text x="1001" y="462" text-anchor="middle" font-size="12.5" fill="#2f6b4f">金鳌岛碧游宫</text>
+      <text x="1001" y="478" text-anchor="middle" font-size="11" fill="#5a8070">（截教总坛）</text>
+      <circle cx="1001" cy="516" r="6" fill="#0e8a6d"/><text x="1001" y="538" text-anchor="middle" font-size="12.5" fill="#2f6b4f">东海 · 应龙</text>
+      <circle cx="1088" cy="560" r="5" fill="#9aa3b5"/><text x="1088" y="577" text-anchor="middle" font-size="11" fill="#8a90a0">傲来国·花果山<text fill="#b3542e">※</text></text>
+    </g>
+
+    <!-- 西牛贺洲 -->
+    <rect x="50" y="330" width="296" height="250" rx="18" fill="#f2e6c2" stroke="#d5bf8a"/>
+    <text x="198" y="368" text-anchor="middle" font-size="22" font-weight="700" fill="#8a6d3b">西牛贺洲</text>
+    <text x="198" y="390" text-anchor="middle" font-size="12" fill="#a08a5c">西方教 · 后为西天灵山</text>
+    <g>
+      <circle cx="198" cy="440" r="6" fill="#8a6d3b"/><text x="198" y="462" text-anchor="middle" font-size="12.5" fill="#6b5429">西天灵山</text>
+      <text x="198" y="478" text-anchor="middle" font-size="11" fill="#a08a5c">（接引·准提 → 佛教）</text>
+      <circle cx="198" cy="520" r="6" fill="#8a6d3b"/><text x="198" y="542" text-anchor="middle" font-size="12.5" fill="#6b5429">西方教道场</text>
+    </g>
+
+    <!-- 南赡部洲 -->
+    <rect x="310" y="640" width="580" height="206" rx="18" fill="#efdcbd" stroke="#d3b281"/>
+    <text x="600" y="680" text-anchor="middle" font-size="22" font-weight="700" fill="#8a5a2b">南赡部洲</text>
+    <text x="600" y="702" text-anchor="middle" font-size="12" fill="#a08050">商周中原 · 人道主舞台</text>
+
+    <!-- 五关连线 -->
+    <line x1="850" y1="756" x2="500" y2="756" stroke="#b3542e" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#arr)"/>
+    <g font-size="11.5" fill="#8a5a2b" text-anchor="middle">
+      <circle cx="850" cy="756" r="6" fill="#b3542e"/><text x="850" y="736">朝歌（商都）</text>
+      <circle cx="788" cy="756" r="4.5" fill="#d08a5a"/><text x="788" y="776">临潼关</text>
+      <circle cx="736" cy="756" r="4.5" fill="#d08a5a"/><text x="736" y="776">潼关</text>
+      <circle cx="684" cy="756" r="4.5" fill="#d08a5a"/><text x="684" y="776">穿云关</text>
+      <circle cx="632" cy="756" r="4.5" fill="#d08a5a"/><text x="632" y="776">界牌关</text>
+      <circle cx="580" cy="756" r="4.5" fill="#d08a5a"/><text x="580" y="776">汜水关</text>
+      <circle cx="500" cy="756" r="6" fill="#b3542e"/><text x="500" y="736">西岐（周都）</text>
+    </g>
+    <g font-size="11.5" fill="#8a5a2b">
+      <circle cx="856" cy="806" r="5" fill="#c88a4a"/><text x="856" y="826" text-anchor="middle">陈塘关（哪吒·李靖）</text>
+      <circle cx="940" cy="730" r="5" fill="#c88a4a"/><text x="940" y="748" text-anchor="middle">青丘之山 · 九尾狐</text>
+      <circle cx="430" cy="806" r="5" fill="#c88a4a"/><text x="430" y="826" text-anchor="middle">孟津渡</text>
+      <circle cx="660" cy="826" r="5" fill="#c88a4a"/><text x="660" y="846" text-anchor="middle">牧野</text>
+    </g>
+
+    <!-- 中央须弥山 -->
+    <circle cx="600" cy="452" r="74" fill="#31406b" stroke="#1e2b47" stroke-width="2"/>
+    <circle cx="600" cy="452" r="52" fill="#3d507f"/>
+    <path d="M600 388 L618 430 L590 430 Z" fill="#f4f6fb"/>
+    <text x="600" y="470" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">须弥山</text>
+    <text x="600" y="488" text-anchor="middle" font-size="11" fill="#c6d0e8">仙佛中枢</text>
+
+    <!-- 昆仑山（西侧近中心） -->
+    <g>
+      <circle cx="470" cy="360" r="6" fill="#2e5fa3"/><text x="470" y="344" text-anchor="middle" font-size="12.5" fill="#2e5fa3" font-weight="600">昆仑山</text>
+      <text x="470" y="320" text-anchor="middle" font-size="11" fill="#5a6f8f">玉虚宫（阐教总坛）</text>
+      <text x="470" y="304" text-anchor="middle" font-size="11" fill="#5a6f8f">昆仑之丘 · 陆吾 / 玉山 · 西王母</text>
+    </g>
+
+    <!-- 罗盘 -->
+    <g transform="translate(1120,80)" opacity="0.85">
+      <circle r="34" fill="none" stroke="#8a90a0" stroke-width="1.5"/>
+      <path d="M0 -26 L6 6 L0 2 L-6 6 Z" fill="#31406b"/>
+      <text y="-42" text-anchor="middle" font-size="12" font-weight="700" fill="#5a6478">北</text>
+      <text x="46" y="4" text-anchor="middle" font-size="12" fill="#5a6478">东</text>
+      <text y="56" text-anchor="middle" font-size="12" fill="#5a6478">南</text>
+      <text x="-46" y="4" text-anchor="middle" font-size="12" fill="#5a6478">西</text>
+    </g>
+  </svg>
+  </div>
+
+  <div class="legend">
+    <span class="chip"><span class="dot" style="background:#ecd6b8"></span>南赡部洲 · 人间</span>
+    <span class="chip"><span class="dot" style="background:#d8e9de"></span>东胜神洲 · 截教/龙族</span>
+    <span class="chip"><span class="dot" style="background:#f2e6c2"></span>西牛贺洲 · 西方教</span>
+    <span class="chip"><span class="dot" style="background:#e6e1f0"></span>北俱芦洲 · 妖族</span>
+    <span class="chip"><span class="dot" style="background:#31406b"></span>须弥山 · 中枢</span>
+    <span class="chip"><span class="dot" style="background:#b3542e"></span>五关 · 伐纣路线</span>
+    <span class="chip"><span class="dot" style="background:#2e5fa3"></span>昆仑 · 阐教</span>
+  </div>
+
+  <div class="note">
+    <b>说明</b>：本图为「四大部洲 × 封神/山海经」<b>融合设定示意图</b>，非任何原著的地理原貌——原著《封神演义》用商周中原（朝歌↔西岐）+ 仙山洞府，《山海经》用五藏山经+海经，两书均无「四大部洲」。图上 <b style="color:#b3542e">※</b> 花果山为《西游记》元素，仅作后世缝合参照。四大部洲框架出自《西游记》/佛教宇宙观。
+  </div>
+</div>
+</body>
+</html>
