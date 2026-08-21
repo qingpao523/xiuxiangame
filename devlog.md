@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-08-21 — 镇魔塔设计立项（design/12.0 v0.1，落地 D5a）
+
+承接用户指令「按顺序做 design/12.0《镇魔塔》」，落地主控 D5a（🔒已锁）。属设计规格文档（非功能代码批次），不走 CLAUDE.md #6 验收评分；文档内含实现批次用的验收标准（≥95）。
+
+**design/12.0《镇魔塔 v0.1》**（269行）核心：
+- **定位**：贯穿全生命周期的周期性推塔活动（用户原话「二天刷一次/类普通手游推塔/生命链常驻支柱」）。**非叙事主线**（主脊柱仍卷章卷一~卷八）、**非开放刷怪**（合 D2 纯1v1具名Boss）、**非地图**（不进 map_table，独立活动入口复用战斗引擎）。
+- **2天周期**：cycleIndex=Math.floor(epochDay/2)，mirror unlock-manager.js:123 _resetDailyIfNeeded；新增 _resetTowerCycleIfNeeded。
+- **登塔令（券）商业化口子**：state.tower_tickets 计数器（**非** resource_id，不污染 8 资源经济表），TOWER_TICKET_CAP=3/期，消耗1令登塔，不跨期囤积；当前券掉落/领取供无付费测试，预留 purchaseTowerTickets() 商业化[买]桩（远期）。与 Boss 日限独立（塔击杀不消耗 boss_counts_today）。
+- **境界缩放**：10段×10层=100层，段首层境界门同 map_table 节奏（rq_03→zs_01）；power_mult 段内 1.0→1.5，跨段随 boss_table.recommended_power 跃升；reward 随段递增。炼气爬1-10、混元爬91-100，同一座塔贯穿全程。
+- **Boss复用**：tower_table.floor→boss_id 引用 boss_table 31 Boss（含九Boss boss_023-031、魔家四将连战 boss_026-029 chain_id）；mechanics/weakness 原样带入（前提九Boss机制接线 design/8.1/8.2，未接线退化为纯数值战不阻塞塔）。
+- **代码触点**：startTowerRun/_nextTowerFloor/_endTowerRun + finishBattle 新增 source:"tower" 分支（胜→_applyResourceDelta+升层+best_floor；败→本期定格弹战报；不挂 first_clear_event/rest popup）。
+- **排期**：批次3（卷三地仙）首落30层，批次4-6扩至100层；登塔令[买]来源远期需服务端。
+- **待设计师确认**：UI入口位置/令上限/层数总量/败惩罚/排行榜（7项开放问题）。
+
+**主控回写**：design/14.0 v0.5——D5a 关联文档「需立 design/12.0」→「design/12.0 v0.1（已立）」；索引 12.0 由⚪待立升已立；变更记录 v0.5。
+
 ## 2026-08-21 — 地图容器 M0/M1/F2/F3 落地（代码先行 + 美术需求 §12）
 
 ### 背景
