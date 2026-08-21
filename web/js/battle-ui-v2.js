@@ -79,12 +79,40 @@ const BattleUIV2 = {
           condSel.addEventListener("click", (ev) => ev.stopPropagation());
           condSel.addEventListener("change", (ev) => {
             ev.stopPropagation();
-            slots[i] = { id: this._slotId(slots[i]), condition: condSel.value };
+            slots[i] = { id: this._slotId(slots[i]), condition: condSel.value, treasure: this._slotTreasure(slots[i]) };
             state.battle_slots = slots;
             SaveManager.save(state);
             this._rerenderConfig();
           });
           slotEl.appendChild(condSel);
+
+          // 方案B·法宝绑定下拉（法宝.wuxing = 本格共鸣左元）
+          const ownedTreasures = this._ownedTreasures(state);
+          if (ownedTreasures.length > 0) {
+            const tSel = document.createElement("select");
+            tSel.className = "slot-treasure";
+            tSel.title = "绑定法宝（五行共鸣）";
+            const noneOpt = document.createElement("option");
+            noneOpt.value = ""; noneOpt.textContent = "无法宝";
+            tSel.appendChild(noneOpt);
+            const curT = this._slotTreasure(slots[i]);
+            for (const tr of ownedTreasures) {
+              const o = document.createElement("option");
+              o.value = tr.id;
+              o.textContent = tr.name + (tr.wuxing ? ` [${this._wuxingBadge(tr.wuxing)}]` : "");
+              if (tr.id === curT) o.selected = true;
+              tSel.appendChild(o);
+            }
+            tSel.addEventListener("click", (ev) => ev.stopPropagation());
+            tSel.addEventListener("change", (ev) => {
+              ev.stopPropagation();
+              slots[i] = { id: this._slotId(slots[i]), condition: this._slotCond(slots[i]), treasure: tSel.value || null };
+              state.battle_slots = slots;
+              SaveManager.save(state);
+              this._rerenderConfig();
+            });
+            slotEl.appendChild(tSel);
+          }
         }
       } else {
         slotEl.classList.add("empty");
@@ -335,6 +363,9 @@ const BattleUIV2 = {
     zone.className = "battle-v2-zone";
     body.appendChild(zone);
 
+    // round timeline: action progress bar
+    this._buildTimeline(zone, battle);
+
     // 日志区域
     const logBox = document.createElement("div");
     logBox.className = "battle-v2-log";
@@ -370,54 +401,87 @@ const BattleUIV2 = {
   },
 
   _startAutoLoop(battle, state, logBox, zone, panel) {
-    if (battle._timer) clearInterval(battle._timer);
+    if (battle._animating) return; // reentry guard
+    battle._animating = true;
 
-    const step = () => {
-      if (battle.done) {
-        clearInterval(battle._timer);
-        this._renderBattleEnd(battle, logBox, zone, panel);
-        return;
-      }
+    const delay = () => this._getDelay(battle);
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const alive = () => battle.enemies.filter((e) => e.hp > 0).length;
 
-      // 玩家回合
-      const playerEvents = BattleEngineV2.executePlayerRound(state, battle);
-      this._renderEvents(playerEvents, logBox, zone, battle);
-
-      if (battle.done) {
-        clearInterval(battle._timer);
-        this._renderBattleEnd(battle, logBox, zone, panel);
-        return;
-      }
-
-      // 敌方回合（延迟执行，给演出时间）
-      setTimeout(() => {
-        if (battle.done) return;
-        const enemyEvents = BattleEngineV2.executeEnemyRound(state, battle);
-        this._renderEvents(enemyEvents, logBox, zone, battle);
-
-        if (battle.done) {
-          clearInterval(battle._timer);
-          this._renderBattleEnd(battle, logBox, zone, panel);
+    const runRound = async () => {
+      while (!battle.done && battle._animating) {
+        // === round start (fire domain, boss mechanic) ===
+        const startEvents = BattleEngineV2.startPlayerRound(state, battle);
+        this._tlPlayer(zone, battle, -1, false);
+        this._tlFoe(zone, battle, "reset");
+        if (startEvents.length) {
+          this._renderEvents(startEvents, logBox, zone, battle);
+          if (battle.speed !== 0) await sleep(delay() * 0.5);
         }
-      }, this._getDelay(battle) * 0.5);
+        if (battle.done) break;
+
+        // === slot-level alternation: P[i] -> enemy gap act, repeat ===
+        for (let i = 0; i < battle.slots.length; i++) {
+          if (battle.done) break;
+          if (alive() === 0) break;
+
+          // player casts slot i (foe gauge charges, telegraphing its next move)
+          this._highlightActiveSlot(zone, i);
+          this._tlPlayer(zone, battle, i, false);
+          this._tlFoe(zone, battle, "charging");
+          const slotEvents = BattleEngineV2.executeSingleSlot(state, battle, i);
+          if (slotEvents.length) this._renderEvents(slotEvents, logBox, zone, battle);
+          if (battle.speed !== 0) await sleep(delay());
+          this._highlightActiveSlot(zone, -1);
+          if (battle.done) break;
+          if (alive() === 0) break;
+
+          // enemy gap act fires the telegraphed move
+          this._tlFoe(zone, battle, "firing");
+          const gapEvents = BattleEngineV2.enemyGapAct(state, battle);
+          if (gapEvents.length) this._renderEvents(gapEvents, logBox, zone, battle);
+          if (battle.speed !== 0) await sleep(delay() * 0.7);
+          if (battle.done) break;
+        }
+
+        if (battle.done) break;
+
+        // === player round end (ultimate, lifesteal, victory) ===
+        const endEvents = BattleEngineV2.endPlayerRound(state, battle);
+        if (endEvents.length) {
+          this._renderEvents(endEvents, logBox, zone, battle);
+          if (battle.speed !== 0) await sleep(delay() * 0.6);
+        }
+        if (battle.done) break;
+
+        // === round-end bookkeeping (burn/status decay, boss phase, timeout, next intent) ===
+        const bookEvents = BattleEngineV2.endEnemyRoundBookkeeping(state, battle);
+        if (bookEvents.length) this._renderEvents(bookEvents, logBox, zone, battle);
+        this._tlPlayer(zone, battle, -1, true);
+        this._tlFoe(zone, battle, "done");
+        if (!battle.done && battle.speed !== 0) await sleep(delay() * 0.6);
+      }
+
+      battle._animating = false;
+      this._renderBattleEnd(battle, logBox, zone, panel);
     };
 
-    const interval = this._getDelay(battle) * (battle.slots.length + 2);
-    battle._timer = setInterval(step, Math.max(300, interval));
-    // 立即执行第一步
-    step();
+    runRound();
+  },
+
+  _highlightActiveSlot(zone, activeIndex) {
+    const slotMini = zone.querySelector(".slot-mini-row");
+    if (!slotMini) return;
+    const cells = slotMini.querySelectorAll(".slot-mini");
+    cells.forEach((cell, idx) => {
+      cell.classList.toggle("active-cast", idx === activeIndex);
+    });
   },
 
   _runSkip(battle, state, logBox, zone, panel) {
-    if (battle._timer) clearInterval(battle._timer);
-    const allEvents = BattleEngineV2.runFullAuto(state, battle);
-    // 只显示关键事件
-    for (const evt of allEvents) {
-      if (evt.type === "ultimate" || evt.type === "victory" || evt.type === "player_defeated" || evt.type === "kill") {
-        this._renderEvents([evt], logBox, zone, battle);
-      }
-    }
-    this._renderBattleEnd(battle, logBox, zone, panel);
+    // speed 已被按钮设为 0，动画循环中所有 await sleep 将被跳过，
+    // 循环以无延迟方式瞬间跑完并自行调用 _renderBattleEnd。
+    // 不在此处调用 runFullAuto，避免与正在执行的异步循环产生状态竞争。
   },
 
   _getDelay(battle) {
@@ -427,8 +491,124 @@ const BattleUIV2 = {
     return base;
   },
 
+  // ---------- round timeline: two action bars (you / foe skill frames) ----------
+  _buildTimeline(zone, battle) {
+    let tl = zone.querySelector(".round-timeline");
+    if (tl == null) {
+      tl = document.createElement("div");
+      tl.className = "round-timeline";
+      tl.innerHTML =
+        '<div class="tl-bar tl-you"><span class="tl-bar-label you">\u4f60</span><div class="tl-bar-body">'
+        + '<div class="tl-track"><div class="tl-fill"></div></div><div class="tl-nodes tl-player-nodes"></div>'
+        + '</div></div>'
+        + '<div class="tl-bar tl-foe"><span class="tl-bar-label foe">\u654c</span><div class="tl-bar-body">'
+        + '<div class="tl-foe-track"><div class="tl-foe-charge"></div><div class="tl-foe-nodes"></div></div>'
+        + '</div></div>';
+      zone.prepend(tl);
+    }
+    // top bar: player slot nodes
+    const nodesBox = tl.querySelector(".tl-player-nodes");
+    const circled = ["\u2460", "\u2461", "\u2462", "\u2463", "\u2464", "\u2465", "\u2466", "\u2467"];
+    let phtml = "";
+    for (let i = 0; i < battle.slots.length; i++) {
+      const s = battle.slots[i];
+      phtml += `<div class="tl-node element-${s.spell_type}" data-idx="${i}">`
+        + `<span class="tl-dot">${circled[i] || (i + 1)}</span>`
+        + `<span class="tl-label">${s.name.slice(0, 2)}</span></div>`;
+    }
+    nodesBox.innerHTML = phtml;
+    // bottom bar: enemy skill chips (from intentPool labels, or generic move types)
+    const foeBox = tl.querySelector(".tl-foe-nodes");
+    const skills = this._enemySkillLabels(battle);
+    let ehtml = "";
+    for (let j = 0; j < skills.length; j++) {
+      ehtml += `<div class="tl-eskill" data-label="${skills[j]}">`
+        + `<span class="tl-eskill-dot"></span><span class="tl-eskill-label">${skills[j]}</span></div>`;
+    }
+    foeBox.innerHTML = ehtml;
+    this._tlPlayer(zone, battle, -1, false);
+    this._tlFoe(zone, battle, "reset");
+  },
+
+  // enemy skill frame labels: boss intentPool labels, else generic move types
+  _enemySkillLabels(battle) {
+    const e = (battle.enemies && battle.enemies.length) ? battle.enemies[0] : null;
+    if (e && Array.isArray(e.intentPool) && e.intentPool.length) {
+      const labels = e.intentPool.map((p) => String(p.label || p.type)).filter((x) => x && x !== "undefined");
+      if (labels.length) return labels.slice(0, 6);
+    }
+    return ["\u6251\u51fb", "\u51f6\u5149\u5927\u76db", "\u7f61\u6c14\u62a4\u4f53", "\u55b7\u5410\u90aa\u706b", "\u5636\u543c\u9707\u9b42"];
+  },
+
+  // top bar (you): player slot nodes + gold progress fill
+  _tlPlayer(zone, battle, activeIndex, done) {
+    const tl = zone.querySelector(".round-timeline");
+    if (tl == null) return;
+    const N = battle.slots.length;
+    const nodes = tl.querySelectorAll(".tl-player-nodes .tl-node");
+    nodes.forEach((node, idx) => {
+      node.classList.toggle("active", done !== true && idx === activeIndex);
+      node.classList.toggle("done", done === true || (activeIndex >= 0 && idx < activeIndex));
+    });
+    const fill = tl.querySelector(".tl-fill");
+    if (fill != null) {
+      let pct = 0;
+      if (done === true) pct = 100;
+      else if (activeIndex >= 0) pct = N > 1 ? (activeIndex / (N - 1)) * 100 : 100;
+      fill.style.width = pct + "%";
+    }
+  },
+
+  // bottom bar (foe): charge gauge + skill chips. mode = reset|charging|firing|done
+  _tlFoe(zone, battle, mode) {
+    const tl = zone.querySelector(".round-timeline");
+    if (tl == null) return;
+    const charge = tl.querySelector(".tl-foe-charge");
+    const foeTrack = tl.querySelector(".tl-foe-track");
+    const eskills = tl.querySelectorAll(".tl-eskill");
+    if (charge == null) return;
+    const delay = this._getDelay(battle);
+    const skip = battle.speed === 0;
+    const e = (battle.enemies && battle.enemies.length) ? battle.enemies[0] : null;
+    const intentLabel = (e && e.intent && e.intent.label) ? String(e.intent.label) : null;
+    const matchChip = (sk, cls) => {
+      sk.classList.toggle(cls, intentLabel != null && sk.getAttribute("data-label") === intentLabel);
+    };
+
+    if (mode === "charging") {
+      // gauge fills 0->100% over the slot cast; telegraph the move about to fire
+      charge.style.transitionDuration = "0ms";
+      charge.style.width = "0%";
+      void charge.offsetWidth; // force reflow so the fill animation plays
+      charge.style.transitionDuration = skip ? "0ms" : delay + "ms";
+      charge.style.width = "100%";
+      if (foeTrack != null) foeTrack.classList.remove("release");
+      eskills.forEach((sk) => { matchChip(sk, "telegraph"); sk.classList.remove("firing"); });
+    } else if (mode === "firing") {
+      charge.style.transitionDuration = skip ? "0ms" : "180ms";
+      charge.style.width = "100%";
+      if (foeTrack != null) foeTrack.classList.add("release");
+      eskills.forEach((sk) => { matchChip(sk, "firing"); sk.classList.remove("telegraph"); });
+    } else if (mode === "done") {
+      charge.style.transitionDuration = skip ? "0ms" : "200ms";
+      charge.style.width = "0%";
+      if (foeTrack != null) foeTrack.classList.remove("release");
+      eskills.forEach((sk) => sk.classList.remove("telegraph", "firing"));
+    } else { // reset
+      charge.style.transitionDuration = "0ms";
+      charge.style.width = "0%";
+      if (foeTrack != null) foeTrack.classList.remove("release");
+      eskills.forEach((sk) => sk.classList.remove("telegraph", "firing"));
+    }
+  },
+
   _renderEvents(events, logBox, zone, battle) {
+    // 跳过模式（speed=0）：只显示关键事件，避免日志刷屏
+    const KEY_EVENTS = new Set(["ultimate", "victory", "player_defeated", "kill", "phase_advance"]);
+    const skipMode = battle.speed === 0;
+
     for (const evt of events) {
+      if (skipMode && !KEY_EVENTS.has(evt.type)) continue;
       switch (evt.type) {
         case "attack": {
           const cls = evt.combo ? "combo-hit" : "normal-hit";
@@ -494,6 +674,33 @@ const BattleUIV2 = {
         case "reflect":
           this._appendLog(logBox, `金光反弹！${evt.target}受 ${formatInt(evt.damage)} 伤害！`, "combo-hit");
           break;
+          case "fire_domain":
+            this._appendLog(logBox, `火域燎原，${evt.target}受焚 ${formatInt(evt.damage)}。`, "burn-line");
+            break;
+          case "enemy_charge":
+            this._appendLog(logBox, `${evt.name}${evt.label || "蓄势"}，气机暴涨！`, "enemy-heavy");
+            break;
+          case "enemy_charge_blocked":
+            this._appendLog(logBox, `${evt.name}蓄势被锁，难以凝聚。`, "control-line");
+            break;
+          case "enemy_block":
+            this._appendLog(logBox, `${evt.name}凝罡护体（罡气 ${formatInt(evt.block)}）。`, "enemy-line");
+            break;
+          case "enemy_burn":
+            this._appendLog(logBox, `${evt.name}施以邪火，你被灼烧（+${formatInt(evt.burn)}）。`, "player-hurt");
+            break;
+          case "enemy_weak":
+            this._appendLog(logBox, `${evt.name}施以弱咒，你的攻势受挫。`, "player-hurt");
+            break;
+          case "enemy_miss":
+            this._appendLog(logBox, `${evt.name}一击落空！`, "control-line");
+            break;
+          case "self_burn_tick":
+            this._appendLog(logBox, `赤焰反噬，你自灼 ${formatInt(evt.damage)}。`, "player-hurt");
+            break;
+          case "timeout":
+            this._appendLog(logBox, "斗法逾时，胜负未分，只得作罢。", "defeat-line");
+            break;
         default:
           break;
       }
@@ -536,7 +743,7 @@ const BattleUIV2 = {
   _renderBattleEnd(battle, logBox, zone, panel) {
     if (battle._ended) return;
     battle._ended = true;
-    if (battle._timer) clearInterval(battle._timer);
+    battle._animating = false;
 
     // 败因摘要（design/8.0 展示层）：仅败北时给出可复盘的战报小结
     if (!battle.win) this._renderDefeatSummary(battle, logBox);
@@ -613,15 +820,53 @@ const BattleUIV2 = {
       six_soul: `六魂幡摇动——你的罡气、圣盾、增益尽散！`,
       picture_world: `山河社稷图展开——你被拉入图中！`,
       immortal: `${evt.name}被榜文照身，满血复活！`,
+      zhangguifang_interrupt: evt.text || "张桂芳呼名落马，术法溃散！",
+      aobing_transform: evt.text || "敖丙化现龙形！",
+      shiji_parasol: evt.text || "石矶祭起八卦云光帕！",
+      shiji_parasol_break: evt.text || "八卦云光帕应声而破！",
+      shiji_parasol_swordqi: evt.text || "石矶狂暴，剑气连斩！",
+      mo_liqing_sword: evt.text || "魔礼青青云剑出鞘！",
+      mo_lihai_strings: evt.text || "魔礼海拨动琵琶！",
+      mo_lishou_armor: evt.text || "魔礼寿花狐貂护甲！",
+      mo_lishou_armor_break: evt.text || "花狐貂被击退，魔礼寿暴怒！",
+      mo_lihong_umbrella: evt.text || "魔礼红撑开混元珍珠伞！",
+      huoling_burnstack: evt.text || "火灵金霞冠灼烧！",
+      huoling_burnstack_tick: evt.text || "灼烧蔓延！",
+      huoling_burnstack_add: evt.text || "灼烧叠加！",
+      huoling_burnstack_detonate: evt.text || "灼烧引爆！",
+      luoxuan_fivefire: evt.text || "罗宣祭出火系法宝！",
+      luoxuan_fivefire_burn_city: evt.text || "五宝齐祭——焚城！",
     };
-    return map[evt.mechanic] || `机制触发：${evt.mechanic}`;
+    return map[evt.mechanic] || evt.text || `机制触发：${evt.mechanic}`;
   },
 
   // ---------- 工具 ----------
 
-  // 斗法栏条目读取（兼容字符串与 {id,condition} 对象）
+  // 斗法栏条目读取（兼容字符串与 {id,condition,treasure} 对象）
   _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
   _slotCond(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
+  _slotTreasure(entry) { return (entry && typeof entry === "object" && entry.treasure) ? String(entry.treasure) : null; },
+
+  // 方案B：玩家已拥有法宝（level>0），供斗法栏每格绑定
+  _ownedTreasures(state) {
+    const out = [];
+    const t = state.treasures || {};
+    for (const tid of Object.keys(t)) {
+      if (Number(t[tid] && t[tid].level) > 0) {
+        const row = BattleEngineV2.getTreasureData ? BattleEngineV2.getTreasureData(tid) : null;
+        out.push({ id: tid, name: row ? row.treasure_name : tid, wuxing: row && row.wuxing ? String(row.wuxing) : null });
+      }
+    }
+    return out;
+  },
+
+  // 五行短标签（共鸣左元徽章）
+  _wuxingBadge(wx) {
+    if (!wx) return "";
+    if (typeof ResonanceSystem !== "undefined" && ResonanceSystem.wuxingLabel) return ResonanceSystem.wuxingLabel(wx);
+    const names = { wood: "木", fire: "火", earth: "土", metal: "金", water: "水" };
+    return names[wx] || wx;
+  },
 
   // 条件触发·短标签（用于战报与缩略）
   _conditionLabel(cond) {

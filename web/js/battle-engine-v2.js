@@ -1,5 +1,8 @@
 "use strict";
 
+// 夹招单次伤害系数：逐格轮流后敌方每回合行动 slots 次，初版缩到 0.4 约等于旧单次强度（🔴待数值验证）
+const ENEMY_GAP_DAMAGE_MULT = 0.4;
+
 // ===== 战斗引擎 V2：斗法栏连锁制 =====
 // 配招5分钟，斗法全自动。
 // 核心：栏位顺序释放 → 同系连锁×1.3 → 三连终极 → Boss抗性/弱点
@@ -10,6 +13,14 @@ const BattleEngineV2 = {
   getSkillData(skillId) {
     const rows = DataManager.getRows("skill_table");
     return rows.find((r) => r.id === skillId) || null;
+  },
+
+  // 法宝数据（方案B：每格斗法栏绑定一件法宝，法宝.wuxing = 该格共鸣左元）
+  getTreasureData(treasureId) {
+    if (!treasureId) return null;
+    if (DataManager.getById) return DataManager.getById("treasure_table", treasureId) || null;
+    const rows = DataManager.getRows("treasure_table");
+    return rows.find((r) => r.treasure_id === treasureId) || null;
   },
 
   getUltimateConfig() {
@@ -90,6 +101,9 @@ const BattleEngineV2 = {
       _revengeActive: false,
       _reflectRatio: 0.5,
       _racePassive: null,
+      _lastEnemyActElement: null, // 逐格轮流：上一次敌方夹招的系（破共鸣用）
+      _lastEnemyActWuxing: null, // 逐格轮流：上一次敌方夹招的五行（middleWuxing）
+      _enemyGapMult: ENEMY_GAP_DAMAGE_MULT, // 夹招单次伤害系数
       // 日志
       log: [],
       pendingEvents: [],
@@ -104,6 +118,7 @@ const BattleEngineV2 = {
 
     // 开局buff（法宝被动、势力、神位等）
     this._applyStartBuffs(state, battle);
+    if (typeof BossMechanicsV2 !== "undefined") BossMechanicsV2.init(state, battle); // 九Boss机制铺底（design/8.1）
 
     return battle;
   },
@@ -161,9 +176,10 @@ const BattleEngineV2 = {
     ];
   },
 
-  // 归一化斗法栏条目：兼容旧字符串数组与新 {id, condition} 对象
+  // 归一化斗法栏条目：兼容旧字符串数组与新 {id, condition, treasure} 对象
   _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
   _slotCondition(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
+  _slotTreasure(entry) { return (entry && typeof entry === "object" && entry.treasure) ? String(entry.treasure) : null; },
 
   _resolveSlots(state) {
     const rawSlots = state.battle_slots || [];
@@ -173,7 +189,11 @@ const BattleEngineV2 = {
       const data = this.getSkillData(id);
       if (data) {
         const lv = int(state.skill_levels?.[id], 1);
-        slots.push({ ...data, level: lv, condition: this._slotCondition(entry) });
+        // 方案B：绑定法宝 → 取法宝.wuxing 作为本格共鸣左元（无绑定/法宝无五行 → null）
+        const treasureId = this._slotTreasure(entry);
+        const treasure = treasureId ? this.getTreasureData(treasureId) : null;
+        const wuxing = (treasure && treasure.wuxing) ? String(treasure.wuxing) : null;
+        slots.push({ ...data, level: lv, condition: this._slotCondition(entry), treasure: treasureId, wuxing });
       }
     }
     // 如果玩家没配（新存档），给默认体系三连
@@ -181,7 +201,7 @@ const BattleEngineV2 = {
       const defaults = ["skill_body_01", "skill_thunder_01", "skill_fire_01"];
       for (const id of defaults) {
         const data = this.getSkillData(id);
-        if (data) slots.push({ ...data, level: 1, condition: "always" });
+        if (data) slots.push({ ...data, level: 1, condition: "always", treasure: null, wuxing: null });
       }
     }
     return slots;
@@ -242,14 +262,19 @@ const BattleEngineV2 = {
     }
   },
 
-  // ---------- 主循环（一步执行一轮，供UI逐帧调用） ----------
+  // ---------- 主循环（分步执行，供UI逐格动画调用） ----------
 
-  // 执行一轮玩家攻击（所有栏位按序释放）
-  executePlayerRound(state, battle) {
+  // ===== 逐格分步接口（供UI逐格动画调用） =====
+
+  // 回合开始：火域结算 + Boss机制·回合开始
+  startPlayerRound(state, battle) {
     if (battle.done) return [];
     const events = [];
     battle.round += 1;
     battle.mechanicState.turnCount += 1;
+    battle._roundDamage = 0;
+    battle._lastEnemyActElement = null;
+    battle._lastEnemyActWuxing = null;
 
     // 火域结算（回合开始）
     if (battle.fireDomainTurns > 0) {
@@ -265,79 +290,117 @@ const BattleEngineV2 = {
     // Boss机制·回合开始
     this._processMechanicTurnStart(state, battle, events);
 
-    // 逐格释放
-    const aliveEnemies = () => battle.enemies.filter((e) => e.hp > 0);
-    let roundDamage = 0; // 用于魂系终极回血
-
-    for (let i = 0; i < battle.slots.length; i++) {
-      if (aliveEnemies().length === 0) break;
-      const skill = battle.slots[i];
-      // 条件触发系统：栏位仅在其条件满足时释放（design/8.0 策略层）
-      if (!this._conditionPasses(skill.condition, battle, i)) {
-        events.push({ type: "slot_wait", slotIndex: i, skillName: skill.name, condition: skill.condition || "always" });
-        continue;
-      }
-      const target = aliveEnemies().reduce((a, b) => (a.hp < b.hp ? a : b), aliveEnemies()[0]);
-
-      // 基础伤害
-      let dmg = this._calcBaseDamage(skill, battle);
-      // 引雷符：下一同系加成消耗
-      if (battle._nextElementBonus && battle._nextElementBonus.element === skill.spell_type) {
-        dmg = Math.floor(dmg * (1 + battle._nextElementBonus.bonus));
-        battle._nextElementBonus = null;
-      }
-
-      // 连锁判定：与前一格同系
-      let comboMult = 1;
-      let comboTriggered = false;
-      if (i > 0 && battle.slots[i - 1].spell_type === skill.spell_type) {
-        comboMult = this._getComboMultiplier(battle.benming, skill.spell_type);
-        comboTriggered = true;
-      }
-      dmg = Math.floor(dmg * comboMult);
-
-      // 劫修叠加
-      if (battle.rageStack > 0) {
-        dmg = Math.floor(dmg * (1 + 0.15 * battle.rageStack));
-      }
-      if (battle.rageAllTurns > 0) {
-        dmg = Math.floor(dmg * 1.5);
-      }
-
-      // 抗性/弱点
-      dmg = this._applyResistance(dmg, skill.spell_type, target, battle);
-
-      // 全局乘区
-      dmg = this._applyGlobalMult(dmg, state, battle, skill);
-
-      // 特殊效果
-      const specialResult = this._applySpecialEffect(skill, target, battle, state, dmg);
-      dmg = specialResult.finalDamage;
-
-      // 应用伤害
-      const actualDmg = this._dealDamageToEnemy(target, dmg, battle);
-      roundDamage += actualDmg;
-
-      // 日志
-      events.push({
-        type: "attack",
-        slotIndex: i,
-        skillName: skill.name,
-        element: skill.spell_type,
-        damage: actualDmg,
-        combo: comboTriggered,
-        comboMult: comboMult,
-        targetName: target.name,
-        special: specialResult.event || null,
-      });
-
-      // 检查击杀
-      if (target.hp <= 0) {
-        events.push({ type: "kill", targetName: target.name });
-      }
+    // 检查火域是否击杀
+    if (battle.enemies.every((e) => e.hp <= 0)) {
+      this._checkPhaseOrWin(battle, events);
     }
 
-    // 三连终极检测（在逐格释放后检测连续三格）
+    return events;
+  },
+
+  // 执行单个栏位释放（逐格动画用）
+  executeSingleSlot(state, battle, slotIndex) {
+    if (battle.done) return [];
+    const events = [];
+    const aliveEnemies = () => battle.enemies.filter((e) => e.hp > 0);
+    if (aliveEnemies().length === 0) return events;
+
+    const skill = battle.slots[slotIndex];
+    if (!skill) return events;
+
+    // 条件触发系统
+    if (!this._conditionPasses(skill.condition, battle, slotIndex)) {
+      events.push({ type: "slot_wait", slotIndex, skillName: skill.name, condition: skill.condition || "always" });
+      return events;
+    }
+
+    const target = aliveEnemies().reduce((a, b) => (a.hp < b.hp ? a : b), aliveEnemies()[0]);
+
+    // 基础伤害
+    let dmg = this._calcBaseDamage(skill, battle);
+    if (battle._nextElementBonus && battle._nextElementBonus.element === skill.spell_type) {
+      dmg = Math.floor(dmg * (1 + battle._nextElementBonus.bonus));
+      battle._nextElementBonus = null;
+    }
+
+    // 连锁判定：与前一格同系
+    let comboMult = 1;
+    let comboTriggered = false;
+    let comboBroken = false;       // 共鸣是否被敌方夹招相克而破
+    let middleElement = null;      // 夹在 ①② 之间的敌方那招的系
+    if (slotIndex > 0 && battle.slots[slotIndex - 1].spell_type === skill.spell_type) {
+      comboTriggered = true;
+      // 共鸣系统（多通道）：五行共鸣 / 套装共鸣 / …。夹招取上一格后敌方行动的元素。
+      // 五行通道仅当 left 与夹招都带五行才参与（wuxing 字段待数据接入，当前惰性）。
+      middleElement = this._enemyResonanceElement(battle);
+      const resoCtx = {
+        leftSkill: battle.slots[slotIndex - 1],
+        leftWuxing: battle.slots[slotIndex - 1].wuxing || null,
+        middleElement: middleElement,
+        middleWuxing: battle._lastEnemyActWuxing || (middleElement && middleElement.wuxing) || null,
+        battle: battle,
+      };
+      const reso = (typeof ResonanceSystem !== "undefined")
+        ? ResonanceSystem.evaluate(resoCtx)
+        : { mult: this._getComboMultiplier(battle.benming, skill.spell_type), broken: false, results: [] };
+      comboBroken = reso.broken;
+      comboMult = reso.broken ? reso.mult : this._getComboMultiplier(battle.benming, skill.spell_type);
+    }
+    dmg = Math.floor(dmg * comboMult);
+
+    // 劫修叠加
+    if (battle.rageStack > 0) {
+      dmg = Math.floor(dmg * (1 + 0.15 * battle.rageStack));
+    }
+    if (battle.rageAllTurns > 0) {
+      dmg = Math.floor(dmg * 1.5);
+    }
+
+    // 抗性/弱点
+    dmg = this._applyResistance(dmg, skill.spell_type, target, battle);
+
+    // 全局乘区
+    dmg = this._applyGlobalMult(dmg, state, battle, skill);
+
+    // 特殊效果
+    const specialResult = this._applySpecialEffect(skill, target, battle, state, dmg);
+    dmg = specialResult.finalDamage;
+
+    // 应用伤害
+    const actualDmg = this._dealDamageToEnemy(target, dmg, battle);
+    battle._roundDamage = (battle._roundDamage || 0) + actualDmg;
+    if (typeof BossMechanicsV2 !== "undefined") BossMechanicsV2.onPlayerDamageDealt(state, battle, target, actualDmg, events); // 八卦云光帕累积/花狐貂护甲（design/8.1）
+
+    // 日志
+    events.push({
+      type: "attack",
+      slotIndex,
+      skillName: skill.name,
+      element: skill.spell_type,
+      damage: actualDmg,
+      combo: comboTriggered,
+      comboMult: comboMult,
+      comboBroken: comboBroken,
+      middleElement: middleElement,
+      targetName: target.name,
+      special: specialResult.event || null,
+    });
+
+    // 检查击杀
+    if (target.hp <= 0) {
+      events.push({ type: "kill", targetName: target.name });
+    }
+
+    return events;
+  },
+
+  // 回合结束：终极检测 + 魂系回血 + 劫修叠加 + 胜利检测
+  endPlayerRound(state, battle) {
+    if (battle.done) return [];
+    const events = [];
+    const roundDamage = battle._roundDamage || 0;
+
+    // 三连终极检测
     if (!battle.ultimateUsed) {
       const ultResult = this._checkAndApplyUltimate(battle, state, roundDamage);
       if (ultResult) {
@@ -367,75 +430,133 @@ const BattleEngineV2 = {
     return events;
   },
 
-  // 执行敌方回合
-  executeEnemyRound(state, battle) {
+  // ===== 整轮执行（兼容 runFullAuto / 跳过模式） =====
+
+  // 执行一轮玩家攻击（所有栏位按序释放，一次性返回全部事件）
+  executePlayerRound(state, battle) {
     if (battle.done) return [];
     const events = [];
 
-    for (const e of battle.enemies.filter((x) => x.hp > 0)) {
-      // 麻痹/眩晕检查
-      if (e.statuses.paralyze > 0) {
-        e.statuses.paralyze -= 1;
-        events.push({ type: "enemy_paralyzed", name: e.name });
-        continue;
-      }
-      if (e.statuses.stun > 0) {
-        e.statuses.stun -= 1;
-        events.push({ type: "enemy_stunned", name: e.name });
-        continue;
-      }
+    events.push(...this.startPlayerRound(state, battle));
+    if (battle.done) return events;
 
-      // 蓄力重击
-      if (e.charged) {
-        const dmg = this._damagePlayer(state, battle, Math.max(1, Math.round(e.power * 0.35)));
-        e.charged = false;
-        events.push({ type: "enemy_charged_attack", name: e.name, damage: dmg });
-        continue;
-      }
-
-      // 意图执行
-      const intent = e.intent || this._rollIntent(e);
-      if (intent.type === "attack") {
-        let value = intent.value || Math.max(1, Math.round(e.power * 0.2));
-        if (e.statuses.weak > 0) {
-          const weakRed = e.statuses.weakReduction || 0.25;
-          value = Math.max(1, Math.round(value * (1 - weakRed)));
-        }
-        // 雷震：slow减伤
-        if (e.statuses.slow > 0) {
-          value = Math.max(1, Math.round(value * (1 - (e.statuses.slowReduction || 0.3))));
-          e.statuses.slow -= 1;
-        }
-        // 迷心术：miss判定
-        if (battle._missTurns > 0 && battle._missChance > 0 && Math.random() < battle._missChance) {
-          events.push({ type: "enemy_miss", name: e.name });
-          e.intent = null;
-          continue;
-        }
-        const dmg = this._damagePlayer(state, battle, value);
-        // 噬血诀：受伤后激活revenge
-        if (dmg > 0 && battle._revengeBonus > 0) battle._revengeActive = true;
-        events.push({ type: "enemy_attack", name: e.name, label: intent.label || "扑击", damage: dmg });
-      } else if (intent.type === "charge") {
-        if (e.statuses.lock > 0) {
-          events.push({ type: "enemy_charge_blocked", name: e.name });
-        } else {
-          e.charged = true;
-          events.push({ type: "enemy_charge", name: e.name, label: intent.label || "蓄势" });
-        }
-      } else if (intent.type === "block") {
-        e.block += intent.value || Math.round(e.power * 0.08);
-        events.push({ type: "enemy_block", name: e.name, block: e.block });
-      } else if (intent.type === "curse_burn") {
-        const burnDmg = Math.max(2, Math.round(e.power * num(intent.ratio, 0.03)));
-        battle.playerStatuses.burn += burnDmg;
-        events.push({ type: "enemy_burn", name: e.name, burn: burnDmg });
-      } else if (intent.type === "curse_weak") {
-        battle.playerStatuses.weak = 2;
-        events.push({ type: "enemy_weak", name: e.name });
-      }
-      e.intent = null;
+    for (let i = 0; i < battle.slots.length; i++) {
+      if (battle.enemies.filter((e) => e.hp > 0).length === 0) break;
+      events.push(...this.executeSingleSlot(state, battle, i));
     }
+
+    events.push(...this.endPlayerRound(state, battle));
+
+    return events;
+  },
+
+  // 执行敌方回合（V2逐格轮流：拆为 夹招enemyGapAct + 回合末结算endEnemyRoundBookkeeping）
+
+  // 单个敌方单位的一次行动（从回合循环体抽出，用于逐格轮流夹招）
+  // 返回该次行动的 element（用于破共鸣），无则 null
+  _enemySingleAct(state, battle, e, events) {
+    const gapMult = battle._enemyGapMult != null ? battle._enemyGapMult : 1;
+    // 麻痹/眩晕检查
+    if (e.statuses.paralyze > 0) {
+      e.statuses.paralyze -= 1;
+      events.push({ type: "enemy_paralyzed", name: e.name });
+      return null;
+    }
+    if (e.statuses.stun > 0) {
+      e.statuses.stun -= 1;
+      events.push({ type: "enemy_stunned", name: e.name });
+      return null;
+    }
+
+    // 蓄力重击
+    if (e.charged) {
+      const dmg = this._damagePlayer(state, battle, Math.max(1, Math.round(e.power * 0.35 * gapMult)));
+      e.charged = false;
+      events.push({ type: "enemy_charged_attack", name: e.name, damage: dmg });
+      return null;
+    }
+
+    // 意图执行
+    const intent = e.intent || this._rollIntent(e);
+    if (intent.type === "attack") {
+      let value = intent.value || Math.max(1, Math.round(e.power * 0.2));
+      value = Math.max(1, Math.round(value * gapMult));
+      if (e.statuses.weak > 0) {
+        const weakRed = e.statuses.weakReduction || 0.25;
+        value = Math.max(1, Math.round(value * (1 - weakRed)));
+      }
+      // 雷震：slow减伤
+      if (e.statuses.slow > 0) {
+        value = Math.max(1, Math.round(value * (1 - (e.statuses.slowReduction || 0.3))));
+        e.statuses.slow -= 1;
+      }
+      // 迷心术：miss判定
+      if (battle._missTurns > 0 && battle._missChance > 0 && Math.random() < battle._missChance) {
+        events.push({ type: "enemy_miss", name: e.name });
+        e.intent = null;
+        return null;
+      }
+      const dmg = this._damagePlayer(state, battle, value);
+      // 噬血诀：受伤后激活revenge
+      if (dmg > 0 && battle._revengeBonus > 0) battle._revengeActive = true;
+      events.push({ type: "enemy_attack", name: e.name, label: intent.label || "扑击", damage: dmg, element: intent.element || null });
+      if (typeof BossMechanicsV2 !== "undefined") BossMechanicsV2.onEnemyAttack(state, battle, e, events); // 火灵灼烧叠层（design/8.1）
+    } else if (intent.type === "charge") {
+      if (e.statuses.lock > 0) {
+        events.push({ type: "enemy_charge_blocked", name: e.name });
+      } else {
+        e.charged = true;
+        events.push({ type: "enemy_charge", name: e.name, label: intent.label || "蓄势" });
+      }
+    } else if (intent.type === "block") {
+      e.block += intent.value || Math.round(e.power * 0.08);
+      events.push({ type: "enemy_block", name: e.name, block: e.block });
+    } else if (intent.type === "curse_burn") {
+      const burnDmg = Math.max(2, Math.round(e.power * num(intent.ratio, 0.03) * gapMult));
+      battle.playerStatuses.burn += burnDmg;
+      events.push({ type: "enemy_burn", name: e.name, burn: burnDmg });
+    } else if (intent.type === "curse_weak") {
+      battle.playerStatuses.weak = 2;
+      events.push({ type: "enemy_weak", name: e.name });
+    }
+    const el = intent.element || null;
+    const wx = intent.wuxing || null; // 五行层：夹招五行（破/增共鸣用，数据待接入）
+    e.intent = null;
+    return { element: el, wuxing: wx };
+  },
+
+  // 夹招：所有存活敌方各行动一次（玩家每释放一格后触发）
+  enemyGapAct(state, battle) {
+    if (battle.done) return [];
+    const events = [];
+    let firstEl = null;
+    let firstWx = null;
+    for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+      const r = this._enemySingleAct(state, battle, e, events);
+      if (r && firstEl == null && r.element != null) firstEl = r.element;
+      if (r && firstWx == null && r.wuxing != null) firstWx = r.wuxing;
+    }
+    battle._lastEnemyActElement = firstEl;
+    battle._lastEnemyActWuxing = firstWx;
+    // 夹招可能击杀玩家
+    if (battle.playerHp <= 0 && !battle.done) {
+      battle.done = true;
+      battle.win = false;
+      events.push({ type: "player_defeated" });
+    }
+    // 预roll下一次夹招意图（供UI在下一格玩家施法时预告）
+    if (!battle.done) {
+      for (const e of battle.enemies.filter((x) => x.hp > 0)) {
+        if (e.intent == null) e.intent = this._rollIntent(e);
+      }
+    }
+    return events;
+  },
+
+  // 回合末结算（燃烧/状态衰减/机制阶段/胜负/预roll下轮意图）——每回合一次
+  endEnemyRoundBookkeeping(state, battle) {
+    if (battle.done) return [];
+    const events = [];
 
     // 燃烧结算（玩家）
     if (battle.playerStatuses.burn > 0) {
@@ -490,7 +611,7 @@ const BattleEngineV2 = {
     if (battle._missTurns > 0) battle._missTurns -= 1;
 
     // 检查死亡
-    if (battle.playerHp <= 0) {
+    if (battle.playerHp <= 0 && !battle.done) {
       battle.done = true;
       battle.win = false;
       events.push({ type: "player_defeated" });
@@ -511,15 +632,40 @@ const BattleEngineV2 = {
     return events;
   },
 
+  // 敌方回合（兼容旧调用 = 夹招一次 + 回合末结算）
+  executeEnemyRound(state, battle) {
+    if (battle.done) return [];
+    const events = [];
+    events.push(...this.enemyGapAct(state, battle));
+    events.push(...this.endEnemyRoundBookkeeping(state, battle));
+    return events;
+  },
+
+  // 完整回合（逐格轮流：①→敌→②→敌→③→敌），跳过/快速结算与动画共用，保证机制一致
+  executeRound(state, battle) {
+    const events = [];
+    events.push(...this.startPlayerRound(state, battle));
+    if (battle.done) return events;
+    for (let i = 0; i < battle.slots.length; i++) {
+      if (battle.done) break;
+      if (battle.enemies.filter((e) => e.hp > 0).length === 0) break;
+      events.push(...this.executeSingleSlot(state, battle, i));
+      if (battle.done) break;
+      if (battle.enemies.filter((e) => e.hp > 0).length === 0) break;
+      events.push(...this.enemyGapAct(state, battle));
+    }
+    if (battle.done) return events;
+    events.push(...this.endPlayerRound(state, battle));
+    if (battle.done) return events;
+    events.push(...this.endEnemyRoundBookkeeping(state, battle));
+    return events;
+  },
+
   // 完整自动战斗（一次性跑完，用于跳过/快速结算）
   runFullAuto(state, battle) {
     const allEvents = [];
     while (!battle.done && battle.round < battle.maxRounds) {
-      const playerEvents = this.executePlayerRound(state, battle);
-      allEvents.push(...playerEvents);
-      if (battle.done) break;
-      const enemyEvents = this.executeEnemyRound(state, battle);
-      allEvents.push(...enemyEvents);
+      allEvents.push(...this.executeRound(state, battle));
     }
     if (!battle.done) {
       battle.done = true;
@@ -543,6 +689,13 @@ const BattleEngineV2 = {
       return 1.4;
     }
     return 1.3;
+  },
+
+  // 取"夹在玩家两格之间"的敌方那招的系（用于五行相克破共鸣）
+  // v1：用敌方预roll意图上挂的 element；无则返回 null（共鸣照常，不被破）
+  _enemyResonanceElement(battle) {
+    // 逐格轮流：取"上一格释放后敌方夹招"的系（enemyGapAct 写入 _lastEnemyActElement）
+    return battle._lastEnemyActElement != null ? battle._lastEnemyActElement : null;
   },
 
   _applyResistance(dmg, elementType, enemy, battle) {
@@ -1210,6 +1363,12 @@ const BattleEngineV2 = {
         }
         break;
       }
+      default:
+        // 九Boss机制（design/8.1 终稿）委托解耦模块 boss-mechanics-v2.js；this 绑定单例。
+        if (typeof BossMechanicsV2 !== "undefined" && BossMechanicsV2.turnStart[mech]) {
+          BossMechanicsV2.turnStart[mech].call(BossMechanicsV2, state, battle, events);
+        }
+        break;
     }
   },
 
@@ -1273,6 +1432,12 @@ const BattleEngineV2 = {
         }
         break;
       }
+      default:
+        // 九Boss机制（design/8.1 终稿）委托解耦模块 boss-mechanics-v2.js；this 绑定单例。
+        if (typeof BossMechanicsV2 !== "undefined" && BossMechanicsV2.enemyPhase[mech]) {
+          BossMechanicsV2.enemyPhase[mech].call(BossMechanicsV2, state, battle, events);
+        }
+        break;
     }
   },
 
@@ -1290,23 +1455,23 @@ const BattleEngineV2 = {
       }
     }
     const r = Math.random();
-    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))), label: "扑击" };
+    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))), label: "扑击", element: "weapon" };
     if (r < 0.75) return { type: "charge", label: "凶光大盛" };
-    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)), label: "罡气护体" };
-    if (r < 0.95) return { type: "curse_burn", label: "喷吐邪火", ratio: 0.03 };
-    return { type: "curse_weak", label: "嘶吼震魂" };
+    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)), label: "罡气护体", element: "weapon" };
+    if (r < 0.95) return { type: "curse_burn", label: "喷吐邪火", ratio: 0.03, element: "fire" };
+    return { type: "curse_weak", label: "嘶吼震魂", element: "soul" };
   },
 
   _mkIntent(enemy, p) {
     if (p.type === "attack") {
       const lo = num(p.ratio?.[0], 0.18);
       const hi = num(p.ratio?.[1], 0.24);
-      return { type: "attack", value: Math.max(1, Math.round(enemy.power * (lo + Math.random() * (hi - lo)))), label: p.label };
+      return { type: "attack", value: Math.max(1, Math.round(enemy.power * (lo + Math.random() * (hi - lo)))), label: p.label, element: p.element || null };
     }
     if (p.type === "block") {
-      return { type: "block", value: Math.max(1, Math.round(enemy.power * num(p.ratio, 0.08))), label: p.label };
+      return { type: "block", value: Math.max(1, Math.round(enemy.power * num(p.ratio, 0.08))), label: p.label, element: p.element || null };
     }
-    return { type: p.type, label: p.label, ratio: num(p.ratio, 0.03) };
+    return { type: p.type, label: p.label, ratio: num(p.ratio, 0.03), element: p.element || null };
   },
 
   // ---------- 阶段/胜负 ----------
