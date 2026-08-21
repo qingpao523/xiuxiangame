@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-08-21 — 流派系统单元测试落地（tests/liupai-manager.test.js，45/45 通过）
+
+**背景**：批次2 流派接口埋点（liupai_table.json + liupai-manager.js，commit e0bd7e9）后，按 CLAUDE.md #4 对抗审查补单元测试，实现 design/11.1 §三 canUseSpell 断言表，为批次5 上线提供回归基线（镜像 tests/boss-mechanics.test.js 之于批次0）。
+
+**交付**：
+- `tests/liupai-manager.test.js`（NEW，~190 行）：`node tests/liupai-manager.test.js` 运行。装载真实 web/data/liupai_table.json；桩替 DataManager.getRows + RealmManager.isRealmAtLeast（可控 reached 集合）。
+- **覆盖（45 断言全过）**：ensureState 归一化（design/11.0 §六）；isChosen；canUseSpell 试验期 chosen=null 恒 true（批次2 埋点不影响前期）；器修主系 weapon；器修五行分支 realm 门 jx_01→thunder/fire（C3 正五行）；prestige 修体 xiuti→body（C5 器↔体杨戬锚点）；魂/劫/体 + prestige 跨系（魂↔劫 xiujie→calamity / xiuhun→soul；器↔体 xiuqi→weapon 哪吒锚点）；getPassives 修被动+分支被动聚合（含 C4 魂修·毒分支 poison_dot_bonus/poison_attack_debuff，吕岳瘟部锚点）；nativeSpellTypes 集合；getById/getBranch。
+- 注：所有方法在 LiupaiManager 单例顶层，`LM.canUseSpell(state,type)` 直接绑定 this=LM，无需 .call（区别于 boss-mechanics 嵌套 turnStart/enemyPhase）。
+
+**验收**（测试批，满足 CLAUDE.md #4 对抗审查）：PASS 45 FAIL 0；零触碰 contested 文件。
+
+---
+
 ## 2026-08-21 — 集成接线规格立项（design/16.0 v0.1，批次0/3/5 contested 接线清单）
 
 **背景**：本会话已把三大 deferred 批次的硬逻辑预建为 inert 组件（boss-mechanics-v2.js+tests 50/50 / skill cooldown / tower_table 100层 / liupai_table+liupai-manager / M3投放层），但引擎/UI/存档接线需编辑并发会话正在重构、尚未提交的 contested 文件（battle-engine-v2.js 等）。本文把"并发会话落地后该怎么接"整理为可执行清单。
