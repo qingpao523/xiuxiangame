@@ -2,6 +2,47 @@
 
 ---
 
+## 2026-08-21 — 地图容器 M0/M1/F2/F3 落地（代码先行 + 美术需求 §12）
+
+### 背景
+用户指令（原话）："先做m0m1，但是地图先用代码，把地图详细的美术需求记录到美术需求文档，完成后继续完成f2.f3，最后提交到远端"。落地 design/15.0 v0.2 三层容器的数据层 + 大地图拓扑 + 推进 gate + 单地图探索循环；美术先用 CSS/SVG 占位，详细美术需求记入《美术需求.md》§12。F2/F3 由 🟡提案 升 🔒已锁（实现即拍板）。
+
+### 变更
+- **M0 前置修复**（web/data/map_table.json）：map_009 unlock_realm `dx_01`→`zs_01`（修配置矛盾：终局图错挂地仙门）；删除 9 图死字段 `event_weight`（grep 确认 0 处 js 读取）。
+- **M1 大地图拓扑**（web/js/world-map.js 全量重写 160→225行 + map_table 加字段）：
+  - map_table 9 图各加 `continent/node_kind/prev_map/region/volume/icon_kind/wx/wy`（continent：001-006 南赡部洲 / 007 东胜神洲 / 008-009 须弥昆仑中枢；prev_map 推进链 001=null→009=map_008；wx/wy 为部洲图归一坐标）。
+  - world-map.js 改数据驱动：`CONTINENT_META`（五大部洲色块+几何，南赡#efdcbd/东胜#d8e9de/西牛#f2e6c2/北俱#e6e1f0/须弥#31406b）+ `FLAVOR_LANDMARKS`（11 雾中地标 reach:false）；`_buildSvg` 铺五部洲色块（fill-opacity .38）+ 按 prev_map 连伐纣推进链（同部洲实线、跨部洲加 `.cross` 类）；`_buildNode` 按 wx/wy 定位、复用 `.world-map-node`。公共 API `open/close/render(state)` 签名不变（ui.js:260/880/1310 调用点 OK）。
+- **F3 推进 gate**（web/js/unlock-manager.js）：`getAvailableMaps` 改为 境界主锁（conditionMet unlock_realm）+ 前置节点弱锁（prev_map 递归链，cycle-guard）；部洲开放门隐含于链（跨部洲图 prev_map 均在南赡部洲）。
+- **F2 单地图探索循环**（纯数据 + ui-constants，零引擎改动）：
+  - action_table +6 游历行动（xiqi_patrol/shijue_probe/huanghe_wade/wanxian_walk/fengshen_climb/hunyuan_contemplate），全 9 图各有游历行动（此前仅前 3 图，后 6 图遭遇永不触发）。
+  - explore_point_table +30 探索点（point_401..905，map_004-009 各 5，discover_after 1/3/6/10/15），全 9 图各 5 点（≥4/图 合 design/6.5）。
+  - ui-constants.js `MAP_ACTION` +6、`INSIGHT_LINES` +6。
+  - 复用既有泛型机制（零改动）：game.js `_setupActionExtras`(176) 按 map_id 过滤遭遇池、`_checkExploreDiscovery`(1346) 按 map_explores 次数发现点；ui.js renderMapPanel 游历按钮(949)/探索点显示(963) 均按 id 泛型读取。encounter_table 后 6 图本各有 6 条遭遇（共 66）。
+- **美术需求 §12**（美术需求.md +134，hunk 在文末）：四大部洲大地图美术需求——五大部洲底图+色调规范表、9 可玩节点图标、11 雾中地标、伐纣路线（朝歌↔西岐五关红虚线）、单地图背景（§11.B 扩至全 9 图）、探索点视觉、代码待补 CSS（`.world-map-path.cross`/`.world-map-node.landmark` 当前降级）、验收引用 design/9.3 + 风格锁 v2（design/9.2）。
+- **主控回写**（design/14.0 v0.4 + design/15.0）：F2/F3 由 🟡提案 升 🔒已锁（2026-08-21 实现即拍板）。
+
+### 验收（CLAUDE.md #6/#8，对齐 design/15.0 + 6.5/6.6）
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| M0 修复（map_009 门 + 死字段清理） | 10 | 10 |
+| M1 大地图拓扑（五部洲色块 + 数据驱动 + 推进链 + API 不变） | 25 | 24 |
+| F3 推进 gate（境界主锁 + prev_map 弱锁 + 防环） | 15 | 15 |
+| F2 单地图探索循环（9 图游历 + 45 探索点 + 零引擎改动） | 25 | 24 |
+| 美术需求 §12（六类资产 + 色调规范 + 验收引用） | 10 | 10 |
+| 代码质量（node --check 全过 + 复用泛型机制） | 10 | 10 |
+| 兼容（公共 API 不变 + 旧档 explored_points/map_explores 兼容 + 并发文件零误伤） | 5 | 5 |
+| **合计** | 100 | **98** |
+
+### 对抗审查（#4）
+- `.world-map-path.cross` / `.world-map-node.landmark` 两类 CSS 不在 style.css（并发文件），代码优雅降级为实线/默认节点，仅视觉，已记入美术需求 §12.7 待补——非功能缺陷。
+- F2 新增 30 探索点刻意不带 trigger_event/unlock_encounter，避免悬空引用（design/6.6 事件联动留待内容批次补 tied 事件）。
+- 美术需求.md 为并发文件：用隔离手法（备份工作树→checkout HEAD→追加 §12→stage→还原工作树），仅 stage 文末 §12 hunk，并发会话的 +2 行顶部注记原样保留为其未提交改动，零误伤。
+
+### 备注
+M0/M1/F2/F3 为功能代码批次。地图美术按 design/9.2 风格锁 v2（古典 Q 版）后续替换，当前 CSS/SVG 占位可玩。
+
+---
+
 ## 2026-08-21 — 大地图底本锁定四大部洲（design/15.0 v0.2 + 主控 F1🔒）
 
 ### 背景

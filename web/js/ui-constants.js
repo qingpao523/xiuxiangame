@@ -130,7 +130,7 @@ const MAP_NODE_ICONS = {
   cave: "assets/map/icons/icon_place_dongfu.png",
 };
 
-const MAP_ACTION = { map_001: "wild_travel", map_002: "chentang_patrol", map_003: "kulou_explore" };
+const MAP_ACTION = { map_001: "wild_travel", map_002: "chentang_patrol", map_003: "kulou_explore", map_004: "xiqi_patrol", map_005: "shijue_probe", map_006: "huanghe_wade", map_007: "wanxian_walk", map_008: "fengshen_climb", map_009: "hunyuan_contemplate" };
 
 const NAV_UNLOCK = {
   realm: { check: () => true },
@@ -147,6 +147,12 @@ const INSIGHT_LINES = {
   wild_travel: ["黑雾在林间游走，你按剑缓行。", "残符的气息从荒庙方向飘来。", "几声妖啸自山坳传出，又归于寂静。"],
   chentang_patrol: ["潮雾深处雷声滚动，海风带着腥咸。", "巡海妖兵的残影在浪尖一闪而没。", "陈塘关的灯火在雨幕中明明灭灭。"],
   kulou_explore: ["白骨阴火在山道两侧幽幽而燃。", "地脉深处传来极缓的搏动声。", "阴云低垂，照魂碎玉在土中微光闪烁。"],
+  xiqi_patrol: ["旌旗蔽日，两军阵脚在远处缓缓移动。", "功德金光与劫气黑雾在战场上空交缠。", "你压低气息，沿战场外围拾取遗落的气机。"],
+  shijue_probe: ["脚下阵纹忽明忽暗，似在试探你的斤两。", "一缕剑意自虚空斩落，你侧身堪堪避过。", "劫气与阵旗残料散落在残阵眼之间。"],
+  huanghe_wade: ["浊浪翻涌，体内法力被一丝丝削去。", "水底金光一闪，是混元金斗的残骸。", "削境之力最烈处，反藏着三霄遗落的机缘。"],
+  wanxian_walk: ["虚空中无数道目光投来，万仙残影未散。", "阵旗如林，海雾里隐隐传来碧游宫的钟声。", "你以神识摄来漂浮的万仙遗宝，抽身而退。"],
+  fengshen_climb: ["头顶榜文金光大盛，真灵被照得发烫。", "神位碎屑如金粉自九天飘落。", "柏鉴的旧影一闪而没，封神功德暗生。"],
+  hunyuan_contemplate: ["无量清光入体，一身尘垢尽洗。", "此处榜文照不到，天庭管不到，唯你与道相对。", "道气氤氲，自成天地，逍遥之意自来。"],
 };
 
 const SPARKLE_TYPES = [

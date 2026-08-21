@@ -55,9 +55,27 @@ const UnlockManager = {
     return false;
   },
 
+  // F3（design/15.0 v0.2）：境界主锁（unlock_realm）+ 前置节点弱锁（prev_map 链）。
+  // 部洲开放门隐含于链中：跨部洲地图（东胜神洲/须弥昆仑中枢）的 prev_map 均在南赡部洲，
+  // 须先打通南赡部洲伐纣链方可进入，无需额外硬门。
   getAvailableMaps(state) {
-    return DataManager.getRows("map_table")
-      .filter((row) => this.conditionMet(state, String(row.unlock_realm || "")))
+    const rows = DataManager.getRows("map_table");
+    const byId = {};
+    for (const r of rows) byId[String(r.map_id)] = r;
+    const cache = {};
+    const available = (row) => {
+      const id = String(row.map_id);
+      if (id in cache) return cache[id];
+      cache[id] = false; // 防环守卫
+      let ok = this.conditionMet(state, String(row.unlock_realm || "")); // 境界主锁
+      if (ok && row.prev_map) {
+        const prev = byId[String(row.prev_map)];
+        ok = prev ? available(prev) : true; // 前置节点弱锁
+      }
+      cache[id] = ok;
+      return ok;
+    };
+    return rows.filter((row) => available(row))
       .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   },
 

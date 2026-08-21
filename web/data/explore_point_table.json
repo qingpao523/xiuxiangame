@@ -158,6 +158,306 @@
       "reward": {
         "daoxing": 600
       }
+    },
+    {
+      "point_id": "point_401",
+      "map_id": "map_004",
+      "name": "残旗堆",
+      "discover_after": 1,
+      "flavor": "两军交锋过后，残旗委地。你从旗杆灵木中剥出一缕护民功德。",
+      "reward": {
+        "merit": 120
+      }
+    },
+    {
+      "point_id": "point_402",
+      "map_id": "map_004",
+      "name": "劫灰坑",
+      "discover_after": 3,
+      "flavor": "一处被劫气熏黑的土坑，黑雾犹在坑底盘旋。你以法力收束，得战场劫气一团。",
+      "reward": {
+        "calamity": 120
+      }
+    },
+    {
+      "point_id": "point_403",
+      "map_id": "map_004",
+      "name": "遗宝冢",
+      "discover_after": 6,
+      "flavor": "无名修士的衣冠冢，冢前供着半件残宝。你拜而取之，得法宝碎片数枚。",
+      "reward": {
+        "treasure_shard": 12
+      }
+    },
+    {
+      "point_id": "point_404",
+      "map_id": "map_004",
+      "name": "点将台旧址",
+      "discover_after": 10,
+      "flavor": "西岐点将台的夯土基址，砖缝里嵌着前人留下的术页。",
+      "reward": {
+        "spell_page": 12
+      }
+    },
+    {
+      "point_id": "point_405",
+      "map_id": "map_004",
+      "name": "地脉灵眼",
+      "discover_after": 15,
+      "flavor": "战场之下的一处地脉灵眼，灵气未绝。你引灵入器，得修行灵材。",
+      "reward": {
+        "refine_material": 10
+      }
+    },
+    {
+      "point_id": "point_501",
+      "map_id": "map_005",
+      "name": "阵纹残刻",
+      "discover_after": 1,
+      "flavor": "山石间残刻着十绝阵纹，微光未熄。你拓下几页阵纹残页。",
+      "reward": {
+        "spell_page": 15
+      }
+    },
+    {
+      "point_id": "point_502",
+      "map_id": "map_005",
+      "name": "断阵旗",
+      "discover_after": 3,
+      "flavor": "一杆断折的阵旗斜插土中，旗面灵材尚可一用。",
+      "reward": {
+        "refine_material": 12
+      }
+    },
+    {
+      "point_id": "point_503",
+      "map_id": "map_005",
+      "name": "杀阵余眼",
+      "discover_after": 6,
+      "flavor": "一处尚未熄灭的残阵眼，劫气森然。你冒险探入，得杀阵劫气。",
+      "reward": {
+        "calamity": 260
+      }
+    },
+    {
+      "point_id": "point_504",
+      "map_id": "map_005",
+      "name": "剑意石",
+      "discover_after": 10,
+      "flavor": "一块被剑意浸透的青石，石中封存着前人剑诀残韵。",
+      "reward": {
+        "treasure_shard": 16
+      }
+    },
+    {
+      "point_id": "point_505",
+      "map_id": "map_005",
+      "name": "试阵碑",
+      "discover_after": 15,
+      "flavor": "金仙试炼的界碑，碑文记载着破阵之法。你默记于心，道行微涨。",
+      "reward": {
+        "mana": 18000
+      }
+    },
+    {
+      "point_id": "point_601",
+      "map_id": "map_006",
+      "name": "浊浪滩",
+      "discover_after": 1,
+      "flavor": "黄河浊浪拍岸，滩涂里沉着三霄阵破后的灵泥。",
+      "reward": {
+        "refine_material": 18
+      }
+    },
+    {
+      "point_id": "point_602",
+      "map_id": "map_006",
+      "name": "金斗残片",
+      "discover_after": 3,
+      "flavor": "水底闪着金光的碎片——是混元金斗的残骸。你以法力捞起。",
+      "reward": {
+        "treasure_shard": 18
+      }
+    },
+    {
+      "point_id": "point_603",
+      "map_id": "map_006",
+      "name": "削境漩涡",
+      "discover_after": 6,
+      "flavor": "一处削境之力最烈的漩涡，你抗住侵蚀，从中取出封存的功德。",
+      "reward": {
+        "merit": 260
+      }
+    },
+    {
+      "point_id": "point_604",
+      "map_id": "map_006",
+      "name": "九曲碑林",
+      "discover_after": 10,
+      "flavor": "黄河九曲的碑林，碑上刻着三霄布阵的残图。",
+      "reward": {
+        "spell_page": 18
+      }
+    },
+    {
+      "point_id": "point_605",
+      "map_id": "map_006",
+      "name": "阵心残域",
+      "discover_after": 15,
+      "flavor": "九曲黄河阵的阵心残域，浊浪深处藏着一缕本源灵机。",
+      "reward": {
+        "refine_material": 22
+      }
+    },
+    {
+      "point_id": "point_701",
+      "map_id": "map_007",
+      "name": "阵旗如林",
+      "discover_after": 1,
+      "flavor": "万仙阵的残旗密如丛林，旗料皆是上佳灵材。",
+      "reward": {
+        "refine_material": 24
+      }
+    },
+    {
+      "point_id": "point_702",
+      "map_id": "map_007",
+      "name": "万仙遗宝",
+      "discover_after": 3,
+      "flavor": "虚空裂缝中漂浮着万仙遗落的法宝残片。你以神识摄来。",
+      "reward": {
+        "treasure_shard": 24
+      }
+    },
+    {
+      "point_id": "point_703",
+      "map_id": "map_007",
+      "name": "虚空目光",
+      "discover_after": 6,
+      "flavor": "无数道万仙残影的目光汇聚之处，劫气凝成实质。",
+      "reward": {
+        "calamity": 420
+      }
+    },
+    {
+      "point_id": "point_704",
+      "map_id": "map_007",
+      "name": "碧游残韵",
+      "discover_after": 10,
+      "flavor": "碧游宫旧地的一缕道韵，封存在一块残玉之中。",
+      "reward": {
+        "spell_page": 24
+      }
+    },
+    {
+      "point_id": "point_705",
+      "map_id": "map_007",
+      "name": "万仙阵眼",
+      "discover_after": 15,
+      "flavor": "万仙阵的主阵眼残域，阵意最浓处藏着一截本源阵旗。",
+      "reward": {
+        "refine_material": 30
+      }
+    },
+    {
+      "point_id": "point_801",
+      "map_id": "map_008",
+      "name": "榜文残料",
+      "discover_after": 1,
+      "flavor": "封神台旧址的榜文残片，金光犹温。你小心收束。",
+      "reward": {
+        "refine_material": 30
+      }
+    },
+    {
+      "point_id": "point_802",
+      "map_id": "map_008",
+      "name": "神位碎屑",
+      "discover_after": 3,
+      "flavor": "榜文照下，神位碎屑如金粉飘落。你以真灵承接。",
+      "reward": {
+        "treasure_shard": 30
+      }
+    },
+    {
+      "point_id": "point_803",
+      "map_id": "map_008",
+      "name": "柏鉴旧影",
+      "discover_after": 6,
+      "flavor": "封神台守柏鉴的残影一闪而没，留下一缕封神功德。",
+      "reward": {
+        "merit": 420
+      }
+    },
+    {
+      "point_id": "point_804",
+      "map_id": "map_008",
+      "name": "真灵照壁",
+      "discover_after": 10,
+      "flavor": "一面照壁能映出真灵本相，壁上残刻着封神古法。",
+      "reward": {
+        "spell_page": 30
+      }
+    },
+    {
+      "point_id": "point_805",
+      "map_id": "map_008",
+      "name": "九天榜基",
+      "discover_after": 15,
+      "flavor": "封神台直抵九天的榜基，此处榜文之力最盛，亦藏最大机缘。",
+      "reward": {
+        "refine_material": 38
+      }
+    },
+    {
+      "point_id": "point_901",
+      "map_id": "map_009",
+      "name": "无量清光",
+      "discover_after": 1,
+      "flavor": "混元道场中清光无量，照入体内，洗去一身尘垢。",
+      "reward": {
+        "mana": 120000
+      }
+    },
+    {
+      "point_id": "point_902",
+      "map_id": "map_009",
+      "name": "道宝残料",
+      "discover_after": 3,
+      "flavor": "你自己开辟的天地里，凝出一缕道宝残料。",
+      "reward": {
+        "treasure_shard": 36
+      }
+    },
+    {
+      "point_id": "point_903",
+      "map_id": "map_009",
+      "name": "逍遥石",
+      "discover_after": 6,
+      "flavor": "一块温润的逍遥石，握之忘忧。你以之温养道基。",
+      "reward": {
+        "refine_material": 40
+      }
+    },
+    {
+      "point_id": "point_904",
+      "map_id": "map_009",
+      "name": "自成天地",
+      "discover_after": 10,
+      "flavor": "道场深处，你窥见自成天地的奥妙，逍遥功德自来。",
+      "reward": {
+        "merit": 680
+      }
+    },
+    {
+      "point_id": "point_905",
+      "map_id": "map_009",
+      "name": "混元道源",
+      "discover_after": 15,
+      "flavor": "混元道场的本源所在，道气氤氲，取之不竭。",
+      "reward": {
+        "refine_material": 50
+      }
     }
   ]
 }

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "table": "map_table",
   "generated_at": "2026-06-30T00:22:16.000128Z",
-  "description": "MVP 地图表，已接入封神锚点与叙事包装。",
+  "description": "地图表（M0/M1：接入四大部洲底本 design/15.0 v0.2，新增 continent/node_kind/prev_map/region/volume/icon_kind/wx/wy；移除死字段 event_weight；map_009 解锁修正为 zs_01）。",
   "rows": [
     {
       "map_id": "map_001",
@@ -36,7 +36,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 1.0,
       "boss_id": "boss_001",
       "lore_anchor": "大劫外溢，妖物受劫气驱使",
       "narrative_desc": "此地原是无名山野。自从天边金榜初现，山中黑雾游走，草木妖灵受劫气惊扰，频频伤人。",
@@ -54,7 +53,15 @@
         "spell_page": "残符碎页",
         "artifact_shard": "破损护道法器",
         "mana": "游离灵气"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": null,
+      "region": "伐纣主线",
+      "volume": 1,
+      "icon_kind": "wild",
+      "wx": 35,
+      "wy": 80
     },
     {
       "map_id": "map_002",
@@ -102,7 +109,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 1.2,
       "boss_id": "boss_002",
       "lore_anchor": "哪吒因果余波、东海水族异动",
       "narrative_desc": "陈塘关外雷声不绝，东海怨潮涌动，巡海妖兵频频上岸。城中似有风火之气冲天。",
@@ -121,7 +127,15 @@
         "merit": "护关功德",
         "calamity": "东海怨劫",
         "spell_page": "风雷术页"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": "map_001",
+      "region": "伐纣主线",
+      "volume": 2,
+      "icon_kind": "pass",
+      "wx": 71,
+      "wy": 90
     },
     {
       "map_id": "map_003",
@@ -162,7 +176,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 1.5,
       "boss_id": "boss_003",
       "lore_anchor": "石矶余阴、白骨阴火、截教残痕",
       "narrative_desc": "骷髅山边界阴云不散，白骨洞旧影若隐若现。此地曾有截教仙人修行，阴火焚山，白骨成阵。",
@@ -180,7 +193,15 @@
         "refine_material": "白骨阴火",
         "treasure_shard": "白骨洞遗宝",
         "spell_page": "截教残韵"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": "map_002",
+      "region": "伐纣主线",
+      "volume": 3,
+      "icon_kind": "ruin",
+      "wx": 20,
+      "wy": 74
     },
     {
       "map_id": "map_004",
@@ -235,7 +256,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 1.8,
       "boss_id": "boss_006",
       "lore_anchor": "封神正面战场外围，阐截两教交锋",
       "narrative_desc": "西岐城外，旌旗蔽日。阐教与殷商大军在此对峙，散修被裹挟其中，功德与劫气并生。你不入阵中，只在战场外围拾取遗落的气机与残宝。",
@@ -255,7 +275,15 @@
         "calamity": "战场劫气",
         "treasure_shard": "战场遗宝",
         "refine_material": "残旗灵材"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": "map_003",
+      "region": "伐纣主线",
+      "volume": 4,
+      "icon_kind": "city",
+      "wx": 42,
+      "wy": 84
     },
     {
       "map_id": "map_005",
@@ -303,7 +331,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 2.0,
       "boss_id": "boss_008",
       "lore_anchor": "十绝阵·封神杀阵外围",
       "narrative_desc": "十绝阵的余波尚未散尽，阵纹残刻在山石之间。空气中弥漫着劫气与剑意，每一步都可能触发残留的阵眼。此处是金仙级修士的试炼场。",
@@ -321,7 +348,15 @@
         "spell_page": "阵纹残页",
         "refine_material": "阵旗灵材",
         "calamity": "杀阵劫气"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": "map_004",
+      "region": "伐纣主线",
+      "volume": 5,
+      "icon_kind": "array",
+      "wx": 55,
+      "wy": 88
     },
     {
       "map_id": "map_006",
@@ -369,7 +404,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 2.2,
       "boss_id": "boss_009",
       "lore_anchor": "九曲黄河阵·三霄遗域",
       "narrative_desc": "三霄娘娘布下的九曲黄河阵，虽已破碎，残域中仍留有削境之力。踏入此地的修士，修为会被一丝丝削去——除非你有混元金斗的抗性。",
@@ -387,7 +421,15 @@
         "refine_material": "黄河灵泥",
         "treasure_shard": "金斗碎片",
         "merit": "破阵功德"
-      }
+      },
+      "continent": "南赡部洲",
+      "node_kind": "map",
+      "prev_map": "map_005",
+      "region": "伐纣主线",
+      "volume": 5,
+      "icon_kind": "array",
+      "wx": 63,
+      "wy": 78
     },
     {
       "map_id": "map_007",
@@ -435,7 +477,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 2.5,
       "boss_id": "boss_013",
       "lore_anchor": "万仙阵·截教万仙来朝",
       "narrative_desc": "通天教主布下的万仙阵，虽已破碎，残域中仍有万仙之威。踏入此地的修士，会感到无数道目光从虚空中投来——那是万仙残影的注视。",
@@ -453,7 +494,15 @@
         "refine_material": "万仙阵旗残料",
         "treasure_shard": "万仙遗宝",
         "calamity": "万仙劫气"
-      }
+      },
+      "continent": "东胜神洲",
+      "node_kind": "map",
+      "prev_map": "map_006",
+      "region": "截教东海",
+      "volume": 6,
+      "icon_kind": "array",
+      "wx": 83,
+      "wy": 49
     },
     {
       "map_id": "map_008",
@@ -501,7 +550,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 2.8,
       "boss_id": "boss_014",
       "lore_anchor": "封神台·榜文压制最强区",
       "narrative_desc": "封神台旧址，榜文悬于九天之上，金光直射而下。此地是榜文压制最强的区域——每一步都像踩在刀刃上，真灵被照得无处遁形。但也是炼化榜文、获取神位碎片的唯一途径。",
@@ -519,13 +567,21 @@
         "merit": "封神功德",
         "refine_material": "榜文残料",
         "treasure_shard": "神位碎片"
-      }
+      },
+      "continent": "须弥昆仑中枢",
+      "node_kind": "map",
+      "prev_map": "map_007",
+      "region": "仙佛中枢",
+      "volume": 7,
+      "icon_kind": "seal",
+      "wx": 50,
+      "wy": 48
     },
     {
       "map_id": "map_009",
       "sort_order": 9,
       "map_name": "混元道场",
-      "unlock_realm": "dx_01",
+      "unlock_realm": "zs_01",
       "recommended_power": 999999999,
       "daoxing_per_min": 1000.0,
       "mana_per_min": 25000,
@@ -560,7 +616,6 @@
           "unlock_condition": "open"
         }
       ],
-      "event_weight": 3.0,
       "boss_id": "",
       "lore_anchor": "混元道场·终局修行地",
       "narrative_desc": "不在三界之内，不在五行之中。混元道场是你自己开辟的一方天地——榜文照不到这里，天庭管不到这里。此处只有你，和你的道。",
@@ -578,7 +633,15 @@
         "refine_material": "混元道材",
         "treasure_shard": "道宝残料",
         "merit": "逍遥功德"
-      }
+      },
+      "continent": "须弥昆仑中枢",
+      "node_kind": "map",
+      "prev_map": "map_008",
+      "region": "仙佛中枢",
+      "volume": 8,
+      "icon_kind": "home",
+      "wx": 50,
+      "wy": 37
     }
   ]
 }
