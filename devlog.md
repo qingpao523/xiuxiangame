@@ -2,6 +2,33 @@
 
 ---
 
+## 2026-08-21 — 九Boss接线·M3 投放层（地图面板 Boss 聚合，解锁 22 个无入口 Boss）
+
+**背景**：九Boss机制接线的引擎层仍因并发会话重构 `battle-engine-v2.js` 暂缓；先落地不碰引擎的投放层（design/15.0 §五，选项 C）。
+
+**交付**：`web/js/ui.js` `renderMapPanel` 由"单代表 Boss（`map.boss_id`）"改为**按 `boss_table.map_id` 聚合渲染本图全部 Boss**。
+- 解锁此前无 UI 入口的 22 个 Boss（含九 Boss `boss_023-031`）；玩家现可在对应地图挑战所有已解锁 Boss。
+- 每张挑战卡保留：弱点提示（命中 +30%）、胜率、今日可挑战次数（`BOSS_DAILY_LIMIT`=3）、已伏标记、`BOSS_ICONS` 图。
+- `map.boss_id` 仅作排序优先级（代表 Boss 排首位），字段保留不删。
+- 战斗入口仍走 `Game.startBossBattle(bossId)`；九 Boss 机制未接线前退化为纯数值战（不阻塞）。
+
+**并发隔离**：并发会话在 `ui.js` 的在途改动位于 `renderTreasureChoicePopup`（line 479），与本次 `renderMapPanel`（line 879）不同区；用 patch-hunk 拆分（`git apply --cached` 仅暂存 M3 hunk）确保**只提交我的改动**，其 treasure-popup 工作原样留在工作树未提交。
+
+**验收（design/15.0 §五 投放层，CLAUDE.md #6/#8）**：
+
+| 维度 | 权重 | 得分 |
+|---|---|---|
+| Boss 按 map_id 聚合渲染 | 30 | 30 |
+| 解锁 22 死 Boss（含九 Boss） | 25 | 25 |
+| 保留弱点/胜率/日限/已伏标记 | 20 | 19 |
+| 不破坏驻留/游历/探索点渲染 | 15 | 15 |
+| 代码质量（node --check + hunk 隔离零触碰并发） | 10 | 10 |
+| **合计** | 100 | **99** |
+
+`node --check web/js/ui.js` 通过。引擎 9 机制 + 冷却消费 + UI 冷却显示仍待并发会话提交后续接（design/8.1/8.2）。
+
+---
+
 ## 2026-08-21 — 九Boss接线·冷却数据地基（skill_table.json 加 cooldown 字段）
 
 **背景**：九Boss机制接线（design/8.1/8.2）的引擎/UI层因并发会话正在重构 `battle-engine-v2.js`（逐格分步+法宝绑定+五行共鸣+夹招）而暂缓；先落地无冲突的数据地基。

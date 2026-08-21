@@ -879,12 +879,16 @@ function renderMapPanel(body, state) {
     const btnBox = document.createElement("div"); btnBox.style.display = "flex"; btnBox.style.flexDirection = "column"; btnBox.style.gap = "6px";
     if (state.current_map_id !== id) { const sb = document.createElement("button"); sb.className = "card-btn"; sb.textContent = "驻留此地"; sb.addEventListener("click", () => Game.selectMap(id)); btnBox.appendChild(sb); }
 
-    const bossId = String(map.boss_id || "");
-    const boss = DataManager.getById("boss_table", bossId);
-    if (Object.keys(boss).length && UnlockManager.conditionMet(state, String(boss.unlock_condition || ""))) {
+    // M3 投放层（design/15.0 §五）：按 boss_table.map_id 聚合渲染本图全部 Boss，
+    // 取代旧"单代表 Boss(map.boss_id)"——解锁 22 个无入口 Boss（含九 Boss boss_023-031）。
+    const mapBosses = DataManager.getRows("boss_table")
+      .filter((b) => String(b.map_id) === id && UnlockManager.conditionMet(state, String(b.unlock_condition || "")))
+      .sort((a, b) => (String(a.boss_id) === String(map.boss_id) ? -1 : String(b.boss_id) === String(map.boss_id) ? 1 : 0) || (num(a.recommended_power) - num(b.recommended_power)));
+    for (const boss of mapBosses) {
+      const bossId = String(boss.boss_id);
       const bossCard = document.createElement("div"); bossCard.className = "card";
       if (BOSS_ICONS[bossId]) { const bImg = document.createElement("img"); bImg.src = BOSS_ICONS[bossId]; bImg.alt = ""; bossCard.appendChild(bImg); }
-        const bInfo = document.createElement("div"); bInfo.className = "card-info";
+      const bInfo = document.createElement("div"); bInfo.className = "card-info";
       const bName = document.createElement("div"); bName.className = "card-name";
       const cleared = int(state.boss_clears[bossId]) > 0;
       bName.textContent = `挑战：${boss.boss_name}${cleared ? "（已伏）" : ""}`;
