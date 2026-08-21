@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-08-21 — 九Boss机制单元测试落地（tests/boss-mechanics.test.js，50/50 通过）
+
+**背景**：boss-mechanics-v2.js（commit 6a94ad2）解耦实现 9 机制后，按 CLAUDE.md #4 对抗审查补单元测试，验证机制行为忠实 design/8.1 v1.3 终稿，为批次0 引擎接线提供回归基线。
+
+**交付**：
+- `tests/boss-mechanics.test.js`（NEW，~210 行，仓库首个测试）：`node tests/boss-mechanics.test.js` 运行。vm 沙箱装载被测模块 + int() 桩（镜像 web/js/utils.js:25）。
+- **关键修正**：直接调 `BM.turnStart.xxx({},b,ev)` 会使 `this` 绑定到 turnStart 子对象 → `this._setSlotCd is not a function`。改用 `.call(BM, state, battle, events)` 镜像引擎 dispatch 契约（dispatch 内 `handler.call(this,...)`，this=BossMechanicsV2）。
+- **覆盖（50 断言全过）**：init 铺底（interruptEvery/parasolEvery/parasolHpMax=15%血量/护甲=30%血量/引爆阈值5/五宝）；张桂芳 turn%3 打断+hp<30%加密+槽位标记+CD重置；敖丙 hp<50% 防御×2/攻击2→1/一次性；石矶展帕-40%+累积破罩；魔礼青飞剑循环+真伤；魔礼海四弦循环（攻-15%/防-15%/CD+1/齐鸣2回合）；魔礼寿护甲破→暴怒攻×2；魔礼红开场-25%整场；火灵叠层+满5引爆25%真伤+tick；罗宣五宝→焚城50%真伤+重置；_trueDamagePlayer 无敌守卫。随机机制（张桂芳选槽/罗宣选宝）仅断言结构性结果。
+
+**验收**（测试批，满足 CLAUDE.md #4 对抗审查）：PASS 50 FAIL 0；零触碰 contested 文件。
+
+---
+
 ## 2026-08-21 — 九Boss机制解耦模块落地（web/js/boss-mechanics-v2.js，design/8.1 v1.3 终稿）
 
 **背景**：九Boss接线（design/8.1/8.2，用户选 option A 全做忠实终稿）的引擎层被并发会话的 battle-engine-v2.js 重构（逐格分步 startPlayerRound + 法宝绑定 + 五行共鸣 + 夹招）阻塞。本批先把**最硬的 9 个机制行为**以解耦模块预建，引擎后续仅以 switch case 委托调用，零侵入其回合结构。
