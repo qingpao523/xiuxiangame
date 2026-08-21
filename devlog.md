@@ -2,6 +2,16 @@
 
 ---
 
+## 2026-08-21 — 流派系统验收标准立项（design/11.1 v0.1，对齐 design/11.0 v0.2 §七/§八）
+
+**背景**：流派系统设定（design/11.0 v0.2，D3/C1-C9 已锁）已立项，批次2 埋点已落地（e0bd7e9）。按 CLAUDE.md #6（验收标准先行）补 design/11.1 验收裁判，使批次5 上线可验证。属设计规格文档，非功能批次，不走 CLAUDE.md #6 功能验收。
+
+**交付**：`design/11.1 流派系统验收标准 v0.1.md`（~200 行）——7 硬性否决项（V1 试验期不破坏/V2 旧档 normalize/V3 本命不破坏/V4 引擎核心不动/V5 node --check/V6 封神锚点强制/V7 一世不可逆）+ 7 评分维度总分 100≥95（四修定义15/分支树20/门控规则20/术法门控15/数值15/兼容稳定10/代码卫生5）+ canUseSpell 断言表 9 场景 + 择派/分支/边界集成测试 + 内容完整性核对（对齐 11.0 §七）+ 分阶段验收（批次2 埋点已通过 / 批次5 上线待并发会话落地 / 批次6 转世远期）+ 6 待设计师确认项。
+
+**主控回写**：design/14.0 v0.7——§三索引 + 11.1 行；changelog v0.7。
+
+---
+
 ## 2026-08-21 — 镇魔塔层配置数据落地（web/data/tower_table.json 100层，design/12.0 v0.1 §3.2）
 
 **背景**：镇魔塔设计（design/12.0 v0.1，D5a 已锁）已立项，本批落地其层配置数据表，使 design/12.0 可被批次3 runner 直接消费。属数据层，runner（state.tower 默认值 + startTowerRun/_nextTowerFloor/_endTowerRun + finishBattle source:'tower' 分支 + UI）deferred 批次3（contested save-manager.js/game.js，需并发会话先落地）。
