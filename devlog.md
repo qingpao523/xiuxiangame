@@ -2,6 +2,23 @@
 
 ---
 
+## 2026-08-21 — 音效需求.md v0.1 立项（D6 落地）
+
+**背景**：D6 锁定"新建音效需求.md，并行轨不阻塞内容"。AudioManager（web/js/audio-manager.js，666 行）已完整实现（Web Audio 单例/三总线/程序化合成回退/autoplay 合规/prefers-reduced-motion），但真实音频素材 = 0。本文档是其素材规格书。
+
+**交付**：design/音效需求.md v0.1（175 行）
+- §一 现有系统盘点（AudioManager 架构/9 个已调用 SFX 逻辑 id/SFX_RECIPES 程序化合成配方）
+- §二 SFX 清单：9 已有（ui_click/seal_hum/water_drop/tribulation_success/secret_found/realm_up/fortune/breath_in/breath_out）+ 17 待补（6 系战斗命中/combo/ultimate/boss_enter/boss_mechanic/tower/liupai/alchemy/talisman 等）
+- §三 BGM 清单：7 首全待补（bgm_main/bgm_battle/bgm_boss/bgm_breakthrough/bgm_tower/bgm_offline/bgm_liupai）+ 代码接入点
+- §四 国风调性规范（五声音阶宫商角徵羽/古琴箫磬鼓编钟/Q 版轻量感/对齐 D4 古典 Q 版 design/9.2）
+- §五 素材生产管线（AI 辅助 Suno/Udio + freesound CC0 + 人工校审 + ffmpeg ogg/mp3 双格式）
+- §六 验收标准（引 design/9.3 框架，6 维：素材完整 25%/调性合规 25%/触发正确 20%/技术合规 15%/可访问性 10%/代码 5%）
+- §七 排期：P0（9 SFX 真实素材+bgm_main+bgm_battle）/P1（战斗 SFX+boss BGM）/P2（塔/流派/炼丹 SFX+BGM）
+
+**注**：属设计规格文档（非功能代码批次），不走 CLAUDE.md #6 验收评分。
+
+---
+
 ## 2026-08-21 — 九Boss接线·M3 投放层（地图面板 Boss 聚合，解锁 22 个无入口 Boss）
 
 **背景**：九Boss机制接线的引擎层仍因并发会话重构 `battle-engine-v2.js` 暂缓；先落地不碰引擎的投放层（design/15.0 §五，选项 C）。
