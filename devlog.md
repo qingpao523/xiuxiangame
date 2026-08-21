@@ -2,6 +2,24 @@
 
 ---
 
+## 2026-08-21 — 战斗重构 WIP 崩溃 Bug 诊断（enemyGapAct:533，待用户决策）
+
+**背景**：用户核心任务（9 Bosses，option A）被其**未提交**的战斗系统重构（web/js/battle-engine-v2.js，295增/145删：startPlayerRound 逐格分步 + 法宝绑定 + 五行共鸣 + 夹招）阻塞（与我的 9-Boss 接线 mixed hunks 交织，无法单独提交接线）。经 mtime 核查该重构为**停滞 WIP**（我未触碰的文件 mtime 为 3.5–11h 前，`ps aux` 无 xiuxiangame 进程），非活跃并发会话——故早前"等并发会话先提交"的判断作废。
+
+**静态分析**：可提交（grep TODO/FIXME/XXX/HACK/未实现/待补/占位 = 0；5 个 contested JS 全过 node --check；新增方法 getTreasureData/_slotTreasure/startPlayerRound/_enemySingleAct/enemyGapAct 均有定义，无悬空引用）。
+
+**功能验证（sandbox 测试，/tmp 本地，未提交、未改工作树）**：发现静态分析漏掉的**真实崩溃 Bug**——
+- ~40% 战斗崩溃（12/30 无机制对照战斗）。
+- 堆栈：`TypeError: Cannot read properties of null (reading 'element') at Object.enemyGapAct (battle-engine-v2.js:533:32) at Object.executeEnemyRound (battle-engine-v2.js:636)`。
+- **根因**：`enemyGapAct`（夹招，line 526）循环调 `const r = this._enemySingleAct(...)`（line 532），line 533 读 `r.element`；但 `_enemySingleAct` 在眩晕/麻痹/蓄力分支有裸 `return;`（正常路径 line ~523 `return {element:el, wuxing:wx}`）→ r 为 undefined → 读 undefined.element 崩溃。间歇性（取决于随机意图）。
+- **修复（一行）**：守卫 `if (r && firstEl == null && r.element != null)`（及 r.wuxing），或令 `_enemySingleAct` 早退时恒 `return {element:null, wuxing:null}`。
+
+**我的 9 机制验证 OK**：mo_lihai_strings / mo_lihong_umbrella / luoxuan_fivefire 在 sandbox 正常触发（dispatch 接线无误）；zhangguifang/aobing 的"崩溃"实为上述 WIP enemyGapAct Bug（aobing 未触发即崩，hp 高于阈值）；shiji/mo_liqing/huoling/mo_lishou 无事件=测试 harness 限制（回合不足 / onEnemyAttack+onPlayerDamageDealt 钩子未接），非 Bug。
+
+**待用户决策**：「修」=我修 enemyGapAct:533（仅空值守卫）+ 提交 WIP 为基线 + 接 9-Boss + 整场战斗验证 + 推送（验证不过不推） / 「等」=用户先自行修复 WIP，我再于干净基线接线。**未获授权不擅自修改用户未提交的 WIP**（其功能正确性未验证，属用户在途工作）。
+
+---
+
 ## 2026-08-21 — 九Boss引擎接线尝试与回退（mixed hunks 证实阻塞，deferred 批次0）
 
 **背景**：用户核心任务 = 实现 9 Bosses（option A：冷却子系统 + 9 机制忠实终稿）。boss-mechanics-v2.js 解耦模块 + tests 已提交（6a94ad2 / a01b8ea）。本批尝试把模块接入引擎/UI/index。
