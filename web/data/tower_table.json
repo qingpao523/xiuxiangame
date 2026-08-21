@@ -1,0 +1,1533 @@
+{
+ "schema_version": "0.1.0",
+ "table": "tower_table",
+ "generated_at": "2026-08-21",
+ "description": "镇魔塔层配置（design/12.0 v0.1）。100层=10境界段×10层，境界缩放贯穿全生命周期（生命链常驻支柱）。boss_id 复用 boss_table（含九Boss boss_023-031；魔家四将 boss_026-029 chain_id='mo_family' 为连战层，runner 按 chain_order 顺序结算）。power_mult 在 boss.recommended_power 基础上段内 1.0→1.5 缩放。reward 随段递增。milestone_reward 为段末层(10/20/.../100)额外奖励；其中 tower_ticket=登塔令，非合法 resource_id，runner 须单独解释为 state.tower.tickets+ N（不经过 _applyResourceDelta）。lore_anchor 为封神锚点（强制，design/10.0§9）。unlock_realm 仅段首层非空，runner 用 UnlockManager.conditionMet 判定该段是否开放。数值🔴待校准。",
+ "rows": [
+  {
+   "floor": 1,
+   "tier": "炼气",
+   "boss_id": "boss_023",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 30,
+    "mana": 800,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "塔门初启，第一缕妖气凝作身影。",
+   "unlock_realm": "rq_03"
+  },
+  {
+   "floor": 2,
+   "tier": "炼气",
+   "boss_id": "boss_001",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 31,
+    "mana": 827,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "山风裹着腥气，又一道妖影扑来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 3,
+   "tier": "炼气",
+   "boss_id": "boss_024",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 32,
+    "mana": 853,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "林深处妖瞳幽幽，拦你去路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 4,
+   "tier": "炼气",
+   "boss_id": "boss_004",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 33,
+    "mana": 880,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "黑雾翻涌，山中精怪现身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 5,
+   "tier": "炼气",
+   "boss_id": "boss_025",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 34,
+    "mana": 907,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "妖气渐浓，来者气息愈发沉厚。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 6,
+   "tier": "炼气",
+   "boss_id": "boss_023",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 35,
+    "mana": 933,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "塔门初启，第一缕妖气凝作身影。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 7,
+   "tier": "炼气",
+   "boss_id": "boss_001",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 36,
+    "mana": 960,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "山风裹着腥气，又一道妖影扑来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 8,
+   "tier": "炼气",
+   "boss_id": "boss_024",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 37,
+    "mana": 987,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "林深处妖瞳幽幽，拦你去路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 9,
+   "tier": "炼气",
+   "boss_id": "boss_004",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 38,
+    "mana": 1013,
+    "refine_material": 1
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "黑雾翻涌，山中精怪现身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 10,
+   "tier": "炼气",
+   "boss_id": "boss_025",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 39,
+    "mana": 1040,
+    "refine_material": 1
+   },
+   "milestone_reward": {
+    "treasure_shard": 3
+   },
+   "lore_anchor": "封神·山野妖患（陈塘关外）",
+   "entry_text": "妖气渐浓，来者气息愈发沉厚。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 11,
+   "tier": "真人",
+   "boss_id": "boss_026",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 120,
+    "mana": 4000,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "关隘森严，守将横刀立马。",
+   "unlock_realm": "zr_03"
+  },
+  {
+   "floor": 12,
+   "tier": "真人",
+   "boss_id": "boss_027",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 124,
+    "mana": 4133,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "鼓角齐鸣，又一关将拦路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 13,
+   "tier": "真人",
+   "boss_id": "boss_028",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 128,
+    "mana": 4267,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "杀气凝形，关前身影如山。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 14,
+   "tier": "真人",
+   "boss_id": "boss_029",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 132,
+    "mana": 4400,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "妖将列阵，气机锁住塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 15,
+   "tier": "真人",
+   "boss_id": "boss_030",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 136,
+    "mana": 4533,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "关风猎猎，来者绝非等闲。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 16,
+   "tier": "真人",
+   "boss_id": "boss_031",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 140,
+    "mana": 4667,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "关隘森严，守将横刀立马。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 17,
+   "tier": "真人",
+   "boss_id": "boss_002",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 144,
+    "mana": 4800,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "鼓角齐鸣，又一关将拦路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 18,
+   "tier": "真人",
+   "boss_id": "boss_005",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 148,
+    "mana": 4933,
+    "refine_material": 2
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "杀气凝形，关前身影如山。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 19,
+   "tier": "真人",
+   "boss_id": "boss_026",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 152,
+    "mana": 5067,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "妖将列阵，气机锁住塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 20,
+   "tier": "真人",
+   "boss_id": "boss_027",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 156,
+    "mana": 5200,
+    "refine_material": 3
+   },
+   "milestone_reward": {
+    "artifact_shard": 3
+   },
+   "lore_anchor": "封神·魔家四将守关",
+   "entry_text": "关风猎猎，来者绝非等闲。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 21,
+   "tier": "地仙",
+   "boss_id": "boss_003",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 400,
+    "mana": 15000,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "白骨森森，洞中阴气凝聚成形。",
+   "unlock_realm": "dx_01"
+  },
+  {
+   "floor": 22,
+   "tier": "地仙",
+   "boss_id": "boss_006",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 413,
+    "mana": 15500,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "骷髅山深处，残影幢幢。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 23,
+   "tier": "地仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 427,
+    "mana": 16000,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "阴火幽幽，白骨化作人形。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 24,
+   "tier": "地仙",
+   "boss_id": "boss_003",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 440,
+    "mana": 16500,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "洞府森寒，一道强大气息压来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 25,
+   "tier": "地仙",
+   "boss_id": "boss_006",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 453,
+    "mana": 17000,
+    "refine_material": 3
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "骨海翻波，来者已非凡俗。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 26,
+   "tier": "地仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 467,
+    "mana": 17500,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "白骨森森，洞中阴气凝聚成形。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 27,
+   "tier": "地仙",
+   "boss_id": "boss_003",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 480,
+    "mana": 18000,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "骷髅山深处，残影幢幢。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 28,
+   "tier": "地仙",
+   "boss_id": "boss_006",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 493,
+    "mana": 18500,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "阴火幽幽，白骨化作人形。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 29,
+   "tier": "地仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 507,
+    "mana": 19000,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "洞府森寒，一道强大气息压来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 30,
+   "tier": "地仙",
+   "boss_id": "boss_003",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 520,
+    "mana": 19500,
+    "refine_material": 4
+   },
+   "milestone_reward": {
+    "treasure_shard": 5,
+    "tower_ticket": 1
+   },
+   "lore_anchor": "封神·骷髅山白骨洞",
+   "entry_text": "骨海翻波，来者已非凡俗。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 31,
+   "tier": "天仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 1200,
+    "mana": 50000,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵纹流转，外围杀机已现。",
+   "unlock_realm": "tx_01"
+  },
+  {
+   "floor": 32,
+   "tier": "天仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 1240,
+    "mana": 51667,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "十绝阵外，气机绞杀成网。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 33,
+   "tier": "天仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 1280,
+    "mana": 53333,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵眼微亮，守阵者现身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 34,
+   "tier": "天仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 1320,
+    "mana": 55000,
+    "refine_material": 4
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "罡风割面，阵中身影步步逼近。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 35,
+   "tier": "天仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 1360,
+    "mana": 56667,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵势压顶，来者气息深不可测。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 36,
+   "tier": "天仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 1400,
+    "mana": 58333,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵纹流转，外围杀机已现。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 37,
+   "tier": "天仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 1440,
+    "mana": 60000,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "十绝阵外，气机绞杀成网。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 38,
+   "tier": "天仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 1480,
+    "mana": 61667,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵眼微亮，守阵者现身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 39,
+   "tier": "天仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 1520,
+    "mana": 63333,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "罡风割面，阵中身影步步逼近。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 40,
+   "tier": "天仙",
+   "boss_id": "boss_007",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 1560,
+    "mana": 65000,
+    "refine_material": 5
+   },
+   "milestone_reward": {
+    "treasure_shard": 6
+   },
+   "lore_anchor": "封神·十绝阵外围",
+   "entry_text": "阵势压顶，来者气息深不可测。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 41,
+   "tier": "真仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 3000,
+    "mana": 120000,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "黄河九曲，阵中浊浪凝形。",
+   "unlock_realm": "zx_01"
+  },
+  {
+   "floor": 42,
+   "tier": "真仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 3100,
+    "mana": 124000,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "河水倒卷，一道阵灵显化。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 43,
+   "tier": "真仙",
+   "boss_id": "boss_011",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 3200,
+    "mana": 128000,
+    "refine_material": 5
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "九曲深处，杀劫之气凝实。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 44,
+   "tier": "真仙",
+   "boss_id": "boss_012",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 3300,
+    "mana": 132000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "浊浪排空，守阵者踏水而来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 45,
+   "tier": "真仙",
+   "boss_id": "boss_009",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 3400,
+    "mana": 136000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "阵心震动，来者已带仙家气象。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 46,
+   "tier": "真仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 3500,
+    "mana": 140000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "黄河九曲，阵中浊浪凝形。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 47,
+   "tier": "真仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 3600,
+    "mana": 144000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "河水倒卷，一道阵灵显化。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 48,
+   "tier": "真仙",
+   "boss_id": "boss_011",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 3700,
+    "mana": 148000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "九曲深处，杀劫之气凝实。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 49,
+   "tier": "真仙",
+   "boss_id": "boss_012",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 3800,
+    "mana": 152000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "浊浪排空，守阵者踏水而来。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 50,
+   "tier": "真仙",
+   "boss_id": "boss_009",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 3900,
+    "mana": 156000,
+    "refine_material": 6
+   },
+   "milestone_reward": {
+    "artifact_shard": 6
+   },
+   "lore_anchor": "封神·九曲黄河阵",
+   "entry_text": "阵心震动，来者已带仙家气象。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 51,
+   "tier": "金仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 8000,
+    "mana": 300000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "万仙阵起，千道气机交织。",
+   "unlock_realm": "jx_01"
+  },
+  {
+   "floor": 52,
+   "tier": "金仙",
+   "boss_id": "boss_010",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 8267,
+    "mana": 310000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "阵中仙影重重，杀劫临身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 53,
+   "tier": "金仙",
+   "boss_id": "boss_011",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 8533,
+    "mana": 320000,
+    "refine_material": 6
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "一道金仙残影，自阵心走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 54,
+   "tier": "金仙",
+   "boss_id": "boss_012",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 8800,
+    "mana": 330000,
+    "refine_material": 7
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "仙光与劫气交缠，来者气吞山河。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 55,
+   "tier": "金仙",
+   "boss_id": "boss_009",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 9067,
+    "mana": 340000,
+    "refine_material": 7
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "万仙齐喑，最强者现身塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 56,
+   "tier": "金仙",
+   "boss_id": "boss_019",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 9333,
+    "mana": 350000,
+    "refine_material": 7
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "万仙阵起，千道气机交织。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 57,
+   "tier": "金仙",
+   "boss_id": "boss_020",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 9600,
+    "mana": 360000,
+    "refine_material": 7
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "阵中仙影重重，杀劫临身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 58,
+   "tier": "金仙",
+   "boss_id": "boss_021",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 9867,
+    "mana": 370000,
+    "refine_material": 7
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "一道金仙残影，自阵心走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 59,
+   "tier": "金仙",
+   "boss_id": "boss_022",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 10133,
+    "mana": 380000,
+    "refine_material": 8
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "仙光与劫气交缠，来者气吞山河。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 60,
+   "tier": "金仙",
+   "boss_id": "boss_008",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 10400,
+    "mana": 390000,
+    "refine_material": 8
+   },
+   "milestone_reward": {
+    "treasure_shard": 8,
+    "tower_ticket": 1
+   },
+   "lore_anchor": "封神·万仙阵",
+   "entry_text": "万仙齐喑，最强者现身塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 61,
+   "tier": "太乙",
+   "boss_id": "boss_013",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 20000,
+    "mana": 800000,
+    "refine_material": 8
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "封神台上，榜文碎光凝聚成影。",
+   "unlock_realm": "ty_01"
+  },
+  {
+   "floor": 62,
+   "tier": "太乙",
+   "boss_id": "boss_015",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 20667,
+    "mana": 826667,
+    "refine_material": 8
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "一道教主残影，自榜文中走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 63,
+   "tier": "太乙",
+   "boss_id": "boss_016",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 21333,
+    "mana": 853333,
+    "refine_material": 9
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "台顶风云变色，太乙之气压顶。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 64,
+   "tier": "太乙",
+   "boss_id": "boss_014",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 22000,
+    "mana": 880000,
+    "refine_material": 9
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "封神榜牵引，强者残影显化。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 65,
+   "tier": "太乙",
+   "boss_id": "boss_017",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 22667,
+    "mana": 906667,
+    "refine_material": 9
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "台上寂然，来者已是传说中人物。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 66,
+   "tier": "太乙",
+   "boss_id": "boss_018",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 23333,
+    "mana": 933333,
+    "refine_material": 9
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "封神台上，榜文碎光凝聚成影。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 67,
+   "tier": "太乙",
+   "boss_id": "boss_013",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 24000,
+    "mana": 960000,
+    "refine_material": 10
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "一道教主残影，自榜文中走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 68,
+   "tier": "太乙",
+   "boss_id": "boss_015",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 24667,
+    "mana": 986667,
+    "refine_material": 10
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "台顶风云变色，太乙之气压顶。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 69,
+   "tier": "太乙",
+   "boss_id": "boss_016",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 25333,
+    "mana": 1013333,
+    "refine_material": 10
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·封神台",
+   "entry_text": "封神榜牵引，强者残影显化。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 70,
+   "tier": "太乙",
+   "boss_id": "boss_014",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 26000,
+    "mana": 1040000,
+    "refine_material": 10
+   },
+   "milestone_reward": {
+    "artifact_shard": 8
+   },
+   "lore_anchor": "封神·封神台",
+   "entry_text": "台上寂然，来者已是传说中人物。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 71,
+   "tier": "大罗",
+   "boss_id": "boss_015",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 50000,
+    "mana": 2000000,
+    "refine_material": 10
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "圣人残影垂眸，塔层为之凝滞。",
+   "unlock_realm": "dl_01"
+  },
+  {
+   "floor": 72,
+   "tier": "大罗",
+   "boss_id": "boss_016",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 51667,
+    "mana": 2066667,
+    "refine_material": 10
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "一道无上气息，自虚空降临。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 73,
+   "tier": "大罗",
+   "boss_id": "boss_017",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 53333,
+    "mana": 2133333,
+    "refine_material": 11
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "大罗之境，来者一念可碎山岳。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 74,
+   "tier": "大罗",
+   "boss_id": "boss_018",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 55000,
+    "mana": 2200000,
+    "refine_material": 11
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "残影虽虚，威压却如实质。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 75,
+   "tier": "大罗",
+   "boss_id": "boss_013",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 56667,
+    "mana": 2266667,
+    "refine_material": 11
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "塔顶在望，守者气息浩瀚无匹。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 76,
+   "tier": "大罗",
+   "boss_id": "boss_014",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 58333,
+    "mana": 2333333,
+    "refine_material": 12
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "圣人残影垂眸，塔层为之凝滞。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 77,
+   "tier": "大罗",
+   "boss_id": "boss_015",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 60000,
+    "mana": 2400000,
+    "refine_material": 12
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "一道无上气息，自虚空降临。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 78,
+   "tier": "大罗",
+   "boss_id": "boss_016",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 61667,
+    "mana": 2466667,
+    "refine_material": 12
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "大罗之境，来者一念可碎山岳。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 79,
+   "tier": "大罗",
+   "boss_id": "boss_017",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 63333,
+    "mana": 2533333,
+    "refine_material": 13
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "残影虽虚，威压却如实质。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 80,
+   "tier": "大罗",
+   "boss_id": "boss_018",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 65000,
+    "mana": 2600000,
+    "refine_material": 13
+   },
+   "milestone_reward": {
+    "treasure_shard": 10,
+    "tower_ticket": 1
+   },
+   "lore_anchor": "封神·圣人残影",
+   "entry_text": "塔顶在望，守者气息浩瀚无匹。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 81,
+   "tier": "准圣",
+   "boss_id": "boss_018",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 120000,
+    "mana": 5000000,
+    "refine_material": 12
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "诛仙阵意弥漫，准圣之威临身。",
+   "unlock_realm": "zs_01"
+  },
+  {
+   "floor": 82,
+   "tier": "准圣",
+   "boss_id": "boss_017",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 124000,
+    "mana": 5166667,
+    "refine_material": 12
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "四道剑意残影，封锁塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 83,
+   "tier": "准圣",
+   "boss_id": "boss_016",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 128000,
+    "mana": 5333333,
+    "refine_material": 13
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "来者一步踏出，虚空为之崩裂。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 84,
+   "tier": "准圣",
+   "boss_id": "boss_015",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 132000,
+    "mana": 5500000,
+    "refine_material": 13
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "阵意凝实，守者已近圣人之境。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 85,
+   "tier": "准圣",
+   "boss_id": "boss_018",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 136000,
+    "mana": 5666667,
+    "refine_material": 14
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "塔顶咫尺，最强残影拦路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 86,
+   "tier": "准圣",
+   "boss_id": "boss_017",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 140000,
+    "mana": 5833333,
+    "refine_material": 14
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "诛仙阵意弥漫，准圣之威临身。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 87,
+   "tier": "准圣",
+   "boss_id": "boss_016",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 144000,
+    "mana": 6000000,
+    "refine_material": 14
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "四道剑意残影，封锁塔层。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 88,
+   "tier": "准圣",
+   "boss_id": "boss_015",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 148000,
+    "mana": 6166667,
+    "refine_material": 15
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "来者一步踏出，虚空为之崩裂。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 89,
+   "tier": "准圣",
+   "boss_id": "boss_018",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 152000,
+    "mana": 6333333,
+    "refine_material": 15
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "阵意凝实，守者已近圣人之境。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 90,
+   "tier": "准圣",
+   "boss_id": "boss_017",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 156000,
+    "mana": 6500000,
+    "refine_material": 16
+   },
+   "milestone_reward": {
+    "artifact_shard": 10
+   },
+   "lore_anchor": "封神·诛仙阵意",
+   "entry_text": "塔顶咫尺，最强残影拦路。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 91,
+   "tier": "混元",
+   "boss_id": "boss_018",
+   "power_mult": 1.0,
+   "reward": {
+    "daoxing": 300000,
+    "mana": 12000000,
+    "refine_material": 15
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "混元道果垂成，塔顶之气混沌未分。",
+   "unlock_realm": "hy_01"
+  },
+  {
+   "floor": 92,
+   "tier": "混元",
+   "boss_id": "boss_017",
+   "power_mult": 1.06,
+   "reward": {
+    "daoxing": 310000,
+    "mana": 12400000,
+    "refine_material": 16
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "一道混元残影，自混沌中走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 93,
+   "tier": "混元",
+   "boss_id": "boss_016",
+   "power_mult": 1.11,
+   "reward": {
+    "daoxing": 320000,
+    "mana": 12800000,
+    "refine_material": 16
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "来者气息与天道相合，深不可测。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 94,
+   "tier": "混元",
+   "boss_id": "boss_015",
+   "power_mult": 1.17,
+   "reward": {
+    "daoxing": 330000,
+    "mana": 13200000,
+    "refine_material": 16
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "塔顶在望，守者已是混元之姿。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 95,
+   "tier": "混元",
+   "boss_id": "boss_018",
+   "power_mult": 1.22,
+   "reward": {
+    "daoxing": 340000,
+    "mana": 13600000,
+    "refine_material": 17
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "登顶在即，最后一道残影凝形。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 96,
+   "tier": "混元",
+   "boss_id": "boss_017",
+   "power_mult": 1.28,
+   "reward": {
+    "daoxing": 350000,
+    "mana": 14000000,
+    "refine_material": 18
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "混元道果垂成，塔顶之气混沌未分。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 97,
+   "tier": "混元",
+   "boss_id": "boss_016",
+   "power_mult": 1.33,
+   "reward": {
+    "daoxing": 360000,
+    "mana": 14400000,
+    "refine_material": 18
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "一道混元残影，自混沌中走出。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 98,
+   "tier": "混元",
+   "boss_id": "boss_015",
+   "power_mult": 1.39,
+   "reward": {
+    "daoxing": 370000,
+    "mana": 14800000,
+    "refine_material": 18
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "来者气息与天道相合，深不可测。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 99,
+   "tier": "混元",
+   "boss_id": "boss_018",
+   "power_mult": 1.44,
+   "reward": {
+    "daoxing": 380000,
+    "mana": 15200000,
+    "refine_material": 19
+   },
+   "milestone_reward": null,
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "塔顶在望，守者已是混元之姿。",
+   "unlock_realm": null
+  },
+  {
+   "floor": 100,
+   "tier": "混元",
+   "boss_id": "boss_017",
+   "power_mult": 1.5,
+   "reward": {
+    "daoxing": 390000,
+    "mana": 15600000,
+    "refine_material": 20
+   },
+   "milestone_reward": {
+    "treasure_shard": 15,
+    "artifact_shard": 15,
+    "tower_ticket": 2
+   },
+   "lore_anchor": "封神·混元道果",
+   "entry_text": "登顶在即，最后一道残影凝形。",
+   "unlock_realm": null
+  }
+ ]
+}

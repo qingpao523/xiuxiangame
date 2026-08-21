@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-08-21 — 镇魔塔层配置数据落地（web/data/tower_table.json 100层，design/12.0 v0.1 §3.2）
+
+**背景**：镇魔塔设计（design/12.0 v0.1，D5a 已锁）已立项，本批落地其层配置数据表，使 design/12.0 可被批次3 runner 直接消费。属数据层，runner（state.tower 默认值 + startTowerRun/_nextTowerFloor/_endTowerRun + finishBattle source:'tower' 分支 + UI）deferred 批次3（contested save-manager.js/game.js，需并发会话先落地）。
+
+**交付**：
+- `web/data/tower_table.json`（NEW，100 行 = 10 境界段 × 10 层）：每行 floor/tier/boss_id（复用 boss_table 31 Boss 含九 Boss 023-031；魔家四将 026-029 chain_id='mo_family' 为连战层）/power_mult（段内 1.0→1.5）/reward（随段递增 炼气 30/800/1 → 混元 300000/12M/15）/milestone_reward（段末层 10/20/.../100，含 tower_ticket=登塔令 非合法 resource_id runner 单独解释）/lore_anchor（封神锚点强制）/entry_text（半文言）/unlock_realm（仅段首层 1/11/.../91 非空 rq_03→hy_01）。
+- `web/data/data_index.json`：tables[] 追加 tower_table.json（现 24 表，data-manager.js:10 按 index 加载）。
+
+**验收**（数据层，非功能批次，不走 CLAUDE.md #6 功能验收；满足 #2 devlog/#7 禁简化）：100 行连续无缺；全行带 lore_anchor + entry_text；段首层境界门 10 个（rq_03/zr_03/dx_01/tx_01/zx_01/jx_01/ty_01/dl_01/zs_01/hy_01）与 map_table 同节奏；JSON 合法；零触碰 contested 文件。数值🔴待批次3 playtest 校准。
+
+**deferred（批次3，contested）**：save-manager.js state.tower 默认值+归一化；game.js startTowerRun/_nextTowerFloor/_endTowerRun + finishBattle source:'tower'；ui.js 塔入口+爬层 UI；2天周期重置 _resetTowerCycleIfNeeded（mirror unlock-manager.js:123）。
+
+---
+
 ## 2026-08-21 — 音效需求.md v0.1 立项（D6 落地）
 
 **背景**：D6 锁定"新建音效需求.md，并行轨不阻塞内容"。AudioManager（web/js/audio-manager.js，666 行）已完整实现（Web Audio 单例/三总线/程序化合成回退/autoplay 合规/prefers-reduced-motion），但真实音频素材 = 0。本文档是其素材规格书。
