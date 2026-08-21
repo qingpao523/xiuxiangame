@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-08-21 — 九Boss引擎接线尝试与回退（mixed hunks 证实阻塞，deferred 批次0）
+
+**背景**：用户核心任务 = 实现 9 Bosses（option A：冷却子系统 + 9 机制忠实终稿）。boss-mechanics-v2.js 解耦模块 + tests 已提交（6a94ad2 / a01b8ea）。本批尝试把模块接入引擎/UI/index。
+
+**接线完成（working tree，已验证）**：
+- `web/js/battle-engine-v2.js` 5 处：_processMechanicTurnStart/_processMechanicEnemyPhase 各加 `default:` case 委托 `BossMechanicsV2.turnStart[mech]/enemyPhase[mech].call(BossMechanicsV2,...)`（typeof 守卫）；create() 加 `BossMechanicsV2.init`；startPlayerRound 加 `onPlayerDamageDealt`；_enemySingleAct 加 `onEnemyAttack`。
+- `web/js/battle-ui-v2.js`：_mechanicText 加 16 个机制 key（evt.text 优先 + 兜底）。
+- `web/index.html`：battle-engine-v2.js 后加 `<script src="js/boss-mechanics-v2.js">`。
+- node --check 全过；tests/boss-mechanics.test.js 50/50、tests/liupai-manager.test.js 45/45 通过。
+
+**Hunk 分析（阻塞证据）**：3 个 contested 文件均有 MIXED hunks——我的编辑与并发会话**未提交**重构（逐格分步 startPlayerRound + 法宝绑定 + 五行共鸣 + 夹招，295增/145删）在 hunk 粒度内交织：battle-engine-v2.js hunks 8/9（round-loop 区，我的 onPlayerDamageDealt/onEnemyAttack 落入其重构区）/ battle-ui-v2.js hunk 6（_mechanicText）/ index.html hunk 1（script）。仅 dispatch defaults（hunks 13/14）+ init（hunk 3）干净可分离，但缺 script/UI 则非功能。
+
+**决策**：提交 mixed hunks 会 sweep 并发会话未提交重构（违反"绝不触碰并发工作"纪律）。**回退**我的 contested 编辑（从 /tmp 备份恢复 = HEAD + 并发 only），保留并发会话工作原样。引擎接线 **deferred 批次0**，per design/16.0（前置硬约束 = 并发会话先提交 battle-engine-v2.js）。
+
+**验收**（回退验证）：BossMechanicsV2 / zhangguifang_interrupt / boss-mechanics-v2.js 标记 = 0（我的已移除）；startPlayerRound = 3（并发保留）；node --check 过。零触碰并发工作。
+
+**注**：接线代码正确（tests 通过）且完整记录于 design/16.0 §一；并发会话提交 battle-engine-v2.js 后可据 spec 一次性干净应用（含冷却消费 slot._cd）。
+
+---
+
 ## 2026-08-21 — 流派系统单元测试落地（tests/liupai-manager.test.js，45/45 通过）
 
 **背景**：批次2 流派接口埋点（liupai_table.json + liupai-manager.js，commit e0bd7e9）后，按 CLAUDE.md #4 对抗审查补单元测试，实现 design/11.1 §三 canUseSpell 断言表，为批次5 上线提供回归基线（镜像 tests/boss-mechanics.test.js 之于批次0）。
