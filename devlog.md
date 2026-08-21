@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-08-21 — 九Boss机制解耦模块落地（web/js/boss-mechanics-v2.js，design/8.1 v1.3 终稿）
+
+**背景**：九Boss接线（design/8.1/8.2，用户选 option A 全做忠实终稿）的引擎层被并发会话的 battle-engine-v2.js 重构（逐格分步 startPlayerRound + 法宝绑定 + 五行共鸣 + 夹招）阻塞。本批先把**最硬的 9 个机制行为**以解耦模块预建，引擎后续仅以 switch case 委托调用，零侵入其回合结构。
+
+**交付**：
+- `web/js/boss-mechanics-v2.js`（NEW，~270 行，node --check 通过）：`BossMechanicsV2` 单例。API = init/dispatch/turnStart/enemyPhase/onPlayerDamageDealt/onEnemyAttack/_trueDamagePlayer/_setSlotCd/_addSlotCd。
+  - turnStart：zhangguifang_interrupt（呼名落马，每3回合hp<30%每2，打断随机槽+重置CD）/shiji_parasol（八卦云光帕，每4回合hp<25%每2，全场术法-40% 2回合，累积15%Boss血量破罩，狂暴剑气连击）/mo_lihai_strings（四弦乱心，循环一弦攻-15%/二弦防-15%/三弦CD+1/四弦齐鸣全叠加2回合，hp<40%从三弦起）/huoling_burnstack（灼烧层每回合tick）。
+  - enemyPhase：aobing_transform（化龙形，hp<50%防御×2攻击2→1）/mo_liqing_sword（青云剑，每5回合飞剑3回合无视护盾，hp<30%剑不回鞘）/mo_lihong_umbrella（混元珍珠伞，开场术法-25%整场不可解除）/luoxuan_fivefire（五宝连锁，5件火宝各祭1次后焚城=最大生命50%）。
+  - onPlayerDamageDealt：shiji_parasol 累积破罩 + mo_lishou_armor 花狐貂护甲（init 设 enemy.block=30%hpMax 减伤50%，破→暴怒减伤消失攻击×2）。
+  - onEnemyAttack：huoling_burnstack 叠层（hp<30%叠2，每3回合+2，满5层引爆=最大生命25%真伤→清零）。
+  - _trueDamagePlayer 绕护盾/格挡不绕无敌；_setSlotCd/_addSlotCd 安全写 slot._cd（冷却子系统未接入时降级不报错）。
+  - 复用 battle.spellDmgReduction（引擎 L69 已加字段）/_mechAtkMult/_mechDefMult/stats.taken。
+
+**集成契约**（模块头注释）：引擎 _processMechanicTurnStart/_processMechanicEnemyPhase 的 switch(battle.mechanic) 加 case 委托 BossMechanicsV2.turnStart[key]/enemyPhase[key]（或 default→dispatch）；战斗创建调 init；玩家伤敌后调 onPlayerDamageDealt；敌方攻击调 onEnemyAttack。
+
+**验收**（解耦模块批，非功能上线，不走 CLAUDE.md #6 功能验收；满足 #2 devlog/#7 禁简化）：node --check 通过；9 机制行为忠实 design/8.1 终稿；封神锚点（呼名落马第40回/云光帕第13回/青云剑花狐貂第37回）入文案；零触碰 contested 文件。数值🔴待批次0 playtest 校准。
+
+**deferred（批次0，contested battle-engine-v2.js/battle-ui-v2.js，需并发会话先落地）**：引擎 switch case 委托接线 + slot._cd 冷却消费（递减/跳过/置位）+ _trueDamagePlayer 路由 + battle-ui-v2.js _mechanicText 9 key 文案 + slot_cooling/CD 显示。
+
+---
+
 ## 2026-08-21 — 流派系统验收标准立项（design/11.1 v0.1，对齐 design/11.0 v0.2 §七/§八）
 
 **背景**：流派系统设定（design/11.0 v0.2，D3/C1-C9 已锁）已立项，批次2 埋点已落地（e0bd7e9）。按 CLAUDE.md #6（验收标准先行）补 design/11.1 验收裁判，使批次5 上线可验证。属设计规格文档，非功能批次，不走 CLAUDE.md #6 功能验收。
