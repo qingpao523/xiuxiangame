@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-08-21 — 集成接线规格立项（design/16.0 v0.1，批次0/3/5 contested 接线清单）
+
+**背景**：本会话已把三大 deferred 批次的硬逻辑预建为 inert 组件（boss-mechanics-v2.js+tests 50/50 / skill cooldown / tower_table 100层 / liupai_table+liupai-manager / M3投放层），但引擎/UI/存档接线需编辑并发会话正在重构、尚未提交的 contested 文件（battle-engine-v2.js 等）。本文把"并发会话落地后该怎么接"整理为可执行清单。
+
+**交付**：
+- `design/16.0 集成接线规格 v0.1.md`（NEW）：
+  - §一 批次0 九Boss引擎接线：机制委托（dispatch.call(BossMechanicsV2)+init+onPlayerDamageDealt+onEnemyAttack）/ slot._cd 冷却消费 / 真伤敌护甲 / 连战 auto-advance（魔家四将 chain）/ battle-ui-v2 _mechanicText 9key+slot_cooling / index.html script / 验收引 design/8.2+tests 50/50。
+  - §二 批次3 tower runner：save-manager state.tower 默认+归一化 / _resetTowerCycleIfNeeded（cycleIndex=epochDay/2，mirror unlock-manager.js:123）/ startTowerRun/_nextTowerFloor/_endTowerRun / finishBattle source:'tower' / ui.js 塔 UI / 验收引 design/12.0 §九。
+  - §三 批次5 流派上线：save-manager state.liupai+ensureState / 择派仪式+C1 重构五选一→四修（chooseBenmingSchool 复用 _maybeTriggerBenming:1298，C7 本命恒=主系×1.5）/ canUseSpell+分支解锁+修被动 / battle-ui-v2 灰显+徽章+ui.js 择派弹窗 / _applyGlobalMult 修被动+本命协同×1.5/1.3/1.0 / 验收引 design/11.1。
+  - §四 接线顺序：并发会话先提交 battle-engine-v2.js → 批次0 → 3 → 5。§五 风险（回合结构变化/hunk隔离+git pull --rebase/数值🔴/真伤独立）。
+- `design/14.0`：§三索引 + 16.0 行；变更记录 v0.8。
+
+**验收**（设计规格文档，非功能批次，不走 CLAUDE.md #6；满足 #2 devlog/#7 禁简化）：清单对齐各专项设计（8.1/8.2/12.0/11.0/11.1）；零触碰 contested 文件。
+
+---
+
 ## 2026-08-21 — 九Boss机制单元测试落地（tests/boss-mechanics.test.js，50/50 通过）
 
 **背景**：boss-mechanics-v2.js（commit 6a94ad2）解耦实现 9 机制后，按 CLAUDE.md #4 对抗审查补单元测试，验证机制行为忠实 design/8.1 v1.3 终稿，为批次0 引擎接线提供回归基线。
