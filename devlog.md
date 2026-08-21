@@ -2,6 +2,21 @@
 
 ---
 
+## 2026-08-21 — 流派系统接口埋点（批次2，design/11.0 v0.2 落地·OPTION A 非冲突新文件）
+
+**背景**：落地锁定决策 D3/C1-C9（流派四修）。批次2 = 埋接口（试验期恒 true 不影响前期），批次5 = 上线（择派仪式+修被动+门控+C1 重构五选一→四修），批次6 = 转世重选。本批仅新增自含文件，零触碰并发会话在改的 contested 文件（game.js/save-manager.js/index.html/battle-* 等），避免误归属。
+
+**交付**：
+- `web/data/liupai_table.json`（新建）：四修定义 4 行（qi 器/ti 体/hun 魂/jie 劫），各含 primary_element/passive（修被动初版数值〔待校准〕）/branches（进阶+高阶+prestige 跨系，含 unlock_realm/unlock_elements/passive）/lore_anchor（封神锚点强制，合 design/5.0 §12）/fantasy。器修锁定（per 9.1：五行/混元太极/修体 prestige）；体魂劫分支〔提案，待设计师 refine〕。prestige 拓扑 C5 = 器↔体（杨戬/哪吒锚点）+ 魂↔劫 两对互跨。毒归魂修·毒分支（C4，锚点吕岳瘟部/余化化血神刀）。
+- `web/js/liupai-manager.js`（新建，自含无外部依赖）：`LiupaiManager` = ensureState（归一化 state.liupai={chosen,chosen_at_realm,branch,prestige[]}）/ nativeSpellTypes（主系∪已解锁分支系∪prestige 系）/ **canUseSpell（chosen=null→true 试验期；else spell_type∈native 系）** / getPassives（修被动+分支被动浅合并，供 battle-engine-v2 _applyGlobalMult 链批次5 消费）/ _realmReached（复用 RealmManager.isRealmAtLeast）。
+- `web/data/data_index.json`：tables[] 追加 `liupai_table.json`（data-manager.js:10 按 index.tables 加载）。
+
+**验收**（接口埋点批，对照 design/11.0 §九）：JSON 校验通过 / node --check 通过 / 4 行 lore_anchor 齐全 / canUseSpell 试验期恒 true 不破坏前期。**deferred 到批次5**（contested 集成，需并发会话先落地）：save-manager.js 默认值+归一化、game.js 择派仪式+门控+修被动结算+C1 重构、index.html script 标签、battle-ui-v2.js 灰显+徽章、ui.js 择派弹窗、battle-engine-v2.js _applyGlobalMult 挂修被动+本命协同×1.5/×1.3/×1.0（C7）。
+
+> 属接口埋点（新文件+数据），核心门控逻辑 canUseSpell 已实现但试验期恒 true；完整功能上线在批次5。不走 CLAUDE.md #6 功能验收评分（无行为变更），但满足 #2/#7（完整埋点禁简化）。
+
+---
+
 ## 2026-08-21 — 镇魔塔设计立项（design/12.0 v0.1，落地 D5a）
 
 承接用户指令「按顺序做 design/12.0《镇魔塔》」，落地主控 D5a（🔒已锁）。属设计规格文档（非功能代码批次），不走 CLAUDE.md #6 验收评分；文档内含实现批次用的验收标准（≥95）。

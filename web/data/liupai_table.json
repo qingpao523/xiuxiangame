@@ -1,0 +1,219 @@
+{
+  "schema_version": "0.1.0",
+  "table": "liupai_table",
+  "generated_at": "2026-08-21T00:00:00Z",
+  "description": "流派系统（design/11.0 v0.2，落地锁定决策 D3/C1-C9）。四修=输出/生存/控制/机制四 build 轴，互不碾压。批次2=埋接口（试验期 canUseSpell 恒 true，chosen=null 不影响前期）；批次5=上线（真仙破劫 zx 择派仪式+修被动+门控）；批次6=转世重选。数值为初版基线〔待校准〕，权威台账见 design/数值规划与平衡待办 v0.1.md §五（标 🔴）。lore_anchor 为封神锚点（强制，合 design/5.0 §12）。",
+  "rows": [
+    {
+      "liupai_id": "qi",
+      "name": "器修",
+      "primary_element": "weapon",
+      "fantasy": "以器证道",
+      "position": "输出·法宝轰炸",
+      "style": "法宝爆发·远程·连锁",
+      "representatives": "多宝道人·赵公明·三霄",
+      "lore_anchor": "多宝道人（截教大弟子，掌诛仙阵图与漫天法宝）/赵公明（二十四颗定海珠打遍阐教）/三霄（混元金斗·金蛟剪）",
+      "passive": {
+        "weapon_damage_bonus": 0.15,
+        "treasure_slot_bonus": 1,
+        "refine_success_bonus": 0.10
+      },
+      "branches": [
+        {
+          "branch_id": "wuxing",
+          "name": "五行",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "treasure_wuxing_count": 5 },
+          "unlock_elements": ["thunder", "fire"],
+          "passive": { "wuxing_treasure_damage_bonus": 0.10 },
+          "note": "正五行金/木/水/火/土法宝万象；火借用现有 fire 系，金木水土为分支内新增标签（非战斗 spell_type），五行相生相克为器修专属机制（C3）"
+        },
+        {
+          "branch_id": "huntai",
+          "name": "混元太极",
+          "tier": "高阶",
+          "prestige": false,
+          "unlock_realm": "ty_01",
+          "unlock_req": { "event": "混元珠/太极图残片机缘" },
+          "unlock_elements": [],
+          "passive": { "treasure_ultimate_damage_bonus": 0.25 },
+          "note": "纯器极致：先天至宝流（混元珠/太极图意境），不扩系，专注法宝终极强化"
+        },
+        {
+          "branch_id": "xiuti",
+          "name": "修体",
+          "tier": "prestige",
+          "prestige": true,
+          "unlock_realm": "dl_01",
+          "unlock_req": { "main_maxed": true, "branch_count": 1, "genjiao": "特定", "event": "八九玄功机缘", "companion": "杨戬" },
+          "unlock_elements": ["body"],
+          "passive": { "body_reflect_bonus": 0.15, "hp_bonus": 0.10 },
+          "note": "门内跨系（八九玄功·器修兼修肉身，杨戬式）；跨系是荣耀而非自由（C5 prestige 高门槛）"
+        }
+      ]
+    },
+    {
+      "liupai_id": "ti",
+      "name": "体修",
+      "primary_element": "body",
+      "fantasy": "以身证道",
+      "position": "生存·肉身成圣",
+      "style": "近战·反伤·高生存",
+      "representatives": "杨戬·哪吒·黄天化",
+      "lore_anchor": "杨戬（八九玄功·肉身成圣·二郎真君）/哪吒（莲花化身·三头八臂）/黄天化（攒心钉·肉身搏杀）",
+      "passive": {
+        "hp_bonus": 0.20,
+        "body_damage_bonus": 0.15,
+        "reflect_ratio": 0.10
+      },
+      "branches": [
+        {
+          "branch_id": "xuangong",
+          "name": "玄功",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "genjiao": "特定", "reflect_total_reached": true },
+          "unlock_elements": [],
+          "passive": { "body_crit_bonus": 0.15 },
+          "note": "八九玄功/九转玄功：体暴击与变化〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "jinshen",
+          "name": "金身",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "event": "金刚不坏机缘" },
+          "unlock_elements": [],
+          "passive": { "damage_reduction": 0.20 },
+          "note": "金刚不坏/法天象地：减伤极致〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "xiuqi",
+          "name": "修器",
+          "tier": "prestige",
+          "prestige": true,
+          "unlock_realm": "dl_01",
+          "unlock_req": { "main_maxed": true, "branch_count": 1, "genjiao": "特定", "event": "乾坤圈机缘", "companion": "哪吒" },
+          "unlock_elements": ["weapon"],
+          "passive": { "weapon_damage_bonus": 0.10 },
+          "note": "门内跨系（哪吒乾坤圈式·体修兼修法宝）；C5 prestige 器↔体互跨（杨戬/哪吒锚点）"
+        }
+      ]
+    },
+    {
+      "liupai_id": "hun",
+      "name": "魂修",
+      "primary_element": "soul",
+      "fantasy": "以神证道",
+      "position": "控制·元神流",
+      "style": "控制·斩杀·暴击",
+      "representatives": "妲己·姚天君·广成子(番天印意境)",
+      "lore_anchor": "妲己（九尾狐·惑心夺魄）/姚天君（落魂阵·拜魂夺魄）/广成子（番天印·镇魂意境）",
+      "passive": {
+        "soul_damage_bonus": 0.15,
+        "control_hit_bonus": 0.15,
+        "crit_bonus": 0.10
+      },
+      "branches": [
+        {
+          "branch_id": "chuqiao",
+          "name": "出窍",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "event": "元神出窍机缘" },
+          "unlock_elements": [],
+          "passive": { "yuanshen_extra_attack_per_battle": 1 },
+          "note": "元神离体额外攻击（每战 1 次，倍率〔待校准〕）〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "huoxin",
+          "name": "惑心",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "event": "幻术机缘" },
+          "unlock_elements": [],
+          "passive": { "control_duration_bonus_turns": 1 },
+          "note": "幻术落魂·控制时长 +1 回合〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "du",
+          "name": "毒",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "event": "吕岳瘟部/化血神刀残片机缘" },
+          "unlock_elements": [],
+          "passive": { "poison_dot_bonus": 0.15, "poison_attack_debuff": 0.10 },
+          "note": "毒归魂修（C4）：毒蚀神魂·持续伤害+侵蚀+削弱目标攻击；封神锚点=吕岳瘟部/余化化血神刀/截教毒术〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "xiujie",
+          "name": "修劫",
+          "tier": "prestige",
+          "prestige": true,
+          "unlock_realm": "dl_01",
+          "unlock_req": { "main_maxed": true, "branch_count": 1, "genjiao": "特定", "event": "斩仙飞刀机缘" },
+          "unlock_elements": ["calamity"],
+          "passive": { "calamity_damage_bonus": 0.10 },
+          "note": "门内跨系（魂修兼修气运杀劫）；C5 prestige 魂↔劫互跨"
+        }
+      ]
+    },
+    {
+      "liupai_id": "jie",
+      "name": "劫修",
+      "primary_element": "calamity",
+      "fantasy": "以劫证道",
+      "position": "机制·气运杀劫",
+      "style": "机制·气运·斩杀线",
+      "representatives": "陆压道人·封神榜",
+      "lore_anchor": "陆压道人（斩仙飞刀·钉头七箭书·趋吉避凶）/封神榜（杀劫气运之枢纽）",
+      "passive": {
+        "calamity_damage_bonus": 0.15,
+        "luck_bonus": 0.10,
+        "killcalamity_trigger_bonus": 0.10
+      },
+      "branches": [
+        {
+          "branch_id": "zhanxian",
+          "name": "斩仙",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "event": "斩仙飞刀机缘" },
+          "unlock_elements": [],
+          "passive": { "execute_hp_threshold": 0.20 },
+          "note": "斩杀线：敌人 HP<20% 直接斩杀（阈值〔待校准〕）；陆压斩仙飞刀意境〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "qiyun",
+          "name": "气运",
+          "tier": "进阶",
+          "prestige": false,
+          "unlock_realm": "jx_01",
+          "unlock_req": { "luck_value_reached": true },
+          "unlock_elements": [],
+          "passive": { "offline_reward_bonus": 0.15 },
+          "note": "趋吉避凶·离线收益 +15%〔提案，待设计师 refine〕"
+        },
+        {
+          "branch_id": "xiuhun",
+          "name": "修魂",
+          "tier": "prestige",
+          "prestige": true,
+          "unlock_realm": "dl_01",
+          "unlock_req": { "main_maxed": true, "branch_count": 1, "genjiao": "特定", "event": "元神机缘" },
+          "unlock_elements": ["soul"],
+          "passive": { "soul_damage_bonus": 0.10 },
+          "note": "门内跨系（劫修兼修元神）；C5 prestige 魂↔劫互跨"
+        }
+      ]
+    }
+  ]
+}
