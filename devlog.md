@@ -2,6 +2,20 @@
 
 ---
 
+## 2026-08-22 — 碎片系统 UI 合成面板（design/16.0，碎片系统端到端完成）
+
+**背景**：碎片系统核心机制（state.treasure_fragments + _treasureTier/synthDedicated/synthLottery，commit 9405cec）已落地，但无 UI 玩家无法使用。本批补 UI 合成面板，碎片系统端到端打通。
+
+**交付**（`web/js/ui.js`，node --check 通过）：
+- `renderFragmentSynthPopup(panel,title,body,buttons)`：通用碎片抽奖卡（当前法宝碎片数 + 耗 15 抽奖，按钮调 `Game.synthLottery()`）+ 专属碎片定向合成列表（每件法宝显示 `state.treasure_fragments[id]/N` 进度，N 按品阶 fan10/ling20/xian35/shen50，集满按钮调 `Game.synthDedicated(id)`）。
+- popup dispatch 加 `fragment_synth` kind；法宝面板（renderTreasurePanel）加「碎片合成」入口按钮。
+
+**说明**：碎片系统至此端到端完成（state + 合成方法 + UI）。**遗留**：碎片**掉落来源**未接——专属碎片需格子探索系统（design/15.x，尚未实现）+ 隐藏 Boss；通用碎片镇魔塔里程碑已给 treasure_shard、修炼挂机小额待接。主城三级地图（design/16.0 批 B/C）需 NPC 框架，工作量大。
+
+**验收**（功能批次，CLAUDE.md #6）：node --check ui.js 通过；仅提交 ui.js（碎片 UI 增量，与并发战斗改版 6d2788d 不重叠），零触碰战斗逻辑。
+
+---
+
 ## 2026-08-22 — 碎片系统核心机制落地（design/16.0 批次A：专属定向合成 + 通用抽奖）
 
 **背景**：用户指令「碎片系统（专属/通用两类）」，design/16.0 批次A 核心机制。

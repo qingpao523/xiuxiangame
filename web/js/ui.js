@@ -290,6 +290,7 @@ function showPopup(popup) {
   else if (popup.kind === "rest") renderRestPopup(panel, title, body, buttons, popup.payload || {});
   else if (popup.kind === "insight") renderInsightPopup(panel, title, body, buttons, popup.payload || {});
   else if (popup.kind === "audio_settings") { title.textContent = "声音设置"; renderAudioSettings(panel, body, buttons); }
+  else if (popup.kind === "fragment_synth") renderFragmentSynthPopup(panel, title, body, buttons);
 }
 
 function closePopup() { currentPopup = null; $("popup-layer").classList.add("hidden"); drainPopupQueue(); render(); }
@@ -1120,10 +1121,53 @@ function renderSkillV2Section(body, state) {
 }
 
 // 法宝面板
+// ---------------- 碎片合成弹窗（design/16.0：专属定向 + 通用抽奖）----------------
+function renderFragmentSynthPopup(panel, title, body, buttons) {
+  panel.classList.add("style-treasure"); title.textContent = "碎片合成";
+  body.textContent = "通用碎片可炉火抽奖，随机得宝；专属碎片集满则定向合成那件法宝。";
+  const state = Game.state;
+  const frag = state.treasure_fragments || {};
+  // 通用碎片抽奖
+  const lotCard = document.createElement("div"); lotCard.className = "card";
+  const lotInfo = document.createElement("div"); lotInfo.className = "card-info";
+  const lotName = document.createElement("div"); lotName.className = "card-name"; lotName.textContent = "通用碎片·炉火抽奖";
+  const lotDesc = document.createElement("div"); lotDesc.className = "card-desc";
+  lotDesc.textContent = `耗通用碎片（法宝碎片）15 枚，随机凝得一件法宝。当前持有：${formatInt(num(state.resources.treasure_shard))} 枚。按境界段奖池加权，高价值极低。`;
+  lotInfo.append(lotName, lotDesc); lotCard.appendChild(lotInfo);
+  const lotBtn = document.createElement("button"); lotBtn.className = "card-btn";
+  const canLot = num(state.resources.treasure_shard) >= 15;
+  lotBtn.textContent = canLot ? "抽奖（15 碎片）" : "碎片不足";
+  lotBtn.disabled = !canLot;
+  lotBtn.addEventListener("click", () => { Game.synthLottery(); drainPopupQueue(); });
+  lotCard.appendChild(lotBtn);
+  body.appendChild(lotCard);
+  // 专属碎片定向合成
+  const need = { fan: 10, ling: 20, xian: 35, shen: 50 };
+  for (const row of DataManager.getRows("treasure_table")) {
+    const id = String(row.treasure_id);
+    const tier = Game._treasureTier(id);
+    const n = need[tier] || 20;
+    const have = int(frag[id]);
+    const card = document.createElement("div"); card.className = "card";
+    const info = document.createElement("div"); info.className = "card-info";
+    const nm = document.createElement("div"); nm.className = "card-name"; nm.textContent = `${row.treasure_name}（${{fan:"凡品",ling:"灵品",xian:"仙品",shen:"神品"}[tier] || tier}）`;
+    const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = `专属碎片 ${have}/${n}｜${row.main_effect || row.skill_desc || ""}`;
+    info.append(nm, desc); card.appendChild(info);
+    const btn = document.createElement("button"); btn.className = "card-btn";
+    const can = have >= n;
+    btn.textContent = can ? "合成" : `${have}/${n}`;
+    btn.disabled = !can;
+    btn.addEventListener("click", () => { Game.synthDedicated(id); drainPopupQueue(); });
+    card.appendChild(btn);
+    body.appendChild(card);
+  }
+}
+
 function renderTreasurePanel(body, state) {
   if (Game.hasPendingTreasureChoice()) { body.appendChild(note("破劫成真人后，你的气机引动三件残宝，静待择主。")); body.appendChild(popupButton("本命法宝择主", false, () => { closePanelSheet(); Game.queuePopup({ kind: "treasure_choice" }); drainPopupQueue(); })); return; }
   const treasures = UnlockManager.getAvailableTreasures(state);
   body.appendChild(note("法宝不是普通装备，而是护道根基。以法宝碎片与法力温养之。"));
+  body.appendChild(popupButton("碎片合成", false, () => { closePanelSheet(); Game.queuePopup({ kind: "fragment_synth" }); drainPopupQueue(); }));
   for (const treasure of treasures) {
     const id = String(treasure.treasure_id); const tState = Game.getTreasureState(id);
     const level = int(tState.level), maxLevel = int(treasure.max_level_mvp, 5), nextLevel = level + 1;
