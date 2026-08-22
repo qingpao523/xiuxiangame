@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>双方技能框 · 行动条预览</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  html,body { margin:0; padding:0; background:#0d0d12; }
+  .wrap { max-width:460px; margin:20px auto; padding:16px; }
+  .cap { color:#90a4ae; font-size:12px; text-align:center; margin:6px 0 12px; line-height:1.6; }
+  .demo-zone { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px 12px; }
+  .legend { color:#666; font-size:11px; text-align:center; margin-top:14px; line-height:1.8; }
+  .legend b { color:#ffd97a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cap">双方技能框 · 行动条预览<br>上：你的斗法栏 ①②③ 连锁 &nbsp;/&nbsp; 下：敌方技能框（蓄力→释放 rolled 招式）</div>
+  <div class="demo-zone">
+    <div class="battle-v2-zone" id="zone"></div>
+  </div>
+  <div class="legend">
+    <b>金脉冲</b>=你正在放招 &nbsp; <b>蓝</b>=雷系（三连期待）<br>
+    下方敌方条：你放招时它<b style="color:#ef9a9a">蓄力</b>上涨，<b style="color:#ef9a9a">亮起的那格</b>=它即将释放的招式（预兆）
+  </div>
+</div>
+<script>
+(function(){
+  var zone = document.getElementById("zone");
+  var playerSlots = [
+    { spell_type:"thunder", name:"\u96f7\u5f15\u672f" },
+    { spell_type:"thunder", name:"\u96f7\u66b4\u9635" },
+    { spell_type:"thunder", name:"\u96f7\u7f5a\u51b3" }
+  ];
+  var enemySkills = ["\u6251\u51fb","\u51f6\u5149\u5927\u76db","\u7f61\u6c14\u62a4\u4f53","\u55b7\u5410\u90aa\u706b","\u5636\u543c\u9707\u9b42"];
+  var circled = ["\u2460","\u2461","\u2462","\u2463","\u2464","\u2465","\u2466","\u2467"];
+
+  function build(){
+    var tl = document.createElement("div");
+    tl.className = "round-timeline";
+    tl.innerHTML =
+      '<div class="tl-bar tl-you"><span class="tl-bar-label you">\u4f60</span><div class="tl-bar-body">'
+      + '<div class="tl-track"><div class="tl-fill"></div></div><div class="tl-nodes tl-player-nodes"></div>'
+      + '</div></div>'
+      + '<div class="tl-bar tl-foe"><span class="tl-bar-label foe">\u654c</span><div class="tl-bar-body">'
+      + '<div class="tl-foe-track"><div class="tl-foe-charge"></div><div class="tl-foe-nodes"></div></div>'
+      + '</div></div>';
+    zone.appendChild(tl);
+
+    var pn = tl.querySelector(".tl-player-nodes");
+    var ph = "";
+    for (var i=0;i<playerSlots.length;i++){
+      var s = playerSlots[i];
+      ph += '<div class="tl-node element-'+s.spell_type+'" data-idx="'+i+'">'
+        + '<span class="tl-dot">'+circled[i]+'</span><span class="tl-label">'+s.name.slice(0,2)+'</span></div>';
+    }
+    pn.innerHTML = ph;
+
+    var en = tl.querySelector(".tl-foe-nodes");
+    var eh = "";
+    for (var j=0;j<enemySkills.length;j++){
+      eh += '<div class="tl-eskill" data-idx="'+j+'"><span class="tl-eskill-dot"></span><span class="tl-eskill-label">'+enemySkills[j]+'</span></div>';
+    }
+    en.innerHTML = eh;
+  }
+
+  function setPlayer(activeIndex, done){
+    var nodes = zone.querySelectorAll(".tl-player-nodes .tl-node");
+    var N = playerSlots.length;
+    nodes.forEach(function(node, idx){
+      node.classList.toggle("active", idx === activeIndex);
+      node.classList.toggle("done", done === true || (activeIndex >= 0 && idx < activeIndex));
+    });
+    var fill = zone.querySelector(".tl-fill");
+    var pct = 0;
+    if (done === true) pct = 100;
+    else if (activeIndex >= 0) pct = N > 1 ? (activeIndex/(N-1))*100 : 100;
+    fill.style.width = pct + "%";
+  }
+
+  function setFoe(chargePct, telegraphIdx, release, instant){
+    var charge = zone.querySelector(".tl-foe-charge");
+    var track = zone.querySelector(".tl-foe-track");
+    charge.style.transitionDuration = instant ? "0ms" : "650ms";
+    charge.style.width = chargePct + "%";
+    track.classList.toggle("release", release === true);
+    var skills = zone.querySelectorAll(".tl-eskill");
+    skills.forEach(function(sk, idx){
+      sk.classList.toggle("telegraph", idx === telegraphIdx && release !== true);
+      sk.classList.toggle("firing", idx === telegraphIdx && release === true);
+    });
+  }
+
+  build();
+
+  var step = 700;
+  function cycle(){
+    var roll = Math.floor(Math.random()*enemySkills.length);
+    setPlayer(-1, false); setFoe(0, -1, false, true);          // 回合重置
+    setTimeout(function(){ setPlayer(0); setFoe(33, roll, false); }, 350);
+    setTimeout(function(){ setPlayer(1); setFoe(66, roll, false); }, 350 + step);
+    setTimeout(function(){ setPlayer(2); setFoe(100, roll, false); }, 350 + step*2);
+    setTimeout(function(){ setPlayer(-1, true); setFoe(100, roll, true); }, 350 + step*3);  // 敌方释放
+    setTimeout(cycle, 350 + step*4 + 500);
+  }
+  cycle();
+})();
+</script>
+</body>
+</html>

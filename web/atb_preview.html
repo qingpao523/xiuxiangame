@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATB 蓄力赛跑预览</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  html,body { margin:0; padding:0; background:#0d0d12; }
+  .wrap { max-width:460px; margin:20px auto; padding:16px; }
+  .cap { color:#90a4ae; font-size:12px; text-align:center; margin:6px 0 12px; line-height:1.6; }
+  .panel { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px; }
+  .ctrl { display:flex; align-items:center; gap:8px; margin:8px 0; font-size:12px; color:#cfd8dc; }
+  .ctrl label { width:78px; text-align:right; }
+  .ctrl input[type=range] { flex:1; }
+  .ctrl .val { width:42px; color:#ffd97a; font-weight:bold; }
+  .atb-row { display:flex; align-items:center; gap:8px; margin:10px 0; }
+  .atb-name { width:52px; font-size:13px; text-align:right; }
+  .atb-name.you { color:#66bb6a; }
+  .atb-name.foe { color:#ef9a9a; }
+  .atb-track { flex:1; height:18px; background:rgba(255,255,255,0.07); border-radius:9px; overflow:hidden; position:relative; }
+  .atb-gauge { height:100%; width:0%; border-radius:9px; transition:width 0.05s linear; }
+  .atb-gauge.you { background:linear-gradient(90deg,#2e7d32,#66bb6a); }
+  .atb-gauge.foe { background:linear-gradient(90deg,#c62828,#ff6659); }
+  .atb-track.ready { box-shadow:0 0 10px rgba(255,215,0,0.8); }
+  .atb-pct { width:40px; font-size:11px; color:#aaa; }
+  .chain { display:flex; gap:4px; justify-content:center; margin:12px 0 4px; min-height:26px; }
+  .chain .slot { font-size:11px; padding:3px 8px; border-radius:5px; border:1px solid rgba(79,195,247,0.5); color:#4FC3F7; opacity:0.3; transition:all 0.15s; }
+  .chain .slot.fire { opacity:1; transform:scale(1.25); background:rgba(79,195,247,0.2); box-shadow:0 0 8px rgba(79,195,247,0.7); }
+  .foe-act { text-align:center; min-height:22px; font-size:12px; color:#ef9a9a; opacity:0; transition:opacity 0.2s; }
+  .foe-act.show { opacity:1; }
+  .log { margin-top:10px; max-height:120px; overflow-y:auto; font-size:11px; line-height:1.7; background:rgba(0,0,0,0.25); border-radius:8px; padding:8px; }
+  .log .you { color:#81c784; } .log .foe { color:#ef9a9a; } .log .sys { color:#90a4ae; }
+  .btns { text-align:center; margin-top:10px; }
+  .btns button { padding:5px 16px; font-size:12px; border-radius:6px; border:1px solid rgba(217,164,65,0.5); background:rgba(217,164,65,0.15); color:#ffd97a; cursor:pointer; }
+  .stat { text-align:center; font-size:11px; color:#78909c; margin-top:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cap">ATB 蓄力赛跑 · 手感验证<br>拖动速度滑块，看谁先出手、你堆速度后连锁频率多高</div>
+  <div class="panel">
+    <div class="ctrl"><label>你的速度</label><input type="range" id="spYou" min="50" max="200" value="100"><span class="val" id="spYouV">100</span></div>
+    <div class="ctrl"><label>敌方速度</label><input type="range" id="spFoe" min="50" max="200" value="90"><span class="val" id="spFoeV">90</span></div>
+
+    <div class="atb-row"><span class="atb-name you">你</span><div class="atb-track" id="trkYou"><div class="atb-gauge you" id="gYou"></div></div><span class="atb-pct" id="pctYou">0%</span></div>
+    <div class="atb-row"><span class="atb-name foe">敌方</span><div class="atb-track" id="trkFoe"><div class="atb-gauge foe" id="gFoe"></div></div><span class="atb-pct" id="pctFoe">0%</span></div>
+
+    <div class="chain" id="chain">
+      <span class="slot">①雷引</span><span class="slot">②雷暴</span><span class="slot">③雷罚</span>
+    </div>
+    <div class="foe-act" id="foeAct">敌方释放：横扫一击！</div>
+
+    <div class="btns"><button id="toggle">暂停</button></div>
+    <div class="stat" id="stat">你出手 0 次 · 敌方出手 0 次</div>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var gYou=document.getElementById("gYou"), gFoe=document.getElementById("gFoe");
+  var trkYou=document.getElementById("trkYou"), trkFoe=document.getElementById("trkFoe");
+  var pctYou=document.getElementById("pctYou"), pctFoe=document.getElementById("pctFoe");
+  var chain=document.getElementById("chain").querySelectorAll(".slot");
+  var foeAct=document.getElementById("foeAct");
+  var log=document.getElementById("log"), stat=document.getElementById("stat");
+  var spYou=document.getElementById("spYou"), spFoe=document.getElementById("spFoe");
+  var spYouV=document.getElementById("spYouV"), spFoeV=document.getElementById("spFoeV");
+  var toggle=document.getElementById("toggle");
+
+  var you=0, foe=0, youCount=0, foeCount=0, running=true, acting=false;
+  var TICK=50, FILL=100;
+
+  function spd(el){ return parseInt(el.value,10); }
+  spYou.oninput=function(){ spYouV.textContent=spYou.value; };
+  spFoe.oninput=function(){ spFoeV.textContent=spFoe.value; };
+  toggle.onclick=function(){ running=!running; toggle.textContent=running?"暂停":"继续"; };
+
+  function addLog(cls,txt){
+    var d=document.createElement("div"); d.className=cls; d.textContent=txt;
+    log.appendChild(d); log.scrollTop=log.scrollHeight;
+    while(log.childNodes.length>40) log.removeChild(log.firstChild);
+  }
+
+  function fireChain(cb){
+    acting=true; var i=0;
+    function step(){
+      if(i>0) chain[i-1].classList.remove("fire");
+      if(i>=chain.length){ acting=false; cb(); return; }
+      chain[i].classList.add("fire"); i++;
+      setTimeout(step, 180);
+    }
+    step();
+  }
+
+  function foeFire(cb){
+    acting=true; foeAct.classList.add("show");
+    setTimeout(function(){ foeAct.classList.remove("show"); acting=false; cb(); }, 500);
+  }
+
+  function update(){
+    gYou.style.width=you+"%"; gFoe.style.width=foe+"%";
+    pctYou.textContent=Math.round(you)+"%"; pctFoe.textContent=Math.round(foe)+"%";
+    trkYou.classList.toggle("ready", you>=FILL);
+    trkFoe.classList.toggle("ready", foe>=FILL);
+    stat.textContent="你出手 "+youCount+" 次 · 敌方出手 "+foeCount+" 次";
+  }
+
+  function loop(){
+    if(running && !acting){
+      you += spd(spYou)/20;
+      foe += spd(spFoe)/20;
+      if(you>=FILL && foe>=FILL){
+        // 同时满：速度高者先
+        if(spd(spYou)>=spd(spFoe)){ you=FILL; } else { foe=FILL; }
+      }
+      if(you>=FILL){
+        you=0; youCount++; addLog("you","你蓄力完成 → 释放 ①②③ 三连连锁！");
+        fireChain(function(){});
+      } else if(foe>=FILL){
+        foe=0; foeCount++; addLog("foe","敌方蓄力完成 → 横扫一击！");
+        foeFire(function(){});
+      }
+      update();
+    }
+    setTimeout(loop, TICK);
+  }
+  addLog("sys","斗法开始：双方蓄力赛跑，谁先满谁出手。");
+  loop();
+})();
+</script>
+</body>
+</html>

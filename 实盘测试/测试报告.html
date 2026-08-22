@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>封神修道录 · 30分钟实盘测试报告</title>
+<style>
+  :root { --ink:#1a2332; --accent:#2b4c7e; --gold:#b8860b; --bg:#f5f1e8; --card:#fffdf7; --red:#a33; --orange:#b69; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Songti SC","Noto Serif SC",serif; background:var(--bg); color:var(--ink); line-height:1.75; }
+  .wrap { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+  header { text-align:center; padding:48px 0 32px; border-bottom:3px double var(--accent); margin-bottom:36px; }
+  header h1 { font-size:34px; letter-spacing:6px; color:var(--accent); }
+  header .sub { margin-top:12px; color:#666; font-size:14px; letter-spacing:2px; }
+  h2 { font-size:22px; color:var(--accent); margin:44px 0 18px; padding-left:14px; border-left:5px solid var(--gold); letter-spacing:2px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:20px 0; }
+  .card { background:var(--card); border:1px solid #e2d9c5; border-radius:10px; padding:16px 12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.05); }
+  .card .num { font-size:26px; font-weight:700; color:var(--accent); }
+  .card .lbl { font-size:12px; color:#888; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; background:var(--card); margin:16px 0; font-size:14px; }
+  th,td { border:1px solid #ddd3bd; padding:9px 12px; text-align:left; vertical-align:top; }
+  th { background:#ece5d3; letter-spacing:1px; }
+  .issue { background:var(--card); border:1px solid #e2d9c5; border-left:6px solid var(--red); border-radius:8px; padding:18px 22px; margin:18px 0; }
+  .issue.mid { border-left-color:#c77; } .issue.low { border-left-color:#999; }
+  .issue h3 { font-size:16px; margin-bottom:8px; }
+  .tag { display:inline-block; font-size:11px; padding:2px 10px; border-radius:20px; color:#fff; margin-right:8px; vertical-align:2px; }
+  .tag.p0 { background:var(--red); } .tag.p1 { background:#c77; } .tag.p2 { background:#89a; } .tag.p3 { background:#999; }
+  .issue p { font-size:14px; margin:6px 0; }
+  .issue .ev { color:#777; font-size:12.5px; }
+  .good li { margin:8px 0 8px 22px; }
+  .verdict { background:linear-gradient(135deg,#2b4c7e,#3d6098); color:#f5f1e8; border-radius:12px; padding:24px 28px; margin:28px 0; font-size:15px; letter-spacing:1px; }
+  code { background:#eee7d6; padding:1px 6px; border-radius:4px; font-size:12.5px; font-family:Menlo,monospace; }
+  footer { margin-top:56px; text-align:center; color:#999; font-size:12px; letter-spacing:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>封神修道录 · 实盘测试报告</h1>
+  <div class="sub">30 分钟真实玩家实盘 ｜ Webwright + Playwright ｜ 2026-08-21</div>
+</header>
+
+<div class="verdict">结论：游戏能稳定运行、前 10 分钟心流顺畅、氛围上乘；但存在 2 个会让挂机/新手玩家「静默卡死」的核心体验缺陷（升重入口锁死、停歇无恢复），建议列为 P0 修复后再扩量测试。</div>
+
+<h2>一、实盘概览</h2>
+<div class="cards">
+  <div class="card"><div class="num">30min</div><div class="lbl">实盘时长</div></div>
+  <div class="card"><div class="num">7 重</div><div class="lbl">终局·炼神还虚</div></div>
+  <div class="card"><div class="num">1800</div><div class="lbl">终局战力</div></div>
+  <div class="card"><div class="num">5 次</div><div class="lbl">升重（全手动）</div></div>
+  <div class="card"><div class="num">29 次</div><div class="lbl">灵光拾取</div></div>
+  <div class="card"><div class="num">0</div><div class="lbl">JS 错误 / 页面异常</div></div>
+</div>
+<table>
+  <tr><th>推进曲线</th><td>1重 →(2min) 3重 →(3min) 4重 →(6min) 5重 →(9min) 6重 →(11min) 7重 → 停滞</td></tr>
+  <tr><th>玩家事件流</th><td>择跟脚(人族) → 踏入修行 → 伸手一试 → 知道了 → 采集/继续赶路(游历遭遇) → 参悟符纹·术法残页+5 → 收下机缘</td></tr>
+  <tr><th>网络</th><td>22 次 404，全部为音频素材（web/audio/ 目录不存在，设计为回退合成音）</td></tr>
+</table>
+
+<h2>二、Bug 与问题清单</h2>
+
+<div class="issue">
+  <h3><span class="tag p0">P0</span>#1 连续修行开启时，升重入口被主按钮 acting 态锁死</h3>
+  <p>开启「连续修行」后主按钮永远是"吐纳周天中…N息"，道行溢出到 <b>110/10（11 倍）</b>也不升重；升重唯一入口埋在境界面板「道行已满，升重」。挂机玩家静默停滞。</p>
+  <p class="ev">根因：<code>getMainAction()</code> 中 current_action 优先级最高（game.js:1355），自动链式续作（game.js:242）不检查 canLevelUp。证据：run_1 截图 final_execution_06_play.png。</p>
+  <p><b>建议</b>：道行已满/可破劫时自动链让行，主按钮切为「可升重」；或提供自动升重开关。</p>
+</div>
+
+<div class="issue">
+  <h3><span class="tag p0">P0</span>#2 连续修行停歇后无自动恢复，修行完全停摆</h3>
+  <p>链式续作可用性失败（如游历每日次数尽）时仅打一行日志「连续修行停歇」，此后 tick() 只收尾不开新，挂机收益归零且无醒目提示。实测后 17 分钟道行仅攒 17/260。</p>
+  <p class="ev">根因：game.js:132-146 tick 无 idle 自动开新逻辑。证据：run_3 截图 final_execution_27_play.png。</p>
+  <p><b>建议</b>：idle + auto_repeat 时 tick 自动回落可用修行动作，或主按钮区显示"修行已停歇·点击继续"。</p>
+</div>
+
+<div class="issue mid">
+  <h3><span class="tag p1">P1</span>#3 面板遮挡主操作区；BOSS 指引文案无战斗语义</h3>
+  <p>「山野妖首现身，可挑战」点击后打开游历面板覆盖主按钮区，反复点开即造成 #2 式停摆；文案与样式和任务指引无异，玩家直觉难识别为战斗入口。</p>
+  <p><b>建议</b>：BOSS 指引用独立战斗样式；面板打开时保留主按钮可点或自动收起。</p>
+</div>
+
+<div class="issue mid">
+  <h3><span class="tag p1">P1</span>#4 自动修行不跟任务，任务门槛依赖玩家注意力</h3>
+  <p>目标「完成一次山野游历」期间自动修行无限吐纳，道行溢出也不推进目标，新手困惑"为什么不变强"。</p>
+  <p><b>建议</b>：目标为 action_complete 且自动开启时，链式续作优先续目标动作。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p2">P2</span>#5 音频素材全量 404（22 次/30min）</h3>
+  <p>web/audio/ 不存在，realm_up/secret_found/water_drop/fortune 全 404；设计为回退合成音（audio-manager.js:9），功能不受影响但污染网络日志。</p>
+  <p><b>建议</b>：占位静音文件或清单探测；尽快补真实素材。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p2">P2</span>#6 首屏 AudioContext 自动启动警告 ×7</h3>
+  <p><b>建议</b>：首次用户手势后再初始化音频上下文。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p2">P2</span>#7 残留文件与死旗标</h3>
+  <p>battle-engine-v2.js.bak、skill_table.json.bak 残留；save-manager.js:65 <code>battle_manual</code> 引擎已不读取，且与 08-18 旧 playtest 报告口径矛盾。</p>
+  <p><b>建议</b>：删 .bak 与死旗标，更新旧报告口径。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p2">P2</span>#8 境界命名双轨制</h3>
+  <p>数据表「炼气士/真人/地仙」 vs UI 映射「炼精化气/炼气化神/地仙/天仙」（realm-manager.js:12-30 刻意映射），旧文档仍用旧名。</p>
+  <p><b>建议</b>：文档统一显示名或维护映射对照表。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p3">P3</span>#9 桌面端 #app 限宽 480px，大片留白</h3>
+  <p><b>建议</b>：桌面断点下面板常驻侧栏或加宽主列。</p>
+</div>
+
+<div class="issue low">
+  <h3><span class="tag p3">P3</span>#10 七重后曲线陡增、空窗拉长</h3>
+  <p>前六重 1-2 分钟/重心流好；炼神还虚需求 260→360→500→800 陡增，实测 17 分钟无升重。</p>
+  <p><b>建议</b>：做七日节奏验证，首小时每重空窗 ≤3 分钟。</p>
+</div>
+
+<h2>三、做得好的地方</h2>
+<ul class="good">
+  <li>30 分钟 0 JS 错误、0 页面异常，启动与存档链路稳定。</li>
+  <li>灵光「点击拾取」微反馈 + 天象/今日异象文案，修仙氛围浓、沉浸感强。</li>
+  <li>「可循」目标 + 指引按钮 + 洞府手札三层引导结构清晰，世界观文案质量高。</li>
+  <li>机缘事件穿插自然，不打断心流。</li>
+</ul>
+
+<h2>四、玩家体验观察（实盘第一人称）</h2>
+<p style="color:#777;font-size:13.5px;margin-bottom:14px;">Bug 是"坏了"，体验是"别扭"。以下为新手视角的体验观察，与 Bug 清单互补。</p>
+
+<div class="issue mid"><h3>E1 理解割裂 · 同屏两套境界命名</h3><p>顶栏「炼精化气·1重」vs 目标栏「升至炼气士二重」，新手困惑"我到底是哪个境界"。</p></div>
+<div class="issue mid"><h3>E2 前期节奏 · 前 2 分钟反馈稀疏</h3><p>道行 0→10 只有氛围文案，首个升重爽点约 120 秒才到；放置类"前 60 秒爽点"没利用上。</p></div>
+<div class="issue mid"><h3>E3 注意力错配 · 灵光比主进度抢眼</h3><p>30 分钟拾取 29 次，是主界面最高频交互；主进度反馈（升重）却埋在境界面板。副玩法抢戏、主反馈藏匿。</p></div>
+<div class="issue mid"><h3>E4 选择时刻 · 择跟脚信息失衡</h3><p>9 种族 7 锁定占大半屏，半成品感强；人/妖仅一行被动加成，缺决策依据（成长曲线/形象预览）。</p></div>
+<div class="issue mid"><h3>E5 引导链 · "跳过卷首"并非真跳过</h3><p>跳过后仍连环弹：择跟脚→踏入修行→伸手一试，前 30 秒被打断 3-4 次。</p></div>
+<div class="issue mid"><h3>E6 核心玩法曝光 · 前 30 分钟零战斗</h3><p>卡牌斗法 11 分钟才以底部小按钮出现，点进去还要在面板里找「斗法」。首日曝光太晚太弱（hints 首现 @662s）。</p></div>
+<div class="issue low"><h3>E7 数值认知 · 四资源并列无用途引导</h3><p>前 3 分钟不知道法力干什么用（术法 Tab 4 重才解锁），资源条无"点按看用途"。</p></div>
+<div class="issue low"><h3>E8 情绪曲线 · 11-30 分钟平台期无钩子</h3><p>7 重后无新系统解锁、无叙事钩子、目标单一，情绪走平；放置玩家会在这段关掉页面（662s→1680s 无 new unlock）。</p></div>
+<div class="issue low"><h3>E9 钩子不闭环 · 天象缺 FOMO</h3><p>「灵潮涌动 +30%」是好钩子，但没明示"不上线会错过什么"；离线/闭关情绪锚点不足。</p></div>
+<div class="issue low"><h3>E10 音频体验 · 合成音单薄</h3><p>真实素材 404 回退合成音，升重/机缘听觉奖励感弱；「音」入口不显眼。</p></div>
+<p style="font-size:14px;margin:14px 0;"><b>做得好的体验</b>：世界观文案氛围感强（"灵气如丝，缓缓入体"）；灵光拾取随机奖励感；天象制造每日差异；洞府手札三层引导清晰。</p>
+
+<h2>五、优先级总表</h2>
+<table>
+  <tr><th>优先级</th><th>问题</th><th>动作</th></tr>
+  <tr><td>P0</td><td>#1 升重入口锁死</td><td>自动链让行 / 自动升重开关</td></tr>
+  <tr><td>P0</td><td>#2 停歇无恢复</td><td>tick 自动回落修行</td></tr>
+  <tr><td>P1</td><td>#3 面板遮挡+BOSS 文案</td><td>战斗样式+面板策略</td></tr>
+  <tr><td>P1</td><td>#4 自动不跟任务</td><td>链式续作优先目标动作</td></tr>
+  <tr><td>P2</td><td>#5 #6 音频</td><td>占位素材/手势初始化</td></tr>
+  <tr><td>P2</td><td>#7 #8 卫生与口径</td><td>清理+文档对齐</td></tr>
+  <tr><td>P3</td><td>#9 #10</td><td>桌面适配+数值验证</td></tr>
+</table>
+
+<footer>证据索引：本目录 evidence/（关键截图·实盘日志·状态时间线）｜完整原始运行见测试工作区 outputs/game_test_8090/final_runs/run_1~3</footer>
+</div>
+</body>
+</html>

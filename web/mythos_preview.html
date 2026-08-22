@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神话素材汇总与共鸣扩展 · 封神修道录</title>
+<style>
+  :root{
+    --bg:#12121f; --panel:#1c1c30; --panel2:#242440; --line:#33335a;
+    --gold:#FFD700; --gold-dim:#b89b2e; --text:#e8e8f0; --muted:#9a9ab8;
+    --wood:#66BB6A; --fire:#FF5722; --earth:#C8A165; --metal:#cfd6e0; --water:#4FC3F7;
+    --chan:#b388ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.6;padding-bottom:60px}
+  header{padding:26px 20px 14px;text-align:center;background:linear-gradient(180deg,#1e1e38,#12121f);border-bottom:1px solid var(--line)}
+  header h1{font-size:24px;color:var(--gold);letter-spacing:2px;font-weight:700}
+  header p{color:var(--muted);font-size:13px;margin-top:6px}
+  .legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .legend span{font-size:12px;padding:3px 10px;border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+  .wx-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .wx-wood{background:var(--wood)} .wx-fire{background:var(--fire)} .wx-earth{background:var(--earth)}
+  .wx-metal{background:var(--metal)} .wx-water{background:var(--water)} .wx-none{background:#555}
+
+  nav{position:sticky;top:0;z-index:10;display:flex;gap:2px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto;padding:0 8px}
+  nav button{flex:0 0 auto;background:none;border:none;color:var(--muted);padding:13px 16px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+  nav button.on{color:var(--gold);border-bottom-color:var(--gold)}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px 16px 4px;max-width:1100px;margin:0 auto}
+  .toolbar input{flex:1;min-width:180px;background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 12px;border-radius:8px;font-size:14px}
+  .chip{font-size:12px;padding:6px 12px;border-radius:16px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;user-select:none}
+  .chip.on{background:var(--gold);color:#1a1a2e;border-color:var(--gold);font-weight:600}
+
+  main{max-width:1100px;margin:0 auto;padding:14px 16px}
+  section{display:none} section.on{display:block}
+  .group-title{font-size:15px;color:var(--gold);margin:20px 0 10px;padding-left:8px;border-left:3px solid var(--gold)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 13px;transition:.15s;position:relative}
+  .card:hover{border-color:var(--gold-dim);transform:translateY(-2px)}
+  .card .nm{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px}
+  .card .own{font-size:12px;color:var(--gold-dim);margin-top:2px}
+  .card .eff{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:9px;border:1px solid var(--line);color:var(--muted);margin-left:auto}
+  .tag.tier{color:var(--chan);border-color:#5a4a8a}
+  .tag.ingame{color:#7ee787;border-color:#2f6b3a}
+  .tag.gap{color:#ff9e64;border-color:#7a4a2a}
+  .wx-badge{font-size:11px;padding:2px 8px;border-radius:9px;font-weight:600}
+  .wx-badge.wood{background:rgba(102,187,106,.18);color:var(--wood)}
+  .wx-badge.fire{background:rgba(255,87,34,.18);color:var(--fire)}
+  .wx-badge.earth{background:rgba(200,161,101,.18);color:var(--earth)}
+  .wx-badge.metal{background:rgba(207,214,224,.16);color:var(--metal)}
+  .wx-badge.water{background:rgba(79,195,247,.18);color:var(--water)}
+  .wx-badge.none{background:rgba(120,120,140,.16);color:#888}
+  .count{color:var(--muted);font-size:12px;margin-left:8px}
+
+  /* 共鸣通道 */
+  .chan{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px;border-left:4px solid var(--chan)}
+  .chan h3{font-size:16px;color:var(--chan);display:flex;align-items:center;gap:8px}
+  .chan .pri{font-size:11px;padding:2px 9px;border-radius:10px;background:var(--gold);color:#1a1a2e;font-weight:700}
+  .chan .pri.low{background:#444;color:var(--muted)}
+  .chan p{font-size:13px;color:var(--muted);margin-top:8px}
+  .chan .ex{font-size:12.5px;color:var(--text);margin-top:6px}
+  .chan .need{font-size:12px;color:#ff9e64;margin-top:6px}
+  .chan .st{font-size:11px;margin-top:6px;color:var(--muted)}
+
+  table.cmp{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  table.cmp th,table.cmp td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  table.cmp th{background:var(--panel2);color:var(--gold)}
+  table.cmp td.y{color:#7ee787} table.cmp td.n{color:#ff9e64}
+  .note{background:var(--panel);border:1px dashed var(--line);border-radius:10px;padding:14px;font-size:13px;color:var(--muted);margin:14px 0}
+  .note b{color:var(--gold)}
+  footer{text-align:center;color:#555;font-size:12px;margin-top:30px}
+</style>
+</head>
+<body>
+<header>
+  <h1>神话素材汇总与共鸣扩展</h1>
+  <p>封神修道录 · 法宝 / 法术 / 神通 / 异兽 · 五行归属建议 · 共鸣通道路线图 &nbsp;|&nbsp; v0.1 🔴初版（归属待验证）</p>
+  <div class="legend">
+    <span><i class="wx-dot wx-wood"></i>木</span>
+    <span><i class="wx-dot wx-fire"></i>火</span>
+    <span><i class="wx-dot wx-earth"></i>土</span>
+    <span><i class="wx-dot wx-metal"></i>金</span>
+    <span><i class="wx-dot wx-water"></i>水</span>
+    <span><i class="wx-dot wx-none"></i>无/待定</span>
+  </div>
+</header>
+
+<nav id="nav">
+  <button data-t="fb" class="on">法宝汇总</button>
+  <button data-t="fs">法术·神通</button>
+  <button data-t="beast">山海经异兽</button>
+  <button data-t="cmp">交叉对照</button>
+  <button data-t="chan">共鸣通道</button>
+</nav>
+
+<div class="toolbar" id="toolbar">
+  <input id="q" placeholder="搜索名称 / 归属 / 效果…">
+  <span class="chip on" data-wx="all">全部五行</span>
+  <span class="chip" data-wx="wood">木</span>
+  <span class="chip" data-wx="fire">火</span>
+  <span class="chip" data-wx="earth">土</span>
+  <span class="chip" data-wx="metal">金</span>
+  <span class="chip" data-wx="water">水</span>
+  <span class="chip" data-wx="none">无</span>
+</div>
+
+<main>
+  <section id="fb" class="on"></section>
+  <section id="fs"></section>
+  <section id="beast"></section>
+  <section id="cmp"></section>
+  <section id="chan"></section>
+</main>
+
+<footer>数据来源：《封神演义》《西游记》《山海经》及衍生作品 · 五行归属与共鸣规则均为设计建议（🔴待验证）</footer>
+
+<script>
+// ===== 五行 meta =====
+var WX = {wood:"木",fire:"火",earth:"土",metal:"金",water:"水",none:"—"};
+function wxBadge(w){return '<span class="wx-badge '+w+'">'+(WX[w]||"—")+'</span>';}
+
+// ===== 法宝数据 [name, owner, source, wuxing, effect, inGame, tier] =====
+var FB = [
+// 封神 · 圣人级
+["太极图","老子","封神","earth","包罗万象，劈地开天，化飞灰",true,"先天至宝"],
+["盘古幡","元始天尊","封神","earth","破太极阵",true,"先天至宝"],
+["诛仙剑","通天教主","封神","metal","布诛仙阵（四剑之一）",false,"先天至宝"],
+["戮仙剑","通天教主","封神","metal","布诛仙阵（四剑之一）",false,"先天至宝"],
+["陷仙剑","通天教主","封神","metal","布诛仙阵（四剑之一）",false,"先天至宝"],
+["绝仙剑","通天教主","封神","metal","布诛仙阵（四剑之一）",false,"先天至宝"],
+["诛仙阵图","通天教主","封神","earth","记载诛仙阵",false,"先天至宝"],
+["山河社稷图","女娲","封神","earth","擒袁洪，困敌",true,"先天灵宝"],
+["七宝妙树","准提道人","封神","wood","刷物",true,"先天灵宝"],
+["六魂幡","通天教主","封神","fire","书人姓名，摇动取命",true,""],
+["三宝玉如意","老子","封神","metal","投掷打天灵盖，破法",false,""],
+["乾坤图","老子","封神","earth","包容天地，裹人",false,""],
+["风火蒲团","老子","封神","fire","风火属性坐禅物",true,""],
+["宝盒","元始天尊","封神","water","装人化血水",false,""],
+["琉璃瓶","元始天尊","封神","water","承三光神水",false,""],
+["太极符印","元始天尊","封神","earth","抵御法术",false,""],
+// 封神 · 阐教
+["番天印","广成子","封神","earth","投掷打头顶，百发百中",true,""],
+["扫霞衣","广成子","封神","fire","拨云见日",false,""],
+["八卦仙衣","广成子","封神","earth","隐身",true,""],
+["阴阳镜","赤精子","封神","water","白死红生",true,""],
+["紫绶仙衣","赤精子","封神","metal","刀枪不入",false,""],
+["九龙神火罩","太乙真人","封神","fire","九火龙，三昧真火",false,""],
+["长虹索","普贤真人","封神","wood","捆敌",false,""],
+["遁龙桩","金咤","封神","metal","金柱金圈困敌",false,""],
+["吴钩","木吒","封神","metal","雌雄双剑",false,""],
+["降魔杵","韦护","封神","metal","轻如灰草重似泰山",false,""],
+["定风珠","度厄真人","封神","water","停风",false,""],
+["清净琉璃瓶","慈航道人","封神","water","吸人化脓",false,""],
+["五火七禽扇","道德真君","封神","fire","五火合成放焰",false,""],
+["混元幡","道德真君","封神","earth","空间转移/隐身",false,""],
+["莫邪宝剑","黄天化","封神","metal","光华闪出人头落",false,""],
+["钻心钉","黄天化","封神","metal","七寸五分穿心",false,""],
+["花篮","黄天化","封神","wood","吸收暗器",false,""],
+["困仙绳","惧留孙","封神","wood","自动捆敌",false,""],
+// 封神 · 截教散仙
+["定海珠","赵公明","封神","water","二十四颗，五色毫光",true,""],
+["缚龙索","赵公明","封神","wood","自动捆敌",false,""],
+["金蛟剪","三霄","封神","metal","两蛟龙，一插两段",true,""],
+["混元金斗","三霄","封神","earth","生擒+消法力",true,""],
+["五色华光","孔宣","封神","earth","青黄赤白黑，攻击/生擒/落宝",true,""],
+["落宝金钱","萧升","封神","metal","有翅金钱，打落法宝",false,""],
+["巨阙剑","云中子","封神","wood","枯松枝削成，灭妖气",false,""],
+["通天神火柱","云中子","封神","fire","八根柱，四十九火龙",false,""],
+["照妖鉴","云中子","封神","metal","照妖原形",false,""],
+["斩仙飞刀","陆压","封神","metal","葫芦毫光，请宝贝转身斩首",false,""],
+["钉头七箭书","陆压","封神","fire","草人拜礼21日致死",false,""],
+["七宝玲珑塔","燃灯道人","封神","metal","吸人火焚/投掷",false,""],
+["乾坤尺","燃灯道人","封神","metal","指挥攻击",false,""],
+["六根清净竹","准提道人","封神","wood","捆敌",false,""],
+// 封神 · 哪吒系
+["乾坤圈","哪吒","封神","metal","金镯，可大可小，投掷",true,""],
+["混天绫","哪吒","封神","fire","红绫七尺，自动捆敌",true,""],
+["风火轮","哪吒","封神","fire","双轮风火，上天入地",true,""],
+["金砖","哪吒","封神","metal","纯金投掷",false,""],
+["火尖枪","哪吒","封神","fire","哪吒主兵器",false,""],
+["火枣","哪吒","封神","fire","变三头八臂",false,""],
+["阴阳剑","哪吒","封神","metal","双属性宝剑",false,""],
+// 封神 · 李靖/其他
+["乾坤弓·震天箭","李靖","封神","metal","轩辕黄帝传，射杀碧云童子",false,""],
+["玲珑宝塔","李靖","封神","metal","燃灯赐，象征",false,""],
+["红杏","雷震子","封神","wood","生风雷二翅",false,""],
+["五光石","邓婵玉","封神","earth","五色光芒，百发百中",false,""],
+["化血神刀","余化","封神","metal","电光，中刀顷刻死",false,""],
+["戮魂幡","余化","封神","fire","生擒敌人",false,""],
+["青云剑","魔礼青","封神","fire","地水火风，风火戈矛",false,""],
+["混元伞","魔礼红","封神","earth","明珠穿成，收宝物兵器",false,""],
+["琵琶","魔礼海","封神","fire","拨弦风火齐至",false,""],
+["花狐貂","魔礼寿","封神","wood","白鼠化白象食人",false,""],
+["五龙轮","罗宣","封神","fire","五神龙攻击",false,""],
+["万鸦壶","罗宣","封神","fire","放喷火乌鸦",false,""],
+["万里起云烟","罗宣","封神","fire","火箭，覆盖广",false,""],
+["照天印","罗宣","封神","earth","投掷力大",false,""],
+["雾露乾坤网","龙吉公主","封神","water","灭一切火焰",false,""],
+["四海瓶","龙吉公主","封神","water","吸取宝物",false,""],
+["二龙剑","龙吉公主","封神","metal","二龙缠绕投掷",false,""],
+["金霞冠","火灵圣母","封神","fire","金霞三四十丈，隐身",false,""],
+["日月珠","龟灵圣母","封神","fire","日月灵气投掷",false,""],
+["龙虎如意","金灵圣母","封神","metal","龙虎玉如意投掷",false,""],
+["四象塔","金灵圣母","封神","earth","四面六层宝塔",false,""],
+["落魂钟","殷郊","封神","fire","摇铃失魂落魄",false,""],
+["仙豆","殷郊","封神","wood","三头六臂多生一目",false,""],
+["列瘟印","吕岳","封神","wood","蛊印中毒（毒）",false,""],
+["瘟癀伞","吕岳","封神","wood","布瘟癀阵（毒）",false,""],
+["落魄镜","法戒","封神","water","吸人魂魄",false,""],
+// 封神 · 五方旗
+["戊己杏黄旗","元始/姜子牙","封神","earth","五方旗·中央，抵挡法宝",false,"五方旗"],
+["离地焰光旗","玄都大法师","封神","fire","五方旗·火，克番天印",false,"五方旗"],
+["青莲宝色旗","接引道人","封神","wood","五方旗·木，克番天印",false,"五方旗"],
+["素色云界旗","西王母","封神","metal","五方旗·金，克番天印",false,"五方旗"],
+["真武皂雕旗","真武大帝","封神","water","五方旗·水，克番天印",false,"五方旗"],
+// 西游 · 老君系
+["金刚琢","太上老君","西游","metal","锟钢炼成，套诸物，三界第一",false,""],
+["紫金红葫芦","太上老君","西游","wood","混沌初分仙藤结，吸人",false,""],
+["羊脂玉净瓶","太上老君","西游","water","盛水，吸人",false,""],
+["九齿钉耙","猪八戒","西游","metal","猪八戒兵器",false,""],
+["如意金箍棒","孙悟空","西游","metal","定海神针，大禹治水",false,""],
+["七星炼魔剑","太上老君","西游","metal","炼魔",false,""],
+["幌金绳","太上老君","西游","wood","勒袍带，捆敌",false,""],
+["紫金铃","观音/金毛犼","西游","metal","十悟空难敌",false,""],
+["芭蕉扇","太上老君","西游","fire","扇火",false,""],
+["八卦炉","太上老君","西游","fire","炼丹，终极法宝",false,""],
+// 西游 · 佛系
+["金箍咒","如来","西游","metal","紧箍儿，困孙悟空",false,""],
+["金钵盂","如来","西游","metal","盖六耳猕猴",false,""],
+["飞龙宝杖","如来","西游","wood","—",false,""],
+["定风丹","如来","西游","water","定风",false,""],
+["锦襕袈裟","如来","西游","earth","护身",false,""],
+["九环锡杖","如来","西游","metal","—",false,""],
+// 西游 · 其他
+["人种袋","弥勒/黄眉","西游","earth","收28星宿",false,""],
+["金钹","弥勒/黄眉","西游","metal","罩人三昼夜化脓血",false,""],
+["阴阳二气瓶","大鹏","西游","water","收人（阴阳）",false,""],
+["芭蕉扇","铁扇公主","西游","fire","扇飞十万八千里",false,""],
+["杨柳玉净瓶","观音","西游","water","甘露起死回生，救人参果树",false,""],
+["莲花宝座","观音","西游","wood","收红孩儿",false,""],
+["天罡刀","观音","西游","metal","收红孩儿/牛魔王",false,""],
+["捣药杵","玉兔精","西游","metal","兵器",false,""],
+["照妖镜","天庭","西游","metal","真假悟空",false,""]
+];
+
+// ===== 法术/神通 [name, source, owner, type, wuxing] =====
+var FS = [
+["七十二变（地煞）","西游","孙悟空","变化","none"],
+["天罡三十六变","西游","猪八戒","变化","none"],
+["八九玄功","封神","杨戬","护体/变化","none"],
+["三昧真火","西游/封神","红孩儿/老君","火法","fire"],
+["五行遁术","封神","姜子牙/闻太师","遁术","none"],
+["法天象地","西游/封神","孙悟空/杨戬","巨大化","none"],
+["一气化三清","封神","老子","分身","none"],
+["他化自在大法","佛","魔道","心魔","none"],
+["斗战圣法","西游","孙悟空","战技","none"],
+["翻天印","衍生","—","印法","earth"],
+["五行神光","衍生","孔宣系","光法","earth"],
+["元磁仙光","衍生","—","光法","metal"],
+["大虚空术","衍生","—","空间","none"],
+["斗转星移","衍生","—","空间","none"],
+["火眼金睛","西游","孙悟空","识破","fire"],
+["天眼","封神","杨戬","识破","none"],
+["土行术","封神","土行孙","遁术","earth"],
+["哼术","封神","郑伦","摄魂","none"],
+["哈术","封神","陈奇","摄魂","none"],
+["莲花化身","封神","哪吒","免疫魂魄","wood"],
+["三头八臂","封神","哪吒","化身","fire"],
+["呼名落马","封神","陆压","咒杀","fire"],
+["撒豆成兵","封神","—","召唤","wood"],
+["起死回生","西游","观音","治疗","water"]
+];
+
+// ===== 山海经异兽 [name, group, wuxing] =====
+var BEAST = [
+["青龙","四灵","wood"],["白虎","四灵","metal"],["朱雀","四灵","fire"],["玄武","四灵","water"],
+["麒麟","礼记四灵","earth"],["凤凰","礼记四灵","fire"],["龙","礼记四灵","water"],["龟","礼记四灵","water"],
+["混沌","四凶","earth"],["穷奇","四凶","metal"],["梼杌","四凶","wood"],["饕餮","四凶","fire"],
+["太阳烛照","两仪二圣","fire"],["太阴幽荧","两仪二圣","water"],
+["赑屃","龙生九子","earth"],["螭吻","龙生九子","water"],["蒲牢","龙生九子","metal"],["狴犴","龙生九子","metal"],
+["蚣蝮","龙生九子","water"],["睚眦","龙生九子","fire"],["狻猊","龙生九子","fire"],["椒图","龙生九子","wood"],["囚牛","龙生九子","wood"],
+["貔貅","祥兽","metal"],["白泽","祥兽","earth"],["獬豸","祥兽","metal"],["角端","祥兽","earth"],["当康","祥兽","earth"],["乘黄","祥兽","earth"],
+["九婴","凶兽","fire"],["毕方","凶兽","fire"],["朱厌","凶兽","fire"],["祸斗","凶兽","fire"],["蛊雕","凶兽","water"],["诸怀","凶兽","earth"],["犼","凶兽","metal"],
+["应龙","神兽","water"],["烛龙","神兽","fire"],["鲲鹏","神兽","water"],["三足乌","神兽","fire"],["天吴","神兽","water"],["禺疆","神兽","water"],
+["九尾狐","异兽","fire"],["刑天","异兽","metal"],["夔牛","异兽","water"],["英招","异兽","wood"],["比翼鸟","异兽","fire"],["重明鸟","异兽","fire"],
+["天马","异兽","metal"],["兕","异兽","water"],["飞廉","异兽","wood"],["天狗","异兽","metal"],["狰","异兽","fire"],["肥遗","异兽","fire"],
+["青鸾","凤属","wood"],["鹓鶵","凤属","fire"],["鸑鷟","凤属","water"],["鸿鹄","凤属","metal"],
+["蛟龙","龙族","water"],["虬龙","龙族","wood"],["蟠龙","龙族","earth"],["虺","龙族","water"]
+];
+
+// ===== 共鸣通道 =====
+var CHAN = [
+{p:1,name:"套装共鸣",st:"已留口子（set channel, enabled:false）",
+ desc:"集齐同套法宝 ≥N 件触发。数据成本最低，最先做。",
+ ex:"哪吒八件（乾坤圈+混天绫+风火轮+火尖枪+金砖+九龙神火罩+阴阳剑+火枣）· 诛仙四剑 · 五方旗（=五行旗阵）· 封神三件（封神榜+打神鞭+杏黄旗）· 老君炼丹套 · 三霄套 · 魔家四将",
+ need:"treasure_table 加 set_id + set_name；trigger = equipped slots 含同 set ≥N"},
+{p:2,name:"化身 / 血脉共鸣",st:"companion_table 19 人已就绪",
+ desc:"companion 上阵 + 其专属法宝 → 加成。主题强，挂 tag 即可。",
+ ex:"哪吒（莲花化身）+哪吒法宝 · 杨戬（八九玄功）+三尖两刃刀+哮天犬 · 孙悟空+金箍棒",
+ need:"companion 加 signature_treasures[]；trigger = companion 上阵 + 专属法宝装备"},
+{p:3,name:"师承 / 阵营共鸣",st:"companion 已有阵营锚点",
+ desc:"同阵营法宝 ≥N 触发，构筑路线（走阐教线 or 截教线）= 玩法分支。",
+ ex:"阐教（元始系十二金仙）· 截教（通天系多宝/三霄/赵公明/吕岳/罗宣）· 西方教（接引/准提）· 散仙（陆压/云中子/燃灯）",
+ need:"treasure 加 faction（chan/jie/west/san）"},
+{p:7,name:"神兽共鸣",st:"game data 几乎无神兽实体",
+ desc:"法宝/坐骑带神兽 tag，集齐同组触发。山海经素材。",
+ ex:"四灵（青龙木+朱雀火+白虎金+玄武水，+黄龙/麒麟土）· 四凶（混沌+穷奇+梼杌+饕餮，凶煞向）· 龙生九子（分段触发）",
+ need:"新增神兽实体表 或 treasure 加 beast_tag"},
+{p:7,name:"阴阳共鸣",st:"二元轴，作整队 buff 更合适",
+ desc:"攻(阳)/补(阴) 搭配 → 阴阳调和 bonus。阴阳是分类轴非环，不合相邻 slot 模型。",
+ ex:"阴阳镜 · 阴阳二气瓶 · 太极图 · 阴阳剑 · 两仪二圣（烛照/幽荧）",
+ need:"treasure 加 polarity（yin/yang/null）；trigger = 同时装备阴+阳"},
+{p:7,name:"品阶共鸣",st:"品阶分类框架已有",
+ desc:"先天至宝/先天灵宝组合 → 先天共鸣。",
+ ex:"先天至宝（太极图/盘古幡/诛仙四剑）+ 先天灵宝（山河社稷图/七宝妙树/十二品莲台）",
+ need:"treasure 加 tier（xiantian_zhibao/xiantian_lingbao/houtian/gongde）"},
+{p:8,name:"因果 / 封神榜共鸣",st:"封神主题特色",
+ desc:"打神鞭专打榜上有名之人 → 对特定 boss 加成；封神图鉴（meta 进度）。",
+ ex:"打神鞭 vs 封神榜上有名 boss · 击败 boss 后封神 → 图鉴共鸣",
+ need:"boss/enemy 加 on_fengshen_list tag；打神鞭法宝 condition"},
+{p:8,name:"主仆 / 传承共鸣",st:"法宝流转史",
+ desc:"法宝原主 companion + 法宝 → bonus。",
+ ex:"定海珠（赵公明→燃灯）· 紫金铃（老君→观音→金毛犼）",
+ need:"treasure 加 origin_owner；trigger = 原主 companion + 法宝"}
+];
+
+// ===== 渲染 =====
+var state={tab:"fb",wx:"all",q:""};
+
+function match(item, fields){
+  if(state.wx!="all" && item[fields.wx]!=state.wx) return false;
+  if(state.q){
+    var s=""; for(var k in fields){ if(typeof item[fields[k]]=="string") s+=item[fields[k]]; }
+    if(s.toLowerCase().indexOf(state.q.toLowerCase())<0) return false;
+  }
+  return true;
+}
+
+function renderFB(){
+  var groups={"封神·圣人级":[],"封神·阐教":[],"封神·截教散仙":[],"封神·哪吒系":[],"封神·李靖/其他":[],"封神·五方旗":[],"西游·老君系":[],"西游·佛系":[],"西游·其他":[]};
+  var F={name:0,owner:1,src:2,wx:3,eff:4,ingame:5,tier:6};
+  FB.forEach(function(it){
+    if(!match(it,F)) return;
+    var key;
+    if(it[2]=="封神"){
+      if(it[6]=="先天至宝"||it[6]=="先天灵宝"||["老子","元始天尊","通天教主","女娲","准提道人"].indexOf(it[1])>=0) key="封神·圣人级";
+      else if(it[6]=="五方旗") key="封神·五方旗";
+      else if(["哪吒"].indexOf(it[1])>=0) key="封神·哪吒系";
+      else if(["广成子","赤精子","太乙真人","普贤真人","金咤","木吒","韦护","度厄真人","慈航道人","道德真君","黄天化","惧留孙"].indexOf(it[1])>=0) key="封神·阐教";
+      else if(["李靖","雷震子","邓婵玉","余化","魔礼青","魔礼红","魔礼海","魔礼寿","罗宣","龙吉公主","火灵圣母","龟灵圣母","金灵圣母","殷郊","吕岳","法戒"].indexOf(it[1])>=0) key="封神·李靖/其他";
+      else key="封神·截教散仙";
+    } else {
+      if(["太上老君","猪八戒","孙悟空","观音/金毛犼"].indexOf(it[1])>=0) key="西游·老君系";
+      else if(it[1]=="如来") key="西游·佛系";
+      else key="西游·其他";
+    }
+    groups[key].push(it);
+  });
+  var html="",total=0;
+  Object.keys(groups).forEach(function(g){
+    if(!groups[g].length) return;
+    total+=groups[g].length;
+    html+='<div class="group-title">'+g+'<span class="count">'+groups[g].length+'件</span></div><div class="grid">';
+    groups[g].forEach(function(it){
+      var tags=wxBadge(it[3]);
+      if(it[6]) tags+=' <span class="tag tier">'+it[6]+'</span>';
+      if(it[5]) tags+=' <span class="tag ingame">已在库</span>';
+      else tags+=' <span class="tag gap">缺口</span>';
+      html+='<div class="card"><div class="nm">'+it[0]+tags+'</div>'
+        +'<div class="own">'+it[1]+' · '+it[2]+'</div>'
+        +'<div class="eff">'+it[4]+'</div></div>';
+    });
+    html+='</div>';
+  });
+  if(!total) html='<div class="note">无匹配结果</div>';
+  document.getElementById("fb").innerHTML=html;
+}
+
+function renderFS(){
+  var F={name:0,owner:2,src:1,wx:4,type:3};
+  var html='<div class="group-title">法术 · 神通<span class="count">'+FS.length+'项</span></div><div class="grid">';
+  var n=0;
+  FS.forEach(function(it){
+    if(!match(it,F)) return; n++;
+    html+='<div class="card"><div class="nm">'+it[0]+wxBadge(it[4])+'</div>'
+      +'<div class="own">'+it[2]+' · '+it[1]+'</div>'
+      +'<div class="eff">类型：'+it[3]+'</div></div>';
+  });
+  html+='</div>';
+  if(!n) html='<div class="note">无匹配结果</div>';
+  document.getElementById("fs").innerHTML=html;
+}
+
+function renderBeast(){
+  var F={name:0,group:1,wx:2};
+  var order=["四灵","礼记四灵","四凶","两仪二圣","龙生九子","祥兽","凶兽","神兽","凤属","龙族","异兽"];
+  var html="",n=0;
+  order.forEach(function(g){
+    var list=BEAST.filter(function(it){return it[1]==g && match(it,F);});
+    if(!list.length) return;
+    n+=list.length;
+    html+='<div class="group-title">'+g+'<span class="count">'+list.length+'</span></div><div class="grid">';
+    list.forEach(function(it){
+      html+='<div class="card"><div class="nm">'+it[0]+wxBadge(it[2])+'</div>'
+        +'<div class="eff">'+it[1]+'</div></div>';
+    });
+    html+='</div>';
+  });
+  if(!n) html='<div class="note">无匹配结果</div>';
+  document.getElementById("beast").innerHTML=html;
+}
+
+function renderCmp(){
+  var inGame=FB.filter(function(x){return x[5];}).length;
+  var gap=FB.filter(function(x){return !x[5];}).length;
+  var html='<div class="note">现有 game data：<b>36 法宝</b> / <b>30 招</b>（体·雷·火·器·魂·劫×5）/ <b>19 companion</b>。'
+    +'本页收录法宝 <b>'+FB.length+'</b> 件，其中 <b style="color:#7ee787">已在库 '+inGame+'</b>、<b style="color:#ff9e64">缺口 '+gap+'</b>。'
+    +'高阶法宝多以"残影/碎片/影/仿品"形式存在 → 设计意图：初期得残影，后期合成真品。</div>';
+  html+='<div class="group-title">已在库的封神/西游法宝（本页收录）</div>';
+  html+='<table class="cmp"><tr><th>法宝</th><th>归属</th><th>五行🔴</th><th>状态</th></tr>';
+  FB.filter(function(x){return x[5];}).forEach(function(it){
+    html+='<tr><td>'+it[0]+'</td><td>'+it[1]+'</td><td>'+WX[it[3]]+'</td><td class="y">已在 treasure_table</td></tr>';
+  });
+  html+='</table>';
+  html+='<div class="group-title">高价值缺口（建议优先入库）🔴</div>';
+  html+='<table class="cmp"><tr><th>法宝</th><th>归属</th><th>五行🔴</th><th>理由</th></tr>';
+  var prio=["诛仙剑","戮仙剑","陷仙剑","绝仙剑","金刚琢","如意金箍棒","九齿钉耙","紫金红葫芦","人种袋","斩仙飞刀","九龙神火罩","遁龙桩","降魔杵","五火七禽扇","混元伞","青云剑","琵琶","花狐貂","定风珠","雾露乾坤网","戊己杏黄旗","离地焰光旗","青莲宝色旗","素色云界旗","真武皂雕旗"];
+  FB.filter(function(x){return !x[5] && prio.indexOf(x[0])>=0;}).sort(function(a,b){return prio.indexOf(a[0])-prio.indexOf(b[0]);}).forEach(function(it){
+    html+='<tr><td>'+it[0]+'</td><td>'+it[1]+'</td><td>'+WX[it[3]]+'</td><td class="n">缺口</td></tr>';
+  });
+  html+='</table>';
+  html+='<div class="note"><b>套装标记缺失</b>：treasure_table 无 set/套装 tag，哪吒三件套（010/011/012）无成员标记 → 需新增字段。<br>'
+    +'<b>神兽实体缺失</b>：game data 几乎无神兽实体（四灵/四凶/龙生九子）→ 神兽共鸣通道的前置。</div>';
+  document.getElementById("cmp").innerHTML=html;
+}
+
+function renderChan(){
+  var html='<div class="note"><b>共鸣引擎 = 纯基础设施（存储+触发）</b>，规则独立设计、按需注册（registerChannel），倍率相乘。'
+    +'现状：wuxing 通道已实现（克×1.0/生×1.6/基础×1.3），set 通道留口子。以下为五行之外的 <b>8 条候选通道</b>，按优先级排序。'
+    +'<br><b>组合规则</b>：当前 = 相乘（初版，⚪待决策，第二条通道上线时定稿）。</div>';
+  CHAN.slice().sort(function(a,b){return a.p-b.p;}).forEach(function(c){
+    var pri = c.p<=3 ? '<span class="pri">优先 P'+c.p+'</span>' : '<span class="pri low">P'+c.p+'</span>';
+    html+='<div class="chan"><h3>'+c.name+' '+pri+'</h3>'
+      +'<p>'+c.desc+'</p>'
+      +'<div class="ex"><b>素材：</b>'+c.ex+'</div>'
+      +'<div class="need"><b>数据需求：</b>'+c.need+'</div>'
+      +'<div class="st">状态：'+c.st+'</div></div>';
+  });
+  document.getElementById("chan").innerHTML=html;
+}
+
+function render(){
+  if(state.tab=="fb") renderFB();
+  else if(state.tab=="fs") renderFS();
+  else if(state.tab=="beast") renderBeast();
+  else if(state.tab=="cmp") renderCmp();
+  else if(state.tab=="chan") renderChan();
+  // toolbar 只在 fb/fs/beast 显示
+  document.getElementById("toolbar").style.display = (state.tab=="cmp"||state.tab=="chan")?"none":"flex";
+}
+
+// nav
+document.getElementById("nav").addEventListener("click",function(e){
+  if(e.target.tagName!="BUTTON") return;
+  document.querySelectorAll("#nav button").forEach(function(b){b.classList.remove("on");});
+  e.target.classList.add("on");
+  document.querySelectorAll("section").forEach(function(s){s.classList.remove("on");});
+  state.tab=e.target.dataset.t;
+  document.getElementById(state.tab).classList.add("on");
+  render();
+});
+// wx filter
+document.getElementById("toolbar").addEventListener("click",function(e){
+  if(!e.target.classList.contains("chip")) return;
+  document.querySelectorAll(".chip").forEach(function(c){c.classList.remove("on");});
+  e.target.classList.add("on");
+  state.wx=e.target.dataset.wx;
+  render();
+});
+// search
+document.getElementById("q").addEventListener("input",function(e){
+  state.q=e.target.value; render();
+});
+
+render();
+</script>
+</body>
+</html>

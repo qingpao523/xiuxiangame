@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>封神修道录 · 机缘弹窗截图（event_002 截教残符）</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+  html { background: #111 !important; }
+  html, body {
+    width: 390px !important;
+    height: 844px !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  #bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: url('assets/backgrounds/bg_mountain_cave.jpg') center / cover no-repeat;
+  }
+  #dim {
+    position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(180deg,
+      rgba(6,8,12,0.28) 0%, rgba(6,8,12,0.10) 35%, rgba(4,6,10,0.50) 100%);
+  }
+  #shot-app {
+    position: absolute; inset: 0; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 12px 14px 14px;
+  }
+  #shot-topbar {
+    text-align: center; padding: 9px 14px 8px;
+    border: 1px solid rgba(214,170,80,0.55); border-radius: 10px;
+    background: linear-gradient(180deg, rgba(30,26,16,0.74), rgba(16,15,10,0.74)),
+      url("assets/ui/banners/ui_top_seal_banner.jpg") center / cover;
+    box-shadow: 0 0 24px rgba(214,170,80,0.12) inset;
+  }
+  #shot-title { font-size: 19px; font-weight: 700; letter-spacing: 8px; color: #ffe08f; text-shadow: 0 0 16px rgba(255,200,90,0.4); }
+  #shot-realm { margin-top: 3px; font-size: 15px; letter-spacing: 2px; color: #ffe9b0; }
+  #shot-realm .realm-layer { color: #ffd97a; font-weight: 700; }
+  #shot-identity { margin-top: 2px; font-size: 12.5px; letter-spacing: 1px; color: #c8d6cf; }
+  #shot-progress { margin: 7px auto 0; max-width: 240px; }
+  #shot-progress .lbl { font-size: 11.5px; color: #d9e6df; text-align: left; margin-bottom: 3px; }
+  #shot-progress .track { height: 10px; border-radius: 6px; background: rgba(8,11,13,0.9); border: 1px solid rgba(199,168,105,0.4); overflow: hidden; }
+  #shot-progress .fill { height: 100%; width: 43%; background: linear-gradient(90deg, #a97e28, #dbab3c, #ffd97a); }
+  #shot-resources { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  #shot-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; position: relative; }
+  #shot-aura { position: absolute; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(120,200,180,0.18), transparent 65%); }
+  #shot-char { position: relative; max-height: 88%; max-width: 70%; object-fit: contain; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6)); }
+  #popup-layer {
+    position: absolute !important; inset: 0 !important; z-index: 10 !important;
+    display: flex; align-items: center; justify-content: center;
+    padding: 22px !important; background: rgba(3,5,7,0.52) !important;
+  }
+  #popup-panel { max-height: none !important; overflow: visible !important; }
+</style>
+</head>
+<body>
+  <div id="bg"></div>
+  <div id="dim"></div>
+  <div id="shot-app">
+    <div id="shot-topbar">
+      <div id="shot-title">封神修道录</div>
+      <div id="shot-realm">境界 · <span class="realm-layer">炼气士4重</span></div>
+      <div id="shot-identity">人族·散修｜战力 1,280</div>
+      <div id="shot-progress">
+        <div class="lbl">道行 1,280 / 3,000</div>
+        <div class="track"><div class="fill"></div></div>
+      </div>
+    </div>
+    <div id="shot-resources">
+      <span class="res-chip"><img src="assets/resources/resource_daoxing.jpg" alt="" /><span class="res-name">道行</span><span class="res-value">1,280</span></span>
+      <span class="res-chip"><img src="assets/resources/resource_mana.jpg" alt="" /><span class="res-name">法力</span><span class="res-value">8,600</span></span>
+      <span class="res-chip"><img src="assets/resources/resource_spell_page.jpg" alt="" /><span class="res-name">残页</span><span class="res-value">12</span></span>
+    </div>
+    <div id="shot-stage">
+      <div id="shot-aura"></div>
+      <img id="shot-char" src="assets/characters/char_cultivator.jpg" alt="修行者" />
+    </div>
+  </div>
+  <div id="popup-layer">
+    <div id="popup-panel" class="style-chance">
+      <div id="popup-title">机缘触发：截教残符</div>
+      <div id="popup-body">封神锚点：截教散落符纹
+
+你在荒山石壁上发现半张残符。符纸焦黑，仍有截教符纹未散。</div>
+      <div id="popup-buttons">
+        <button class="popup-btn"><span>参悟符纹</span><span class="popup-option-sub">术法残页 +5</span></button>
+        <button class="popup-btn"><span>炼入法力</span><span class="popup-option-sub">法力 +3,000</span></button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
