@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>封神修道录 · 格子探索交互示例</title>
+<style>
+  :root{
+    --gold:#d9a441; --gold-light:#f3d99a; --seal:#b8860b;
+    --jie-qi:#7b4fa3; --gong-de:#e8b84b; --ink:#2a2118;
+    --paper:#f4e9d0; --paper-dark:#e6d4ac; --fog:#8a7a5c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(160deg,#1a1410,#2d2418);color:var(--paper);min-height:100vh;padding:12px;max-width:520px;margin:0 auto;}
+  h1{font-size:18px;text-align:center;color:var(--gold-light);margin:6px 0;letter-spacing:2px;}
+  .sub{text-align:center;font-size:11px;color:#a89877;margin-bottom:12px;}
+  /* 顶栏：机缘令 + 进度 + 地点 */
+  .topbar{display:flex;justify-content:space-between;align-items:center;background:rgba(217,164,65,.12);border:1px solid var(--seal);border-radius:10px;padding:8px 12px;margin-bottom:10px;}
+  .stat{font-size:12px;}
+  .stat b{color:var(--gold-light);font-size:15px;}
+  .loc{text-align:center;font-size:13px;color:var(--gold-light);}
+  .loc small{display:block;font-size:10px;color:#a89877;}
+  /* 格子地图 */
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;background:rgba(0,0,0,.25);padding:8px;border-radius:12px;border:1px solid rgba(217,164,65,.3);}
+  .tile{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;position:relative;transition:transform .15s,box-shadow .3s;user-select:none;}
+  .tile.fog{background:repeating-linear-gradient(45deg,#5a4d33,#5a4d33 4px,#6b5c3e 4px,#6b5c3e 8px);border:1px solid var(--seal);box-shadow:inset 0 0 8px rgba(184,134,11,.4);}
+  .tile.fog::after{content:"封";font-size:11px;color:rgba(243,217,154,.5);position:absolute;}
+  .tile.fog:active{transform:scale(.92);}
+  .tile.revealed{background:var(--paper-dark);border:1px solid #c9b487;animation:pop .35s ease;}
+  .tile.locked{background:#3a3226;border:1px dashed #6b5c3e;cursor:not-allowed;opacity:.6;}
+  .tile.locked::after{content:"🔒";font-size:13px;position:absolute;}
+  @keyframes pop{0%{transform:scale(.3) rotate(-15deg);opacity:0;}60%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+  .tile .badge{position:absolute;top:1px;right:2px;font-size:8px;color:#fff;background:rgba(0,0,0,.5);border-radius:3px;padding:0 2px;}
+  /* 赐缘判定弹窗 */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .modal.show{display:flex;}
+  .modal-card{background:linear-gradient(160deg,#3a2f1e,#2a2118);border:2px solid var(--gold);border-radius:16px;padding:20px;max-width:340px;width:100%;text-align:center;animation:pop .4s ease;}
+  .modal-card h2{color:var(--gold-light);font-size:17px;margin-bottom:6px;}
+  .modal-card .tier{font-size:13px;margin:8px 0;padding:8px;border-radius:8px;background:rgba(255,255,255,.06);}
+  .modal-card .tier.hit{background:rgba(217,164,65,.25);border:1px solid var(--gold);box-shadow:0 0 12px rgba(217,164,65,.4);}
+  .modal-card .reward{font-size:15px;color:var(--gold-light);margin:12px 0;font-weight:bold;}
+  .btn{background:var(--gold);color:var(--ink);border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:bold;cursor:pointer;margin-top:8px;}
+  .btn:active{transform:scale(.95);}
+  /* 发现日志 */
+  .feed{margin-top:12px;background:rgba(0,0,0,.25);border-radius:10px;padding:10px;max-height:150px;overflow-y:auto;font-size:12px;line-height:1.7;}
+  .feed .item{padding:2px 0;border-bottom:1px dashed rgba(255,255,255,.08);}
+  .feed .item:last-child{border:none;}
+  .feed .r-res{color:#c9b487;} .feed .r-frag{color:#7ec8e3;} .feed .r-spec{color:#e88fc3;}
+  .feed .r-fate{color:var(--gold-light);} .feed .r-clue{color:#9fd99f;} .feed .r-boss{color:#e8746f;} .feed .r-story{color:#d9b3e8;}
+  .explain{margin-top:12px;font-size:11px;color:#a89877;line-height:1.8;background:rgba(217,164,65,.06);border-radius:8px;padding:10px;}
+  .explain b{color:var(--gold-light);}
+  .reset{display:block;margin:12px auto 0;background:transparent;border:1px solid var(--seal);color:var(--gold-light);border-radius:8px;padding:8px 20px;font-size:12px;cursor:pointer;}
+  .tag{display:inline-block;font-size:9px;padding:1px 5px;border-radius:4px;margin-left:4px;vertical-align:middle;}
+  .tag.t1{background:#5a4d33;} .tag.t2{background:#3a6b7b;} .tag.t3{background:#8b4a7b;} .tag.t4{background:#b8860b;}
+</style>
+</head>
+<body>
+  <h1>格子探索 · 交互示例</h1>
+  <div class="sub">点按封印格翻开 · 体验「探索→发现→赐缘→碎片」循环</div>
+
+  <div class="topbar">
+    <div class="stat">机缘令<br><b id="lingCount">8</b></div>
+    <div class="loc">南赡部洲 · 山野妖患<small>探索进度 <span id="prog">0</span>/30 格</small></div>
+    <div class="stat">碎片<br><b id="fragCount">0</b></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="feed" id="feed"><div class="item" style="color:#a89877;">▷ 翻开封印格，看看山野里藏着什么……</div></div>
+
+  <div class="explain">
+    <b>怎么玩（核心循环）：</b><br>
+    ① 每翻 1 格消耗 1 枚<b>机缘令</b>（令从修炼/日常获得，每日有上限）。<br>
+    ② 格下随机藏着：<span class="r-res">资源</span>（凡品，常见）· <span class="r-frag">通用碎片</span>（攒够抽奖）· <span class="r-spec">专属碎片</span>（定向合成强法宝，稀有）· <span class="r-fate">机缘·赐缘</span>（弹赐缘判定，按品阶roll奖）· <span class="r-clue">线索</span>（拼事件链）· <span class="r-boss">Boss格</span>（具名妖首）· <span class="r-story">隐藏剧情</span>（世界观，极稀有）。<br>
+    ③ <b>赐缘判定</b>＝奖励分层：凡品60% / 灵品25% / 仙品12% / 神品3%（神品＝完整法宝，概率梯度可设1%/0.5%）。<br>
+    ④ 有的格需<b>钥匙/境界</b>才开（🔒），不是无脑全翻，有路径策略。<br>
+    ⑤ 不同地点格子主题不同：山野=妖气、骷髅山=白骨阴火、朝歌=王城兵煞。
+  </div>
+
+  <button class="reset" onclick="initGrid()">↻ 重置探索</button>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <h2>机缘 · 赐缘判定</h2>
+      <div style="font-size:11px;color:#a89877;">封神榜感应你的气运，降下一桩机缘</div>
+      <div class="tier" data-t="1">凡品 · 修行资粮 <span class="tag t1">60%</span></div>
+      <div class="tier" data-t="2">灵品 · 万能法宝碎片 <span class="tag t2">25%</span></div>
+      <div class="tier" data-t="3">仙品 · 专属法宝碎片 <span class="tag t3">12%</span></div>
+      <div class="tier" data-t="4">神品 · 完整法宝 <span class="tag t4">3%</span></div>
+      <div class="reward" id="modalReward"></div>
+      <button class="btn" onclick="closeModal()">收下机缘</button>
+    </div>
+  </div>
+
+<script>
+// 格子内容分布（示例：30格=6×5）。type 决定翻开后的发现。
+const TYPES = {
+  res:   {icon:"🌾", cls:"r-res",   name:"资源", weight:34},
+  frag:  {icon:"🔷", cls:"r-frag",  name:"通用碎片", weight:18},
+  spec:  {icon:"💠", cls:"r-spec",  name:"专属碎片", weight:8},
+  fate:  {icon:"🎴", cls:"r-fate",  name:"机缘·赐缘", weight:14},
+  clue:  {icon:"📜", cls:"r-clue",  name:"线索", weight:8},
+  fight: {icon:"⚔️", cls:"r-boss",  name:"遭遇", weight:6},
+  boss:  {icon:"👹", cls:"r-boss",  name:"Boss格", weight:2},
+  story: {icon:"🏮", cls:"r-story", name:"隐藏剧情", weight:2},
+  lock:  {icon:"",   cls:"",         name:"封印(需钥匙)", weight:8},
+};
+const COLS=6, ROWS=5, TOTAL=COLS*ROWS;
+let ling=8, frag=0, revealed=0, grid=[];
+
+function weightedType(){
+  const total=Object.values(TYPES).reduce((s,t)=>s+t.weight,0);
+  let r=Math.random()*total;
+  for(const [k,t] of Object.entries(TYPES)){ if((r-=t.weight)<0) return k; }
+  return "res";
+}
+function initGrid(){
+  ling=8; frag=0; revealed=0; grid=[];
+  for(let i=0;i<TOTAL;i++) grid.push({type:weightedType(), open:false});
+  // 固定放一个Boss格和一个隐藏剧情格做演示（保证能翻到）
+  grid[14].type="boss"; grid[27].type="story";
+  document.getElementById("lingCount").textContent=ling;
+  document.getElementById("fragCount").textContent=frag;
+  document.getElementById("prog").textContent=revealed;
+  document.getElementById("feed").innerHTML='<div class="item" style="color:#a89877;">▷ 翻开封印格，看看山野里藏着什么……</div>';
+  render();
+}
+function render(){
+  const g=document.getElementById("grid"); g.innerHTML="";
+  grid.forEach((cell,i)=>{
+    const el=document.createElement("div");
+    if(!cell.open){
+      el.className="tile "+(cell.type==="lock"?"locked":"fog");
+      el.onclick=()=>flip(i);
+    }else{
+      const t=TYPES[cell.type];
+      el.className="tile revealed";
+      el.innerHTML=t.icon+(cell.badge?`<span class="badge">${cell.badge}</span>`:"");
+    }
+    g.appendChild(el);
+  });
+}
+function flip(i){
+  const cell=grid[i];
+  if(cell.open) return;
+  if(cell.type==="lock"){ log("r-clue","🔒 这格被更强的封印锁住，需钥匙或更高境界才能开。"); return; }
+  if(ling<=0){ log("r-res","⚠️ 机缘令用完了。修炼/日常可再获得，明日亦有上限。"); return; }
+  ling--; cell.open=true; revealed++;
+  document.getElementById("lingCount").textContent=ling;
+  document.getElementById("prog").textContent=revealed;
+  const t=TYPES[cell.type];
+  switch(cell.type){
+    case "res": log("r-res",`${t.icon} 翻出一处灵草坡，得道行 +50、法力 +3000。`); break;
+    case "frag": frag+=2; log("r-frag",`${t.icon} 掘得万能法宝碎片 ×2（攒 10-20 个可合成抽奖）。`); break;
+    case "spec": frag+=1; log("r-spec",`${t.icon} 发现「雷纹木剑」专属碎片 ×1（集齐可定向合成这件法宝）。`); break;
+    case "clue": log("r-clue",`${t.icon} 拾得残破线索：「朝歌兵煞，起于五关……」（拼齐可揭开伐纣暗线）。`); break;
+    case "fight": log("r-boss",`${t.icon} 遭遇拦路小妖！一场小战斗（抉择：战/避）。`); break;
+    case "boss": log("r-boss",`${t.icon} 👹 妖气凝聚——山野妖首现身！击败它掉专属碎片。`); break;
+    case "story": log("r-story",`${t.icon} 🏮 隐藏剧情：山腹中一页金榜残篇，照见你的因果……（世界观纵深）`); break;
+    case "fate": openModal(); break;
+  }
+  if(cell.type!=="fate" && cell.type!=="lock") {}
+  document.getElementById("fragCount").textContent=frag;
+  render();
+}
+// 赐缘判定＝奖励分层
+function openModal(){
+  const r=Math.random()*100; let tier, reward;
+  if(r<60){tier=1; reward="凡品：道行 +200、法力 +8000"; }
+  else if(r<85){tier=2; reward="灵品：万能法宝碎片 ×3"; frag+=3;}
+  else if(r<97){tier=3; reward="仙品：「聚灵葫芦」专属碎片 ×1"; frag+=1;}
+  else {tier=4; reward="神品：完整法宝「打神鞭」！"; }
+  document.querySelectorAll(".tier").forEach(el=>el.classList.toggle("hit", +el.dataset.t===tier));
+  document.getElementById("modalReward").textContent="➤ "+reward;
+  document.getElementById("modal").classList.add("show");
+  document.getElementById("fragCount").textContent=frag;
+  log("r-fate",`🎴 触发赐缘判定 → ${reward}`);
+}
+function closeModal(){ document.getElementById("modal").classList.remove("show"); }
+function log(cls,msg){
+  const f=document.getElementById("feed");
+  const d=document.createElement("div"); d.className="item "+cls; d.textContent=msg;
+  f.insertBefore(d,f.firstChild);
+}
+initGrid();
+</script>
+</body>
+</html>
