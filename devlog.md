@@ -2,6 +2,23 @@
 
 ---
 
+## 2026-08-22 — 碎片系统核心机制落地（design/16.0 批次A：专属定向合成 + 通用抽奖）
+
+**背景**：用户指令「碎片系统（专属/通用两类）」，design/16.0 批次A 核心机制。
+
+**交付**（2 文件，node --check 通过）：
+- `web/js/save-manager.js`：`state.treasure_fragments`（per-treasure 专属碎片计数 `{[treasure_id]:count}`）默认 `{}` + 字段级归一化。
+- `web/js/game.js`：新增 3 方法（插入「截教·万仙阵法」前）：
+  - `_treasureTier(treasureId)`：由 unlock_realm 段推导品阶（rq/zr→凡品，dx/tx→灵品，zx/jx→仙品，ty+→神品）——treasure_table.rarity 字段未填充，故由境界段推导（🔴待校准）。
+  - `synthDedicated(treasureId)`：专属碎片定向合成，集满 N 个（凡10/灵20/仙35/神50）→ 直接合成该法宝（确定性，无随机）。
+  - `synthLottery()`：通用碎片抽奖，消耗 15 个 treasure_shard → 按境界段奖池加权随机（凡60/灵28/仙10/神2，高价值极低🔴待校准）。
+
+**说明**：核心合成机制已落地；掉落接入（专属碎片←探索翻格需 design/15.x 探索系统，尚未实现；通用碎片←镇魔塔里程碑已给 treasure_shard）+ UI 合成面板为后续工作。仅提交 save-manager.js + game.js（clean），零触碰并发 contested 文件。
+
+**验收**（功能批次，CLAUDE.md #6）：node --check 通过；synthDedicated/synthLottery/_treasureTier 已接入。
+
+---
+
 ## 2026-08-22 — 碎片系统与主城三级地图设计（design/16.0 v0.1）
 
 **背景**：用户指令「碎片系统（专属/通用两类）、主城三级地图细化」。

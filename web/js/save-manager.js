@@ -51,6 +51,9 @@ const SaveManager = {
         tower_best_floor_ever: 0,
         tower_total_kills: 0,
         tower_floor_clears: {},
+        treasure_fragments: {}, // 专属碎片（碎片系统 design/16.0）：{ [treasure_id]: count }
+        treasure_fragments: {}, // 专属碎片（碎片系统 design/16.0）：{ [treasure_id]: count }
+        treasure_fragments: {}, // 专属碎片（碎片系统 design/16.0）：{ [treasure_id]: count }
         devour_stacks: 0,
         faction_buff: null,
         faction_edict_day: "",
@@ -122,6 +125,9 @@ const SaveManager = {
     if (!("tower_best_floor_ever" in state)) state.tower_best_floor_ever = 0;
     if (!("tower_total_kills" in state)) state.tower_total_kills = 0;
     if (!("tower_floor_clears" in state)) state.tower_floor_clears = {};
+    if (!("treasure_fragments" in state) || typeof state.treasure_fragments !== "object" || state.treasure_fragments === null) state.treasure_fragments = {};
+    if (!("treasure_fragments" in state) || typeof state.treasure_fragments !== "object" || state.treasure_fragments === null) state.treasure_fragments = {};
+    if (!("treasure_fragments" in state) || typeof state.treasure_fragments !== "object" || state.treasure_fragments === null) state.treasure_fragments = {};
     state.devour_stacks = int(state.devour_stacks);
     if (!("faction_buff" in state)) state.faction_buff = null;
     state.faction_edict_day = str(state.faction_edict_day, "");

@@ -1105,6 +1105,62 @@ const Game = {
     return { ok: true, quality: q, level: newLevel };
   },
 
+  // ===== 碎片系统（design/16.0：专属碎片定向合成 + 通用碎片抽奖）=====
+
+  // 法宝品阶（由 unlock_realm 段推导；treasure_table.rarity 字段未填充）🔴待校准
+  _treasureTier(treasureId) {
+    const row = DataManager.getById("treasure_table", treasureId);
+    const prefix = str(row.unlock_realm, "").split("_")[0];
+    if (prefix === "rq" || prefix === "zr") return "fan";   // 凡品
+    if (prefix === "dx" || prefix === "tx") return "ling";  // 灵品
+    if (prefix === "zx" || prefix === "jx") return "xian";  // 仙品
+    return "shen"; // ty/dl/zs/hy 神品
+  },
+
+  // 专属碎片·定向合成：集满 N 个某法宝碎片 → 直接合成该法宝（确定性）
+  synthDedicated(treasureId) {
+    const row = DataManager.getById("treasure_table", treasureId);
+    if (!Object.keys(row).length) return { ok: false, reason: "无此法宝" };
+    const tier = this._treasureTier(treasureId);
+    const need = { fan: 10, ling: 20, xian: 35, shen: 50 }[tier] || 20;
+    if (!this.state.treasure_fragments) this.state.treasure_fragments = {};
+    const have = int(this.state.treasure_fragments[treasureId]);
+    if (have < need) return { ok: false, reason: `「${row.treasure_name}」专属碎片不足（${have}/${need}）。` };
+    this.state.treasure_fragments[treasureId] = have - need;
+    const tState = this.getTreasureState(treasureId);
+    const alreadyOwned = int(tState.level) > 0;
+    tState.level = alreadyOwned ? Math.min(int(tState.level) + 1, int(row.max_level_mvp, 5)) : 1;
+    tState.owned = true;
+    this._log(`专属碎片凝聚：「${row.treasure_name}」${alreadyOwned ? "淬炼至 " + tState.level + " 重" : "炼成"}。`);
+    this.queuePopup({ kind: "text", style: "treasure", title: "碎片合成", body: `${need} 枚「${row.treasure_name}」专属碎片凝聚成形。\n\n「${row.treasure_name}」${alreadyOwned ? "淬炼至 " + tState.level + " 重" : "炼成，初入你的法宝之列"}。`, buttons: [{ label: "收宝" }] });
+    this._afterMutated();
+    return { ok: true, level: tState.level };
+  },
+
+  // 通用碎片·抽奖：消耗 15 个通用碎片（treasure_shard）→ 按境界段奖池加权随机得一件法宝
+  synthLottery() {
+    const cost = 15;
+    if (num(this.state.resources.treasure_shard) < cost) return { ok: false, reason: `通用碎片不足（${int(this.state.resources.treasure_shard)}/${cost}）。` };
+    const tierOrder = ["rq", "zr", "dx", "tx", "zx", "jx", "ty", "dl", "zs", "hy"];
+    const maxIdx = Math.max(0, tierOrder.indexOf(str(this.state.realm_id, "").split("_")[0]));
+    const pool = DataManager.getRows("treasure_table").filter((r) => tierOrder.indexOf(str(r.unlock_realm, "").split("_")[0]) <= maxIdx);
+    if (!pool.length) return { ok: false, reason: "奖池为空。" };
+    const weight = { fan: 60, ling: 28, xian: 10, shen: 2 }; // 高价值极低 🔴待校准
+    const weighted = pool.map((r) => ({ row: r, w: weight[this._treasureTier(r.treasure_id)] || 30 }));
+    const total = weighted.reduce((s, x) => s + x.w, 0);
+    let roll = Math.random() * total, pick = weighted[0].row;
+    for (const x of weighted) { roll -= x.w; if (roll <= 0) { pick = x.row; break; } }
+    this.state.resources.treasure_shard = num(this.state.resources.treasure_shard) - cost;
+    const tState = this.getTreasureState(pick.treasure_id);
+    const alreadyOwned = int(tState.level) > 0;
+    tState.level = alreadyOwned ? Math.min(int(tState.level) + 1, int(pick.max_level_mvp, 5)) : 1;
+    tState.owned = true;
+    this._log(`通用碎片抽奖：宝光随机凝聚，「${pick.treasure_name}」${alreadyOwned ? "淬炼至 " + tState.level + " 重" : "炼成"}。`);
+    this.queuePopup({ kind: "text", style: "treasure", title: "碎片抽奖", body: `${cost} 枚通用碎片投入炉中，宝光随机凝聚。\n\n抽得「${pick.treasure_name}」${alreadyOwned ? "（淬炼至 " + tState.level + " 重）" : "（炼成）"}。`, buttons: [{ label: "收宝" }] });
+    this._afterMutated();
+    return { ok: true, treasure: pick.treasure_id, level: tState.level };
+  },
+
   // ===== 截教·万仙阵法（阵法卡系统）=====
   // 可学习（耗功德/劫气）、可携带（装备入阵法栏，有栏位上限）、战斗中生效（首回合敌方全体受伤加成）。
 
