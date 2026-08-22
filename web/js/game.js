@@ -139,6 +139,17 @@ const Game = {
       }
     }
     if (action && nowMs() >= num(action.end_time_ms)) { this._finishAction(); changed = true; }
+    // P0-#2 修复：idle + auto_repeat 且无 pending 事件/升重时，自动恢复修行，避免停摆。
+    if (!this.state.current_action && this.state.flags.auto_repeat && !this.state.pending_event_id
+        && !RealmManager.canLevelUp(this.state) && !BreakthroughManager.canAttempt(this.state)
+        && !this.hasPendingTreasureChoice() && int(this.pendingOfflineReward.minutes) < 5) {
+      const resume = this._getFallbackCultivationAction();
+      if (resume) {
+        this.state.current_action = { action_id: String(resume.action_id), start_time_ms: nowMs(), end_time_ms: nowMs() + int(resume.duration_sec) * 1000 };
+        this._setupActionExtras(resume, this.state.current_action);
+        changed = true;
+      }
+    }
     this._refreshPendingReward();
     if (changed) this._afterMutated();
     this._emit();
@@ -151,6 +162,8 @@ const Game = {
     if (!Object.keys(row).length) return;
     const avail = ActionManager.getAvailability(this.state, row);
     if (!avail.ok) { this.queuePopup({ kind: "text", title: row.action_name, body: avail.reason + "。", buttons: [{ label: "知道了" }] }); return; }
+    // P1-#3 修复：行动开始后自动收起面板，避免面板遮挡主按钮区。
+    if (typeof closePanelSheet === "function") closePanelSheet();
     const duration = int(row.duration_sec);
     if (duration <= 0) { this.state.current_action = { action_id: actionId, end_time_ms: nowMs() }; this._finishAction(); this._afterMutated(); return; }
     this.state.current_action = { action_id: actionId, start_time_ms: nowMs(), end_time_ms: nowMs() + duration * 1000 };
@@ -238,9 +251,25 @@ const Game = {
     const autoOn = !!this.state.flags.auto_repeat && int(row.duration_sec) > 0;
     let chained = false;
     if (autoOn && !eventTriggered) {
-      const avail = ActionManager.getAvailability(this.state, row);
-      if (avail.ok) { this.state.current_action = { action_id: id, start_time_ms: nowMs(), end_time_ms: nowMs() + int(row.duration_sec) * 1000 }; chained = true; }
-      else { this._log(`连续修行停歇：${avail.reason}。`); }
+      // P0-#1 修复：道行已满时自动链"让行"，不续作，让主按钮切为升重入口。
+      if (RealmManager.canLevelUp(this.state)) {
+        this._log("连续修行暂停：道行已满，可升重。");
+      } else {
+        // 挂机放置准则：主页「连续修行」即纯修炼循环，只在修炼类动作间续作，
+        // 绝不跳去游历/探幽（map 类）。目标动作保留在「修行指引」次级按钮，由玩家手动触发。
+        const chainRow = this._getAutoChainAction(row);
+        const avail = ActionManager.getAvailability(this.state, chainRow);
+        if (avail.ok) { this.state.current_action = { action_id: String(chainRow.action_id), start_time_ms: nowMs(), end_time_ms: nowMs() + int(chainRow.duration_sec) * 1000 }; chained = true; }
+        else {
+          // P0-#2 修复：链式续作失败时，自动回落到可用的修炼类动作，避免停摆。
+          const fallback = this._getFallbackCultivationAction();
+          if (fallback) {
+            const fbAvail = ActionManager.getAvailability(this.state, fallback);
+            if (fbAvail.ok) { this.state.current_action = { action_id: String(fallback.action_id), start_time_ms: nowMs(), end_time_ms: nowMs() + int(fallback.duration_sec) * 1000 }; chained = true; this._log(`连续修行：${avail.reason}，转为${fallback.action_name}。`); }
+            else { this._log(`连续修行停歇：${avail.reason}。`); }
+          } else { this._log(`连续修行停歇：${avail.reason}。`); }
+        }
+      }
     }
     const completionBody = `${row.complete_text || ""}${allRewardText ? `\n\n获得：\n${allRewardText}` : ""}${blessText}`;
     const firstBreath = id === "breath_cycle" && int(this.state.action_counts_total[id]) === 1;
@@ -438,7 +467,7 @@ const Game = {
     const id = String(arr.array_id);
     this.state.array_counts_today[id] = int(this.state.array_counts_today[id]) + 1;
     this._log(`你踏入${arr.array_name}，杀劫阵势轰然合拢。`);
-    const phases = (arr.phases || []).map((p) => ({ name: String(p.name), power_ratio: num(p.power_ratio, 0.7), intro: String(p.intro || ""), pool: ARRAY_INTENTS[String(p.pool)] || ARRAY_INTENTS.zhenshi }));
+    const phases = (arr.phases || []).map((p) => ({ name: String(p.name), power_ratio: num(p.power_ratio, 0.7), intro: String(p.intro || ""), pool: null })); // ARRAY_INTENTS 已删除，phases 暂用通用意图池
     this.startBattleV2({ name: arr.array_name, source: "array", phases, bannerLabel: "阵势", payload: { arrayId: id } });
     this._afterMutated();
   },
@@ -941,7 +970,7 @@ const Game = {
     this.state.race_id = String(raceId); this.state.flags.race_choice_done = true;
     if (String(raceId) === "xiantian" && !this.state.treasures.treasure_009) this.state.treasures.treasure_009 = { level: 1, owned: true };
     this._log(`你觉醒了跟脚：${row.race_name}。`);
-    this.queuePopup({ kind: "text", style: "seal", title: `跟脚已定：${row.race_name}`, body: String(row.choose_text || row.talent_desc || ""), buttons: [{ label: "踏入修行" }] });
+    this.queuePopup({ kind: "text", style: "seal", title: `跟脚已定：${row.race_name}`, body: String(row.choose_text || row.talent_desc || "") + "\n\n——此念既定，道途不再回头。", buttons: [{ label: "踏入修行" }] });
     this._afterMutated();
   },
 
@@ -1399,6 +1428,33 @@ const Game = {
     return available[0];
   },
 
+  // 挂机放置准则：修炼类动作 = 无地图、offline_equivalent 产出（吐纳/入定/各势力任务）。
+  // 游历/探幽（map_equivalent + map_id）属于主动内容，绝不进挂机循环。
+  _isCultivationAction(row) {
+    return !!row && !row.map_id && String(row.reward_type) === "offline_equivalent" && int(row.duration_sec) > 0;
+  },
+
+  // 连续修行链式续作：只续修炼类动作。当前动作是修炼且可用则续它；否则回落首选修炼动作。
+  // 绝不续游历/探幽——主页挂机就是修炼（参考所有挂机放置手游设定）。
+  _getAutoChainAction(currentRow) {
+    const state = this.state;
+    if (this._isCultivationAction(currentRow) && ActionManager.getAvailability(state, currentRow).ok) return currentRow;
+    return this._getFallbackCultivationAction() || currentRow;
+  },
+
+  // P0-#2：链式续作失败后，回落到可用的修炼类动作（breath_cycle 优先），避免挂机停摆。
+  _getFallbackCultivationAction() {
+    const state = this.state;
+    const fallbackOrder = ["breath_cycle", "short_meditation", "chan_task", "jie_task", "tianting_task", "wuzhuang_task"];
+    const actions = ActionManager.getActions(state);
+    for (const id of fallbackOrder) {
+      const row = actions.find((r) => String(r.action_id) === id);
+      if (row && this._isCultivationAction(row) && ActionManager.getAvailability(state, row).ok) return row;
+    }
+    // 兜底：任意可用的修炼类动作
+    return actions.find((r) => this._isCultivationAction(r) && ActionManager.getAvailability(state, r).ok) || null;
+  },
+
   getSecondaryRecommendations(state) {
     const list = [];
     const primary = this._preferredCultivationAction(state);
@@ -1413,7 +1469,7 @@ const Game = {
       }
     }
     const boss = this._challengeableBoss(state);
-    if (boss) list.push({ id: "boss", label: `${boss.boss_name}现身，可挑战`, bossId: String(boss.boss_id) });
+    if (boss) list.push({ id: "boss", label: `⚔ ${boss.boss_name}现身，可斗法`, bossId: String(boss.boss_id) });
     return list.slice(0, 2);
   },
 
@@ -1488,7 +1544,6 @@ const Game = {
     if (rb.log.length > 9) rb.log.length = 9;
     const fresh = SaveManager.createDefault();
     fresh.rebirth = rb;
-    fresh.flags.battle_manual = !!state.flags.battle_manual;
     fresh.flags.auto_repeat = !!state.flags.auto_repeat;
     this.state = SaveManager.normalize(fresh);
     UnlockManager.refresh(this.state);

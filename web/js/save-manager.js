@@ -62,7 +62,7 @@ const SaveManager = {
       explored_points: [],
       seen_resources: ["daoxing", "mana"],
       seen_unlock_popups: [],
-      flags: { battle_manual: true },
+      flags: {},
       logs: [],
       rebirth: { count: 0, daohen: 0, races_seen: [], log: [] },
       pills: {},
@@ -126,8 +126,6 @@ const SaveManager = {
     state.seen_resources = state.seen_resources || ["daoxing", "mana"];
     state.seen_unlock_popups = state.seen_unlock_popups || [];
     state.flags = state.flags || {};
-    // 默认手动排序出招：战斗是前 30 分钟的核心交互，不能开场就全自动。
-    if (state.flags.battle_manual == null) state.flags.battle_manual = true;
     state.logs = state.logs || [];
     state.race_id = str(state.race_id, "");
     state.faction_id = str(state.faction_id, "");

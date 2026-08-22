@@ -12,21 +12,27 @@
   <div id="dim"></div>
 
   <main id="app">
-    <!-- 顶部封神天象条 -->
-    <header id="top-banner">
-      <div id="game-title" title="点击展开封神图卷">封神修道录</div>
-      <button id="world-scroll-btn" class="scroll-open" title="展开封神图卷">卷</button>
-      <button id="world-map-btn" class="scroll-open map-open" title="展开封神山河图">图</button>
-        <button id="audio-settings-btn" class="scroll-open audio-open" title="声音设置">音</button>
-      <div id="identity-line"></div>
-      <div id="weather-line"></div>
-      <div id="omen-line"></div>
-      <div id="seal-pressure" title="封神榜对你的感应">
-        <span id="seal-pressure-label">榜文感应</span>
-        <span id="seal-pressure-track"><i id="seal-pressure-fill"></i></span>
-        <span id="seal-pressure-state">未显</span>
-      </div>
-    </header>
+      <!-- 顶部封神天象条 -->
+      <header id="top-banner">
+        <div class="banner-top">
+          <div id="game-title" title="点击展开封神图卷">封神修道录</div>
+          <div class="banner-tools">
+            <button id="world-scroll-btn" class="scroll-open" title="展开封神图卷">卷</button>
+            <button id="world-map-btn" class="scroll-open map-open" title="展开封神山河图">图</button>
+            <button id="audio-settings-btn" class="scroll-open audio-open" title="声音设置">音</button>
+          </div>
+        </div>
+        <div id="identity-line"></div>
+        <div class="banner-sub">
+          <span id="weather-line"></span>
+          <span id="omen-line"></span>
+        </div>
+        <div id="seal-pressure" title="封神榜对你的感应">
+          <span id="seal-pressure-label">榜文感应</span>
+          <span id="seal-pressure-track"><i id="seal-pressure-fill"></i></span>
+          <span id="seal-pressure-state">未显</span>
+        </div>
+      </header>
 
     <!-- 资源浮层 -->
     <div id="resource-strip"></div>
@@ -188,6 +194,7 @@
   <script src="js/goal-manager.js"></script>
   <script src="js/boss-manager.js"></script>
   <script src="js/breakthrough-manager.js"></script>
+  <script src="js/resonance-system.js"></script>
   <script src="js/battle-engine-v2.js"></script>
   <script src="js/boss-mechanics-v2.js"></script>
   <script src="js/battle-ui-v2.js"></script>

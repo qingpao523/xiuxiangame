@@ -200,7 +200,7 @@ const AudioManager = {
   playSfx(id, opts) {
     opts = opts || {};
     if (this.settings.muted) return;
-    if (!this._ready) this.init();
+    // #6 修复：不在无手势时创建 AudioContext，仅在手势已触发 init 后播放。
     if (!this.isReady()) return;
     if (this.ctx.state === "suspended" && this.ctx.resume) this.ctx.resume();
     const buf = this.bufferCache[id];
@@ -234,7 +234,7 @@ const AudioManager = {
     if (this.currentAmbient && this.currentAmbient.id === id) return;
     this.stopAmbient();
     if (this.settings.muted) { this.currentAmbient = { id, silent: true, stop() {} }; return; }
-    if (!this._ready) this.init();
+    // #6 修复：不在无手势时创建 AudioContext，仅在手势已触发 init 后播放。
     if (!this.isReady()) return;
     const recipe = AMBIENT_RECIPES[id];
     if (typeof recipe !== "function") return;

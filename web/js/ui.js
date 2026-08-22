@@ -479,35 +479,72 @@ function renderTreasureChoicePopup(panel, title, body, buttons) {
 
 function renderRaceChoicePopup(panel, title, body, buttons) {
   panel.classList.add("style-seal"); title.textContent = "择跟脚：你自何处来";
-  body.textContent = "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。\n\n跟脚一选定终身，不可更改。";
+  body.textContent = "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。";
   const rb = Game.state.rebirth || {};
-  for (const row of DataManager.getRows("race_table")) {
-    const isOpen = row.open === true;
+  const rows = DataManager.getRows("race_table");
+  const openRows = rows.filter((r) => r.open === true);
+  const lockedRows = rows.filter((r) => r.open !== true);
+  const PROFILE_LABELS = [
+    ["growth", "成长方向"],
+    ["early", "前期体验"],
+    ["ceiling", "后期天花板"],
+  ];
+  let picked = null;
+
+  // 命运确认按钮（二步确认：先点种族选中，再点此确认，强化不可逆仪式感）
+  const confirmBtn = document.createElement("button");
+  confirmBtn.className = "popup-btn race-confirm-btn";
+  confirmBtn.style.display = "none";
+  confirmBtn.addEventListener("click", () => {
+    if (!picked) return;
+    closePopup();
+    Game.chooseRace(String(picked));
+  });
+  buttons.appendChild(confirmBtn);
+
+  for (const row of openRows) {
     const btn = document.createElement("button"); btn.className = "popup-btn treasure-pick choice-pick";
     const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "命";
     const info = document.createElement("span"); info.className = "choice-info";
     const name = document.createElement("span"); name.className = "choice-name";
     const seen = rb.races_seen?.includes(String(row.race_id));
     name.textContent = `${row.race_name}｜天赋·${row.talent_name}${seen ? "（前世）" : ""}`;
-    if (!isOpen) {
-      const badge = document.createElement("span"); badge.className = "choice-lock-badge"; badge.textContent = "暂未开放";
-      name.appendChild(badge);
-    }
     const sub = document.createElement("span");
-    if (isOpen) {
-      sub.className = "popup-option-sub";
-      sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
-    } else {
-      sub.className = "choice-lock-hint";
-      sub.textContent = row.lock_hint || "此跟脚暂未开放，敬请期待。";
+    sub.className = "popup-option-sub";
+    sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
+    info.append(name, sub);
+    // 决策依据三行（成长方向/前期体验/后期天花板）——预留结构，详细差异待数值定稿后填充
+    if (row.profile) {
+      const prof = document.createElement("div"); prof.className = "race-profile";
+      for (const [key, label] of PROFILE_LABELS) {
+        if (!row.profile[key]) continue;
+        const line = document.createElement("div"); line.className = "race-profile-line";
+        const lab = document.createElement("span"); lab.className = "race-profile-label"; lab.textContent = label;
+        const val = document.createElement("span"); val.className = "race-profile-value"; val.textContent = row.profile[key];
+        line.append(lab, val); prof.appendChild(line);
+      }
+      info.appendChild(prof);
     }
-    info.append(name, sub); btn.append(glyph, info);
-    if (isOpen) {
-      btn.addEventListener("click", () => { closePopup(); Game.chooseRace(String(row.race_id)); });
-    } else {
-      btn.disabled = true; btn.classList.add("locked"); btn.setAttribute("aria-disabled", "true");
-    }
+    btn.append(glyph, info);
+    btn.addEventListener("click", () => {
+      picked = row.race_id;
+      buttons.querySelectorAll(".choice-pick").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      confirmBtn.style.display = "";
+      confirmBtn.textContent = `立此为命：${row.short_name || row.race_name} —— 此念既定，道途不再回头`;
+    });
     buttons.appendChild(btn);
+  }
+
+  // 未开放种族：折叠为一条剪影带，不再逐个占半屏
+  if (lockedRows.length) {
+    const strip = document.createElement("div"); strip.className = "race-locked-strip";
+    const glyphs = document.createElement("span"); glyphs.className = "race-locked-glyphs";
+    glyphs.textContent = lockedRows.map((r) => r.glyph || "？").join(" ");
+    const hint = document.createElement("span"); hint.className = "race-locked-hint";
+    hint.textContent = `${lockedRows.length} 方跟脚尚未觉醒 · 未开放`;
+    strip.append(glyphs, hint);
+    buttons.appendChild(strip);
   }
 }
 

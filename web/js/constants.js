@@ -152,21 +152,21 @@ const TREASURE_SKILLS = {
 
 const TRIBULATION_INTENT_POOLS = {
   suiguang: [
-    { type: "attack", w: 50, ratio: [0.16, 0.22], label: "金光扫落", short: "金光" },
-    { type: "block", w: 20, ratio: 0.08, label: "榜文凝聚", short: "凝聚" },
-    { type: "curse_weak", w: 30, label: "照影摄魂", short: "摄魂" },
+    { type: "attack", w: 50, ratio: [0.16, 0.22], label: "金光扫落", short: "金光", element: "weapon" },
+    { type: "block", w: 20, ratio: 0.08, label: "榜文凝聚", short: "凝聚", element: "soul" },
+    { type: "curse_weak", w: 30, label: "照影摄魂", short: "摄魂", element: "soul" },
   ],
   jinying: [
-    { type: "attack", w: 45, ratio: [0.2, 0.26], label: "金鞭抽魂", short: "金鞭" },
+    { type: "attack", w: 45, ratio: [0.2, 0.26], label: "金鞭抽魂", short: "金鞭", element: "weapon" },
     { type: "charge", w: 20, label: "真灵牵引，雷霆将落", short: "牵引" },
-    { type: "curse_burn", w: 20, ratio: 0.03, label: "劫火焚身", short: "劫火" },
-    { type: "block", w: 15, ratio: 0.1, label: "榜文护持", short: "护持" },
+    { type: "curse_burn", w: 20, ratio: 0.03, label: "劫火焚身", short: "劫火", element: "fire" },
+    { type: "block", w: 15, ratio: 0.1, label: "榜文护持", short: "护持", element: "soul" },
   ],
   yipie: [
-    { type: "attack", w: 45, ratio: [0.22, 0.3], label: "封神一瞥", short: "一瞥" },
+    { type: "attack", w: 45, ratio: [0.22, 0.3], label: "封神一瞥", short: "一瞥", element: "calamity" },
     { type: "charge", w: 20, label: "真灵牵引，雷霆将落", short: "牵引" },
-    { type: "curse_burn", w: 25, ratio: 0.04, label: "留名之厄", short: "留名" },
-    { type: "block", w: 10, ratio: 0.12, label: "榜文垂光", short: "垂光" },
+    { type: "curse_burn", w: 25, ratio: 0.04, label: "留名之厄", short: "留名", element: "calamity" },
+    { type: "block", w: 10, ratio: 0.12, label: "榜文垂光", short: "垂光", element: "soul" },
   ],
 };
 
