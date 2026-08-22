@@ -1,8 +1,11 @@
 "use strict";
 
+const TOWER_TICKET_CAP = 3; // 镇魔塔每期登塔令上限（D5，design/12.0）
+
 const UnlockManager = {
   refresh(state) {
     this._resetDailyIfNeeded(state);
+    this._resetTowerCycleIfNeeded(state);
     const unlocked = state.unlocked_ids;
     for (const row of DataManager.getRows("unlock_table")) {
       const id = String(row.unlock_id || "");
@@ -128,5 +131,18 @@ const UnlockManager = {
     state.action_counts_today = {};
     state.boss_counts_today = {};
     state.array_counts_today = {};
+  },
+
+  // 镇魔塔周期重置（D5，design/12.0 §7.1）：两日一期，刷新登塔令与本期进度
+  _resetTowerCycleIfNeeded(state) {
+    if (!state.tower || typeof state.tower !== "object") state.tower = { cycle_index: 0, tickets: TOWER_TICKET_CAP, current_floor: 0, best_floor_this_cycle: 0, in_run: false };
+    const epochDay = Math.floor(Date.now() / 86400000);
+    const cycleIndex = Math.floor(epochDay / 2);
+    if (int(state.tower.cycle_index) === cycleIndex) return;
+    state.tower.cycle_index = cycleIndex;
+    state.tower.tickets = TOWER_TICKET_CAP;
+    state.tower.current_floor = 0;
+    state.tower.best_floor_this_cycle = 0;
+    state.tower.in_run = false;
   },
 };

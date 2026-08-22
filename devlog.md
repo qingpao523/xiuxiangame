@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-08-22 — 镇魔塔 runner 落地（D5，design/12.0）
+
+**背景**：用户指令「可以先完成D2D3D5」，D2（战斗）另一会话在做，D5 镇魔塔「重新去，慢慢分步骤」。本批落地镇魔塔周期推塔 runner（design/12.0 v0.1）。
+
+**交付**（4 文件，均 node --check 通过）：
+- `web/js/save-manager.js`：state.tower 默认 {cycle_index:0,tickets:3,current_floor:0,best_floor_this_cycle:0,in_run:false} + tower_best_floor_ever/tower_total_kills/tower_floor_clears + 字段级归一化。
+- `web/js/unlock-manager.js`：`const TOWER_TICKET_CAP = 3` + `_resetTowerCycleIfNeeded(state)`（两日一期：epochDay=Math.floor(Date.now()/86400000)，cycleIndex=Math.floor(epochDay/2)，跨期重置登塔令+本期进度）+ refresh 调用。
+- `web/js/game.js`：`startTowerRun()`（消耗登塔令→_nextTowerFloor）/`_towerFloorRealm(floor)`（段首层 unlock_realm 门）/`_nextTowerFloor()`（按 tower_table 逐层起战斗，enemy_power=recommended_power×power_mult，source:'tower'）/`_endTowerRun(defeated)`（本期战报）+ finishBattle 新增 `tower` 分支（胜→reward+milestone_reward、best/ever/kills 记录、弹本层战报「继续登塔/就此收手」；败→_endTowerRun）。
+- `web/js/ui.js`：popup dispatch 加 tower_next→Game._nextTowerFloor() / tower_stop→Game._endTowerRun(false)；renderMapPanel 顶部加「镇魔塔·层层斩将」卡（本期登塔令/本期最高/历史最高/登塔按钮，tickets<=0 禁用）。
+
+**说明**：复用 tower_table.json（100 层，已提交 04314a4）+ boss_table（mechanics/weakness/victory_text）；塔击杀不消耗 boss_counts_today（独立于地图 Boss 日限）；登塔令为整数计数（非 resource_id）。数值🔴待校准。
+
+**验收**（功能批次，CLAUDE.md #6）：node --check 4 文件通过；仅提交 4 个 clean 文件，零触碰并发 contested 文件（battle-engine-v2.js/battle-ui-v2.js/constants.js/style.css）。
+
+---
+
 ## 2026-08-22 — 格子探索交互示例（web/exploration_preview.html，供设计对齐）
 
 **背景**：用户对格子探索玩法"没看懂"，要求做一个交互示例直观感受。

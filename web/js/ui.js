@@ -276,7 +276,7 @@ function showPopup(popup) {
   if (popup.kind === "text") {
     if (popup.style) panel.classList.add(`style-${popup.style}`);
     title.textContent = popup.title || ""; body.textContent = popup.body || "";
-    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); }));
+    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); }));
   } else if (popup.kind === "event") renderEventPopup(panel, title, body, buttons);
   else if (popup.kind === "encounter") renderEncounterPopup(panel, title, body, buttons, popup.encounterId);
   else if (popup.kind === "battle_v2") { title.textContent = "斗法"; BattleUIV2.renderBattlePopup(panel, popup.battle, Game.state); }
@@ -898,6 +898,23 @@ function renderRealmPanel(body, state) {
 // 游历面板
 function renderMapPanel(body, state) {
   body.appendChild(popupButton("展开封神山河图", false, () => { closePanelSheet(); WorldMap.open(); }));
+  // 镇魔塔（D5：周期推塔活动，design/12.0）
+  UnlockManager._resetTowerCycleIfNeeded(state);
+  const tw = state.tower || { tickets: 0, best_floor_this_cycle: 0 };
+  const twCard = document.createElement("div"); twCard.className = "card";
+  const twInfo = document.createElement("div"); twInfo.className = "card-info";
+  const twName = document.createElement("div"); twName.className = "card-name"; twName.textContent = "镇魔塔·层层斩将";
+  const twDesc = document.createElement("div"); twDesc.className = "card-desc";
+  twDesc.textContent = `本期登塔令 ${int(tw.tickets)} 枚｜本期最高 第${int(tw.best_floor_this_cycle)}层｜历史最高 第${int(state.tower_best_floor_ever)}层`;
+  const twCost = document.createElement("div"); twCost.className = "card-cost"; twCost.textContent = "两日一期·每期三令·斩将得宝，层越高宝越珍";
+  twInfo.append(twName, twDesc, twCost); twCard.appendChild(twInfo);
+  const twBtn = document.createElement("button"); twBtn.className = "card-btn";
+  const twHas = int(tw.tickets) > 0;
+  twBtn.textContent = twHas ? "登塔" : "登塔令已尽";
+  twBtn.disabled = !twHas;
+  twBtn.addEventListener("click", () => { closePanelSheet(); Game.startTowerRun(); });
+  twCard.appendChild(twBtn);
+  body.appendChild(twCard);
   // 今日杀劫大阵
   const todayArr = getTodayArray();
   if (Object.keys(todayArr).length && UnlockManager.conditionMet(state, String(todayArr.unlock_realm || ""))) {

@@ -47,6 +47,10 @@ const SaveManager = {
         map_explores: {},
         benming_school: null,
         liupai: { chosen: null, chosen_at_realm: null, branch: null, prestige: [] },
+        tower: { cycle_index: 0, tickets: 3, current_floor: 0, best_floor_this_cycle: 0, in_run: false },
+        tower_best_floor_ever: 0,
+        tower_total_kills: 0,
+        tower_floor_clears: {},
         devour_stacks: 0,
         faction_buff: null,
         faction_edict_day: "",
@@ -109,6 +113,15 @@ const SaveManager = {
     state.map_explores = state.map_explores || {};
     if (!("benming_school" in state)) state.benming_school = null;
     if (typeof LiupaiManager !== "undefined") LiupaiManager.ensureState(state); else if (!("liupai" in state)) state.liupai = { chosen: null, chosen_at_realm: null, branch: null, prestige: [] };
+    if (!("tower" in state) || typeof state.tower !== "object" || state.tower === null) state.tower = {};
+    if (!("cycle_index" in state.tower)) state.tower.cycle_index = 0;
+    if (!("tickets" in state.tower)) state.tower.tickets = 3;
+    if (!("current_floor" in state.tower)) state.tower.current_floor = 0;
+    if (!("best_floor_this_cycle" in state.tower)) state.tower.best_floor_this_cycle = 0;
+    if (!("in_run" in state.tower)) state.tower.in_run = false;
+    if (!("tower_best_floor_ever" in state)) state.tower_best_floor_ever = 0;
+    if (!("tower_total_kills" in state)) state.tower_total_kills = 0;
+    if (!("tower_floor_clears" in state)) state.tower_floor_clears = {};
     state.devour_stacks = int(state.devour_stacks);
     if (!("faction_buff" in state)) state.faction_buff = null;
     state.faction_edict_day = str(state.faction_edict_day, "");

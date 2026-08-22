@@ -450,6 +450,49 @@ const Game = {
 
   startBossBattle(bossId) { return this.startBossBattleV2(bossId); },
 
+  // ---------- 镇魔塔（D5：周期推塔活动，design/12.0）----------
+  startTowerRun() {
+    UnlockManager._resetTowerCycleIfNeeded(this.state);
+    if (int(this.state.tower.tickets) <= 0) { this.queuePopup({ kind: "text", title: "镇魔塔", body: "登塔令已尽。\n每期（两日）刷新三枚登塔令，本期已用完，且待下期。", buttons: [{ label: "知道了" }] }); return; }
+    this.state.tower.tickets = int(this.state.tower.tickets) - 1;
+    this.state.tower.in_run = true;
+    this.state.tower.current_floor = 0;
+    this._log("你持登塔令，踏入镇魔塔。塔门在身后合拢，层层妖气自下而上。");
+    this._nextTowerFloor();
+    this._afterMutated();
+  },
+  _towerFloorRealm(floor) {
+    const duan = Math.floor((int(floor) - 1) / 10) * 10 + 1; // 段首层（每10层一段）
+    const row = DataManager.getRows("tower_table").find((r) => int(r.floor) === duan);
+    return row ? str(row.unlock_realm, "") : "";
+  },
+  _nextTowerFloor() {
+    const floor = int(this.state.tower.current_floor) + 1;
+    const row = DataManager.getRows("tower_table").find((r) => int(r.floor) === floor);
+    if (!row) { this._endTowerRun(false); return; } // 已登顶
+    const realm = this._towerFloorRealm(floor);
+    if (realm && !UnlockManager.conditionMet(this.state, realm)) { this._endTowerRun(false); return; } // 境界不足
+    const boss = DataManager.getById("boss_table", str(row.boss_id, ""));
+    if (!Object.keys(boss).length) { this._endTowerRun(false); return; }
+    this._log(`镇魔塔第${floor}层：${row.entry_text || (boss.boss_name + "拦路。")}`);
+    const cfg = { name: String(boss.boss_name), enemy_power: num(boss.recommended_power) * num(row.power_mult, 1),
+      adds: [], source: "tower", mechanic: boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null,
+      weakness: boss.weakness || null, payload: { floor, bossId: str(row.boss_id, "") } };
+    this.startBattleV2(cfg);
+    this._afterMutated();
+  },
+  _endTowerRun(defeated) {
+    this.state.tower.in_run = false;
+    const best = int(this.state.tower.best_floor_this_cycle);
+    const ever = int(this.state.tower_best_floor_ever);
+    const kills = int(this.state.tower_total_kills);
+    this._log(defeated ? `镇魔塔之行止步于第${best}层。` : `镇魔塔本期登顶第${best}层。`);
+    this.queuePopup({ kind: "text", style: "breakthrough", title: "镇魔塔·本期战报",
+      body: `${defeated ? "你被守关者击退，本期登塔就此定格。" : "本期塔层已尽收脚下。"}\n\n本期最高：第${best}层\n历史最高：第${ever}层\n累计斩将：${kills}`,
+      buttons: [{ label: "收功" }] });
+    this._afterMutated();
+  },
+
   getArrayAvailability() {
     const today = getTodayArray();
     if (!Object.keys(today).length) return { ok: false, reason: "今日无杀阵开启。大劫未至，阵势敛息。" };
@@ -588,6 +631,27 @@ const Game = {
         this.queuePopup({ kind: "text", title: "斗法失利",
           body: `${boss.boss_name}妖气正盛，你且战且退，未伤根本。\n\n拾得游离灵气：法力 +${formatInt(consolation)}\n${seatText}\n\n再积累些道行与术法，改日再来。`,
           buttons: [{ label: "暂且退去" }] });
+      }
+      this._afterMutated(); return;
+    }
+    if (battle.source === "tower") { /* 镇魔塔结算（D5） */
+      const floor = int(battle.payload.floor);
+      const row = DataManager.getRows("tower_table").find((r) => int(r.floor) === floor);
+      if (battle.win) {
+        const boss = DataManager.getById("boss_table", str(row?.boss_id, ""));
+        const rewards = { ...(row?.reward || {}), ...(row?.milestone_reward || {}) };
+        this._applyResourceDelta(rewards);
+        this.state.tower.current_floor = floor;
+        this.state.tower.best_floor_this_cycle = Math.max(int(this.state.tower.best_floor_this_cycle), floor);
+        this.state.tower_best_floor_ever = Math.max(int(this.state.tower_best_floor_ever), floor);
+        this.state.tower_total_kills = int(this.state.tower_total_kills) + 1;
+        this.state.tower_floor_clears[floor] = int(this.state.tower_floor_clears[floor]) + 1;
+        this._log(`镇魔塔第${floor}层，${boss?.boss_name || "守关者"}伏诛。`);
+        this.queuePopup({ kind: "text", style: "breakthrough", title: `镇魔塔·第${floor}层`,
+          body: `${row?.entry_text || ""}\n\n${boss?.victory_text || "守关者伏诛。"}\n\n获得：\n${this._formatResourceDelta(rewards)}${row?.milestone_reward && Object.keys(row.milestone_reward).length ? "\n\n（含里程碑奖励）" : ""}`,
+          buttons: [{ label: "继续登塔", action: "tower_next" }, { label: "就此收手", action: "tower_stop" }] });
+      } else {
+        this._endTowerRun(true);
       }
       this._afterMutated(); return;
     }
