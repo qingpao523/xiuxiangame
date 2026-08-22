@@ -1297,8 +1297,9 @@ const Game = {
     // P0-A: 本命流派——四阶以上神通需先定本命；非本命流派封顶三阶
     if (nextLevel === 1 && int(spellRow.tier) >= 4) {
       const bm = str(this.state.benming_school, "");
-      if (!bm) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: "四阶神通，需先定本命流派。\n（真仙破劫后，于五条道中选一条走到黑。）", buttons: [{ label: "知道了" }] }); return { ok: false }; }
-      if (String(spellRow.spell_school) !== bm) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: `你已定本命「${SCHOOL_NAME[bm]}」。\n非本命流派，封顶三阶，此路不通。`, buttons: [{ label: "知道了" }] }); return { ok: false }; }
+      if (!bm) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: "四阶神通，需先择道统。\n（真仙破劫后，于四修中择一修走到黑。）", buttons: [{ label: "知道了" }] }); return { ok: false }; }
+      const _canUse = (typeof LiupaiManager !== "undefined") ? LiupaiManager.canUseSpell(this.state, str(spellRow.spell_type, "")) : (String(spellRow.spell_school) === bm);
+      if (!_canUse) { this.queuePopup({ kind: "text", title: spellRow.spell_name, body: `你已择道统「${(typeof SCHOOL_NAME !== "undefined" && SCHOOL_NAME[bm]) || bm}」。\n非本修神通，封顶三阶，此路不通。`, buttons: [{ label: "知道了" }] }); return { ok: false }; }
     }
     const cost = this.getSpellUpgradeCost(spellRow, nextLevel);
     if (!cost) return { ok: false };

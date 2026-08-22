@@ -2,6 +2,26 @@
 
 ---
 
+## 2026-08-22 — 遗留 TODO 收尾（canUseSpell 门控接线 + 镇魔塔数值校准）
+
+**背景**：用户指令「把遗留的先做了」，指 D3/D5 完成后的两项批次5 遗留：(1) 体修 spell_school 门控 + canUseSpell 分支系门控完整接线；(2) 镇魔塔数值校准。
+
+**(1) canUseSpell 门控接线**（`web/js/game.js` upgradeSpell）：
+- 旧门控用 `String(spellRow.spell_school) !== bm`——spell_school 字段稀疏（23 神通中 3 个为 None），不可靠。
+- 改为 `LiupaiManager.canUseSpell(this.state, str(spellRow.spell_type, ""))`——spell_type 可靠（thunder/fire/weapon/soul/calamity），且 canUseSpell 自动处理分支系（器修五行分支在金仙解锁 thunder/fire）+ 试验期（chosen=null 恒 true）。
+- 体修 nuance：body 只在 skill_table（战斗技能）不在 spell_table（神通），故体修无 body 神通可门控，canUseSpell(body) 返回 true 但无神通匹配，无害。
+- 同步更新「五条道」文案为「四修中择一修」。node --check 通过。
+
+**(2) 镇魔塔数值校准**（`web/data/tower_table.json` 审阅）：
+- 结构：10 段 × 10 层。段内 power_mult 1.0→1.5（×1.5），奖励约 ×1.3；跨段奖励 ×3-5 跳跃，与 boss recommended_power 跳跃匹配（enemy_power=recommended_power×power_mult 贴合各段玩家预期战力）。
+- 里程碑奖励（段末层）：f10 treasure_shard3 / f20 artifact_shard3 / f30 treasure_shard5+tower_ticket1 / f40 treasure_shard6 / f50 artifact_shard6。
+- **结论**：公式化数值合理（难度与奖励同步缩放），不做任意改动（无实测恐破坏经济）；精调待 playtesting。
+- **注**：塔当前给通用 treasure_shard/artifact_shard，尚未接入「专属碎片（地图探索产出）/通用碎片（塔/修炼产出）」两类碎片系统——那是独立碎片系统，属后续工作。
+
+**验收**（功能批次，CLAUDE.md #6）：node --check game.js 通过；仅提交 game.js（clean），零触碰并发 contested 文件。
+
+---
+
 ## 2026-08-22 — 镇魔塔 runner 落地（D5，design/12.0）
 
 **背景**：用户指令「可以先完成D2D3D5」，D2（战斗）另一会话在做，D5 镇魔塔「重新去，慢慢分步骤」。本批落地镇魔塔周期推塔 runner（design/12.0 v0.1）。
