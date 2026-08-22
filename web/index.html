@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>封神修道录</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" />
+  <link rel="stylesheet" href="style.css?v=20260823a" />
 </head>
 <body>
   <div id="bg"></div>
@@ -40,8 +43,11 @@
     <!-- 主角舞台 -->
     <section id="stage">
       <div id="char-aura"></div>
-      <img id="char-img" src="assets/characters/char_cultivator.jpg" alt="修行者" />
+      <div id="char-ground"></div>
+      <div id="cave-motes" aria-hidden="true"></div>
+      <img id="char-img" src="assets/characters/char_cultivator.png" alt="修行者" />
       <div id="treasure-orb" class="hidden"></div>
+      <div id="action-toast" class="hidden"></div>
     </section>
 
     <!-- 当前目标 -->
@@ -58,9 +64,6 @@
 
     <!-- 修行日志（最新一条） -->
     <div id="status-line"></div>
-
-    <!-- 行动结算浮字（非阻断） -->
-    <div id="action-toast" class="hidden"></div>
 
     <!-- 唯一主行动按钮 -->
     <button id="main-btn">
@@ -89,6 +92,7 @@
       <span>调试模式：当前节奏不代表正式体验</span>
       <button id="debug-ff">快进6时辰</button>
       <button id="debug-res">资源+5000</button>
+      <button id="debug-battle">试斗一场</button>
     </div>
   </main>
 
@@ -97,7 +101,7 @@
     <div id="panel-sheet">
       <div id="panel-title"></div>
       <div id="panel-body"></div>
-      <button id="panel-close">收起</button>
+      <button id="panel-close" class="popup-btn">收起</button>
     </div>
   </div>
 
@@ -113,11 +117,22 @@
     </div>
   </div>
 
+  <!-- 斗法场（全屏，一场一会话，禁止把结算钮挂到弹窗上） -->
+  <div id="duel-layer" class="hidden">
+    <div id="duel-root"></div>
+  </div>
+
+  <!-- 配招阵面 -->
+  <div id="formation-layer" class="hidden">
+    <div id="formation-root"></div>
+  </div>
+
   <!-- 破劫演出 -->
   <div id="tribulation-fx" class="hidden"><span>劫云压顶</span></div>
 
   <!-- 开局卷首演出 -->
   <div id="prologue-layer" class="hidden">
+    <div id="prologue-gold" aria-hidden="true"></div>
     <div id="prologue-scroll"><div id="prologue-stage"></div></div>
     <div id="prologue-hint">轻触继续</div>
     <button id="prologue-skip">跳过卷首</button>
@@ -202,6 +217,8 @@
   <script src="js/atmosphere.js"></script>
   <script src="js/craft.js"></script>
   <script src="js/liupai-manager.js"></script>
+  <script src="js/gameplay-engine.js"></script>
+  <script src="js/content-director.js"></script>
   <script src="js/game.js"></script>
   <script src="js/world-scroll.js"></script>
   <script src="js/world-map.js"></script>

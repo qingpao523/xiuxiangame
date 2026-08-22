@@ -1,0 +1,70 @@
+{
+  "realm_id": "rq_05",
+  "realm_name": "炼气士5重",
+  "major": "炼气士",
+  "minor": 5,
+  "display_realm": "炼气化神·5重",
+  "daoxing": 116,
+  "daoxing_need": 180,
+  "daoxing_cur": 116,
+  "canLevelUp": false,
+  "mainType": "acting",
+  "mainLabel": "入定一轮中… 4息",
+  "mainActionId": "short_meditation",
+  "popupVisible": false,
+  "popupTitle": "遭遇：灵草",
+  "popupKindQueued": null,
+  "popupQueueLen": 0,
+  "popupQueueKinds": [],
+  "auto_repeat": true,
+  "current_action": "short_meditation",
+  "combatPower": 860,
+  "logs0": "[20:17] 连续修行：入定结束，体内法力缓缓增长，道行更深一分。  获得： 道行 +18 法力 +332",
+  "identity": "炼气化神·5重｜人族·无名散修｜战力 860",
+  "goalText": "卷一·山野炼气",
+  "goalReward": "可循：触发榜文碎光 ｜ 手札共 3 线（洞府查看）",
+  "current_goal_id": "goal_006",
+  "hints": [],
+  "panelOpen": false,
+  "mapOpen": false,
+  "prologueOpen": false,
+  "battleOn": true,
+  "race_id": "human",
+  "pending_event_id": "",
+  "seen_events": [],
+  "action_counts": {
+    "breath_cycle": 40,
+    "wild_travel": 2,
+    "short_meditation": 1
+  },
+  "boss_clears": {},
+  "unlocked_skills": [
+    "skill_body_01",
+    "skill_body_02",
+    "skill_body_03",
+    "skill_thunder_01",
+    "skill_fire_01",
+    "skill_weapon_01",
+    "skill_fire_02",
+    "skill_weapon_02"
+  ],
+  "spellNames": [
+    "spell_thunder_01#1"
+  ],
+  "flags": {
+    "world_map_seen": true,
+    "prologue_seen": true,
+    "battle_v2_tutorial_done": false,
+    "sparkle_guide_seen": true
+  },
+  "resources": {
+    "daoxing": 116,
+    "mana": 5016,
+    "merit": 0,
+    "calamity": 0,
+    "spell_page": 17,
+    "artifact_shard": 0,
+    "treasure_shard": 0,
+    "refine_material": 0
+  }
+}

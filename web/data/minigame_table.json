@@ -1,0 +1,46 @@
+{
+  "schema_version": "0.1.0",
+  "table": "minigame_table",
+  "description": "玩法引擎表。一行=一次玩法。新内容加行，不改 game.js。design/1.12。",
+  "rows": [
+    {
+      "minigame_id": "spirit_tide",
+      "title": "灵潮",
+      "body": "榜文碎光搅动山中灵气，洞府外潮声一夜未歇。\n这一潮，你打算怎么接？",
+      "lore_anchor": "封神榜初现，山中灵潮随榜文起伏（《封神演义》开篇气数将移）",
+      "settle_log": "灵潮退去。",
+      "fsm": [
+        {
+          "state": "choose",
+          "options": [
+            {
+              "id": "absorb",
+              "label": "闭关吸纳",
+              "sub": "稳妥。把潮气收进周天。",
+              "log": "你闭关迎潮，灵气化作道行入体。",
+              "toast": "潮气入体，道行更沉一分。",
+              "rewards": { "daoxing": 24 }
+            },
+            {
+              "id": "venture",
+              "label": "踏潮出洞",
+              "sub": "出去看看。潮里容易撞上东西。",
+              "log": "你踏潮出洞。山雾比往日更活。",
+              "toast": "下一场游历，遭遇更近。",
+              "flag": "spirit_tide_venture",
+              "rewards": { "daoxing": 8 }
+            },
+            {
+              "id": "craft",
+              "label": "借潮炼气",
+              "sub": "引潮入脉，法力暴涨一线。",
+              "log": "你借潮炼气，丹田一阵滚热。",
+              "toast": "法力涨得发烫。",
+              "rewards": { "mana": 1200 }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

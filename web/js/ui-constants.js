@@ -3,14 +3,14 @@
 "use strict";
 
 const ICON_PATHS = {
-  daoxing: "assets/resources/resource_daoxing.jpg",
-  mana: "assets/resources/resource_mana.jpg",
-  merit: "assets/resources/resource_merit.jpg",
-  calamity: "assets/resources/resource_calamity.jpg",
-  spell_page: "assets/resources/resource_spell_page.jpg",
-  artifact_shard: "assets/resources/resource_treasure_shard.jpg",
-  treasure_shard: "assets/resources/resource_treasure_shard.jpg",
-  refine_material: "assets/resources/resource_refine_material.jpg",
+  daoxing: "assets/resources/resource_daoxing.png",
+  mana: "assets/resources/resource_mana.png",
+  merit: "assets/resources/resource_merit.png",
+  calamity: "assets/resources/resource_calamity.png",
+  spell_page: "assets/resources/resource_spell_page.png",
+  artifact_shard: "assets/resources/resource_treasure_shard.png",
+  treasure_shard: "assets/resources/resource_treasure_shard.png",
+  refine_material: "assets/resources/resource_refine_material.png",
 };
 
 // 背景：每个境界阶段(background_phase)映射到一张底图，无专属美术的阶段回退到相近场景
@@ -41,74 +41,100 @@ const MAP_BACKGROUNDS = {
 };
 
 const CHARACTER_PATHS = {
-  炼气士: "assets/characters/char_cultivator.jpg",
-  真人: "assets/characters/char_realman.jpg",
-  地仙: "assets/characters/char_earth_immortal.jpg",
+  human: {
+    炼气士: "assets/characters/char_cultivator.png",
+    真人: "assets/characters/char_realman.png",
+    地仙: "assets/characters/char_earth_immortal.png",
+  },
+  yao: {
+    炼气士: "assets/characters/char_yao_cultivator.png",
+    真人: "assets/characters/char_yao_realman.png",
+    地仙: "assets/characters/char_yao_earth_immortal.png",
+  },
 };
+
+const CHARACTER_IDLE_PATHS = {
+  human: { 炼气士: "assets/characters/idle/char_cultivator_idle.png" },
+  yao: { 炼气士: "assets/characters/idle/char_yao_cultivator_idle.png" },
+};
+
+function getCharacterPath(state) {
+  const race = String((state && state.race_id) || "human");
+  let phase = "炼气士";
+  if (state && typeof RealmManager !== "undefined" && RealmManager.getCurrentRealm) {
+    const realm = RealmManager.getCurrentRealm(state) || {};
+    const ui = realm.ui || {};
+    phase = String(ui.character_phase || realm.major_realm || "炼气士");
+  }
+  const idlePack = CHARACTER_IDLE_PATHS[race] || {};
+  if (idlePack[phase]) return idlePack[phase];
+  const pack = CHARACTER_PATHS[race] || CHARACTER_PATHS.human;
+  return pack[phase] || pack["炼气士"] || CHARACTER_PATHS.human["炼气士"];
+}
 
 // 术法图标：四阶/五阶神通暂无专属图，回退到本系最高阶图标
 const SPELL_ICONS = {
-  spell_thunder_01: "assets/spells/spell_palm_thunder.jpg",
-  spell_thunder_02: "assets/spells/spell_thunder_02.jpg",
-  spell_thunder_03: "assets/spells/spell_thunder_03.jpg",
-  spell_thunder_04: "assets/spells/spell_thunder_03.jpg",
-  spell_thunder_05: "assets/spells/spell_thunder_03.jpg",
-  spell_fire_01: "assets/spells/spell_spirit_fire.jpg",
-  spell_fire_02: "assets/spells/spell_fire_02.jpg",
-  spell_fire_03: "assets/spells/spell_fire_03.jpg",
-  spell_fire_04: "assets/spells/spell_fire_04.jpg",
-  spell_fire_05: "assets/spells/spell_fire_04.jpg",
-  spell_fire_shenhuozhao_legacy: "assets/spells/spell_fire_04.jpg",
-  spell_weapon_01: "assets/spells/spell_artifact_control.jpg",
-  spell_weapon_02: "assets/spells/spell_weapon_02.jpg",
-  spell_weapon_03: "assets/spells/spell_weapon_03.jpg",
-  spell_weapon_04: "assets/spells/spell_weapon_03.jpg",
-  spell_weapon_05: "assets/spells/spell_weapon_03.jpg",
-  spell_soul_01: "assets/spells/spell_soul_01.jpg",
-  spell_soul_02: "assets/spells/spell_soul_02.jpg",
-  spell_soul_03: "assets/spells/spell_soul_03.jpg",
-  spell_soul_04: "assets/spells/spell_soul_03.jpg",
-  spell_soul_05: "assets/spells/spell_soul_03.jpg",
-  spell_calamity_01: "assets/spells/spell_calamity_01.jpg",
-  spell_calamity_02: "assets/spells/spell_calamity_02.jpg",
-  spell_calamity_04: "assets/spells/spell_calamity_02.jpg",
-  spell_calamity_05: "assets/spells/spell_calamity_02.jpg",
-  spell_earth_01: "assets/spells/spell_earth_01.jpg",
-  spell_water_01: "assets/spells/spell_water_01.jpg",
-  spell_sword_01: "assets/spells/spell_sword_01.jpg",
+  spell_thunder_01: "assets/spells/spell_palm_thunder.png",
+  spell_thunder_02: "assets/spells/spell_thunder_02.png",
+  spell_thunder_03: "assets/spells/spell_thunder_03.png",
+  spell_thunder_04: "assets/spells/spell_thunder_03.png",
+  spell_thunder_05: "assets/spells/spell_thunder_03.png",
+  spell_fire_01: "assets/spells/spell_spirit_fire.png",
+  spell_fire_02: "assets/spells/spell_fire_02.png",
+  spell_fire_03: "assets/spells/spell_fire_03.png",
+  spell_fire_04: "assets/spells/spell_fire_04.png",
+  spell_fire_05: "assets/spells/spell_fire_04.png",
+  spell_fire_shenhuozhao_legacy: "assets/spells/spell_fire_04.png",
+  spell_weapon_01: "assets/spells/spell_artifact_control.png",
+  spell_weapon_02: "assets/spells/spell_weapon_02.png",
+  spell_weapon_03: "assets/spells/spell_weapon_03.png",
+  spell_weapon_04: "assets/spells/spell_weapon_03.png",
+  spell_weapon_05: "assets/spells/spell_weapon_03.png",
+  spell_soul_01: "assets/spells/spell_soul_01.png",
+  spell_soul_02: "assets/spells/spell_soul_02.png",
+  spell_soul_03: "assets/spells/spell_soul_03.png",
+  spell_soul_04: "assets/spells/spell_soul_03.png",
+  spell_soul_05: "assets/spells/spell_soul_03.png",
+  spell_calamity_01: "assets/spells/spell_calamity_01.png",
+  spell_calamity_02: "assets/spells/spell_calamity_02.png",
+  spell_calamity_04: "assets/spells/spell_calamity_02.png",
+  spell_calamity_05: "assets/spells/spell_calamity_02.png",
+  spell_earth_01: "assets/spells/spell_earth_01.png",
+  spell_water_01: "assets/spells/spell_water_01.png",
+  spell_sword_01: "assets/spells/spell_sword_01.png",
 };
 
 // 法宝图标：残影/影系列回退到本体或相近法宝
 const TREASURE_ICONS = {
-  treasure_001: "assets/treasures/treasure_lightwood_sword.jpg",
-  treasure_002: "assets/treasures/treasure_spirit_gourd.jpg",
-  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.jpg",
-  treasure_004: "assets/treasures/treasure_subduing_demon_bell.jpg",
-  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.jpg",
-  treasure_006: "assets/treasures/treasure_bronze_soul_mirror.jpg",
-  treasure_007: "assets/treasures/treasure_gold_light_seal.jpg",
-  treasure_008: "assets/treasures/treasure_calm_jade_pendant.jpg",
-  treasure_009: "assets/treasures/treasure_seven_treasure_tree.jpg",
-  treasure_010: "assets/treasures/treasure_qiankun_ring.jpg",
-  treasure_011: "assets/treasures/treasure_huntian_sash.jpg",
-  treasure_012: "assets/treasures/treasure_windfire_wheels.jpg",
-  treasure_013: "assets/treasures/treasure_xiantian_sword.jpg",
-  treasure_014: "assets/treasures/treasure_wuse_stone.jpg",
-  treasure_015: "assets/treasures/treasure_seven_treasure_tree.jpg",
-  treasure_016: "assets/treasures/treasure_golden_dragon_scissors.jpg",
-  treasure_017: "assets/treasures/treasure_dragon_soul_whip.jpg",
-  treasure_018: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_001: "assets/treasures/treasure_lightwood_sword.png",
+  treasure_002: "assets/treasures/treasure_spirit_gourd.png",
+  treasure_003: "assets/treasures/treasure_xuanhuang_protective_talisman.png",
+  treasure_004: "assets/treasures/treasure_subduing_demon_bell.png",
+  treasure_005: "assets/treasures/treasure_windfire_meditation_mat.png",
+  treasure_006: "assets/treasures/treasure_bronze_soul_mirror.png",
+  treasure_007: "assets/treasures/treasure_gold_light_seal.png",
+  treasure_008: "assets/treasures/treasure_calm_jade_pendant.png",
+  treasure_009: "assets/treasures/treasure_seven_treasure_tree.png",
+  treasure_010: "assets/treasures/treasure_qiankun_ring.png",
+  treasure_011: "assets/treasures/treasure_huntian_sash.png",
+  treasure_012: "assets/treasures/treasure_windfire_wheels.png",
+  treasure_013: "assets/treasures/treasure_xiantian_sword.png",
+  treasure_014: "assets/treasures/treasure_wuse_stone.png",
+  treasure_015: "assets/treasures/treasure_seven_treasure_tree.png",
+  treasure_016: "assets/treasures/treasure_golden_dragon_scissors.png",
+  treasure_017: "assets/treasures/treasure_dragon_soul_whip.png",
+  treasure_018: "assets/treasures/treasure_xuanyuan_mirror.png",
   treasure_019: "assets/treasures/icon_treasure_019.png",
-  treasure_020: "assets/treasures/treasure_huntian_sash.jpg",
+  treasure_020: "assets/treasures/treasure_huntian_sash.png",
   treasure_021: "assets/treasures/icon_treasure_021.png",
-  treasure_022: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_022: "assets/treasures/treasure_xuanyuan_mirror.png",
   treasure_023: "assets/treasures/icon_treasure_019.png",
-  treasure_024: "assets/treasures/treasure_wuse_stone.jpg",
-  treasure_025: "assets/treasures/treasure_golden_dragon_scissors.jpg",
-  treasure_026: "assets/treasures/treasure_spirit_gourd.jpg",
+  treasure_024: "assets/treasures/treasure_wuse_stone.png",
+  treasure_025: "assets/treasures/treasure_golden_dragon_scissors.png",
+  treasure_026: "assets/treasures/treasure_spirit_gourd.png",
   treasure_027: "assets/treasures/icon_treasure_027.png",
   treasure_028: "assets/treasures/icon_treasure_021.png",
-  treasure_029: "assets/treasures/treasure_xuanyuan_mirror.jpg",
+  treasure_029: "assets/treasures/treasure_xuanyuan_mirror.png",
   treasure_030: "assets/treasures/icon_treasure_030.png",
 };
 

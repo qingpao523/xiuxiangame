@@ -16,11 +16,33 @@ const BattleEngineV2 = {
   // ---------- 数据获取 ----------
 
   getSkillData(skillId) {
+    const id = String(skillId || "");
     const rows = DataManager.getRows("skill_table");
-    return rows.find((r) => r.id === skillId) || null;
+    const fromSkill = rows.find((r) => r.id === id);
+    if (fromSkill) return fromSkill;
+    if (id.indexOf("treasure_") === 0) return this._treasureAsSkill(id);
+    return null;
   },
 
-  // 法宝数据（方案B：每格斗法栏绑定一件法宝，法宝.wuxing = 该格共鸣左元）
+  _treasureAsSkill(treasureId) {
+    const row = this.getTreasureData(treasureId);
+    if (!row) return null;
+    const el = String(row.related_spell_type || "");
+    if (!el || el === "neutral") return null;
+    const bonus = num(row.base_power_bonus, 0.8);
+    return {
+      id: treasureId,
+      name: row.skill_name || row.treasure_name,
+      category: "treasure",
+      spell_type: el,
+      skill_class: "法宝",
+      rarity: "rare",
+      damage_base: Math.max(40, Math.round(90 * bonus)),
+      damage_growth: 12,
+      icon_key: row.icon_key || "",
+    };
+  },
+
   getTreasureData(treasureId) {
     if (!treasureId) return null;
     if (DataManager.getById) return DataManager.getById("treasure_table", treasureId) || null;
@@ -66,6 +88,8 @@ const BattleEngineV2 = {
 
     const battle = {
       version: 2,
+      sessionId: "b" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      aborted: false,
       name: String(cfg.name || "妖物"),
       source: cfg.source || "normal",
       payload: cfg.payload || {},
@@ -134,6 +158,16 @@ const BattleEngineV2 = {
     for (const e of battle.enemies) { if (e.hp > 0 && e.intent == null) e.intent = this._rollIntent(e); }
 
     return battle;
+  },
+
+  abort(battle) {
+    if (!battle) return;
+    battle.aborted = true;
+    battle._animating = false;
+  },
+
+  _dead(battle) {
+    return !battle || battle.aborted === true || battle.done === true;
   },
 
   // ---------- 条件触发系统（design/8.0 策略层） ----------
@@ -281,7 +315,7 @@ const BattleEngineV2 = {
 
   // 回合开始：火域结算 + Boss机制·回合开始
   startPlayerRound(state, battle) {
-    if (battle.done) return [];
+    if (this._dead(battle)) return [];
     const events = [];
     battle.round += 1;
     battle.mechanicState.turnCount += 1;
@@ -308,12 +342,30 @@ const BattleEngineV2 = {
       this._checkPhaseOrWin(battle, events);
     }
 
+    this._planEnemyRound(battle);
     return events;
+  },
+
+  _planEnemyRound(battle) {
+    const n = Math.max(1, (battle.slots || []).length);
+    for (const e of (battle.enemies || []).filter((x) => x.hp > 0)) {
+      const q = [];
+      if (e.intent) q.push(e.intent);
+      while (q.length < n) {
+        let it = this._rollIntent(e);
+        const last = q[q.length - 1];
+        if (last && it.label === last.label) it = this._rollIntent(e);
+        q.push(it);
+      }
+      e.roundIntents = q;
+      e.roundIntentAt = 0;
+      e.intent = q[0];
+    }
   },
 
   // 执行单个栏位释放（逐格动画用）
   executeSingleSlot(state, battle, slotIndex) {
-    if (battle.done) return [];
+    if (this._dead(battle)) return [];
     const events = [];
     const aliveEnemies = () => battle.enemies.filter((e) => e.hp > 0);
     if (aliveEnemies().length === 0) return events;
@@ -342,7 +394,7 @@ const BattleEngineV2 = {
     let comboTriggered = false;
     let comboBroken = false;       // 共鸣是否被敌方夹招相克而破
     let middleElement = null;      // 夹在 ①② 之间的敌方那招的系
-    if (slotIndex > 0 && battle.slots[slotIndex - 1].spell_type === skill.spell_type) {
+    if (slotIndex > 0 && this.sameTixi(battle.slots[slotIndex - 1].spell_type, skill.spell_type)) {
       comboTriggered = true;
       // 共鸣系统（多通道）：五行共鸣 / 套装共鸣 / …。夹招取上一格后敌方行动的元素。
       // 五行通道仅当 left(法宝.wuxing) 与夹招(意图.wuxing) 都带五行才参与；数据已接入。
@@ -368,6 +420,14 @@ const BattleEngineV2 = {
       }
     }
     dmg = Math.floor(dmg * comboMult);
+
+    // 催动：风起时点亮栏位，伤害 ×1.15（不点则自动放出，不卡死）
+    let urged = false;
+    if (num(battle._urgeNext) > 1) {
+      dmg = Math.floor(dmg * num(battle._urgeNext, 1.15));
+      urged = true;
+      battle._urgeNext = 0;
+    }
 
     // 劫修叠加
     if (battle.rageStack > 0) {
@@ -399,6 +459,7 @@ const BattleEngineV2 = {
       skillName: skill.name,
       element: skill.spell_type,
       damage: actualDmg,
+      urged,
       combo: comboTriggered,
       comboMult: comboMult,
       comboBroken: comboBroken,
@@ -417,7 +478,7 @@ const BattleEngineV2 = {
 
   // 回合结束：终极检测 + 魂系回血 + 劫修叠加 + 胜利检测
   endPlayerRound(state, battle) {
-    if (battle.done) return [];
+    if (this._dead(battle)) return [];
     const events = [];
     const roundDamage = battle._roundDamage || 0;
 
@@ -548,7 +609,7 @@ const BattleEngineV2 = {
 
   // 夹招：所有存活敌方各行动一次（玩家每释放一格后触发）
   enemyGapAct(state, battle) {
-    if (battle.done) return [];
+    if (this._dead(battle)) return [];
     const events = [];
     let firstEl = null;
     let firstWx = null;
@@ -566,7 +627,14 @@ const BattleEngineV2 = {
       battle.win = false;
       events.push({ type: "player_defeated" });
     }
-    // 预roll下一次夹招意图（供UI在下一格玩家施法时预告）
+    if (front && !battle.done) {
+      front.roundIntentAt = int(front.roundIntentAt) + 1;
+      if (front.roundIntents && front.roundIntentAt < front.roundIntents.length) {
+        front.intent = front.roundIntents[front.roundIntentAt];
+      } else if (front.hp > 0) {
+        front.intent = this._rollIntent(front);
+      }
+    }
     if (!battle.done) {
       for (const e of battle.enemies.filter((x) => x.hp > 0)) {
         if (e.intent == null) e.intent = this._rollIntent(e);
@@ -577,7 +645,7 @@ const BattleEngineV2 = {
 
   // 回合末结算（燃烧/状态衰减/机制阶段/胜负/预roll下轮意图）——每回合一次
   endEnemyRoundBookkeeping(state, battle) {
-    if (battle.done) return [];
+    if (this._dead(battle)) return [];
     const events = [];
 
     // 燃烧结算（玩家）
@@ -666,8 +734,9 @@ const BattleEngineV2 = {
   // 完整回合（逐格轮流：①→敌→②→敌→③→敌），跳过/快速结算与动画共用，保证机制一致
   executeRound(state, battle) {
     const events = [];
+    if (this._dead(battle)) return events;
     events.push(...this.startPlayerRound(state, battle));
-    if (battle.done) return events;
+    if (this._dead(battle)) return events;
     for (let i = 0; i < battle.slots.length; i++) {
       if (battle.done) break;
       if (battle.enemies.filter((e) => e.hp > 0).length === 0) break;
@@ -686,7 +755,7 @@ const BattleEngineV2 = {
   // 完整自动战斗（一次性跑完，用于跳过/快速结算）
   runFullAuto(state, battle) {
     const allEvents = [];
-    while (!battle.done && battle.round < battle.maxRounds) {
+    while (!this._dead(battle) && battle.round < battle.maxRounds) {
       allEvents.push(...this.executeRound(state, battle));
     }
     if (!battle.done) {
@@ -701,6 +770,22 @@ const BattleEngineV2 = {
   _calcBaseDamage(skill, battle) {
     const lv = int(skill.level, 1);
     return skill.damage_base + skill.damage_growth * (lv - 1);
+  },
+
+  // 共鸣扩展§〇：体系=体/器/魂/劫。过渡数据 thunder 归体；weapon/fire 是法术不是器。
+  tixiOf(el) {
+    const e = String(el || "");
+    if (e === "body" || e === "thunder") return "ti";
+    if (e === "soul") return "hun";
+    if (e === "calamity") return "jie";
+    return "";
+  },
+
+  sameTixi(a, b) {
+    const ta = this.tixiOf(a);
+    const tb = this.tixiOf(b);
+    if (ta && tb) return ta === tb;
+    return !!a && a === b;
   },
 
   _getComboMultiplier(benming, elementType) {
@@ -1259,9 +1344,10 @@ const BattleEngineV2 = {
 
     // 找连续三格同系
     for (let i = 2; i < slots.length; i++) {
-      if (slots[i].spell_type === slots[i - 1].spell_type &&
-          slots[i].spell_type === slots[i - 2].spell_type) {
-        const element = slots[i].spell_type;
+      if (this.sameTixi(slots[i].spell_type, slots[i - 1].spell_type) &&
+          this.sameTixi(slots[i].spell_type, slots[i - 2].spell_type)) {
+        const tixi = this.tixiOf(slots[i].spell_type);
+        const element = tixi === "ti" ? "body" : tixi === "hun" ? "soul" : tixi === "jie" ? "calamity" : slots[i].spell_type;
         return this._applyUltimate(element, battle, state, roundDamage);
       }
     }

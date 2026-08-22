@@ -150,10 +150,12 @@
       "base_mana_per_min": 37,
       "combat_power_base": 800,
       "unlock_ids": [
-        "spell_upgrade"
+        "spell_upgrade",
+        "boss_001"
       ],
       "feature_tips": [
-        "升级术法"
+        "升级术法",
+        "山野妖首"
       ],
       "lore_text": "术法渐熟，斩妖已不再全靠蛮力。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
@@ -246,11 +248,9 @@
       "base_daoxing_per_min": 3.2,
       "base_mana_per_min": 93,
       "combat_power_base": 2600,
-      "unlock_ids": [
-        "boss_001"
-      ],
+      "unlock_ids": [],
       "feature_tips": [
-        "开启小Boss"
+        "山野更深"
       ],
       "lore_text": "山野妖患渐重，可试斩妖首。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",

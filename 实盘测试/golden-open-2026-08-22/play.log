@@ -1,0 +1,1569 @@
+start 2026-08-22T11:48:23.279Z http://127.0.0.1:8090/
+[0.3s] SHOT 00_first_paint.png
+[0.3s] EVENT first_paint {}
+[0.4s] EVENT game_ready {"realm":"rq_01"}
+[0.4s] EVENT realm_change {"from":"","to":"rq_01","display":"炼精化气·1重","identity":"炼精化气·1重｜无名散修｜战力 100"}
+[0.4s] SNAP r=rq_01 dx=0/10 main=吐纳周天 act=null auto=false goal=goal_001 pop=race_choice
+[0.5s] EVENT prologue_skip {}
+[0.7s] EVENT popup {"title":"择跟脚：你自何处来","battle":false,"config":false,"tut":false,"insight":false,"buttons":["","人人族·先天道体｜天赋·先天道体上限与下限差距最大的种族。平庸者碌碌无为，天骄可比肩先天神魔——赌的就是你是后者。 道行类收益 +5%；破劫基础成功率 +3%成长方向稳定均衡型：道行与破劫双加成，无短板前期体验上手最快，吐纳破劫皆有先天底子托底后期天花板上下限差距最大——庸者碌碌，天骄比肩神魔","妖妖族·万灵之体｜天赋·万灵之体养成深度最深的种族，可不断吞噬进化。化形前有雷劫风险——那是后话，眼下先吃饱。 斗法胜利战利 +25%（吞噬）成长方向吞噬成长型：斗法越多越强，以战养战前期体验前期依赖斗法，不打架时进度略慢后期天花板养成深度最深，可不断吞噬进化"]}
+[1.3s] SHOT after_race_choice.png
+[1.3s] EVENT race_human {}
+[1.6s] EVENT popup {"title":"跟脚已定：人族·先天道体","battle":false,"config":false,"tut":false,"insight":false,"buttons":["踏入修行"]}
+[1.9s] EVENT auto_toggle_on {}
+[2.0s] EVENT main_click_idle_start {"label":"吐纳周天"}
+[4.7s] EVENT popup {"title":"灵光初现","battle":false,"config":false,"tut":false,"insight":false,"buttons":["伸手一试"]}
+[12.8s] EVENT first_feedback {"t":12.749,"daoxing":8,"label":"吐纳周天中… 10息"}
+[15.4s] SNAP r=rq_01 dx=8/10 main=吐纳周天中… 7息 act=breath_cycle auto=true goal=goal_002 pop=灵光初现
+[22.1s] EVENT main_click {"type":"level_up","label":"道行已满，可升重"}
+[22.8s] SHOT first_shengzhong.png
+[22.8s] EVENT first_shengzhong {"t":22.127,"realm":"rq_01"}
+[23.0s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.ogg
+[23.0s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[23.0s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.mp3
+[23.0s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[23.7s] EVENT realm_change {"from":"rq_01","to":"rq_02","display":"炼精化气·2重","identity":"炼精化气·2重｜人族·无名散修｜战力 180"}
+[31.3s] SNAP r=rq_02 dx=1/25 main=吐纳周天中… 2息 act=breath_cycle auto=true goal=goal_003 pop=灵光初现
+[46.7s] SNAP r=rq_02 dx=9/25 main=吐纳周天中… 7息 act=breath_cycle auto=true goal=goal_003 pop=灵光初现
+[61.7s] SNAP r=rq_02 dx=13/25 main=吐纳周天中… 2息 act=breath_cycle auto=true goal=goal_003 pop=灵光初现
+[77.3s] SNAP r=rq_02 dx=21/25 main=吐纳周天中… 7息 act=breath_cycle auto=true goal=goal_003 pop=灵光初现
+[84.2s] EVENT main_click {"type":"level_up","label":"道行已满，可升重"}
+[85.1s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.ogg
+[85.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[85.1s] EVENT realm_change {"from":"rq_02","to":"rq_03","display":"炼精化气·3重","identity":"炼精化气·3重｜人族·无名散修｜战力 300"}
+[85.1s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.mp3
+[85.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[86.4s] SHOT first_world_map.png
+[86.4s] EVENT world_map_open {}
+[87.4s] SHOT first_youli_or_map.png
+[93.3s] SNAP r=rq_03 dx=0/45 main=吐纳周天中… 3息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[108.7s] SNAP r=rq_03 dx=10/45 main=吐纳周天中… 7息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[124.2s] SNAP r=rq_03 dx=15/45 main=吐纳周天中… 2息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[139.6s] SNAP r=rq_03 dx=25/45 main=吐纳周天中… 7息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[154.6s] SNAP r=rq_03 dx=30/45 main=吐纳周天中… 2息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[170.5s] SNAP r=rq_03 dx=40/45 main=吐纳周天中… 6息 act=breath_cycle auto=true goal=goal_004 pop=灵光初现
+[177.3s] EVENT main_click {"type":"level_up","label":"道行已满，可升重"}
+[178.2s] EVENT realm_change {"from":"rq_03","to":"rq_04","display":"炼气化神·4重","identity":"炼气化神·4重｜人族·无名散修｜战力 500"}
+[178.2s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.ogg
+[178.2s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[178.2s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.mp3
+[178.2s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[178.2s] EVENT popup {"title":"新机缘开启：术法","battle":false,"config":false,"tut":false,"insight":false,"buttons":["知道了"]}
+[178.8s] EVENT popup {"title":"术法残页","battle":false,"config":false,"tut":false,"insight":false,"buttons":["知道了"]}
+[181.5s] SHOT t_3min.png
+[182.9s] EVENT spell_canwu {}
+[184.9s] EVENT first_spell {"t":184.941,"spells":["spell_thunder_01#1"]}
+[185.0s] EVENT popup {"title":"悟得术法：掌心雷","battle":false,"config":false,"tut":false,"insight":false,"buttons":["谨记于心"]}
+[187.6s] SNAP r=rq_04 dx=0/113 main=吐纳周天中… 1息 act=breath_cycle auto=true goal=goal_004 pop=悟得术法：掌心雷
+[189.0s] EVENT hints {"labels":["山野游历（修行指引）","⚔ 张桂芳现身，可斗法"]}
+[189.0s] EVENT hint_click {"label":"山野游历（修行指引）"}
+[189.3s] SHOT first_youli_or_map.png
+[189.3s] EVENT first_travel_click {}
+[193.8s] EVENT auto_toggle_on {}
+[197.9s] EVENT popup {"title":"遭遇：黑雾小妖","battle":false,"config":false,"tut":false,"insight":false,"buttons":["应战斗法 · 黑雾小妖 · 战力约 50（你 560）"]}
+[198.0s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.ogg
+[198.0s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[198.0s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.mp3
+[198.0s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[198.0s] EVENT encounter_fight {"label":"应战斗法 · 黑雾小妖 · 战力约 50（你 560）"}
+[198.3s] EVENT popup {"title":"斗法","battle":true,"config":false,"tut":false,"insight":false,"buttons":[]}
+[198.5s] SHOT first_combat.png
+[198.5s] EVENT first_combat {"t":198.259,"title":"斗法","body":""}
+[199.9s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.ogg
+[199.9s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[199.9s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.mp3
+[199.9s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[201.1s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.ogg
+[201.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[201.1s] HTTP 404 http://127.0.0.1:8090/audio/elem_body.mp3
+[201.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[201.8s] HTTP 404 http://127.0.0.1:8090/audio/tribulation_rumble.ogg
+[201.8s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[201.8s] HTTP 404 http://127.0.0.1:8090/audio/tribulation_rumble.mp3
+[201.8s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[202.3s] EVENT battle_end_click {}
+[203.9s] SNAP r=rq_04 dx=6/113 main=山野游历中… 16息 act=wild_travel auto=true goal=goal_004 pop=斗法
+[209.5s] EVENT popup {"title":"遭遇：荒庙残符","battle":true,"config":false,"tut":false,"insight":false,"buttons":["冒险探查成算约 65%","拜庙而去稳妥之选","收取战果"]}
+[209.5s] EVENT battle_end_click {}
+[219.1s] HTTP 404 http://127.0.0.1:8090/audio/secret_found.ogg
+[219.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[219.1s] HTTP 404 http://127.0.0.1:8090/audio/secret_found.mp3
+[219.1s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[219.3s] EVENT first_travel_done {"t":219.34}
+[219.3s] SNAP r=rq_04 dx=37/113 main=吐纳周天中… 10息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[234.4s] SNAP r=rq_04 dx=43/113 main=吐纳周天中… 5息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[240.5s] CONSOLE.error The AudioContext encountered an error from the audio device or the WebAudio renderer.
+[249.5s] SNAP r=rq_04 dx=49/113 main=吐纳周天中… 1息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[264.5s] SNAP r=rq_04 dx=61/113 main=吐纳周天中… 6息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[280.5s] SNAP r=rq_04 dx=73/113 main=吐纳周天中… 10息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[296.0s] SNAP r=rq_04 dx=79/113 main=吐纳周天中… 4息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[311.5s] SNAP r=rq_04 dx=91/113 main=吐纳周天中… 9息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[326.6s] SNAP r=rq_04 dx=97/113 main=吐纳周天中… 4息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[342.0s] SNAP r=rq_04 dx=109/113 main=吐纳周天中… 9息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：荒庙残符
+[350.6s] EVENT main_click {"type":"level_up","label":"道行已满，可升重"}
+[351.5s] EVENT realm_change {"from":"rq_04","to":"rq_05","display":"炼气化神·5重","identity":"炼气化神·5重｜人族·无名散修｜战力 860"}
+[351.6s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.ogg
+[351.6s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[351.6s] HTTP 404 http://127.0.0.1:8090/audio/realm_up.mp3
+[351.6s] CONSOLE.error Failed to load resource: the server responded with a status of 404 (File not found)
+[351.6s] EVENT popup {"title":"新机缘开启：山野妖首","battle":true,"config":false,"tut":false,"insight":false,"buttons":["知道了","收取战果"]}
+[351.8s] EVENT battle_end_click {}
+[352.1s] EVENT hints {"labels":["⚔ 山野妖首现身，可斗法"]}
+[352.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[353.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[354.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[355.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[356.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[357.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 5分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[357.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[358.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[359.0s] EVENT P0-#2_auto_idle_no_resume {"label":"出关领取\n闭关 5分钟","goal":"goal_006"}
+[359.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[360.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[361.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[362.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[363.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[364.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[365.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[366.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[367.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[368.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[369.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[370.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[371.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[372.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[373.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 6分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[373.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[374.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[375.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[376.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[377.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[378.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[379.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[380.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[381.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[382.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[383.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[384.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[385.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[386.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[387.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[388.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 6分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[388.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[389.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[390.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[391.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[392.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[393.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[394.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[395.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[396.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[397.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[398.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[399.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[400.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[401.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[402.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[403.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[404.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 6分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[404.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[405.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[406.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[407.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[408.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[409.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[410.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[411.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[412.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[413.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[414.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[415.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[416.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[417.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[418.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[419.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[420.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 7分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[420.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[421.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[422.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[423.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[424.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[425.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[426.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[427.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[428.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[429.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[430.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[431.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[432.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[433.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[434.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[435.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[436.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 7分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[436.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[437.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[438.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[439.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[440.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[441.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[442.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[443.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[444.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[445.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[446.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[447.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[448.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[449.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[450.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[451.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 7分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[451.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[452.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[453.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[454.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[455.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[456.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[457.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[458.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[459.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[460.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[461.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[462.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[463.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[464.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[465.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[466.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 7分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[466.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[467.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[468.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[469.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[470.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[471.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[472.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[473.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[474.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[475.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[476.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[477.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[478.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[479.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[480.2s] SHOT t_8min.png
+[480.3s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[481.2s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 8分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[481.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[482.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[483.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[484.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[485.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[486.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[487.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[488.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[489.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[490.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[491.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[492.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[493.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[494.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[495.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[496.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[497.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 8分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[497.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[498.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[499.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[500.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[501.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[502.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[503.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[504.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[505.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[506.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[507.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[508.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[509.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[510.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[511.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[512.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[513.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 8分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[513.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[514.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[515.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[516.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[517.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[518.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[519.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[520.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[521.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[522.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[523.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[524.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[525.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[526.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[527.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[528.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[529.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 8分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[529.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[530.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[531.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[532.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[533.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[534.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[535.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[536.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[537.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[538.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[539.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[540.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[541.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[542.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[543.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[544.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 9分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[544.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[545.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[546.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[547.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[548.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[549.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[550.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[551.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[552.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[553.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[554.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[555.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[556.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[557.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[558.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[559.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[560.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 9分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[560.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[561.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[562.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[563.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[564.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[565.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[566.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[567.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[568.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[569.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[570.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[571.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[572.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[573.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[574.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[575.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 9分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[575.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[576.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[577.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[578.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[579.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[580.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[581.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[582.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[583.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[584.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[585.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[586.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[587.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[588.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[589.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[590.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[591.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 9分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[591.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[592.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[593.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[594.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[595.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[596.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[597.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[598.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[599.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[600.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[601.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[602.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[603.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[604.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[605.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[606.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[607.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 10分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[607.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[608.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[609.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[610.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[611.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[612.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[613.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[614.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[615.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[616.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[617.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[618.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[619.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[620.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[621.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[622.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[623.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 10分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[623.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[624.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[625.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[626.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[627.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[628.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[629.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[630.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[631.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[632.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[633.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[634.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[635.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[636.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[637.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[638.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 10分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[638.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[639.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[640.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[641.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[642.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[643.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[644.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[645.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[646.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[647.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[648.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[649.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[650.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[651.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[652.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[653.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[654.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 10分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[654.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[655.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[656.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[657.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[658.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[659.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[660.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[661.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[662.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[663.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[664.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[665.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[666.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[667.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[668.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[669.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[670.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 11分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[670.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[671.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[672.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[673.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[674.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[675.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[676.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[677.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[678.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[679.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[680.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[681.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[682.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[683.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[684.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[685.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[686.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 11分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[686.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[687.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[688.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[689.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[690.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[691.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[692.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[693.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[694.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[695.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[696.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[697.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[698.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[699.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[700.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[701.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 11分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[701.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[702.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[703.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[704.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[705.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[706.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[707.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[708.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[709.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[710.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[711.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[712.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[713.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[714.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[715.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[716.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 11分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[716.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[717.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[718.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[719.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[720.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[721.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[722.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[723.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[724.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[725.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[726.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[727.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[728.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[729.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[730.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[731.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 12分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[731.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[732.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[733.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[734.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[735.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[736.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[737.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[738.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[739.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[740.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[741.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[742.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[743.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[744.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[745.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[746.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[747.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 12分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[747.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[748.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[749.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[750.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[751.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[752.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[753.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[754.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[755.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[756.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[757.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[758.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[759.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[760.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[761.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[762.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 12分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[762.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[763.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[764.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[765.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[766.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[767.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[768.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[769.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[770.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[771.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[772.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[773.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[774.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[775.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[776.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[777.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 12分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[777.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[778.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[779.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[780.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[781.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[782.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[783.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[784.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[785.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[786.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[787.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[788.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[789.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[790.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[791.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[792.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[793.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 13分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[793.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[794.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[795.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[796.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[797.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[798.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[799.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[800.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[801.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[802.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[803.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[804.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[805.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[806.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[807.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[808.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[809.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 13分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[809.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[810.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[811.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[812.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[813.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[814.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[815.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[816.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[817.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[818.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[819.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[820.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[821.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[822.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[823.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[824.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 13分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[824.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[825.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[826.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[827.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[828.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[829.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[830.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[831.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[832.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[833.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[834.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[835.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[836.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[837.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[838.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[839.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 13分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[839.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[840.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[841.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[842.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[843.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[844.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[845.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[846.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[847.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[848.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[849.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[850.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[851.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[852.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[853.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[854.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 14分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[854.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[855.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[856.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[857.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[858.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[859.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[860.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[861.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[862.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[863.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[864.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[865.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[866.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[867.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[868.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[869.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[870.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 14分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[870.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[871.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[872.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[873.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[874.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[875.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[876.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[877.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[878.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[879.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[880.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[881.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[882.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[883.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[884.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[885.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[886.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 14分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[886.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[887.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[888.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[889.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[890.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[891.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[892.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[893.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[894.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[895.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[896.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[897.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[898.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[899.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[900.2s] SHOT t_15min.png
+[900.3s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[901.2s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 15分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[901.3s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[902.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[903.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[904.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[905.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[906.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[907.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[908.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[909.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[910.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[911.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[912.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[913.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[914.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[915.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[916.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[917.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 15分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[917.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[918.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[919.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[920.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[921.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[922.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[923.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[924.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[925.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[926.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[927.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[928.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[929.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[930.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[931.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[932.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[933.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 15分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[933.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[934.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[935.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[936.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[937.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[938.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[939.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[940.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[941.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[942.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[943.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[944.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[945.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[946.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[947.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[948.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[949.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 15分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[949.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[950.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[951.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[952.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[953.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[954.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[955.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[956.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[957.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[958.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[959.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[960.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[961.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[962.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[963.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[964.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[965.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 16分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[965.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[966.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[967.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[968.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[969.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[970.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[971.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[972.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[973.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[974.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[975.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[976.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[977.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[978.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[979.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[980.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[981.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 16分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[981.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[982.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[983.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[984.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[985.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[986.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[987.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[988.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[989.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[990.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[991.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[992.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[993.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[994.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[995.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[996.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 16分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[996.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[997.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[998.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[999.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1000.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1001.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1002.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1003.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1004.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1005.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1006.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1007.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1008.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1009.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1010.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1011.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1012.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 16分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1012.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1013.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1014.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1015.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1016.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1017.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1018.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1019.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1020.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1021.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1022.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1023.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1024.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1025.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1026.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1027.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 17分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1027.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1028.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1029.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1030.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1031.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1032.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1033.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1034.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1035.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1036.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1037.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1038.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1039.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1040.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1041.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1042.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1043.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 17分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1043.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1044.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1045.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1046.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1047.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1048.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1049.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1050.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1051.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1052.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1053.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1054.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1055.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1056.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1057.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1058.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1059.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 17分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1059.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1060.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1061.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1062.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1063.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1064.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1065.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1066.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1067.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1068.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1069.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1070.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1071.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1072.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1073.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1074.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 17分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1074.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1075.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1076.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1077.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1078.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1079.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1080.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1081.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1082.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1083.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1084.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1085.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1086.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1087.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1088.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1089.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 18分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1089.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1090.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1091.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1092.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1093.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1094.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1095.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1096.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1097.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1098.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1099.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1100.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1101.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1102.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1103.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1104.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1105.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 18分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1105.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1106.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1107.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1108.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1109.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1110.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1111.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1112.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1113.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1114.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1115.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1116.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1117.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1118.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1119.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1120.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1121.1s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 18分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1121.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1122.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1123.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1124.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1125.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1126.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1127.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1128.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1129.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1130.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1131.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1132.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1133.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1134.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1135.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1136.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1137.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 18分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1137.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1138.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1139.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1140.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1141.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1142.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1143.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1144.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1145.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1146.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1147.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1148.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1149.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1150.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1151.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1152.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1153.0s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 19分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1153.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1154.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1155.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1156.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1157.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1158.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1159.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1160.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1161.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1162.1s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1163.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1164.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1165.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1166.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1167.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1167.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1168.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 19分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1168.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1169.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1170.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1171.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1172.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1173.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1174.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1175.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1176.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1177.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1178.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1179.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1180.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1181.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1182.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1183.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1184.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 19分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1184.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1185.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1186.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1187.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1188.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1189.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1190.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1191.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1192.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1193.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1194.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1195.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1196.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1197.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1198.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1199.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 20分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1199.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1200.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1201.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1202.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1203.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1204.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1205.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1206.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1207.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1208.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1209.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1210.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1211.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1212.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1213.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1214.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1215.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 20分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1215.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1216.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1217.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1218.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1219.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1220.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1221.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1222.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1223.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1224.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1225.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1226.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1227.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1228.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1229.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1230.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 20分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1230.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1231.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1232.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1233.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1234.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1235.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1236.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1237.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1238.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1239.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1240.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1241.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1242.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1243.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1244.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1245.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 20分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1245.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1246.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1247.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1248.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1249.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1250.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1251.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1252.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1253.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1254.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1255.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1256.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1257.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1258.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1259.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1260.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1261.7s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 21分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1261.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1262.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1263.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1264.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1265.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1266.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1267.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1268.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1269.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1270.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1271.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1272.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1273.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1274.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1275.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1276.7s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 21分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1276.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1277.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1278.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1279.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1280.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1281.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1282.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1283.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1284.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1285.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1286.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1287.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1288.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1289.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1290.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1291.7s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 21分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1291.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1292.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1293.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1294.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1295.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1296.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1297.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1298.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1299.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1300.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1301.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1302.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1303.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1304.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1305.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1306.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1307.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 21分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1307.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1308.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1309.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1310.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1311.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1312.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1313.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1314.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1315.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1316.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1317.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1318.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1319.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1320.9s] SHOT t_22min.png
+[1321.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1322.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1322.9s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 22分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1323.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1324.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1325.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1326.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1327.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1328.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1329.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1329.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1330.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1331.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1332.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1333.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1334.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1335.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1336.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1337.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1338.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 22分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1338.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1339.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1340.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1341.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1342.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1343.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1344.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1345.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1346.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1347.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1348.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1349.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1350.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1351.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1352.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1353.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1354.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 22分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1354.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1355.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1356.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1357.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1358.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1359.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1360.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1361.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1362.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1363.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1364.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1365.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1366.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1367.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1368.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1369.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1370.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 22分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1370.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1371.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1372.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1373.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1374.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1375.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1376.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1377.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1378.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1379.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1380.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1381.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1382.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1383.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1384.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1385.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1386.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 23分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1386.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1387.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1388.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1389.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1390.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1391.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1392.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1393.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1394.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1395.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1396.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1397.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1398.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1399.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1400.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1401.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1402.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 23分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1402.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1403.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1404.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1405.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1406.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1407.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1408.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1409.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1410.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1411.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1412.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1413.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1414.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1415.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1416.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1417.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1418.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 23分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1418.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1419.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1420.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1421.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1422.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1423.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1424.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1425.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1426.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1427.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1428.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1429.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1430.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1431.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1432.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1433.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1434.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 23分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1434.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1435.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1436.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1437.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1438.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1439.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1440.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1441.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1442.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1443.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1444.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1445.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1446.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1447.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1448.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1449.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 24分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1449.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1450.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1451.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1452.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1453.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1454.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1455.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1456.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1457.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1458.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1459.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1460.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1461.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1462.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1463.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1464.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1465.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 24分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1465.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1466.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1467.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1468.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1469.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1470.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1471.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1472.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1473.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1474.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1475.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1476.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1477.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1478.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1479.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1480.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 24分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1480.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1481.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1482.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1483.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1484.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1485.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1486.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1487.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1488.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1489.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1490.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1491.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1492.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1493.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1494.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1495.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1496.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 24分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1496.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1497.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1498.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1499.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1500.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1501.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1502.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1503.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1504.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1505.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1506.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1507.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1508.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1509.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1510.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1511.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 25分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1511.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1512.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1513.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1514.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1515.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1516.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1517.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1519.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1520.0s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1520.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1521.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1522.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1523.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1524.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1525.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1526.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1527.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 25分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1527.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1528.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1529.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1530.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1531.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1532.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1533.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1534.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1535.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1536.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1537.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1538.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1539.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1540.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1541.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1542.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 25分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1542.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1543.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1544.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1545.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1546.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1547.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1548.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1549.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1550.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1551.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1552.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1553.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1554.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1555.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1556.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1557.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1558.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 25分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1558.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1559.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1560.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1561.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1562.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1563.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1564.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1565.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1566.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1567.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1568.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1569.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1570.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1571.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1572.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1573.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1574.7s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 26分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1574.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1575.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1576.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1577.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1578.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1579.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1580.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1581.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1582.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1583.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1584.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1585.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1586.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1587.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1588.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1589.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 26分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1589.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1590.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1591.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1592.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1593.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1594.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1595.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1596.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1597.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1598.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1599.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1600.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1601.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1602.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1603.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1604.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1605.8s] SNAP r=rq_05 dx=2/180 main=出关领取
+闭关 26分钟 act=null auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1605.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1606.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1607.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1608.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1609.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1610.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1611.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1612.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1613.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1614.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1615.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1616.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1617.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1618.8s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1619.9s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1620.2s] SHOT anomaly_stuck_1619.png
+[1620.2s] EVENT stuck_60s {"sig":"rq_05|2|出关领取\n闭关 26分钟||false|true","goal":"goal_006"}
+[1620.2s] EVENT hint_click {"label":"⚔ 山野妖首现身，可斗法"}
+[1623.3s] EVENT map_start_wild_travel {"n":1}
+[1624.2s] SNAP r=rq_05 dx=2/180 main=山野游历中… 30息 act=wild_travel auto=true goal=goal_006 pop=新机缘开启：山野妖首
+[1632.0s] EVENT popup {"title":"遭遇：山魈","battle":true,"config":false,"tut":false,"insight":false,"buttons":["应战斗法 · 山魈 · 战力约 75（你 860）","收取战果"]}
+[1632.0s] EVENT battle_end_click {}
+[1639.9s] SNAP r=rq_05 dx=2/180 main=山野游历中… 14息 act=wild_travel auto=true goal=goal_006 pop=遭遇：山魈
+[1643.7s] EVENT popup {"title":"遭遇：灵草","battle":true,"config":false,"tut":false,"insight":false,"buttons":["采集","收取战果"]}
+[1643.9s] EVENT battle_end_click {}
+[1655.5s] SNAP r=rq_05 dx=35/180 main=吐纳周天中… 9息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1670.8s] SNAP r=rq_05 dx=42/180 main=吐纳周天中… 3息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1685.8s] SNAP r=rq_05 dx=56/180 main=吐纳周天中… 9息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1701.2s] SNAP r=rq_05 dx=63/180 main=吐纳周天中… 3息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1716.7s] SNAP r=rq_05 dx=77/180 main=吐纳周天中… 8息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1732.5s] SNAP r=rq_05 dx=84/180 main=吐纳周天中… 2息 act=breath_cycle auto=true goal=goal_006 pop=遭遇：灵草
+[1748.3s] SNAP r=rq_05 dx=98/180 main=入定一轮中… 26息 act=short_meditation auto=true goal=goal_006 pop=遭遇：灵草
+[1763.8s] SNAP r=rq_05 dx=98/180 main=入定一轮中… 11息 act=short_meditation auto=true goal=goal_006 pop=遭遇：灵草
+[1779.2s] SNAP r=rq_05 dx=116/180 main=入定一轮中… 25息 act=short_meditation auto=true goal=goal_006 pop=遭遇：灵草
+[1795.5s] SNAP r=rq_05 dx=116/180 main=入定一轮中… 9息 act=short_meditation auto=true goal=goal_006 pop=遭遇：灵草
+[1800.4s] SHOT t_30min.png
+[1800.6s] SHOT zz_final.png
+[1800.6s] EVENT run_end {"final_realm":"rq_05","daoxing":116}
+[1800.7s] DONE

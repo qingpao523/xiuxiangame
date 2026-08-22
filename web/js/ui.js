@@ -24,7 +24,7 @@ function render() {
   const mapBg = (typeof MAP_BACKGROUNDS !== "undefined" && state.current_map_id) ? MAP_BACKGROUNDS[state.current_map_id] : null;
   $("bg").style.backgroundImage = `url("${mapBg || BACKGROUND_PATHS[ui.background_phase] || BACKGROUND_PATHS.mountain_cave}")`;
   $("fx-seal").classList.toggle("lit", DataManager.isRealmAtLeast(state.realm_id, "rq_06"));
-  $("char-img").src = CHARACTER_PATHS[ui.character_phase] || CHARACTER_PATHS["炼气士"];
+  $("char-img").src = getCharacterPath(state);
   const raceTag = getRaceShortName(state);
   $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
   $("weather-line").textContent = `天象：${getWeather(state)}`;
@@ -71,6 +71,7 @@ function renderToast() {
   if (!el || !msg || msg.id === toastShownId) return;
   toastShownId = msg.id;
   el.innerHTML = "";
+  el.className = "action-toast kind-" + (msg.kind || "plain");
   const title = document.createElement("div");
   title.className = "action-toast-title";
   title.textContent = msg.title || "";
@@ -79,6 +80,10 @@ function renderToast() {
   body.textContent = msg.body || "";
   el.append(title, body);
   el.classList.remove("hidden");
+  if (msg.kind === "world") {
+    const fx = $("fx-seal");
+    if (fx) { fx.classList.add("lit", "burst"); setTimeout(() => fx.classList.remove("burst"), 1600); }
+  }
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.add("hidden"), int(msg.duration, 2400));
 }
@@ -105,12 +110,15 @@ function renderMainButton(state) {
     const ratio = total > 0 ? 1 - remainMs / total : 1;
     bar.style.width = `${Math.round(ratio * 100)}%`;
     label.textContent = `${row.action_name || "修行"}中… ${Math.ceil(remainMs / 1000)}息`;
-    btn.classList.add("acting"); btn.classList.toggle("beat", Game.isInBeatWindow());
+    btn.classList.add("acting"); btn.classList.remove("ready");
+    btn.classList.toggle("beat", Game.isInBeatWindow());
     stage.classList.add("acting");
     tickSparkle(String(row.action_id || "")); tickInsight(String(row.action_id || ""));
   } else {
     bar.style.width = "0%"; label.textContent = main.label;
-    btn.classList.remove("acting"); stage.classList.remove("acting"); clearSparkle();
+    btn.classList.remove("acting");
+    btn.classList.toggle("ready", main.type === "level_up" || main.type === "breakthrough");
+    stage.classList.remove("acting"); clearSparkle();
     if (insightShowing) { insightShowing = false; $("status-line").classList.remove("insight"); }
     nextSparkleAt = nowMs() + 2500; nextInsightAt = nowMs() + 2000;
   }
@@ -227,7 +235,11 @@ function onMainButtonClick() {
   const btn = $("main-btn"), type = btn.dataset.type;
   switch (type) {
     case "acting": if (Game.registerBeat()) { const f = document.createElement("div"); f.className = "sparkle-float"; f.style.left = "50%"; f.style.top = "80%"; f.textContent = "完美吐纳！"; $("stage").appendChild(f); setTimeout(() => f.remove(), 1300); } break;
-    case "event": if (currentPopup && currentPopup.kind === "event") break; Game.openPendingEvent(); break;
+    case "event":
+      if (currentPopup && currentPopup.kind === "event") { ensurePopupDismiss(); break; }
+      Game.openPendingEvent();
+      drainPopupQueue();
+      break;
     case "treasure_choice": Game.queuePopup({ kind: "treasure_choice" }); drainPopupQueue(); break;
     case "faction_choice": Game._maybeQueueFactionChoice(); drainPopupQueue(); break;
     case "breakthrough": Game.requestBreakthrough(); break;
@@ -269,31 +281,108 @@ function drainPopupQueue() {
   showPopup(popup);
 }
 
+function resetPopupPanel() {
+  const panel = $("popup-panel");
+  if (!panel) return;
+  const keep = new Set(["popup-title", "popup-body", "popup-buttons"]);
+  Array.from(panel.children).forEach((el) => { if (!keep.has(el.id)) el.remove(); });
+  const title = $("popup-title"), body = $("popup-body"), buttons = $("popup-buttons");
+  if (title) title.textContent = "";
+  if (body) body.innerHTML = "";
+  if (buttons) buttons.innerHTML = "";
+  panel.className = "";
+}
+
+function releaseModal() {
+  const wasEvent = currentPopup && currentPopup.kind === "event";
+  if (typeof BattleUIV2 !== "undefined" && BattleUIV2.closeLayers) BattleUIV2.closeLayers();
+  currentPopup = null;
+  resetPopupPanel();
+  const layer = $("popup-layer");
+  if (layer) layer.classList.add("hidden");
+  if (wasEvent && typeof Game !== "undefined" && Game.state && Game.state.pending_event_id) {
+    Game.eventPopupActive = false;
+  }
+}
+
+function ensurePopupDismiss() {
+  const layer = $("popup-layer");
+  if (!layer || layer.classList.contains("hidden")) return;
+  const buttons = $("popup-buttons");
+  if (!buttons) return;
+  if (buttons.querySelector("button")) return;
+  buttons.appendChild(popupButton("知道了", false, () => closePopup()));
+}
+
 function showPopup(popup) {
   currentPopup = popup;
+  resetPopupPanel();
+  if (popup.kind === "battle_v2") {
+    $("popup-layer").classList.add("hidden");
+    BattleUIV2.openBattle(popup.battle, Game.state);
+    return;
+  }
+  if (popup.kind === "slot_config") {
+    $("popup-layer").classList.add("hidden");
+    BattleUIV2.openFormation(Game.state, () => { closePopup(); }, { tutorial: !!popup.tutorial });
+    return;
+  }
   const panel = $("popup-panel"), title = $("popup-title"), body = $("popup-body"), buttons = $("popup-buttons");
-  panel.className = ""; body.innerHTML = ""; buttons.innerHTML = ""; $("popup-layer").classList.remove("hidden");
-  if (popup.kind === "text") {
+  $("popup-layer").classList.remove("hidden");
+  const fn = (typeof GameplayEngine !== "undefined") ? GameplayEngine.getRenderer(popup.kind) : null;
+  if (fn) { fn(panel, title, body, buttons, popup); ensurePopupDismiss(); return; }
+  panel.classList.add("plaque");
+  title.textContent = popup.title || "";
+  body.textContent = popup.body || "";
+  buttons.appendChild(popupButton("知道了", false, () => closePopup()));
+}
+
+function registerPopupRenderers() {
+  if (typeof GameplayEngine === "undefined") return;
+  GameplayEngine.registerRenderer("text", (panel, title, body, buttons, popup) => {
+    panel.classList.add("plaque");
     if (popup.style) panel.classList.add(`style-${popup.style}`);
     title.textContent = popup.title || ""; body.textContent = popup.body || "";
     for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); }));
-  } else if (popup.kind === "event") renderEventPopup(panel, title, body, buttons);
-  else if (popup.kind === "encounter") renderEncounterPopup(panel, title, body, buttons, popup.encounterId);
-  else if (popup.kind === "battle_v2") { title.textContent = "斗法"; BattleUIV2.renderBattlePopup(panel, popup.battle, Game.state); }
-  else if (popup.kind === "slot_config") { title.textContent = "斗法栏·配招"; BattleUIV2.renderSlotConfig(body, Game.state, () => { closePopup(); }, { tutorial: !!popup.tutorial }); }
-  else if (popup.kind === "treasure_choice") renderTreasureChoicePopup(panel, title, body, buttons);
-  else if (popup.kind === "race_choice") renderRaceChoicePopup(panel, title, body, buttons);
-  else if (popup.kind === "benming_choice") renderBenmingChoicePopup(panel, title, body, buttons);
-  else if (popup.kind === "liupai_choice") renderLiupaiChoicePopup(panel, title, body, buttons);
-  else if (popup.kind === "faction_choice") renderFactionChoicePopup(panel, title, body, buttons);
-  else if (popup.kind === "breakthrough_confirm") renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
-  else if (popup.kind === "rest") renderRestPopup(panel, title, body, buttons, popup.payload || {});
-  else if (popup.kind === "insight") renderInsightPopup(panel, title, body, buttons, popup.payload || {});
-  else if (popup.kind === "audio_settings") { title.textContent = "声音设置"; renderAudioSettings(panel, body, buttons); }
-  else if (popup.kind === "fragment_synth") renderFragmentSynthPopup(panel, title, body, buttons);
+  });
+  GameplayEngine.registerRenderer("event", (panel, title, body, buttons) => renderEventPopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("encounter", (panel, title, body, buttons, popup) => renderEncounterPopup(panel, title, body, buttons, popup.encounterId));
+  GameplayEngine.registerRenderer("battle_v2", (panel, title, body, buttons, popup) => { title.textContent = "斗法"; BattleUIV2.renderBattlePopup(panel, popup.battle, Game.state); });
+  GameplayEngine.registerRenderer("slot_config", (panel, title, body, buttons, popup) => { title.textContent = "斗法栏·配招"; BattleUIV2.renderSlotConfig(body, Game.state, () => { closePopup(); }, { tutorial: !!popup.tutorial }); });
+  GameplayEngine.registerRenderer("treasure_choice", (panel, title, body, buttons) => renderTreasureChoicePopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("race_choice", (panel, title, body, buttons) => renderRaceChoicePopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("benming_choice", (panel, title, body, buttons) => renderBenmingChoicePopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("liupai_choice", (panel, title, body, buttons) => renderLiupaiChoicePopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("faction_choice", (panel, title, body, buttons) => renderFactionChoicePopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("breakthrough_confirm", (panel, title, body, buttons, popup) => renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId));
+  GameplayEngine.registerRenderer("rest", (panel, title, body, buttons, popup) => renderRestPopup(panel, title, body, buttons, popup.payload || {}));
+  GameplayEngine.registerRenderer("insight", (panel, title, body, buttons, popup) => renderInsightPopup(panel, title, body, buttons, popup.payload || {}));
+  GameplayEngine.registerRenderer("audio_settings", (panel, title, body, buttons) => { title.textContent = "声音设置"; renderAudioSettings(panel, body, buttons); });
+  GameplayEngine.registerRenderer("fragment_synth", (panel, title, body, buttons) => renderFragmentSynthPopup(panel, title, body, buttons));
+  GameplayEngine.registerRenderer("minigame", renderMinigamePopup);
 }
 
-function closePopup() { currentPopup = null; $("popup-layer").classList.add("hidden"); drainPopupQueue(); render(); }
+function renderMinigamePopup(panel, title, body, buttons, popup) {
+  const def = DataManager.getById("minigame_table", popup.minigameId);
+  panel.classList.add("style-chance");
+  title.textContent = def.title || "机缘";
+  body.textContent = def.body || "";
+  const node = (def.fsm || []).find((n) => String(n.state) === String(popup.stateId)) || (def.fsm || [])[0] || {};
+  (node.options || []).forEach((opt) => {
+    const btn = document.createElement("button");
+    btn.className = "popup-btn";
+    const main = document.createElement("span"); main.textContent = opt.label || "选择";
+    const sub = document.createElement("span"); sub.className = "popup-option-sub"; sub.textContent = opt.sub || "";
+    btn.append(main, sub);
+    btn.addEventListener("click", () => {
+      closePopup();
+      GameplayEngine.choose(popup.minigameId, opt.id);
+    });
+    buttons.appendChild(btn);
+  });
+}
+
+function closePopup() { releaseModal(); drainPopupQueue(); render(); }
 
 function popupButton(label, secondary, handler, extraClass = "") {
   const btn = document.createElement("button");
@@ -369,7 +458,9 @@ function renderEncounterPopup(panel, title, body, buttons, encounterId) {
   // --- Old format ---
   panel.classList.add("style-chance"); title.textContent = `遭遇：${enc.name}`; body.textContent = enc.narrative || "";
   const state = Game.state;
+  const forceBattle = !state.flags.first_travel_battle_done;
   (enc.options || []).forEach((option, index) => {
+    if (forceBattle && option.kind !== "battle") return;
     const btn = document.createElement("button"); btn.className = "popup-btn" + (option.kind === "battle" ? " calamity" : "");
     const main = document.createElement("span"); main.textContent = option.text || "选择";
     const sub = document.createElement("span"); sub.className = "popup-option-sub";
@@ -438,6 +529,14 @@ function renderEventPopup(panel, title, body, buttons) {
   body.textContent = `${tag}${eventRow.narrative_text || eventRow.body || ""}`;
   const isChoice = eventRow.merit_or_calamity === "choice";
   const evOptions = eventRow.options || eventRow.choices || [];
+  if (!evOptions.length) {
+    const sub = describeEventReward({ reward: eventRow.reward || {} });
+    const btn = document.createElement("button"); btn.className = "popup-btn";
+    btn.innerHTML = "<span>记下</span><span class=\"popup-option-sub\">" + sub + "</span>";
+    btn.addEventListener("click", () => { closePopup(); Game.chooseEventOption(-1); });
+    buttons.appendChild(btn);
+    return;
+  }
   evOptions.forEach((option, index) => {
     const btn = document.createElement("button"); btn.className = "popup-btn" + (isChoice ? (index === 0 ? " merit" : " calamity") : "");
     btn.innerHTML = "<span>" + (option.text || option.label || "选择") + '</span><span class="popup-option-sub">' + describeEventReward(option) + "</span>";
@@ -481,20 +580,20 @@ function renderTreasureChoicePopup(panel, title, body, buttons) {
 // ---------------- 种族四选一弹窗 ----------------
 
 function renderRaceChoicePopup(panel, title, body, buttons) {
-  panel.classList.add("style-seal"); title.textContent = "择跟脚：你自何处来";
-  body.textContent = "巫妖大战落幕，人族初兴，三界秩序未稳。\n投胎灵光将落未落之际——你先想清楚，这一世做什么生灵。";
+  panel.classList.add("style-seal", "race-full");
+  title.textContent = "择跟脚：你自何处来";
+  body.innerHTML = "";
+  const lead = document.createElement("p");
+  lead.className = "race-lead";
+  lead.textContent = "灵光将落未落。这一世，你是洞府里醒来的哪一种生灵。";
+  body.appendChild(lead);
+
   const rb = Game.state.rebirth || {};
   const rows = DataManager.getRows("race_table");
   const openRows = rows.filter((r) => r.open === true);
   const lockedRows = rows.filter((r) => r.open !== true);
-  const PROFILE_LABELS = [
-    ["growth", "成长方向"],
-    ["early", "前期体验"],
-    ["ceiling", "后期天花板"],
-  ];
   let picked = null;
 
-  // 命运确认按钮（二步确认：先点种族选中，再点此确认，强化不可逆仪式感）
   const confirmBtn = document.createElement("button");
   confirmBtn.className = "popup-btn race-confirm-btn";
   confirmBtn.style.display = "none";
@@ -503,52 +602,83 @@ function renderRaceChoicePopup(panel, title, body, buttons) {
     closePopup();
     Game.chooseRace(String(picked));
   });
-  buttons.appendChild(confirmBtn);
 
+  const grid = document.createElement("div");
+  grid.className = "race-grid";
   for (const row of openRows) {
-    const btn = document.createElement("button"); btn.className = "popup-btn treasure-pick choice-pick";
-    const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = row.glyph || "命";
-    const info = document.createElement("span"); info.className = "choice-info";
-    const name = document.createElement("span"); name.className = "choice-name";
-    const seen = rb.races_seen?.includes(String(row.race_id));
-    name.textContent = `${row.race_name}｜天赋·${row.talent_name}${seen ? "（前世）" : ""}`;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "popup-btn choice-pick race-card";
+    const art = document.createElement("img");
+    art.className = "race-card-art";
+    const pack = (typeof CHARACTER_PATHS !== "undefined" && CHARACTER_PATHS[row.race_id]) ? CHARACTER_PATHS[row.race_id] : null;
+    art.src = (pack && pack["炼气士"]) || "";
+    art.alt = "";
+    const name = document.createElement("span");
+    name.className = "choice-name";
+    const seen = rb.races_seen && rb.races_seen.includes(String(row.race_id));
+    name.textContent = `${row.short_name || row.race_name}${seen ? "（前世）" : ""}`;
+    const talent = document.createElement("span");
+    talent.className = "race-card-talent";
+    talent.textContent = row.talent_name || "";
     const sub = document.createElement("span");
     sub.className = "popup-option-sub";
-    sub.textContent = `${row.card_desc}\n${row.effect_desc}`;
-    info.append(name, sub);
-    // 决策依据三行（成长方向/前期体验/后期天花板）——预留结构，详细差异待数值定稿后填充
-    if (row.profile) {
-      const prof = document.createElement("div"); prof.className = "race-profile";
-      for (const [key, label] of PROFILE_LABELS) {
-        if (!row.profile[key]) continue;
-        const line = document.createElement("div"); line.className = "race-profile-line";
-        const lab = document.createElement("span"); lab.className = "race-profile-label"; lab.textContent = label;
-        const val = document.createElement("span"); val.className = "race-profile-value"; val.textContent = row.profile[key];
-        line.append(lab, val); prof.appendChild(line);
-      }
-      info.appendChild(prof);
-    }
-    btn.append(glyph, info);
+    sub.textContent = row.talent_desc || row.card_desc || "";
+    btn.append(art, name, talent, sub);
     btn.addEventListener("click", () => {
       picked = row.race_id;
-      buttons.querySelectorAll(".choice-pick").forEach((b) => b.classList.remove("selected"));
+      grid.querySelectorAll(".choice-pick").forEach((b) => b.classList.remove("selected"));
       btn.classList.add("selected");
       confirmBtn.style.display = "";
       confirmBtn.textContent = `立此为命：${row.short_name || row.race_name} —— 此念既定，道途不再回头`;
     });
-    buttons.appendChild(btn);
+    grid.appendChild(btn);
+  }
+  body.appendChild(grid);
+
+  if (lockedRows.length) {
+    const fog = document.createElement("section");
+    fog.className = "race-fog";
+    const fogHead = document.createElement("div");
+    fogHead.className = "race-fog-head";
+    fogHead.innerHTML = "<b>雾中未醒</b><span>大劫之后，他们才会落到你手里。先点开看看。</span>";
+    fog.appendChild(fogHead);
+    const row = document.createElement("div");
+    row.className = "race-fog-row";
+    const tease = document.createElement("div");
+    tease.className = "race-fog-tease";
+    tease.textContent = "点一尊剪影。此刻还轮不到你。";
+    const ROOT_ART = {
+      xiantian: "assets/opening/root_xiantian.jpg",
+      qilin: "assets/opening/root_qilin.jpg",
+      wu: "assets/opening/root_wu.jpg",
+      mo: "assets/opening/root_mo.jpg",
+      long: "assets/opening/root_long.jpg",
+      feng: "assets/opening/root_feng.jpg",
+      hongmeng: "assets/opening/root_shou.jpg",
+    };
+    for (const rowData of lockedRows) {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "race-fog-card";
+      const img = document.createElement("img");
+      img.src = ROOT_ART[rowData.race_id] || "";
+      img.alt = "";
+      const nm = document.createElement("span");
+      nm.textContent = rowData.short_name || rowData.race_name;
+      card.append(img, nm);
+      card.addEventListener("click", () => {
+        row.querySelectorAll(".race-fog-card").forEach((c) => c.classList.remove("on"));
+        card.classList.add("on");
+        tease.textContent = (rowData.lock_hint || "尚未觉醒") + " 先走完这一世。";
+      });
+      row.appendChild(card);
+    }
+    fog.append(row, tease);
+    body.appendChild(fog);
   }
 
-  // 未开放种族：折叠为一条剪影带，不再逐个占半屏
-  if (lockedRows.length) {
-    const strip = document.createElement("div"); strip.className = "race-locked-strip";
-    const glyphs = document.createElement("span"); glyphs.className = "race-locked-glyphs";
-    glyphs.textContent = lockedRows.map((r) => r.glyph || "？").join(" ");
-    const hint = document.createElement("span"); hint.className = "race-locked-hint";
-    hint.textContent = `${lockedRows.length} 方跟脚尚未觉醒 · 未开放`;
-    strip.append(glyphs, hint);
-    buttons.appendChild(strip);
-  }
+  buttons.appendChild(confirmBtn);
 }
 
 // ---------------- 本命流派五选一弹窗（P0-A） ----------------
@@ -899,7 +1029,8 @@ function renderRealmPanel(body, state) {
 // 游历面板
 function renderMapPanel(body, state) {
   body.appendChild(popupButton("展开封神山河图", false, () => { closePanelSheet(); WorldMap.open(); }));
-  // 镇魔塔（D5：周期推塔活动，design/12.0）
+  const opening = typeof ContentDirector !== "undefined" && ContentDirector.isOpening(state);
+  // 镇魔塔：开局主路径不推（design/1.12）
   UnlockManager._resetTowerCycleIfNeeded(state);
   const tw = state.tower || { tickets: 0, best_floor_this_cycle: 0 };
   const twCard = document.createElement("div"); twCard.className = "card";
@@ -915,7 +1046,7 @@ function renderMapPanel(body, state) {
   twBtn.disabled = !twHas;
   twBtn.addEventListener("click", () => { closePanelSheet(); Game.startTowerRun(); });
   twCard.appendChild(twBtn);
-  body.appendChild(twCard);
+  if (!opening) body.appendChild(twCard);
   // 今日杀劫大阵
   const todayArr = getTodayArray();
   if (Object.keys(todayArr).length && UnlockManager.conditionMet(state, String(todayArr.unlock_realm || ""))) {
@@ -1167,7 +1298,9 @@ function renderTreasurePanel(body, state) {
   if (Game.hasPendingTreasureChoice()) { body.appendChild(note("破劫成真人后，你的气机引动三件残宝，静待择主。")); body.appendChild(popupButton("本命法宝择主", false, () => { closePanelSheet(); Game.queuePopup({ kind: "treasure_choice" }); drainPopupQueue(); })); return; }
   const treasures = UnlockManager.getAvailableTreasures(state);
   body.appendChild(note("法宝不是普通装备，而是护道根基。以法宝碎片与法力温养之。"));
-  body.appendChild(popupButton("碎片合成", false, () => { closePanelSheet(); Game.queuePopup({ kind: "fragment_synth" }); drainPopupQueue(); }));
+  if (!(typeof ContentDirector !== "undefined" && ContentDirector.isOpening(state))) {
+    body.appendChild(popupButton("碎片合成", false, () => { closePanelSheet(); Game.queuePopup({ kind: "fragment_synth" }); drainPopupQueue(); }));
+  }
   for (const treasure of treasures) {
     const id = String(treasure.treasure_id); const tState = Game.getTreasureState(id);
     const level = int(tState.level), maxLevel = int(treasure.max_level_mvp, 5), nextLevel = level + 1;
@@ -1397,9 +1530,16 @@ async function boot() {
   $("world-map-layer").addEventListener("click", (e) => { if (e.target === $("world-map-layer")) WorldMap.close(); });
     const audioBtn = $("audio-settings-btn");
     if (audioBtn) audioBtn.addEventListener("click", () => { if (typeof AudioManager !== "undefined") AudioManager.playSfx("ui_click"); Game.queuePopup({ kind: "audio_settings" }); drainPopupQueue(); });
+  registerPopupRenderers();
   Game.onChange = render;
   Game.init();
-  if (Game.debug) { $("debug-bar").classList.remove("hidden"); $("debug-ff").addEventListener("click", () => Game.fastForward(360)); $("debug-res").addEventListener("click", () => Game.debugAddResources()); }
+  if (Game.debug) {
+    $("debug-bar").classList.remove("hidden");
+    $("debug-ff").addEventListener("click", () => Game.fastForward(360));
+    $("debug-res").addEventListener("click", () => Game.debugAddResources());
+    const db = $("debug-battle");
+    if (db) db.addEventListener("click", () => Game.debugStartBattle());
+  }
   setInterval(() => Game.tick(), 250);
 }
 

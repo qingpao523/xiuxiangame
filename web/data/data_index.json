@@ -26,7 +26,9 @@
   "synth_recipe_table.json",
   "array_card_table.json",
   "liupai_table.json",
-  "tower_table.json"
+  "tower_table.json",
+  "minigame_table.json",
+  "beat_table.json"
  ],
  "notes": [
   "MVP 范围：炼气士一重到地仙一重。",

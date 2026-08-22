@@ -87,7 +87,7 @@
     {
       "unlock_id": "fengshen_intro",
       "unlock_name": "榜文碎光初现",
-      "unlock_realm": "rq_06",
+      "unlock_realm": "rq_04",
       "feature_type": "narrative",
       "ui_target": "EventPopup",
       "description": "首次出现封神榜叙事。"

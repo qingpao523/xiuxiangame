@@ -1,0 +1,344 @@
+{
+  "consoles": [
+    {
+      "t": 23.03,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 23.03,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 85.11,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 85.12,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 178.19,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 178.19,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 197.99,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 197.99,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 199.89,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 199.89,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 201.09,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 201.09,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 201.79,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/tribulation_rumble.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 201.79,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/tribulation_rumble.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 219.06,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/secret_found.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 219.06,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/secret_found.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 240.51,
+      "type": "error",
+      "text": "The AudioContext encountered an error from the audio device or the WebAudio renderer.",
+      "loc": {
+        "url": "http://127.0.0.1:8090/",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 351.55,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    },
+    {
+      "t": 351.55,
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "loc": {
+        "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+        "line": 0,
+        "column": 0,
+        "lineNumber": 0,
+        "columnNumber": 0
+      }
+    }
+  ],
+  "pageerrors": [],
+  "requestfailed": [],
+  "httpErrors": [
+    {
+      "t": 23.03,
+      "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 23.03,
+      "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 85.11,
+      "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 85.12,
+      "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 178.19,
+      "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 178.19,
+      "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 197.99,
+      "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 197.99,
+      "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 199.89,
+      "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 199.89,
+      "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 201.09,
+      "url": "http://127.0.0.1:8090/audio/elem_body.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 201.09,
+      "url": "http://127.0.0.1:8090/audio/elem_body.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 201.79,
+      "url": "http://127.0.0.1:8090/audio/tribulation_rumble.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 201.79,
+      "url": "http://127.0.0.1:8090/audio/tribulation_rumble.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 219.06,
+      "url": "http://127.0.0.1:8090/audio/secret_found.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 219.06,
+      "url": "http://127.0.0.1:8090/audio/secret_found.mp3",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 351.55,
+      "url": "http://127.0.0.1:8090/audio/realm_up.ogg",
+      "status": 404,
+      "method": "GET"
+    },
+    {
+      "t": 351.55,
+      "url": "http://127.0.0.1:8090/audio/realm_up.mp3",
+      "status": 404,
+      "method": "GET"
+    }
+  ]
+}

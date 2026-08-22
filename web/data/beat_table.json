@@ -1,0 +1,58 @@
+{
+  "schema_version": "0.1.0",
+  "table": "beat_table",
+  "description": "内容导演日程。开号第几天×境界触发 minigame。design/1.12。day 1–7 预留，本批只交 day0 灵潮。",
+  "rows": [
+    {
+      "beat_id": "spirit_tide_d0",
+      "day_min": 0,
+      "day_max": 0,
+      "realm_min": "rq_04",
+      "realm_max": "rq_10",
+      "trigger": "any",
+      "opening_only": true,
+      "minigame_id": "spirit_tide",
+      "lore_anchor": "封神榜碎光搅动山中灵潮"
+    },
+    {
+      "beat_id": "d1_return_harvest",
+      "day_min": 1,
+      "day_max": 1,
+      "trigger": "login",
+      "minigame_id": "",
+      "note": "预留：第1天离线丰收主声。下一包填内容。"
+    },
+    {
+      "beat_id": "d2_tower_first",
+      "day_min": 2,
+      "day_max": 2,
+      "trigger": "login",
+      "minigame_id": "",
+      "note": "预留：第2天镇魔塔第一期。下一包填内容。"
+    },
+    {
+      "beat_id": "d3_fragment_first",
+      "day_min": 3,
+      "day_max": 3,
+      "trigger": "login",
+      "minigame_id": "",
+      "note": "预留：第3天碎片第一次掉落/合成。下一包填内容。"
+    },
+    {
+      "beat_id": "d4_map_shift",
+      "day_min": 4,
+      "day_max": 5,
+      "trigger": "login",
+      "minigame_id": "",
+      "note": "预留：第4–5天换地图遭遇包。下一包填内容。"
+    },
+    {
+      "beat_id": "d6_tower_second",
+      "day_min": 6,
+      "day_max": 7,
+      "trigger": "login",
+      "minigame_id": "",
+      "note": "预留：第6–7天塔第二期与号感。下一包填内容。"
+    }
+  ]
+}

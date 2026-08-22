@@ -5,27 +5,24 @@
 const PROLOGUE_SCENES = [
   {
     cls: "scene-title",
-    kicker: "殷商气数将尽 · 封神大劫将起",
-    title: "封神修道录",
-    text: "天地为卷，榜文未落。<br>你不在榜上——正因不在榜上，才要从山野间争出一条活路。",
-  },
-  {
-    cls: "scene-cave",
-    kicker: "卷首 · 山野洞府",
-    title: "无名炼气士",
-    text: "你自无名洞府醒来，一介炼气士。<br>山中黑雾渐起，妖物比昨日更躁。",
+    bg: "assets/opening/prologue_wake.jpg",
+    kicker: "洞府 · 第一息",
+    title: "你睁开眼",
+    text: "尘在光里走。",
   },
   {
     cls: "scene-seal",
-    kicker: "榜文初现",
-    title: "一页金榜悬天",
-    text: "极东天际，一页残破金榜悬空。<br>日月绕它而行，天下气数朝它流去。",
+    bg: "assets/opening/prologue_gold.jpg",
+    kicker: "天际",
+    title: "那一点金光",
+    text: "它不解释。你会记住。",
   },
   {
     cls: "scene-world",
-    kicker: "山河有卷 · 层层待启",
-    title: "陈塘风雷 · 骷髅山界 · 十绝杀阵",
-    text: "此卷将随你的修行，一尺一尺展开。<br>先吐纳一轮周天，让榜文看见：这里有个不肯认命的人。",
+    bg: "assets/opening/prologue_breathe.jpg",
+    kicker: "洞府 · 吐纳",
+    title: "先把这一息稳住",
+    text: "跟脚还没落定。",
     enter: true,
   },
 ];
@@ -100,7 +97,7 @@ const WorldScroll = {
     const stage = this._el("prologue-stage");
     stage.innerHTML = PROLOGUE_SCENES.map((scene, i) => {
       const enter = scene.enter
-        ? '<button id="prologue-enter" class="hidden">展开封神图卷</button>'
+        ? '<button id="prologue-enter" class="hidden">盘膝吐纳</button>'
         : "";
       return `<section class="prologue-scene ${scene.cls}" data-index="${i}">
         <div class="prologue-kicker">${scene.kicker}</div>
@@ -111,6 +108,7 @@ const WorldScroll = {
     }).join("");
     layer.classList.remove("hidden");
     layer.dataset.scene = "0";
+    this._setPrologueBg(PROLOGUE_SCENES[0].bg);
     this._showPrologueScene(0);
     layer.onclick = () => {
       if (this.prologueIndex < PROLOGUE_SCENES.length - 1) this._nextPrologueScene();
@@ -142,23 +140,32 @@ const WorldScroll = {
       scene.classList.toggle("leaving", i < index);
     });
     layer.dataset.scene = String(index);
-      // SFX-01 开局卷首声音闭环（design/6.0 水滴→雷声→按住首息）：与 4 幕节奏同步。
-      if (typeof AudioManager !== "undefined") {
-        if (index === 1) AudioManager.playSfx("water_drop");            // 山野洞府醒来 · 滴水
-        else if (index === 2) AudioManager.playSfx("seal_hum");         // 金榜悬天 · 榜文嗡鸣
-        else if (index === PROLOGUE_SCENES.length - 1) AudioManager.playSfx("thunder", { dur: 2.2 }); // 陈塘风雷 · 远雷
-      }
+    this._setPrologueBg(PROLOGUE_SCENES[index] && PROLOGUE_SCENES[index].bg);
+    // SFX-01 开局卷首声音闭环（design/6.0 水滴→金鸣→按住首息）：与 3 幕节奏同步。
+    if (typeof AudioManager !== "undefined") {
+      if (index === 0) AudioManager.playSfx("water_drop");
+      else if (index === 1) AudioManager.playSfx("seal_hum");
+    }
     const enter = this._el("prologue-enter");
     if (enter) enter.classList.toggle("hidden", index !== PROLOGUE_SCENES.length - 1);
     const hint = this._el("prologue-hint");
     if (hint) hint.classList.toggle("hidden", index === PROLOGUE_SCENES.length - 1);
     if (this.prologueTimer) clearTimeout(this.prologueTimer);
-    const wait = index === 0 ? 2600 : index === PROLOGUE_SCENES.length - 1 ? 5000 : 2400;
+    const wait = index === 0 ? 3200 : index === PROLOGUE_SCENES.length - 1 ? 5600 : 2800;
     this.prologueTimer = setTimeout(() => {
       this.prologueTimer = null;
       if (index < PROLOGUE_SCENES.length - 1) this._nextPrologueScene();
       else this._finishPrologue();
     }, wait);
+  },
+
+  _setPrologueBg(src) {
+    const layer = this._el("prologue-layer");
+    if (!layer || !src) return;
+    layer.style.setProperty("--pro-bg", "url(\"" + src + "\")");
+    layer.classList.remove("pro-ken");
+    void layer.offsetWidth;
+    layer.classList.add("pro-ken");
   },
 
   _nextPrologueScene() {

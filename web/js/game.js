@@ -72,9 +72,7 @@ const Game = {
     const showPrologue = fresh || (!this.state.flags.prologue_seen && this._isUnstartedRun());
     if (showPrologue) this.queuePopup({ kind: "prologue" });
     if (fresh) {
-      this._log("你于山野洞府中睁开眼，开始修行。");
-      // BUG-A12-S1 修复：开局弹窗减负。世界观已由卷首 4 幕建立（含"一页金榜悬天"自见榜文），
-      // 删除多余的「封神修道录」「榜文远眺」讲解弹窗——榜文被看见，而非被弹窗讲解。开局仅留 卷首 + 择跟脚。
+      this._log("你于山野洞府中睁开眼。先认跟脚，再吐纳。");
       this.queuePopup({ kind: "race_choice" });
     } else if (!str(this.state.race_id, "") && !this.state.flags.race_choice_done) {
       this.queuePopup({ kind: "race_choice" });
@@ -94,6 +92,7 @@ const Game = {
       this.updateAmbient();
     }
     SaveManager.save(this.state);
+    if (typeof ContentDirector !== "undefined" && this.state.flags.prologue_seen) ContentDirector.pulse("login");
     this._emit();
   },
 
@@ -120,13 +119,14 @@ const Game = {
     if (this.state.flags.prologue_seen) return;
     this.state.flags.prologue_seen = true;
     SaveManager.save(this.state);
+    if (typeof ContentDirector !== "undefined") ContentDirector.pulse("login");
     this._emit();
   },
 
   queuePopup(popup) { this.popupQueue.push(popup); this._emit(); },
 
-  toast(title, body, duration = 2400) {
-    this.toastMessage = { id: Date.now() + Math.random(), title, body, duration };
+  toast(title, body, duration = 2400, kind = "") {
+    this.toastMessage = { id: Date.now() + Math.random(), title, body, duration, kind: String(kind || "") };
     this._emit();
   },
 
@@ -157,6 +157,12 @@ const Game = {
 
   // ---------- 在线动作 ----------
 
+  isOpeningStage() {
+    if (typeof ContentDirector !== "undefined") return ContentDirector.isOpening(this.state);
+    const g = GoalManager.getCurrent(this.state);
+    return String(g.stage || "") === "前30分钟";
+  },
+
   startAction(actionId) {
     const row = DataManager.getById("action_table", actionId);
     if (!Object.keys(row).length) return;
@@ -176,13 +182,22 @@ const Game = {
   _setupActionExtras(row, action) {
     const duration = int(row.duration_sec);
     if (row.map_id) {
-      const pool = DataManager.getRows("encounter_table").filter((e) => {
+      const firstTravel = String(row.action_id) === "wild_travel" && !this.state.flags.first_travel_battle_done;
+      const tide = !!this.state.flags.spirit_tide_venture;
+      let pool = DataManager.getRows("encounter_table").filter((e) => {
         if (String(e.map_id) !== String(row.map_id)) return false;
-        const rp = e.requires_point; // 探索点接遭遇（design/6.6）：未发现该秘境则不刷出
+        const rp = e.requires_point;
         if (rp && !(this.state.explored_points || []).includes(String(rp))) return false;
         return true;
       });
+      if (firstTravel || tide) {
+        const battlePool = pool.filter((e) => (e.options || []).some((o) => o.kind === "battle") || String(e.encounter_type) === "battle");
+        if (battlePool.length) pool = battlePool;
+        const named = pool.find((e) => String(e.encounter_id) === "enc_wild_01");
+        if (named) pool = [named, ...pool.filter((e) => e !== named)];
+      }
       const picked = []; const copy = [...pool];
+      if (firstTravel && copy.length) picked.push(copy.shift());
       while (copy.length && picked.length < 2) picked.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
       action.encounters = picked.map((e, i) => ({ id: String(e.encounter_id), at: num(action.start_time_ms) + (i === 0 ? 8000 : 20000), fired: false }));
     }
@@ -273,12 +288,12 @@ const Game = {
     }
     const completionBody = `${row.complete_text || ""}${allRewardText ? `\n\n获得：\n${allRewardText}` : ""}${blessText}`;
     const firstBreath = id === "breath_cycle" && int(this.state.action_counts_total[id]) === 1;
-    if (chained) {
+    if (firstBreath) {
+      this.queuePopup({ kind: "text", style: "seal", title: "你听见了风",
+        body: `洞外松风过了一息。你这口气，比睁眼时长了三寸。\n\n${allRewardText}${blessText}`,
+        buttons: [{ label: "收下这一息" }] });
+    } else if (chained) {
       this._log(`连续修行：${completionBody.replace(/\n/g, " ")}`);
-    } else if (firstBreath) {
-      this.queuePopup({ kind: "text", style: "seal", title: "吐纳完成！",
-        body: `你盘膝吐纳，运转一轮小周天。\n山中灵气被缓缓牵引，化作一缕道行归入体内。\n\n获得：\n${allRewardText}${blessText}\n\n体内气机已动，可以提升境界了。`,
-        buttons: [{ label: "收功" }] });
     } else {
       // 第一层·微反馈：气韵为主，数字退为次级（design/6.0）
         const qiyun = Atmosphere.actionLine(id, this.state);
@@ -528,6 +543,15 @@ const Game = {
   },
 
   startBattleV2(cfg) {
+    if (cfg && cfg.source === "encounter") this.state.flags.first_travel_battle_done = true;
+    if (!this.state.flags.battle_v2_tutorial_done && !(cfg.payload && cfg.payload.tutorial)) {
+      if (typeof GameplayEngine !== "undefined") GameplayEngine.pendingBattle = cfg;
+      if (typeof BattleUIV2 !== "undefined" && BattleUIV2.startTutorial) {
+        BattleUIV2.startTutorial(this.state);
+        this._emit();
+        return null;
+      }
+    }
     const battle = BattleEngineV2.create(this.state, cfg);
     this.queuePopup({ kind: "battle_v2", battle });
     this._emit();
@@ -551,7 +575,18 @@ const Game = {
   },
 
   finishBattle(battle) {
+    if (!battle) return;
     const omen = getTodayOmen();
+    if (battle.source === "debug") {
+      this.queuePopup({
+        kind: "text",
+        title: battle.win ? "调试·胜" : "调试·负",
+        body: `${battle.name} 已结束。\n会话 ${battle.sessionId || "—"}\n回合 ${int(battle.round)}\n输出 ${formatInt(battle.stats && battle.stats.dealt)}`,
+        buttons: [{ label: "关闭" }],
+      });
+      this._afterMutated();
+      return;
+    }
     if (battle.source === "breakthrough") { /* 破劫结算 */
       const btId = String(battle.payload.breakthroughId || "");
       const data = DataManager.getById("breakthrough_table", btId);
@@ -965,7 +1000,7 @@ const Game = {
         Atmosphere.playRitual(ritualText);
         this._log(`【境界】${ritualText}`);
       } else {
-        this.toast(`突破至${getPhaseRealmName(to)}`, to.lore_text || "你吐纳周天，法力更进一步。");
+        this.toast(`突破至${getPhaseRealmName(to)}`, to.lore_text || "你吐纳周天，法力更进一步。", 3200, "world");
       }
       this._queueNewUnlockPopups(before);
     if (!this.state.pending_event_id) { const eventId = EventManager.rollEvent(this.state, "level_up"); if (eventId) { this._setPendingEvent(eventId); this._queueEventPopup(); } }
@@ -997,23 +1032,39 @@ const Game = {
 
   // ---------- 机缘 ----------
 
-  openPendingEvent() { if (!this.state.pending_event_id) return; this._queueEventPopup(); this._emit(); },
+  openPendingEvent() {
+    if (!this.state.pending_event_id) return;
+    this.eventPopupActive = false;
+    this.popupQueue = (this.popupQueue || []).filter((p) => p.kind !== "event");
+    this._queueEventPopup();
+    this._emit();
+  },
 
   chooseEventOption(optionIndex) {
     const eventId = this.state.pending_event_id;
     const eventRow = EventManager.getEvent(eventId);
-    if (!Object.keys(eventRow).length) return { ok: false };
+    if (!Object.keys(eventRow).length) {
+      this.state.pending_event_id = "";
+      this.eventPopupActive = false;
+      return { ok: false };
+    }
     const options = eventRow.options || eventRow.choices || [];
-    if (optionIndex < 0 || optionIndex >= options.length) return { ok: false };
-    const option = options[optionIndex];
-    const reward = this._applyEventReward(option.reward || option.result || {});
+    const narrative = !options.length;
+    if (!narrative && (optionIndex < 0 || optionIndex >= options.length)) return { ok: false };
+    const option = narrative ? null : options[optionIndex];
+    const reward = this._applyEventReward(narrative ? (eventRow.reward || {}) : (option.reward || option.result || {}));
     EventManager.markSeen(this.state, eventId);
     this.state.pending_event_id = ""; this.eventPopupActive = false;
     const deltaText = this._formatResourceDelta(reward.resources || {});
-    this._log(`机缘「${eventRow.event_name}」：${option.text || option.label}。`);
-    const flavor = (option.reward && option.reward.log) || (option.result && option.result.log) || `你选择了「${option.text || option.label}」。`;
-    if (typeof AudioManager !== "undefined") AudioManager.playSfx("fortune"); // SFX-05 机缘清脆提示
-    this.queuePopup({ kind: "text", style: "chance", title: String(eventRow.event_name || "机缘"), body: `${flavor}${deltaText ? `\n\n获得：\n${deltaText}` : ""}`, buttons: [{ label: "收下机缘" }] });
+    if (typeof AudioManager !== "undefined") AudioManager.playSfx("fortune");
+    if (narrative) {
+      this._log(`机缘「${eventRow.event_name}」已入心。`);
+      this.toast(String(eventRow.event_name || "机缘"), deltaText || "记下这一缕气机。", 2600);
+    } else {
+      this._log(`机缘「${eventRow.event_name}」：${option.text || option.label}。`);
+      const flavor = (option.reward && option.reward.log) || (option.result && option.result.log) || `你选择了「${option.text || option.label}」。`;
+      this.queuePopup({ kind: "text", style: "chance", title: String(eventRow.event_name || "机缘"), body: `${flavor}${deltaText ? `\n\n获得：\n${deltaText}` : ""}`, buttons: [{ label: "收下机缘" }] });
+    }
     this._afterMutated();
     return { ok: true };
   },
@@ -1362,9 +1413,33 @@ const Game = {
     if (num(this.state.resources.spell_page) < num(cost.spell_page_cost) || num(this.state.resources.mana) < num(cost.mana_cost)) return { ok: false, message: "材料不足" };
     this.state.resources.spell_page -= num(cost.spell_page_cost); this.state.resources.mana -= num(cost.mana_cost);
     spellState.level = nextLevel; spellState.unlocked = true;
-    if (nextLevel === 1) { this._log(`你悟得术法「${spellRow.spell_name}」。`); this.queuePopup({ kind: "text", style: "seal", title: `悟得术法：${spellRow.spell_name}`, body: `${spellRow.lore_text || ""}\n\n此术虽浅，却已能惊退山野妖邪。`, buttons: [{ label: "谨记于心" }] }); }
+    if (nextLevel === 1) {
+      this._log(`你悟得术法「${spellRow.spell_name}」。`);
+      this._equipFirstSpellToSlots(spellRow);
+      this.queuePopup({ kind: "text", style: "seal", title: `悟得术法：${spellRow.spell_name}`, body: `${spellRow.lore_text || ""}\n\n此术已列入斗法栏。下一场，用它。`, buttons: [{ label: "谨记于心" }] });
+    }
     else { this._log(`「${spellRow.spell_name}」提升至${nextLevel}重。`); }
     this._afterMutated(); return { ok: true };
+  },
+
+  _equipFirstSpellToSlots(spellRow) {
+    const type = String(spellRow.spell_type || "");
+    const map = { thunder: "skill_thunder_01", fire: "skill_fire_01", weapon: "skill_weapon_01", body: "skill_body_01", soul: "skill_soul_01", calamity: "skill_calamity_01" };
+    const skillId = map[type];
+    if (!skillId) return;
+    this.state.unlocked_skills = this.state.unlocked_skills || [];
+    if (!this.state.unlocked_skills.includes(skillId)) this.state.unlocked_skills.push(skillId);
+    this.state.skill_levels = this.state.skill_levels || {};
+    if (!this.state.skill_levels[skillId]) this.state.skill_levels[skillId] = 1;
+    const max = (typeof BattleEngineV2 !== "undefined") ? BattleEngineV2.getSlotCount(this.state) : 3;
+    const slots = (this.state.battle_slots || []).slice();
+    const has = slots.some((s) => String(s && s.id || s) === skillId);
+    if (!has) {
+      if (slots.length < max) slots.push({ id: skillId, condition: "always" });
+      else slots[slots.length - 1] = { id: skillId, condition: "always" };
+      this.state.battle_slots = slots;
+    }
+    this._log("此术已列入斗法栏。");
   },
 
   // ---------- 练气术法（V2 skill_table，30术法六系） ----------
@@ -1534,7 +1609,7 @@ const Game = {
     if (RealmManager.isCapped(state) && !str(state.faction_id, "")) {
       return { type: "faction_choice", label: "择一方势力入局" };
     }
-    if (BreakthroughManager.canAttempt(state)) {
+    if (BreakthroughManager.canAttempt(state) && !this.isOpeningStage()) {
       const data = BreakthroughManager.getAvailable(state);
       return { type: "breakthrough", label: `榜文垂光，${data.display_name || "破劫"}` };
     }
@@ -1712,6 +1787,23 @@ const Game = {
     this._log("【调试】资源 +5000。"); this._afterMutated();
   },
 
+  debugStartBattle() {
+    if (!this.debug) return;
+    this.state.flags.battle_v2_tutorial_done = true;
+    if (typeof BattleUIV2 !== "undefined" && BattleUIV2.closeLayers) BattleUIV2.closeLayers();
+    if (typeof releaseModal === "function") releaseModal();
+    this.popupQueue = (this.popupQueue || []).filter((p) => p.kind !== "battle_v2");
+    this._debugBattleN = int(this._debugBattleN) + 1;
+    const names = ["山魈", "夜枭", "岩蜥", "雾狸"];
+    const n = names[(this._debugBattleN - 1) % names.length];
+    this.startBattleV2({
+      name: "调试·" + n,
+      enemy_power: 90,
+      source: "debug",
+      payload: { debug: true },
+    });
+  },
+
   resetSave() {
     SaveManager.wipe(); this.popupQueue = [];
     this.state = SaveManager.normalize(SaveManager.createDefault());
@@ -1794,7 +1886,9 @@ const Game = {
     }
     this._checkChapterReveals();
     this._checkCompanions();
+    this._checkWorldMapReveal();
     this._refreshPendingReward();
+    if (typeof ContentDirector !== "undefined") ContentDirector.pulse("realm");
     SaveManager.save(this.state);
     this._emit();
   },

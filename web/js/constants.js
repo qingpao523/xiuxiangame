@@ -21,6 +21,8 @@ const ID_FIELDS = {
   skill_table: "id",
   synth_recipe_table: "recipe_id",
   array_card_table: "card_id",
+  minigame_table: "minigame_id",
+  beat_table: "beat_id",
 };
 
 const REALM_NAME_TO_ID = {

@@ -1,218 +1,835 @@
 "use strict";
 
-// ===== 斗法栏配置UI + 战斗演出UI V2 =====
-// 配招界面：拖拽/点选技能入栏，同系高亮，连锁预览
-// 战斗演出：逐行文字日志，combo变色，三连全屏大演出
+// ===== 斗法场 + 配招阵面（design/8.4）=====
+// 规则核仍是 BattleEngineV2。这里只负责：一场一会话、全屏演出、配招触控。
 
 const BattleUIV2 = {
-  // ---------- 斗法栏配置界面 ----------
+  _session: null,
+  _formCtx: null,
+  _selIdx: -1,
+  _tutSolved: false,
+  _tutTimers: [],
+  _condPick: -1,
+  _treasurePick: -1,
+
+  // ---------- 会话 ----------
+
+  BAR_CAP: 6,
+
+  abortSession() {
+    const s = this._session;
+    if (!s) return;
+    s.aborted = true;
+    if (s.battle) {
+      if (typeof BattleEngineV2 !== "undefined" && BattleEngineV2.abort) BattleEngineV2.abort(s.battle);
+      else { s.battle.aborted = true; s.battle._animating = false; }
+    }
+    for (const t of s.timers || []) clearTimeout(t);
+    s.timers = [];
+    for (const r of s.resolvers || []) { try { r(); } catch (e) {} }
+    s.resolvers = [];
+    this._session = null;
+  },
+
+  closeLayers() {
+    this.abortSession();
+    this._clearTutorialHints();
+    this._unmount("duel-layer", "duel-root");
+    this._unmount("formation-layer", "formation-root");
+    this._formCtx = null;
+    this._condPick = -1;
+    this._treasurePick = -1;
+    document.body.classList.remove("dueling");
+  },
+
+  _unmount(layerId, rootId) {
+    const layer = document.getElementById(layerId);
+    const root = document.getElementById(rootId);
+    if (root) root.innerHTML = "";
+    if (layer) layer.classList.add("hidden");
+  },
+
+  _alive(session) {
+    return !!(session && !session.aborted && this._session === session && session.battle && !session.battle.aborted);
+  },
+
+  _timer(session, fn, ms) {
+    const id = setTimeout(fn, ms);
+    if (session && session.timers) session.timers.push(id);
+    return id;
+  },
+
+  // ---------- 公共入口（兼容旧 renderer 名） ----------
+
+  renderBattlePopup(panel, battle, state) {
+    this.openBattle(battle, state);
+  },
 
   renderSlotConfig(container, state, onConfirm, opts = {}) {
-    container.innerHTML = "";
-    container.classList.add("battle-v2-config");
-    // 记住渲染上下文，供交互后重渲染复用
-    this._cfgCtx = { container, state, onConfirm, opts };
-    if (this._selIdx == null) this._selIdx = -1;
+    this.openFormation(state, onConfirm, opts);
+  },
 
+  openBattle(battle, state) {
+    this.abortSession();
+    this._unmount("formation-layer", "formation-root");
+    document.body.classList.add("dueling");
+    const layer = document.getElementById("duel-layer");
+    const root = document.getElementById("duel-root");
+    if (!layer || !root || !battle) return;
+    const session = { id: battle.sessionId || ("b" + Date.now()), battle, state, timers: [], resolvers: [], aborted: false };
+    this._session = session;
+    battle._ended = false;
+    battle._animating = false;
+    layer.classList.remove("hidden");
+    layer.dataset.session = session.id;
+    this._mountDuel(root, session);
+    this._startAutoLoop(session);
+  },
+
+  closeBattle() {
+    this.abortSession();
+    this._unmount("duel-layer", "duel-root");
+    document.body.classList.remove("dueling");
+  },
+
+  openFormation(state, onConfirm, opts = {}) {
+    this._clearTutorialHints();
+    const layer = document.getElementById("formation-layer");
+    const root = document.getElementById("formation-root");
+    if (!layer || !root) return;
+    this._formCtx = { state, onConfirm, opts };
+    if (this._selIdx == null) this._selIdx = -1;
+    layer.classList.remove("hidden");
+    this._mountFormation(root);
+  },
+
+  closeFormation() {
+    this._clearTutorialHints();
+    this._unmount("formation-layer", "formation-root");
+    this._formCtx = null;
+    this._condPick = -1;
+    this._treasurePick = -1;
+  },
+
+  // ---------- 斗法场 DOM ----------
+
+  _mountDuel(root, session) {
+    const battle = session.battle;
+    const state = session.state;
+    const bg = this._battleBg(battle, state);
+    const playerName = this._playerBattleName(state);
+    const playerImg = this._playerPortrait(state);
+    const front = (battle.enemies || []).find((e) => e.hp > 0) || (battle.enemies || [])[0] || { name: battle.name, hp: 1, hpMax: 1 };
+    const foeImg = this._foePortrait(battle);
+    battle.playerName = playerName;
+    session.urgedSlots = session.urgedSlots || {};
+    root.innerHTML = "";
+    root.className = "duel-root duel-board";
+    root.style.backgroundImage =
+      `linear-gradient(180deg, rgba(6,8,12,0.00) 0%, rgba(6,8,12,0.08) 48%, rgba(6,8,12,0.90) 100%), url("${bg}")`;
+
+    const head = document.createElement("header");
+    head.className = "duel-head";
+    head.innerHTML =
+      `<div class="duel-round">第 <b data-duel="round">${int(battle.round, 0)}</b> 回</div>`
+      + `<div class="duel-title" data-duel="title">${this._esc(battle.name)}</div>`
+      + `<div class="duel-speeds" data-duel="speeds"></div>`;
+    root.appendChild(head);
+    this._mountSpeeds(head.querySelector("[data-duel=speeds]"), session);
+
+    const arena = document.createElement("div");
+    arena.className = "duel-arena";
+    arena.innerHTML =
+      `<div class="duel-impact" data-duel="impact"></div>`
+      + `<div class="duel-field">`
+      + `  <div class="duel-scroll">`
+      + `    <div class="duel-portrait foe${foeImg ? "" : " nametag"}" data-duel="foe-port">`
+      + (foeImg ? `<img alt="" src="${this._esc(foeImg)}">` : this._yaoSilhouette(front.name))
+      + `      <div class="duel-floats" data-duel="foe-floats"></div>`
+      + `    </div>`
+      + `    <div class="duel-plaque">${this._esc(front.name)}</div>`
+      + `    <div class="duel-hp foe" data-duel="foe-hp"></div>`
+      + `    <div class="duel-orbs foe" data-duel="foe-orbs"></div>`
+      + `  </div>`
+      + `  <div class="duel-you">`
+      + `    <div class="duel-portrait you" data-duel="you-port">`
+      + (playerImg ? `<img alt="" src="${this._esc(playerImg)}">` : `<span class="duel-nametag">${this._esc(playerName)}</span>`)
+      + `      <div class="duel-floats" data-duel="you-floats"></div>`
+      + `    </div>`
+      + `    <div class="duel-you-meta">`
+      + `      <div class="duel-you-name">${this._esc(playerName)}</div>`
+      + `      <div class="duel-hp you" data-duel="you-hp"></div>`
+      + `    </div>`
+      + `  </div>`
+      + `</div>`;
+    root.appendChild(arena);
+
+    const callout = document.createElement("div");
+    callout.className = "duel-callout";
+    callout.setAttribute("data-duel", "callout");
+    callout.innerHTML = `<span class="co-k">气机</span><span class="co-name">相触</span><span class="co-sub">点亮的术法可催动</span>`;
+    root.appendChild(callout);
+
+    const orbs = document.createElement("div");
+    orbs.className = "duel-orbs you";
+    orbs.setAttribute("data-duel", "orbs");
+    orbs.addEventListener("click", (ev) => this._onOrbTap(ev, session, root));
+    root.appendChild(orbs);
+
+    const ticker = document.createElement("div");
+    ticker.className = "duel-ticker hidden";
+    ticker.setAttribute("data-duel", "ticker");
+    ticker.innerHTML = `<div class="duel-tick" data-duel="tick"></div>`;
+    root.appendChild(ticker);
+
+    const end = document.createElement("div");
+    end.className = "duel-end hidden";
+    end.setAttribute("data-duel", "end");
+    root.appendChild(end);
+
+    this._paintHp(root, battle);
+    this._paintOrbs(root, battle, -1);
+    if (typeof BattleEngineV2._planEnemyRound === "function") BattleEngineV2._planEnemyRound(battle);
+    this._paintFoeBar(root, battle, 0, "next");
+    this._paintTele(root, battle);
+    for (const evt of (battle.pendingEvents || []).splice(0)) {
+      if (typeof evt === "string") this._tick(root, session, evt, "sys");
+    }
+  },
+
+  _mountSpeeds(host, session) {
+    if (!host) return;
+    host.innerHTML = "";
+    const speeds = [1, 2, 4, 0];
+    const labels = ["1×", "2×", "4×", "跳过"];
+    speeds.forEach((sp, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "duel-speed" + (session.battle.speed === sp ? " on" : "");
+      btn.textContent = labels[idx];
+      btn.addEventListener("click", () => {
+        if (!this._alive(session)) return;
+        session.battle.speed = sp;
+        host.querySelectorAll(".duel-speed").forEach((b) => b.classList.remove("on"));
+        btn.classList.add("on");
+        if (sp === 0) {
+          const rs = (session.resolvers || []).splice(0);
+          for (const r of rs) { try { r(); } catch (e) {} }
+        }
+      });
+      host.appendChild(btn);
+    });
+  },
+
+  _paintHp(root, battle) {
+    const foeBox = root.querySelector("[data-duel=foe-hp]");
+    if (foeBox) {
+      foeBox.innerHTML = (battle.enemies || []).map((e) => {
+        const dead = e.hp <= 0;
+        const pct = Math.max(0, Math.round((e.hp / Math.max(1, e.hpMax)) * 100));
+        const charging = (e.charged || (e.intent && e.intent.type === "charge") || e.intent === "charge") && !dead;
+        return `<div class="duel-hp-row${dead ? " dead" : ""}${charging ? " charging" : ""}">`
+          + `<span class="duel-hp-track"><i style="width:${pct}%"></i></span>`
+          + `<span class="duel-hp-num">${dead ? "溃" : formatInt(e.hp)}</span></div>`;
+      }).join("");
+    }
+    const plaque = root.querySelector(".duel-plaque");
+    const front = (battle.enemies || []).find((e) => e.hp > 0) || (battle.enemies || [])[0];
+    if (plaque && front) plaque.textContent = front.name;
+    const youBox = root.querySelector("[data-duel=you-hp]");
+    if (youBox) {
+      const pct = Math.max(0, Math.round((battle.playerHp / Math.max(1, battle.playerHpMax)) * 100));
+      youBox.innerHTML = `<div class="duel-hp-row">`
+        + `<span class="duel-hp-track player"><i style="width:${pct}%"></i></span>`
+        + `<span class="duel-hp-num">${formatInt(battle.playerHp)}</span></div>`;
+    }
+    const roundEl = root.querySelector("[data-duel=round]");
+    if (roundEl) roundEl.textContent = String(int(battle.round, 0));
+  },
+
+  _paintOrbs(root, battle, activeIndex, mode) {
+    const host = root.querySelector("[data-duel=orbs]");
+    if (!host) return;
+    const slots = battle.slots || [];
+    const state = (this._session && this._session.state) || {};
+    const open = BattleEngineV2.getSlotCount ? BattleEngineV2.getSlotCount(state) : slots.length;
+    const cap = this.BAR_CAP;
+    let html = "";
+    for (let i = 0; i < cap; i++) {
+      if (i >= open) {
+        html += `<div class="duel-orb locked" data-idx="${i}"><span class="duel-orb-cat">锁</span><span class="duel-orb-name">未开</span></div>`;
+        continue;
+      }
+      const s = slots[i];
+      if (!s) {
+        html += `<div class="duel-orb empty" data-idx="${i}"><span class="duel-orb-name">空</span></div>`;
+        continue;
+      }
+      const on = i === activeIndex ? " on" : (activeIndex >= 0 && i < activeIndex ? " done" : "");
+      const combo = i > 0 && slots[i - 1] && slots[i - 1].spell_type === s.spell_type ? " combo" : "";
+      const urging = (mode === "urge" && i === activeIndex) ? " urging" : "";
+      const icon = this._skillIcon(s);
+      const cat = s.treasure ? "器" : "术";
+      html += `<button type="button" class="duel-orb element-${s.spell_type}${on}${combo}${urging}" data-idx="${i}">`
+        + `<span class="duel-orb-cat">${cat}</span>`
+        + (icon ? `<img alt="" src="${icon}">` : `<span class="duel-orb-el">${this._elementName(s.spell_type)}</span>`)
+        + `<span class="duel-orb-name">${this._esc(s.name || "")}</span>`
+        + (i === activeIndex && mode === "urge" ? `<span class="duel-orb-cue">催</span>` : "")
+        + `</button>`;
+    }
+    host.innerHTML = html;
+  },
+
+  _paintFoeBar(root, battle, pulseIndex, mode) {
+    const host = root.querySelector("[data-duel=foe-orbs]");
+    if (!host) return;
+    const front = (battle.enemies || []).find((e) => e.hp > 0);
+    const q = (front && front.roundIntents) || [];
+    const n = this.BAR_CAP;
+    const live = Math.max(1, (battle.slots || []).length);
+    const at = front ? int(front.roundIntentAt) : 0;
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      if (i >= live) {
+        html += `<div class="duel-orb foe-orb empty" data-foe-idx="${i}"><span class="duel-orb-name">·</span></div>`;
+        continue;
+      }
+      const it = q[i] || {};
+      const el = it.element || "";
+      let cls = "duel-orb foe-orb" + (el ? " element-" + el : "");
+      if (i < at) cls += " done";
+      if (mode === "cast" && i === pulseIndex) cls += " on";
+      else if (mode === "next" && i === pulseIndex) cls += " next";
+      const name = it.label || (i < at ? "·" : "…");
+      html += `<div class="${cls}" data-foe-idx="${i}">`
+        + `<span class="duel-orb-name">${this._esc(name)}</span></div>`;
+    }
+    host.innerHTML = html;
+  },
+
+  _paintTele(root, battle) {
+    const box = root.querySelector("[data-duel=tele]");
+    if (!box) return;
+    const bar = root.querySelector("[data-duel=foe-orbs]");
+    if (bar && bar.children.length) { box.innerHTML = ""; return; }
+    const front = (battle.enemies || []).find((e) => e.hp > 0);
+    const it = front ? front.intent : null;
+    if (!it || battle.done) { box.innerHTML = ""; return; }
+    const wx = it.wuxing || null;
+    const hasRS = typeof ResonanceSystem !== "undefined";
+    const wxLabel = wx && hasRS ? ResonanceSystem.wuxingLabel(wx) : "";
+    const wxColor = wx && hasRS ? ResonanceSystem.wuxingColor(wx) : "#c9a227";
+    const badge = wx ? `<span class="duel-wx" style="color:${wxColor};border-color:${wxColor}">${this._esc(wxLabel)}</span>` : "";
+    box.innerHTML = `<span class="duel-tele-k">敌势</span><span class="duel-tele-v">${this._esc(it.label || it.type || "")}</span>${badge}`;
+  },
+
+  _tick(root, session, text, cls) {
+    const tick = root.querySelector("[data-duel=tick]");
+    if (tick) {
+      tick.className = "duel-tick " + (cls || "");
+      tick.innerHTML = text;
+    }
+    const dbg = root.querySelector("[data-duel=debug-log]");
+    if (dbg) {
+      const line = document.createElement("div");
+      line.className = cls || "";
+      line.innerHTML = text;
+      dbg.appendChild(line);
+      dbg.scrollTop = dbg.scrollHeight;
+    }
+  },
+
+  _float(root, side, text, cls) {
+    const host = root.querySelector(side === "you" ? "[data-duel=you-floats]" : "[data-duel=foe-floats]");
+    if (!host) return;
+    const el = document.createElement("div");
+    el.className = "duel-float " + (cls || "");
+    el.textContent = text;
+    el.style.left = (36 + Math.random() * 28) + "%";
+    host.appendChild(el);
+    const session = this._session;
+    this._timer(session || { timers: [] }, () => el.remove(), 900);
+  },
+
+  _shake(root, side) {
+    const el = root.querySelector(side === "you" ? "[data-duel=you-port]" : "[data-duel=foe-port]");
+    if (!el) return;
+    el.classList.remove("hit");
+    void el.offsetWidth;
+    el.classList.add("hit");
+  },
+
+  // ---------- 播放循环 ----------
+
+  _startAutoLoop(session) {
+    const battle = session.battle;
+    const state = session.state;
+    if (battle._animating) return;
+    battle._animating = true;
+    const root = document.getElementById("duel-root");
+    const delay = () => this._getDelay(battle);
+    const sleep = (ms) => new Promise((r) => {
+      if (!this._alive(session) || battle.speed === 0 || ms <= 0) return r();
+      session.resolvers.push(r);
+      this._timer(session, r, ms);
+    });
+    const alive = () => battle.enemies.filter((e) => e.hp > 0).length;
+
+    const runRound = async () => {
+      while (this._alive(session) && !battle.done) {
+        const startEvents = BattleEngineV2.startPlayerRound(state, battle);
+        if (!this._alive(session)) return;
+        this._paintHp(root, battle);
+        this._paintOrbs(root, battle, -1);
+        this._paintFoeBar(root, battle, 0, "next");
+        this._paintTele(root, battle);
+        if (startEvents.length) {
+          this._renderEvents(startEvents, root, session);
+          await sleep(delay() * 0.35);
+        }
+        if (!this._alive(session) || battle.done) break;
+
+        for (let i = 0; i < battle.slots.length; i++) {
+          if (!this._alive(session) || battle.done || alive() === 0) break;
+          const skill = battle.slots[i];
+          session.urgeSlot = i;
+          battle._urgeNext = 0;
+          this._paintOrbs(root, battle, i, battle.speed === 0 ? "" : "urge");
+          this._paintFoeBar(root, battle, i, "next");
+          this._paintTele(root, battle);
+          {
+            const dmg = skill ? (skill.damage_base || skill.damage || "") : "";
+            this._callout(
+              root,
+              skill ? this._xiuCallout(skill.spell_type) : "",
+              skill ? skill.name : "",
+              dmg ? ("伤 " + formatInt(dmg)) : (battle.speed === 0 ? "" : "点此催动"),
+              ""
+            );
+          }
+          await sleep(delay() * 0.42);
+          if (!this._alive(session) || battle.done) break;
+          if (battle.speed !== 0 && skill) this._launchBolt(root, session, i, skill);
+          await sleep(delay() * 0.16);
+          if (!this._alive(session)) return;
+          session.urgeSlot = -1;
+          const slotEvents = BattleEngineV2.executeSingleSlot(state, battle, i);
+          if (!this._alive(session)) return;
+          if (slotEvents.length) this._renderEvents(slotEvents, root, session);
+          this._paintOrbs(root, battle, i);
+          await sleep(delay() * 0.42);
+          if (!this._alive(session) || battle.done || alive() === 0) break;
+
+          this._paintFoeBar(root, battle, i, "cast");
+          const gapEvents = BattleEngineV2.enemyGapAct(state, battle);
+          if (!this._alive(session)) return;
+          if (gapEvents.length) this._renderEvents(gapEvents, root, session);
+          this._paintFoeBar(root, battle, i, "done");
+          this._paintTele(root, battle);
+          await sleep(delay() * 0.55);
+        }
+
+        if (!this._alive(session) || battle.done) break;
+        const endEvents = BattleEngineV2.endPlayerRound(state, battle);
+        if (!this._alive(session)) return;
+        if (endEvents.length) {
+          this._renderEvents(endEvents, root, session);
+          await sleep(delay() * 0.45);
+        }
+        if (!this._alive(session) || battle.done) break;
+        const bookEvents = BattleEngineV2.endEnemyRoundBookkeeping(state, battle);
+        if (!this._alive(session)) return;
+        if (bookEvents.length) this._renderEvents(bookEvents, root, session);
+        this._paintOrbs(root, battle, -1);
+        this._paintHp(root, battle);
+        if (!battle.done) await sleep(delay() * 0.28);
+      }
+
+      if (!this._alive(session)) return;
+      battle._animating = false;
+      this._renderBattleEnd(session, root);
+    };
+
+    runRound();
+  },
+
+  _getDelay(battle) {
+    if (battle.speed === 2) return 700;
+    if (battle.speed === 4) return 300;
+    if (battle.speed === 0) return 0;
+    return 1400;
+  },
+
+  _renderEvents(events, root, session) {
+    const battle = session.battle;
+    const skipMode = battle.speed === 0;
+    const KEY = new Set(["ultimate", "victory", "player_defeated", "kill", "phase_advance"]);
+    for (const evt of events) {
+      if (skipMode && !KEY.has(evt.type)) continue;
+      switch (evt.type) {
+        case "attack": {
+          const sub = [
+            evt.urged ? "催动" : "",
+            evt.combo ? `${this._xiuCallout(evt.element)}共鸣 ×${evt.comboMult}` : "",
+          ].filter(Boolean).join(" · ");
+          this._callout(root, this._xiuCallout(evt.element), evt.skillName, sub || ("伤 " + formatInt(evt.damage)), evt.combo ? "combo" : (evt.urged ? "urge" : "hit"));
+          this._float(root, "foe", (evt.combo ? "✦" : "-") + formatInt(evt.damage), evt.combo ? "crit" : (evt.urged ? "urge" : "dmg"));
+          this._shake(root, "foe");
+          this._flash(root, session, evt.element, evt.combo);
+          if (evt.combo) this._stamp(root, session, "共鸣");
+          else if (evt.urged) this._stamp(root, session, "催");
+          if (typeof AudioManager !== "undefined") {
+            const now = performance.now();
+            if (!this._lastCastSfx || now - this._lastCastSfx > 130) {
+              this._lastCastSfx = now;
+              AudioManager.playSfx(AudioManager.elementSfx(evt.element), { gain: evt.combo ? 1.0 : 0.8 });
+            }
+          }
+          break;
+        }
+        case "kill":
+          this._tick(root, session, `${this._esc(evt.targetName)} 道消身陨，溃散当场！`, "kill");
+          break;
+        case "slot_wait":
+          this._tick(root, session, `${this._esc(evt.skillName)} 引而不发（${this._conditionLabel(evt.condition)}）。`, "wait");
+          break;
+        case "ultimate":
+          this._showUltimateOverlay(evt, root, session);
+          const shen = root.querySelector(".duel-kit-slot.shen");
+          if (shen) shen.classList.add("filled");
+          if (typeof AudioManager !== "undefined") AudioManager.playSfx("tribulation_rumble", { dur: 1.0, gain: 0.5 });
+          this._callout(root, "通", evt.name, evt.visual_text || "", "ult");
+          if (evt.total_damage) this._float(root, "foe", formatInt(evt.total_damage), "ult");
+          break;
+        case "enemy_attack":
+          if (battle.stats) battle.stats.lastHit = evt.name;
+          this._callout(root, "敌", evt.label || "扑击", "你受创 " + formatInt(evt.damage), "lose");
+          this._float(root, "you", "-" + formatInt(evt.damage), "dmg");
+          this._shake(root, "you");
+          break;
+        case "enemy_charged_attack":
+          if (battle.stats) battle.stats.lastHit = evt.name;
+          this._callout(root, "敌", "重击", "你受创 " + formatInt(evt.damage), "lose");
+          this._float(root, "you", "-" + formatInt(evt.damage), "crit");
+          this._shake(root, "you");
+          break;
+        case "enemy_stunned":
+        case "enemy_paralyzed":
+          this._tick(root, session, `${this._esc(evt.name)}气机受制，动弹不得！`, "ctrl");
+          break;
+        case "enemy_burn_tick":
+          this._tick(root, session, `灵火灼体，${this._esc(evt.name)}受焚 ${formatInt(evt.damage)}。`, "burn");
+          this._float(root, "foe", "-" + formatInt(evt.damage), "burn");
+          break;
+        case "player_burn":
+          this._tick(root, session, `邪火焚身，你受灼 ${formatInt(evt.damage)}。`, "hurt");
+          this._float(root, "you", "-" + formatInt(evt.damage), "burn");
+          break;
+        case "player_defeated":
+          this._callout(root, "", "且战且退", "灵台尚在", "lose");
+          root.classList.add("duel-lost");
+          break;
+        case "victory":
+          this._callout(root, "", "溃散", "此战告捷", "win");
+          const foe = root.querySelector("[data-duel=foe-port]");
+          if (foe) foe.classList.add("fall");
+          break;
+        case "mechanic":
+          this._tick(root, session, this._mechanicText(evt), "mech");
+          break;
+        case "phase_advance":
+          this._tick(root, session, evt.intro || `${this._esc(evt.name)}显化而出！`, "phase");
+          break;
+        case "lifesteal":
+          this._tick(root, session, `六魂尽灭——回复 ${formatInt(evt.amount)} 气血！`, "heal");
+          this._float(root, "you", "+" + formatInt(evt.amount), "heal");
+          break;
+        case "reflect":
+          this._tick(root, session, `金光反弹！${this._esc(evt.target)}受 ${formatInt(evt.damage)} 伤害！`, "combo");
+          this._float(root, "foe", "-" + formatInt(evt.damage), "crit");
+          break;
+        case "fire_domain":
+          this._tick(root, session, `火域燎原，${this._esc(evt.target)}受焚 ${formatInt(evt.damage)}。`, "burn");
+          break;
+        case "enemy_charge":
+          this._tick(root, session, `${this._esc(evt.name)}${this._esc(evt.label || "蓄势")}，气机暴涨！`, "hurt");
+          break;
+        case "enemy_charge_blocked":
+          this._tick(root, session, `${this._esc(evt.name)}蓄势被锁，难以凝聚。`, "ctrl");
+          break;
+        case "enemy_block":
+          this._tick(root, session, `${this._esc(evt.name)}凝罡护体（罡气 ${formatInt(evt.block)}）。`, "sys");
+          break;
+        case "enemy_burn":
+          this._tick(root, session, `${this._esc(evt.name)}施以邪火，你被灼烧（+${formatInt(evt.burn)}）。`, "hurt");
+          break;
+        case "enemy_weak":
+          this._tick(root, session, `${this._esc(evt.name)}施以弱咒，你的攻势受挫。`, "hurt");
+          break;
+        case "enemy_miss":
+          this._tick(root, session, `${this._esc(evt.name)}一击落空！`, "ctrl");
+          break;
+        case "self_burn_tick":
+          this._tick(root, session, `赤焰反噬，你自灼 ${formatInt(evt.damage)}。`, "hurt");
+          break;
+        case "timeout":
+          this._tick(root, session, "斗法逾时，胜负未分，只得作罢。", "lose");
+          break;
+        default:
+          break;
+      }
+    }
+    this._paintHp(root, battle);
+  },
+
+  _showUltimateOverlay(evt, root, session) {
+    if (session.battle && session.battle.speed === 0) return;
+    const overlay = document.createElement("div");
+    overlay.className = "duel-ult";
+    overlay.style.setProperty("--ult-color", evt.visual_color || "#FFD700");
+    overlay.innerHTML = `<div class="duel-ult-name">${this._esc(evt.name)}</div><div class="duel-ult-sub">${this._esc(evt.visual_text || "")}</div>`;
+    root.appendChild(overlay);
+    this._timer(session, () => overlay.classList.add("fade-out"), 1800);
+    this._timer(session, () => overlay.remove(), 2600);
+  },
+
+  _renderBattleEnd(session, root) {
+    const battle = session.battle;
+    if (!this._alive(session)) return;
+    if (battle._ended) return;
+    battle._ended = true;
+    battle._animating = false;
+    this._paintHp(root, battle);
+    this._paintOrbs(root, battle, -1);
+    this._paintFoeBar(root, battle, -1, "idle");
+    this._paintTele(root, battle);
+
+    const end = root.querySelector("[data-duel=end]");
+    if (!end) return;
+    end.classList.remove("hidden");
+    end.innerHTML = "";
+
+    const banner = document.createElement("div");
+    banner.className = "duel-finale" + (battle.win ? " win" : " loss");
+    banner.innerHTML = `<div class="finale-kicker">${battle.win ? "气机已定" : "气机未定"}</div>`
+      + `<div class="finale-title">${battle.win ? "告捷" : "暂退"}</div>`
+      + `<div class="finale-sub">${battle.win ? this._esc(battle.name) + "溃散" : "且战且退，未伤根本"}</div>`;
+    end.appendChild(banner);
+
+    if (!battle.win) {
+      const st = battle.stats || { dealt: 0, taken: 0, lastHit: "" };
+      const remainFoes = (battle.enemies || []).filter((e) => e.hp > 0);
+      const totalEnemyHp = (battle.enemies || []).reduce((a, e) => a + Math.max(0, e.hp), 0);
+      const box = document.createElement("div");
+      box.className = "duel-settle loss";
+      box.innerHTML = `<div class="settle-title">此战小记</div>`
+        + `<div class="defeat-line">撑至第 ${int(battle.round, 0)} 回</div>`
+        + `<div class="defeat-line">输出 ${formatInt(st.dealt)}　承伤 ${formatInt(st.taken)}</div>`
+        + (st.lastHit ? `<div class="defeat-line">致命一击：${this._esc(st.lastHit)}</div>` : "")
+        + (remainFoes.length ? `<div class="defeat-line">残敌余血 ${formatInt(totalEnemyHp)}</div>` : "")
+        + `<div class="defeat-tip">同系相邻则共鸣。术法亮起时点一下可催动。</div>`;
+      end.appendChild(box);
+    }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "duel-collect";
+    btn.textContent = battle.win ? "收取战果" : "退出战圈";
+    btn.addEventListener("click", () => this._collect(session));
+    end.appendChild(btn);
+  },
+
+  _collect(session) {
+    if (!session || session._collected) return;
+    session._collected = true;
+    const battle = session.battle;
+    this.closeBattle();
+    if (typeof releaseModal === "function") releaseModal();
+    if (typeof Game !== "undefined" && Game.finishBattle) Game.finishBattle(battle);
+  },
+
+  // ---------- 配招阵面 ----------
+
+  _mountFormation(root) {
+    const ctx = this._formCtx;
+    if (!ctx) return;
+    const state = ctx.state;
+    const opts = ctx.opts || {};
     const maxSlots = BattleEngineV2.getSlotCount(state);
     const slots = state.battle_slots || [];
     const unlocked = state.unlocked_skills || [];
+    root.innerHTML = "";
 
-    // 标题
-    const title = document.createElement("div");
-    title.className = "slot-config-title";
-    title.textContent = "斗法栏·配招";
-    container.appendChild(title);
+    const head = document.createElement("header");
+    head.className = "form-head";
+    head.innerHTML = `<div class="form-kicker">斗法栏</div><div class="form-title">配招</div><div class="form-hint">体系体/器/魂/劫 · 器=法宝绑在格上 · 五行是器的二级 · 炼气开 ${maxSlots}/6 格</div>`;
+    root.appendChild(head);
 
-    // 格数提示
-    const hint = document.createElement("div");
-    hint.className = "slot-config-hint";
-    hint.textContent = `当前${maxSlots}格（境界突破可扩展）`;
-    container.appendChild(hint);
-
-    // 斗法栏格子
-    const slotRow = document.createElement("div");
-    slotRow.className = "slot-row";
-    for (let i = 0; i < maxSlots; i++) {
-      const slotEl = document.createElement("div");
-      slotEl.className = "slot-cell";
-      slotEl.dataset.index = i;
-
-      if (slots[i]) {
-        const skill = BattleEngineV2.getSkillData(this._slotId(slots[i]));
-        if (skill) {
-          slotEl.classList.add("filled", `element-${skill.spell_type}`);
-          if (this._selIdx === i) slotEl.classList.add("selected");
-          slotEl.innerHTML = `<span class="slot-num">${i + 1}</span><span class="slot-name">${skill.name}</span><span class="slot-type">${this._elementName(skill.spell_type)}</span><span class="slot-remove" title="移除">✕</span>`;
-          // 点击格体：选中 / 交换顺序
-          slotEl.addEventListener("click", () => {
-            if (this._selIdx === i) { this._selIdx = -1; }
-            else if (this._selIdx >= 0 && slots[this._selIdx]) {
-              const a = this._selIdx;
-              const tmp = slots[a]; slots[a] = slots[i]; slots[i] = tmp;
-              this._selIdx = -1;
-              state.battle_slots = slots;
-              SaveManager.save(state);
-            } else { this._selIdx = i; }
-            this._rerenderConfig();
-          });
-          // 点击 ✕：移除
-          slotEl.querySelector(".slot-remove").addEventListener("click", (ev) => {
-            ev.stopPropagation();
-            slots.splice(i, 1);
-            this._selIdx = -1;
-            state.battle_slots = slots.filter(Boolean);
-            SaveManager.save(state);
-            this._rerenderConfig();
-          });
-          // 条件触发·释放条件下拉（design/8.0 策略层）
-          const condSel = document.createElement("select");
-          condSel.className = "slot-cond";
-          condSel.title = "释放条件";
-          const curCond = this._slotCond(slots[i]);
-          for (const opt of BattleEngineV2.conditionOptions()) {
-            const o = document.createElement("option");
-            o.value = opt.value; o.textContent = opt.label;
-            if (opt.value === curCond) o.selected = true;
-            condSel.appendChild(o);
-          }
-          condSel.addEventListener("click", (ev) => ev.stopPropagation());
-          condSel.addEventListener("change", (ev) => {
-            ev.stopPropagation();
-            slots[i] = { id: this._slotId(slots[i]), condition: condSel.value, treasure: this._slotTreasure(slots[i]) };
-            state.battle_slots = slots;
-            SaveManager.save(state);
-            this._rerenderConfig();
-          });
-          slotEl.appendChild(condSel);
-
-          // 方案B·法宝绑定下拉（法宝.wuxing = 本格共鸣左元）
-          const ownedTreasures = this._ownedTreasures(state);
-          if (ownedTreasures.length > 0) {
-            const tSel = document.createElement("select");
-            tSel.className = "slot-treasure";
-            tSel.title = "绑定法宝（五行共鸣）";
-            const noneOpt = document.createElement("option");
-            noneOpt.value = ""; noneOpt.textContent = "无法宝";
-            tSel.appendChild(noneOpt);
-            const curT = this._slotTreasure(slots[i]);
-            for (const tr of ownedTreasures) {
-              const o = document.createElement("option");
-              o.value = tr.id;
-              o.textContent = tr.name + (tr.wuxing ? ` [${this._wuxingBadge(tr.wuxing)}]` : "");
-              if (tr.id === curT) o.selected = true;
-              tSel.appendChild(o);
-            }
-            tSel.addEventListener("click", (ev) => ev.stopPropagation());
-            tSel.addEventListener("change", (ev) => {
-              ev.stopPropagation();
-              slots[i] = { id: this._slotId(slots[i]), condition: this._slotCond(slots[i]), treasure: tSel.value || null };
-              state.battle_slots = slots;
-              SaveManager.save(state);
-              this._rerenderConfig();
-            });
-            slotEl.appendChild(tSel);
-          }
-        }
-      } else {
-        slotEl.classList.add("empty");
-        slotEl.innerHTML = `<span class="slot-num">${i + 1}</span><span class="slot-empty-text">空</span>`;
-      }
-
-      // 连锁高亮：相邻同系
-      if (i > 0 && slots[i] && slots[i - 1]) {
-        const prev = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
-        const curr = BattleEngineV2.getSkillData(this._slotId(slots[i]));
-        if (prev && curr && prev.spell_type === curr.spell_type) {
-          slotEl.classList.add("combo-active");
-        }
-      }
-
-      slotRow.appendChild(slotEl);
-
-      // 连锁箭头
-      if (i < maxSlots - 1) {
-        const arrow = document.createElement("span");
-        arrow.className = "slot-arrow";
-        arrow.textContent = "→";
-        slotRow.appendChild(arrow);
-      }
+    const row = document.createElement("div");
+    row.className = "form-slots";
+    for (let i = 0; i < this.BAR_CAP; i++) {
+      row.appendChild(this._slotCard(state, slots, i, maxSlots));
     }
-    container.appendChild(slotRow);
+    root.appendChild(row);
 
-    // 连锁预览
     const preview = document.createElement("div");
-    preview.className = "combo-preview";
+    preview.className = "form-preview";
     preview.innerHTML = this._getComboPreview(slots);
-    container.appendChild(preview);
+    root.appendChild(preview);
 
-    // 技能列表（按系分组）
-    const listTitle = document.createElement("div");
-    listTitle.className = "skill-list-title";
-    listTitle.textContent = "可用技能（点击放入）";
-    container.appendChild(listTitle);
+    if (this._condPick >= 0) root.appendChild(this._optionSheet("释放条件", BattleEngineV2.conditionOptions(), this._slotCond(slots[this._condPick]), (val) => {
+      const i = this._condPick;
+      slots[i] = { id: this._slotId(slots[i]), condition: val, treasure: this._slotTreasure(slots[i]) };
+      state.battle_slots = slots;
+      SaveManager.save(state);
+      this._condPick = -1;
+      this._rerenderConfig();
+    }, () => { this._condPick = -1; this._rerenderConfig(); }));
 
-    const elements = ["body", "thunder", "fire", "weapon", "soul", "calamity"];
-    for (const el of elements) {
-      const skills = unlocked.map((id) => BattleEngineV2.getSkillData(id)).filter((s) => s && s.spell_type === el);
-      if (skills.length === 0) continue;
-
-      const group = document.createElement("div");
-      group.className = `skill-group element-${el}`;
-      const groupLabel = document.createElement("div");
-      groupLabel.className = "skill-group-label";
-      groupLabel.textContent = `${this._elementName(el)}系`;
-      group.appendChild(groupLabel);
-
-      for (const skill of skills) {
-        const inSlot = slots.some((e) => this._slotId(e) === skill.id);
-        const item = document.createElement("div");
-        item.className = `skill-item rarity-${skill.rarity}${inSlot ? " in-slot" : ""}`;
-        item.innerHTML = `
-          <span class="skill-cat-badge cat-${skill.category}">${this._categoryName(skill.category)}</span>
-          <span class="skill-item-name">${skill.name}</span>
-          <span class="skill-item-dmg">${skill.damage_base}+</span>
-          ${skill.special_effect ? `<span class="skill-item-fx">✦</span>` : ""}
-        `;
-        if (!inSlot && slots.length < maxSlots) {
-          item.addEventListener("click", () => {
-            slots.push({ id: skill.id, condition: "always" });
-            this._selIdx = -1;
-            state.battle_slots = slots;
-            SaveManager.save(state);
-            this._rerenderConfig();
-          });
-        }
-        group.appendChild(item);
-      }
-      container.appendChild(group);
+    if (this._treasurePick >= 0) {
+      const owned = this._ownedTreasures(state);
+      const optsT = [{ value: "", label: "无法宝" }].concat(owned.map((tr) => ({
+        value: tr.id,
+        label: tr.name + (tr.wuxing ? ` [${this._wuxingBadge(tr.wuxing)}]` : ""),
+      })));
+      root.appendChild(this._optionSheet("绑定法宝（器·五行）", optsT, this._slotTreasure(slots[this._treasurePick]) || "", (val) => {
+        const i = this._treasurePick;
+        slots[i] = { id: this._slotId(slots[i]), condition: this._slotCond(slots[i]), treasure: val || null };
+        state.battle_slots = slots;
+        SaveManager.save(state);
+        this._treasurePick = -1;
+        this._rerenderConfig();
+      }, () => { this._treasurePick = -1; this._rerenderConfig(); }));
     }
 
-    // 教学分支 / 确认按钮
-    if (opts.tutorial) {
-      this._renderTutorialUI(container, state);
-    } else {
+    const listTitle = document.createElement("div");
+    listTitle.className = "form-list-title";
+    listTitle.textContent = "体系四修 · 法术入格 · 法宝绑格";
+    root.appendChild(listTitle);
+    this._mountXiuCatalog(root, state, slots, unlocked, maxSlots);
+
+    if (opts.tutorial) this._renderTutorialUI(root, state);
+    else {
       const btn = document.createElement("button");
-      btn.className = "slot-confirm-btn";
+      btn.type = "button";
+      btn.className = "form-confirm";
       btn.textContent = "确认配招";
       btn.addEventListener("click", () => {
-        if (onConfirm) onConfirm();
+        const fn = ctx.onConfirm;
+        this.closeFormation();
+        if (fn) fn();
       });
-      container.appendChild(btn);
+      root.appendChild(btn);
     }
   },
 
-  // ---------- 重渲染 ----------
-  _rerenderConfig() {
-    const c = this._cfgCtx;
-    if (c) this.renderSlotConfig(c.container, c.state, c.onConfirm, c.opts);
+  _slotCard(state, slots, i, maxSlots) {
+    const card = document.createElement("div");
+    card.className = "form-slot";
+    card.dataset.index = i;
+    if (i >= maxSlots) {
+      card.classList.add("locked");
+      card.innerHTML = `<span class="form-slot-num">${i + 1}</span><span class="form-slot-empty">境界未开</span>`;
+      return card;
+    }
+    const entry = slots[i];
+    if (entry) {
+      const skill = BattleEngineV2.getSkillData(this._slotId(entry));
+      if (skill) {
+        card.classList.add("filled", `element-${skill.spell_type}`);
+        if (this._selIdx === i) card.classList.add("selected");
+        if (i > 0 && slots[i - 1]) {
+          const prev = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
+          if (prev && BattleEngineV2.sameTixi && BattleEngineV2.sameTixi(prev.spell_type, skill.spell_type)) card.classList.add("combo-active");
+        }
+        const icon = this._skillIcon(skill);
+        const cond = this._conditionLabel(this._slotCond(entry));
+        const treasureId = this._slotTreasure(entry);
+        const tr = treasureId ? BattleEngineV2.getTreasureData(treasureId) : null;
+        const wx = tr && tr.wuxing ? this._wuxingBadge(tr.wuxing) : "";
+        card.innerHTML =
+          `<span class="form-slot-num">${i + 1}</span>`
+          + `<button type="button" class="form-slot-x" title="移除">✕</button>`
+          + (icon ? `<img class="form-slot-icon" alt="" src="${icon}">` : `<span class="form-slot-el">${this._esc(this._xiuCallout(skill.spell_type))}</span>`)
+          + `<span class="form-slot-name">${this._esc(skill.name)}</span>`
+          + `<span class="form-slot-type">法术 · ${this._esc(this._xiuCallout(skill.spell_type))}</span>`
+          + `<button type="button" class="form-chip cond">${this._esc(cond)}</button>`
+          + `<button type="button" class="form-chip treasure">${this._esc(tr ? ("器·" + (tr.treasure_name || "") + (wx ? " " + wx : "")) : "器·未绑法宝")}</button>`;
+        card.addEventListener("click", (ev) => {
+          if (ev.target.closest(".form-slot-x") || ev.target.closest(".form-chip")) return;
+          if (this._selIdx === i) this._selIdx = -1;
+          else if (this._selIdx >= 0 && slots[this._selIdx]) {
+            const a = this._selIdx;
+            const tmp = slots[a]; slots[a] = slots[i]; slots[i] = tmp;
+            this._selIdx = -1;
+            state.battle_slots = slots;
+            SaveManager.save(state);
+          } else this._selIdx = i;
+          this._rerenderConfig();
+        });
+        card.querySelector(".form-slot-x").addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          slots.splice(i, 1);
+          this._selIdx = -1;
+          state.battle_slots = slots.filter(Boolean);
+          SaveManager.save(state);
+          this._rerenderConfig();
+        });
+        const condBtn = card.querySelector(".form-chip.cond");
+        if (condBtn) condBtn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          this._condPick = i;
+          this._treasurePick = -1;
+          this._rerenderConfig();
+        });
+        const tBtn = card.querySelector(".form-chip.treasure");
+        if (tBtn) tBtn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          this._treasurePick = i;
+          this._condPick = -1;
+          this._rerenderConfig();
+        });
+        return card;
+      }
+    }
+    card.classList.add("empty");
+    card.innerHTML = `<span class="form-slot-num">${i + 1}</span><span class="form-slot-empty">空</span>`;
+    return card;
   },
 
-  // ---------- 新手教学：三层递进引导 ----------
+  _optionSheet(title, options, current, onPick, onClose) {
+    const sheet = document.createElement("div");
+    sheet.className = "form-sheet";
+    const inner = document.createElement("div");
+    inner.className = "form-sheet-inner";
+    inner.innerHTML = `<div class="form-sheet-title">${this._esc(title)}</div>`;
+    for (const opt of options) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "form-sheet-opt" + (String(opt.value) === String(current) ? " on" : "");
+      b.textContent = opt.label;
+      b.addEventListener("click", () => onPick(opt.value));
+      inner.appendChild(b);
+    }
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "form-sheet-opt ghost";
+    cancel.textContent = "取消";
+    cancel.addEventListener("click", onClose);
+    inner.appendChild(cancel);
+    sheet.appendChild(inner);
+    sheet.addEventListener("click", (ev) => { if (ev.target === sheet) onClose(); });
+    return sheet;
+  },
 
-  // 入口：布置教学局面并打开配招界面
+  _rerenderConfig() {
+    const root = document.getElementById("formation-root");
+    if (root && this._formCtx) this._mountFormation(root);
+  },
+
+  // ---------- 教学 ----------
+
   startTutorial(state) {
-    // 确保教学所需技能已解锁
     const need = ["skill_body_01", "skill_body_02", "skill_thunder_01"];
     state.unlocked_skills = state.unlocked_skills || [];
     for (const id of need) {
@@ -220,8 +837,11 @@ const BattleUIV2 = {
       if (!state.skill_levels) state.skill_levels = {};
       if (!state.skill_levels[id]) state.skill_levels[id] = 1;
     }
-    // 故意把两个体系技能隔开（中间夹雷系），让玩家发现"同系相邻"
-    state.battle_slots = [{ id: "skill_body_01", condition: "always" }, { id: "skill_thunder_01", condition: "always" }, { id: "skill_body_02", condition: "always" }];
+    state.battle_slots = [
+      { id: "skill_body_01", condition: "always" },
+      { id: "skill_thunder_01", condition: "always" },
+      { id: "skill_body_02", condition: "always" },
+    ];
     this._selIdx = -1;
     this._tutSolved = false;
     SaveManager.save(state);
@@ -232,43 +852,35 @@ const BattleUIV2 = {
     this._clearTutorialHints();
     const slots = state.battle_slots || [];
     const solved = this._tutorialHasCombo(slots);
-
-    // 教学横幅
     const banner = document.createElement("div");
     banner.className = "tut-banner";
     banner.innerHTML = solved
       ? "✓ 气机共鸣！同系术法相邻，威力倍增。"
       : "教学 · 试着让<b>同系术法</b>相邻排列……";
     container.appendChild(banner);
-
-    // 三层提示容器
     const hint = document.createElement("div");
     hint.className = "tut-hint";
     hint.id = "tut-hint";
     container.appendChild(hint);
-
     if (solved) {
       this._tutSolved = true;
       hint.innerHTML = '<div class="tut-bubble gold">妙！同系相邻，气机共鸣，威力倍增。</div>';
       const btn = document.createElement("button");
-      btn.className = "slot-confirm-btn tut-go";
+      btn.className = "form-confirm tut-go";
       btn.textContent = "开始斗法 · 试试威力";
       btn.addEventListener("click", () => this._launchTutorialBattle(state));
       container.appendChild(btn);
     } else {
-      // 第一层（立即）：高亮抖动两个体系格
       this._highlightBodySlots(container);
-      // 第二层（3秒）：文字提示
       this._tutTimers.push(setTimeout(() => {
         if (this._tutSolved) return;
         const h = document.getElementById("tut-hint");
         if (h) h.innerHTML = '<div class="tut-bubble">同系术法相邻，或有奇效……<br><span class="tut-sub">点选一格，再点另一格，即可交换顺序。</span></div>';
       }, 3000));
-      // 第三层（8秒）：箭头直接引导
       this._tutTimers.push(setTimeout(() => {
         if (this._tutSolved) return;
         const h = document.getElementById("tut-hint");
-        if (h) h.innerHTML = '<div class="tut-bubble arrow">把第③格「铜头诀」换到第②格 ↷<br><span class="tut-sub">先点「铜头诀」，再点「掌心雷」。</span></div>';
+        if (h) h.innerHTML = '<div class="tut-bubble arrow">把第③格换到第②格 ↷<br><span class="tut-sub">先点第③格，再点第②格。</span></div>';
         this._showArrow(container);
       }, 8000));
     }
@@ -284,17 +896,17 @@ const BattleUIV2 = {
   },
 
   _highlightBodySlots(container) {
-    const cells = container.querySelectorAll(".slot-cell.filled");
+    const cells = container.querySelectorAll(".form-slot.filled");
     cells.forEach((cell) => {
       const idx = parseInt(cell.dataset.index, 10);
-      const slots = (this._cfgCtx && this._cfgCtx.state.battle_slots) || [];
+      const slots = (this._formCtx && this._formCtx.state.battle_slots) || [];
       const sk = BattleEngineV2.getSkillData(this._slotId(slots[idx]));
       if (sk && sk.spell_type === "body") cell.classList.add("tut-shake");
     });
   },
 
   _showArrow(container) {
-    const row = container.querySelector(".slot-row");
+    const row = container.querySelector(".form-slots");
     if (!row) return;
     const arrow = document.createElement("div");
     arrow.className = "tut-arrow";
@@ -312,9 +924,13 @@ const BattleUIV2 = {
     this._clearTutorialHints();
     state.flags.battle_v2_tutorial_done = true;
     SaveManager.save(state);
-    if (typeof closePopup === "function") closePopup();
+    const pending = (typeof GameplayEngine !== "undefined") ? GameplayEngine.pendingBattle : null;
+    if (typeof GameplayEngine !== "undefined") GameplayEngine.pendingBattle = null;
+    this.closeFormation();
+    if (typeof releaseModal === "function") releaseModal();
     if (typeof Game !== "undefined") {
-      Game.startBattleV2({
+      if (pending) Game.startBattleV2(pending);
+      else Game.startBattleV2({
         name: "山野妖猪",
         enemy_power: 350,
         source: "normal",
@@ -324,542 +940,373 @@ const BattleUIV2 = {
   },
 
   _getComboPreview(slots) {
-    if (slots.length < 2) return '<span class="preview-none">放入技能后显示连锁预览</span>';
+    if (!slots || slots.length < 2) return '<span class="preview-none">法术入格，同体系相邻连锁；器上五行才共鸣</span>';
     const parts = [];
-    let maxCombo = 0;
     let currentCombo = 1;
     let comboElement = null;
-
     for (let i = 1; i < slots.length; i++) {
       const prev = BattleEngineV2.getSkillData(this._slotId(slots[i - 1]));
       const curr = BattleEngineV2.getSkillData(this._slotId(slots[i]));
-      if (prev && curr && prev.spell_type === curr.spell_type) {
+      if (prev && curr && BattleEngineV2.sameTixi && BattleEngineV2.sameTixi(prev.spell_type, curr.spell_type)) {
         currentCombo++;
         comboElement = curr.spell_type;
       } else {
         if (currentCombo >= 2) {
-          parts.push(`<span class="preview-combo element-${comboElement}">${this._elementName(comboElement)}系${currentCombo >= 3 ? "三连·终极" : "二连"}×1.3</span>`);
+          parts.push(`<span class="preview-combo element-${comboElement}">${this._xiuCallout(comboElement)}${currentCombo >= 3 ? "三连·终极" : "二连"}×1.3</span>`);
         }
         currentCombo = 1;
         comboElement = null;
       }
     }
     if (currentCombo >= 2 && comboElement) {
-      parts.push(`<span class="preview-combo element-${comboElement}">${this._elementName(comboElement)}系${currentCombo >= 3 ? "三连·终极" : "二连"}×1.3</span>`);
+      parts.push(`<span class="preview-combo element-${comboElement}">${this._xiuCallout(comboElement)}${currentCombo >= 3 ? "三连·终极" : "二连"}×1.3</span>`);
     }
-
-    if (parts.length === 0) return '<span class="preview-none">无连锁（相邻同系触发）</span>';
+    if (parts.length === 0) return '<span class="preview-none">无连锁（相邻同体系触发）</span>';
     return parts.join(" ");
   },
 
-  // ---------- 战斗演出界面 ----------
-
-  renderBattlePopup(panel, battle, state) {
-    panel.classList.add("style-breakthrough", "battle-v2");
-    const body = panel.querySelector(".popup-body") || panel;
-
-    // 战斗区域
-    const zone = document.createElement("div");
-    zone.className = "battle-v2-zone";
-    body.appendChild(zone);
-
-    // round timeline: action progress bar
-    battle.playerName = this._playerBattleName(state);
-    this._buildTimeline(zone, battle);
-
-    // 日志区域
-    const logBox = document.createElement("div");
-    logBox.className = "battle-v2-log";
-    body.appendChild(logBox);
-
-    // 初始信息
-    this._appendLog(logBox, `你与${battle.name}气机相触，斗法就此展开。`, "system");
-    for (const evt of battle.pendingEvents.splice(0)) {
-      if (typeof evt === "string") this._appendLog(logBox, evt, "system");
-    }
-
-    // 速度控制
-    const speedRow = document.createElement("div");
-    speedRow.className = "battle-speed-row";
-    const speeds = [1, 2, 4, 0];
-    const speedLabels = ["1×", "2×", "4×", "跳过"];
-    speeds.forEach((sp, idx) => {
-      const btn = document.createElement("button");
-      btn.className = `speed-btn${battle.speed === sp ? " active" : ""}`;
-      btn.textContent = speedLabels[idx];
-      btn.addEventListener("click", () => {
-        battle.speed = sp;
-        speedRow.querySelectorAll(".speed-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        if (sp === 0) this._runSkip(battle, state, logBox, zone, panel);
-      });
-      speedRow.appendChild(btn);
-    });
-    body.appendChild(speedRow);
-
-    // 开始自动战斗
-    this._startAutoLoop(battle, state, logBox, zone, panel);
-  },
-
-  _startAutoLoop(battle, state, logBox, zone, panel) {
-    if (battle._animating) return; // reentry guard
-    battle._animating = true;
-
-    const delay = () => this._getDelay(battle);
-    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-    const alive = () => battle.enemies.filter((e) => e.hp > 0).length;
-
-    const runRound = async () => {
-      while (!battle.done && battle._animating) {
-        // === round start (fire domain, boss mechanic) ===
-        const startEvents = BattleEngineV2.startPlayerRound(state, battle);
-        this._tlPlayer(zone, battle, -1, false);
-        this._tlFoe(zone, battle, -1, false);
-        this._foeTelegraph(zone, battle);
-        if (startEvents.length) {
-          this._renderEvents(startEvents, logBox, zone, battle);
-          if (battle.speed !== 0) await sleep(delay() * 0.5);
-        }
-        if (battle.done) break;
-
-        // === slot-level alternation: P[i] -> enemy gap act, repeat ===
-        for (let i = 0; i < battle.slots.length; i++) {
-          if (battle.done) break;
-          if (alive() === 0) break;
-
-          // player casts slot i (foe gauge charges, telegraphing its next move)
-          this._highlightActiveSlot(zone, i);
-          this._tlPlayer(zone, battle, i, false);
-          this._foeTelegraph(zone, battle);
-          const slotEvents = BattleEngineV2.executeSingleSlot(state, battle, i);
-          if (slotEvents.length) this._renderEvents(slotEvents, logBox, zone, battle);
-          if (battle.speed !== 0) await sleep(delay());
-          this._highlightActiveSlot(zone, -1);
-          if (battle.done) break;
-          if (alive() === 0) break;
-
-          // enemy gap act fires; reveal its skill on foe node i (capture before intent is nulled)
-          const foeSkill = (battle.enemies[0] && battle.enemies[0].intent && battle.enemies[0].intent.label) ? String(battle.enemies[0].intent.label) : null;
-          this._tlFoe(zone, battle, i, false, foeSkill);
-          const gapEvents = BattleEngineV2.enemyGapAct(state, battle);
-          if (gapEvents.length) this._renderEvents(gapEvents, logBox, zone, battle);
-          if (battle.speed !== 0) await sleep(delay() * 0.7);
-          if (battle.done) break;
-        }
-
-        if (battle.done) break;
-
-        // === player round end (ultimate, lifesteal, victory) ===
-        const endEvents = BattleEngineV2.endPlayerRound(state, battle);
-        if (endEvents.length) {
-          this._renderEvents(endEvents, logBox, zone, battle);
-          if (battle.speed !== 0) await sleep(delay() * 0.6);
-        }
-        if (battle.done) break;
-
-        // === round-end bookkeeping (burn/status decay, boss phase, timeout, next intent) ===
-        const bookEvents = BattleEngineV2.endEnemyRoundBookkeeping(state, battle);
-        if (bookEvents.length) this._renderEvents(bookEvents, logBox, zone, battle);
-        this._tlPlayer(zone, battle, -1, true);
-        this._tlFoe(zone, battle, -1, true);
-        if (!battle.done && battle.speed !== 0) await sleep(delay() * 0.6);
+  _paintKit(root, battle, state) {
+    const kit = root.querySelector("[data-duel=kit]");
+    if (!kit) return;
+    const treasures = [];
+    const seen = {};
+    for (const s of battle.slots || []) {
+      const tid = s && s.treasure;
+      if (tid && !seen[tid]) {
+        seen[tid] = true;
+        const row = BattleEngineV2.getTreasureData ? BattleEngineV2.getTreasureData(tid) : null;
+        treasures.push({ id: tid, name: row ? (row.treasure_name || tid) : tid });
       }
-
-      battle._animating = false;
-      this._renderBattleEnd(battle, logBox, zone, panel);
-    };
-
-    runRound();
+    }
+    while (treasures.length < 2) treasures.push(null);
+    let shen = "神通未成";
+    const slots = battle.slots || [];
+    let run = 1, runEl = slots[0] && slots[0].spell_type;
+    for (let i = 1; i < slots.length; i++) {
+      if (slots[i] && slots[i].spell_type === runEl) {
+        run++;
+        if (run >= 3) {
+          const ult = BattleEngineV2.getUltimateConfig && BattleEngineV2.getUltimateConfig();
+          const u = ult && ult[runEl];
+          shen = (u && u.name) || (this._elementName(runEl) + "系神通");
+          break;
+        }
+      } else {
+        run = 1;
+        runEl = slots[i] && slots[i].spell_type;
+      }
+    }
+    kit.innerHTML =
+      `<div class="duel-kit-row treasures">`
+      + treasures.slice(0, 2).map((t) => t
+        ? `<span class="duel-kit-slot filled" title="${this._esc(t.name)}">宝·${this._esc((t.name || "").slice(0, 2))}</span>`
+        : `<span class="duel-kit-slot empty">宝</span>`).join("")
+      + `</div>`
+      + `<div class="duel-kit-row shentong"><span class="duel-kit-slot shen${shen === "神通未成" ? " empty" : " filled"}">通·${this._esc(shen)}</span></div>`;
   },
 
-  _highlightActiveSlot(zone, activeIndex) {
-    const slotMini = zone.querySelector(".slot-mini-row");
-    if (!slotMini) return;
-    const cells = slotMini.querySelectorAll(".slot-mini");
-    cells.forEach((cell, idx) => {
-      cell.classList.toggle("active-cast", idx === activeIndex);
-    });
+  _onOrbTap(ev, session, root) {
+    if (!this._alive(session) || session.battle.speed === 0) return;
+    const btn = ev.target.closest(".duel-orb");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.idx, 10);
+    if (idx !== session.urgeSlot) return;
+    session.battle._urgeNext = 1.15;
+    session.urgedSlots[idx] = true;
+    btn.classList.add("urged");
+    this._stamp(root, session, "催");
   },
 
-  _runSkip(battle, state, logBox, zone, panel) {
-    // speed 已被按钮设为 0，动画循环中所有 await sleep 将被跳过，
-    // 循环以无延迟方式瞬间跑完并自行调用 _renderBattleEnd。
-    // 不在此处调用 runFullAuto，避免与正在执行的异步循环产生状态竞争。
+  _callout(root, el, name, sub, cls) {
+    const box = root.querySelector("[data-duel=callout]");
+    if (!box) return;
+    box.className = "duel-callout " + (cls || "");
+    box.innerHTML =
+      (el ? `<span class="co-k">${this._esc(el)}</span>` : `<span class="co-k">斗法</span>`)
+      + `<span class="co-name">${this._esc(name || "")}</span>`
+      + (sub ? `<span class="co-sub">${this._esc(sub)}</span>` : "");
   },
 
-  _getDelay(battle) {
-    // 8.0 原为 800/400/150；实测体感过快，1× 放慢至 1400 便于观看与读预告（🔴可调）
-    const base = 1400;
-    if (battle.speed === 2) return 700;
-    if (battle.speed === 4) return 300;
-    return base;
+  _launchBolt(root, session, slotIndex, skill) {
+    this._flash(root, session, skill && skill.spell_type, false);
   },
 
-  // 玩家战斗名：境界称号优先（生产 RealmManager），其次本命修称（harness/降级）
+  _flash(root, session, element, combo) {
+    const layer = root.querySelector("[data-duel=impact]");
+    if (!layer) return;
+    const flash = document.createElement("div");
+    flash.className = "duel-flash element-" + (element || "body") + (combo ? " combo" : "");
+    layer.appendChild(flash);
+    this._timer(session, () => flash.remove(), 380);
+  },
+
+  _stamp(root, session, text) {
+    const layer = root.querySelector("[data-duel=impact]");
+    if (!layer) return;
+    const el = document.createElement("div");
+    el.className = "duel-stamp";
+    el.textContent = text;
+    layer.appendChild(el);
+    this._timer(session, () => el.remove(), 700);
+  },
+
+  _yaoSilhouette(name) {
+    return `<svg class="duel-yao" viewBox="0 0 160 180" aria-hidden="true">`
+      + `<ellipse cx="80" cy="168" rx="46" ry="8" fill="rgba(80,20,20,0.45)"/>`
+      + `<path d="M80 28 C118 36 132 88 118 128 C108 156 52 156 42 128 C28 88 42 36 80 28 Z" fill="#2a1c18"/>`
+      + `<path d="M52 40 L36 8 L60 32 M108 40 L124 8 L100 32" fill="#3a241c"/>`
+      + `<circle cx="62" cy="78" r="7" fill="#c62828"/><circle cx="98" cy="78" r="7" fill="#c62828"/>`
+      + `<circle cx="62" cy="78" r="3" fill="#ffecb3"/><circle cx="98" cy="78" r="3" fill="#ffecb3"/>`
+      + `<path d="M68 108 Q80 122 92 108" stroke="#6d4c41" fill="none" stroke-width="3"/>`
+      + `</svg><span class="visually-hidden">${this._esc(name || "")}</span>`;
+  },
+
+  // ---------- 资源 / 文案 ----------
+
+  _battleBg(battle, state) {
+    if (typeof BACKGROUND_PATHS === "undefined") return "assets/backgrounds/bg_mountain_cave.jpg";
+    if (battle.source === "breakthrough") return BACKGROUND_PATHS.fengsheng_far;
+    if (battle.source === "boss") return BACKGROUND_PATHS.kulou_edge || BACKGROUND_PATHS.mountain_cave;
+    if (battle.source === "array") return BACKGROUND_PATHS.xichi_far || BACKGROUND_PATHS.mountain_cave;
+    return BACKGROUND_PATHS.mountain_cave;
+  },
+
+  _playerPortrait(state) {
+    try {
+      if (typeof getCharacterPath === "function") return getCharacterPath(state) || "";
+    } catch (e) {}
+    return (typeof CHARACTER_PATHS !== "undefined" && CHARACTER_PATHS.human)
+      ? CHARACTER_PATHS.human["炼气士"]
+      : "";
+  },
+
+  _foePortrait(battle) {
+    const bossId = battle && battle.payload && battle.payload.bossId;
+    if (bossId && typeof BOSS_ICONS !== "undefined" && BOSS_ICONS[bossId]) return BOSS_ICONS[bossId];
+    if (typeof BOSS_ICONS !== "undefined" && BOSS_ICONS.boss_001) {
+      const src = String(battle.source || "");
+      if (src === "encounter" || src === "debug" || src === "normal" || src === "") return BOSS_ICONS.boss_001;
+    }
+    return "";
+  },
+
   _playerBattleName(state) {
     try {
-      if (typeof RealmManager !== "undefined" && RealmManager.getPhaseRealmName && RealmManager.getCurrentRealm) {
-        const rn = RealmManager.getPhaseRealmName(RealmManager.getCurrentRealm(state));
-        if (rn) return String(rn);
+      if (typeof RealmManager !== "undefined" && RealmManager.getCurrentRealm) {
+        const realm = RealmManager.getCurrentRealm(state);
+        if (RealmManager.getPhaseRealmName) {
+          const rn = RealmManager.getPhaseRealmName(realm);
+          if (rn) return String(rn);
+        }
+        if (realm && realm.major_realm) return String(realm.major_realm);
       }
     } catch (e) {}
     const bm = { thunder: "雷修", fire: "火修", body: "体修", weapon: "器修", soul: "魂修", calamity: "劫修" };
-    return bm[String((state && state.benming_school) || "")] || "道友";
+    return bm[String((state && state.benming_school) || "")] || "炼气士";
   },
 
-  // ---------- round timeline: two action bars (you / foe skill frames) ----------
-  _buildTimeline(zone, battle) {
-    let tl = zone.querySelector(".round-timeline");
-    if (tl == null) {
-      tl = document.createElement("div");
-      tl.className = "round-timeline";
-      tl.innerHTML =
-        '<div class="tl-bar tl-you"><span class="tl-bar-label you">\u4f60</span><div class="tl-bar-body">'
-        + '<div class="tl-track"><div class="tl-fill"></div></div><div class="tl-nodes tl-player-nodes"></div>'
-        + '</div></div>'
-        + '<div class="tl-bar tl-foe"><span class="tl-bar-label foe">\u654c</span><div class="tl-bar-body">'
-        + '<div class="tl-track tl-foe-track"><div class="tl-fill tl-foe-fill"></div></div><div class="tl-nodes tl-foe-nodes"></div>'
-        + '<div class="tl-foe-telegraph"></div>'
-        + '</div></div>';
-      zone.prepend(tl);
-      // 标签换成对应战斗名字：你→玩家境界称号，敌→当前最前之敌
-      const youLabel = tl.querySelector(".tl-bar-label.you");
-      if (youLabel != null) youLabel.textContent = battle.playerName || "你";
-      const foeLabel0 = tl.querySelector(".tl-bar-label.foe");
-      const front0 = (battle.enemies || []).find((e) => e.hp > 0) || (battle.enemies || [])[0];
-      if (foeLabel0 != null) foeLabel0.textContent = front0 ? front0.name : "敌";
+  _skillIcon(skill) {
+    if (!skill) return "";
+    const id = skill.id || skill.skill_id;
+    if (typeof TREASURE_ICONS !== "undefined" && TREASURE_ICONS[id]) return TREASURE_ICONS[id];
+    if (typeof SPELL_ICONS !== "undefined" && SPELL_ICONS[id]) return SPELL_ICONS[id];
+    const byEl = {
+      thunder: "assets/spells/spell_palm_thunder.png",
+      fire: "assets/spells/spell_spirit_fire.png",
+      weapon: "assets/spells/spell_artifact_control.png",
+      soul: "assets/spells/spell_soul_01.png",
+      calamity: "assets/spells/spell_calamity_01.png",
+      body: "assets/spells/spell_earth_01.png",
+    };
+    const el = skill.spell_type;
+    if (typeof SPELL_ICONS !== "undefined") {
+      const legacy = "spell_" + el + "_01";
+      if (SPELL_ICONS[legacy]) return SPELL_ICONS[legacy];
     }
-    // top bar: player slot nodes
-    const nodesBox = tl.querySelector(".tl-player-nodes");
-    const circled = ["\u2460", "\u2461", "\u2462", "\u2463", "\u2464", "\u2465", "\u2466", "\u2467"];
-    let phtml = "";
-    for (let i = 0; i < battle.slots.length; i++) {
-      const s = battle.slots[i];
-      phtml += `<div class="tl-node element-${s.spell_type}" data-idx="${i}">`
-        + `<span class="tl-dot">${circled[i] || (i + 1)}</span>`
-        + `<span class="tl-label">${s.name.slice(0, 2)}</span></div>`;
-    }
-    nodesBox.innerHTML = phtml;
-    // bottom bar: enemy gap-act nodes (mirror player; one node per player slot, lit in order)
-    const foeBox = tl.querySelector(".tl-foe-nodes");
-    let ehtml = "";
-    for (let i = 0; i < battle.slots.length; i++) {
-      ehtml += `<div class="tl-node tl-foe-node" data-idx="${i}">`
-        + `<span class="tl-dot">${circled[i] || (i + 1)}</span>`
-        + `<span class="tl-label"></span></div>`;
-    }
-    foeBox.innerHTML = ehtml;
-    this._tlPlayer(zone, battle, -1, false);
-    this._tlFoe(zone, battle, -1, false);
+    return byEl[el] || "";
   },
 
-  // enemy skill frame labels: boss intentPool labels, else generic move types
-  _enemySkillLabels(battle) {
-    const e = (battle.enemies && battle.enemies.length) ? battle.enemies[0] : null;
-    if (e && Array.isArray(e.intentPool) && e.intentPool.length) {
-      const labels = e.intentPool.map((p) => String(p.label || p.type)).filter((x) => x && x !== "undefined");
-      if (labels.length) return labels.slice(0, 6);
-    }
-    return ["\u6251\u51fb", "\u51f6\u5149\u5927\u76db", "\u7f61\u6c14\u62a4\u4f53", "\u55b7\u5410\u90aa\u706b", "\u5636\u543c\u9707\u9b42"];
+  _esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   },
 
-  // top bar (you): player slot nodes + gold progress fill
-  _tlPlayer(zone, battle, activeIndex, done) {
-    const tl = zone.querySelector(".round-timeline");
-    if (tl == null) return;
-    const N = battle.slots.length;
-    const nodes = tl.querySelectorAll(".tl-player-nodes .tl-node");
-    nodes.forEach((node, idx) => {
-      node.classList.toggle("active", done !== true && idx === activeIndex);
-      node.classList.toggle("done", done === true || (activeIndex >= 0 && idx < activeIndex));
-    });
-    const fill = tl.querySelector(".tl-fill");
-    if (fill != null) {
-      let pct = 0;
-      if (done === true) pct = 100;
-      else if (activeIndex >= 0) pct = N > 1 ? (activeIndex / (N - 1)) * 100 : 100;
-      fill.style.width = pct + "%";
-    }
-  },
+  _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
+  _slotCond(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
+  _slotTreasure(entry) { return (entry && typeof entry === "object" && entry.treasure) ? String(entry.treasure) : null; },
 
-  // bottom bar (foe): sequential gap-act nodes mirroring the player bar.
-  // activeIndex = which enemy gap act is active (0..N-1); done = round over;
-  // skillLabel = name of the skill fired by the active gap act (reveals that node's label).
-  _tlFoe(zone, battle, activeIndex, done, skillLabel) {
-    const tl = zone.querySelector(".round-timeline");
-    if (tl == null) return;
-    const N = battle.slots.length;
-    const nodes = tl.querySelectorAll(".tl-foe-nodes .tl-node");
-    // reset (activeIndex<0, not done): clear revealed labels back to blank
-    if (activeIndex < 0 && done !== true) {
-      nodes.forEach((node) => { const lb = node.querySelector(".tl-label"); if (lb != null) lb.textContent = ""; });
-    }
-    nodes.forEach((node, idx) => {
-      node.classList.toggle("active", done !== true && idx === activeIndex);
-      node.classList.toggle("done", done === true || (activeIndex >= 0 && idx < activeIndex));
-      if (skillLabel != null && idx === activeIndex) {
-        const lb = node.querySelector(".tl-label");
-        if (lb != null) lb.textContent = skillLabel;
-      }
-    });
-    const fill = tl.querySelector(".tl-foe-fill");
-    if (fill != null) {
-      let pct = 0;
-      if (done === true) pct = 100;
-      else if (activeIndex >= 0) pct = N > 1 ? (activeIndex / (N - 1)) * 100 : 100;
-      fill.style.width = pct + "%";
-    }
-  },
-
-  // 敌方意图预告：展示最前存活敌方已预roll的下一招（label + 五行色），供玩家预判共鸣克增
-  _foeTelegraph(zone, battle) {
-    const tl = zone.querySelector(".round-timeline");
-    if (tl == null) return;
-    const box = tl.querySelector(".tl-foe-telegraph");
-    if (box == null) return;
-    const front = (battle.enemies || []).find((e) => e.hp > 0);
-    const foeLabel = tl.querySelector(".tl-bar-label.foe");
-    if (foeLabel != null && front) foeLabel.textContent = front.name;
-    const it = front ? front.intent : null;
-    if (it == null || battle.done) { box.innerHTML = ""; return; }
-    const wx = it.wuxing || null;
-    const hasRS = typeof ResonanceSystem !== "undefined";
-    const wxLabel = wx && hasRS ? ResonanceSystem.wuxingLabel(wx) : "";
-    const wxColor = wx && hasRS ? ResonanceSystem.wuxingColor(wx) : "#888";
-    const wxBadge = wx ? `<span class="tg-wx" style="color:${wxColor};border-color:${wxColor}">${wxLabel}</span>` : "";
-    box.innerHTML = `<span class="tg-prefix">\u654c\u5c06\u65bd</span><span class="tg-name">${it.label || it.type}</span>${wxBadge}`;
-  },
-
-  _renderEvents(events, logBox, zone, battle) {
-    // 跳过模式（speed=0）：只显示关键事件，避免日志刷屏
-    const KEY_EVENTS = new Set(["ultimate", "victory", "player_defeated", "kill", "phase_advance"]);
-    const skipMode = battle.speed === 0;
-
-    for (const evt of events) {
-      if (skipMode && !KEY_EVENTS.has(evt.type)) continue;
-      switch (evt.type) {
-        case "attack": {
-          const cls = evt.combo ? "combo-hit" : "normal-hit";
-          const comboText = evt.combo ? ` <span class="combo-badge">${this._elementName(evt.element)}系共鸣！×${evt.comboMult}</span>` : "";
-          this._appendLog(logBox, `${evt.skillName} 施于 ${evt.targetName}，伤 <b>${formatInt(evt.damage)}</b>${comboText}`, cls);
-            // SFX-03 五系出招音色（雷/火/剑/魂/劫），高速时节流避免连珠刺耳。
-            if (typeof AudioManager !== "undefined") {
-              const now = performance.now();
-              if (!this._lastCastSfx || now - this._lastCastSfx > 130) {
-                this._lastCastSfx = now;
-                AudioManager.playSfx(AudioManager.elementSfx(evt.element), { gain: evt.combo ? 1.0 : 0.8 });
-              }
-            }
-          break;
-        }
-        case "kill":
-          this._appendLog(logBox, `${evt.targetName} 道消身陨，溃散当场！`, "kill-line");
-          break;
-        case "slot_wait":
-          this._appendLog(logBox, `${evt.skillName} 引而不发（${this._conditionLabel(evt.condition)}）。`, "wait-line");
-          break;
-        case "ultimate":
-          this._showUltimateOverlay(evt, zone);
-          if (typeof AudioManager !== "undefined") AudioManager.playSfx("tribulation_rumble", { dur: 1.0, gain: 0.5 }); // SFX-04 终极声势
-          this._appendLog(logBox, `【${evt.name}】${evt.visual_text}`, "ultimate-line");
-          if (evt.total_damage) this._appendLog(logBox, `共伤 ${formatInt(evt.total_damage)}！`, "ultimate-dmg");
-          if (evt.damage) this._appendLog(logBox, `伤 ${formatInt(evt.damage)}！`, "ultimate-dmg");
-          if (evt.detonate_damage) this._appendLog(logBox, `引雷炸裂，再伤 ${formatInt(evt.detonate_damage)}！`, "ultimate-dmg");
-          break;
-        case "enemy_attack":
-          if (battle.stats) battle.stats.lastHit = evt.name;
-          this._appendLog(logBox, `${evt.name}${evt.label}，你受创 ${formatInt(evt.damage)}。`, "enemy-line");
-          break;
-        case "enemy_charged_attack":
-          if (battle.stats) battle.stats.lastHit = evt.name;
-          this._appendLog(logBox, `${evt.name}蓄势既久，骤然重击！你受创 ${formatInt(evt.damage)}。`, "enemy-heavy");
-          break;
-        case "enemy_stunned":
-        case "enemy_paralyzed":
-          this._appendLog(logBox, `${evt.name}气机受制，动弹不得！`, "control-line");
-          break;
-        case "enemy_burn_tick":
-          this._appendLog(logBox, `灵火灼体，${evt.name}受焚 ${formatInt(evt.damage)}。`, "burn-line");
-          break;
-        case "player_burn":
-          this._appendLog(logBox, `邪火焚身，你受灼 ${formatInt(evt.damage)}。`, "player-hurt");
-          break;
-        case "player_defeated":
-          this._appendLog(logBox, "你勉护灵台一线，且战且退，暂避其锋。", "defeat-line");
-          break;
-        case "victory":
-          this._appendLog(logBox, `${battle.name}溃散！此战告捷！`, "victory-line");
-          break;
-        case "mechanic":
-          this._appendLog(logBox, this._mechanicText(evt), "mechanic-line");
-          break;
-        case "phase_advance":
-          this._appendLog(logBox, evt.intro || `${evt.name}显化而出！`, "phase-line");
-          break;
-        case "lifesteal":
-          this._appendLog(logBox, `六魂尽灭——回复 ${formatInt(evt.amount)} 气血！`, "heal-line");
-          break;
-        case "reflect":
-          this._appendLog(logBox, `金光反弹！${evt.target}受 ${formatInt(evt.damage)} 伤害！`, "combo-hit");
-          break;
-          case "fire_domain":
-            this._appendLog(logBox, `火域燎原，${evt.target}受焚 ${formatInt(evt.damage)}。`, "burn-line");
-            break;
-          case "enemy_charge":
-            this._appendLog(logBox, `${evt.name}${evt.label || "蓄势"}，气机暴涨！`, "enemy-heavy");
-            break;
-          case "enemy_charge_blocked":
-            this._appendLog(logBox, `${evt.name}蓄势被锁，难以凝聚。`, "control-line");
-            break;
-          case "enemy_block":
-            this._appendLog(logBox, `${evt.name}凝罡护体（罡气 ${formatInt(evt.block)}）。`, "enemy-line");
-            break;
-          case "enemy_burn":
-            this._appendLog(logBox, `${evt.name}施以邪火，你被灼烧（+${formatInt(evt.burn)}）。`, "player-hurt");
-            break;
-          case "enemy_weak":
-            this._appendLog(logBox, `${evt.name}施以弱咒，你的攻势受挫。`, "player-hurt");
-            break;
-          case "enemy_miss":
-            this._appendLog(logBox, `${evt.name}一击落空！`, "control-line");
-            break;
-          case "self_burn_tick":
-            this._appendLog(logBox, `赤焰反噬，你自灼 ${formatInt(evt.damage)}。`, "player-hurt");
-            break;
-          case "timeout":
-            this._appendLog(logBox, "斗法逾时，胜负未分，只得作罢。", "defeat-line");
-            break;
-        default:
-          break;
+  _ownedTreasures(state) {
+    const out = [];
+    const t = state.treasures || {};
+    for (const tid of Object.keys(t)) {
+      if (Number(t[tid] && t[tid].level) > 0) {
+        const row = BattleEngineV2.getTreasureData ? BattleEngineV2.getTreasureData(tid) : null;
+        out.push({ id: tid, name: row ? (row.treasure_name || tid) : tid, wuxing: row && row.wuxing ? String(row.wuxing) : null });
       }
     }
-    // 更新血条
-    this._updateHealthBars(zone, battle);
+    return out;
   },
 
-  _showUltimateOverlay(evt, zone) {
-    const overlay = document.createElement("div");
-    overlay.className = "ultimate-overlay";
-    overlay.style.setProperty("--ult-color", evt.visual_color || "#FFD700");
-    overlay.innerHTML = `<div class="ultimate-text">${evt.name}</div><div class="ultimate-sub">${evt.visual_text}</div>`;
-    zone.appendChild(overlay);
-    // 3秒后移除
-    setTimeout(() => overlay.classList.add("fade-out"), 2000);
-    setTimeout(() => overlay.remove(), 2800);
+  _wuxingBadge(wx) {
+    if (!wx) return "";
+    if (typeof ResonanceSystem !== "undefined" && ResonanceSystem.wuxingLabel) return ResonanceSystem.wuxingLabel(wx);
+    const names = { wood: "木", fire: "火", earth: "土", metal: "金", water: "水" };
+    return names[wx] || wx;
   },
 
-  // 败因摘要：复盘此战胜负关键，助玩家调整配招与条件
-  _renderDefeatSummary(battle, logBox) {
-    const st = battle.stats || { dealt: 0, taken: 0, lastHit: "" };
-    const foes = battle.enemies || [];
-    const remainFoes = foes.filter((e) => e.hp > 0);
-    const totalEnemyHp = foes.reduce((a, e) => a + Math.max(0, e.hp), 0);
-    const lines = [];
-    lines.push(`回合：撑至第 ${int(battle.round, 0)} 回合`);
-    lines.push(`输出：累计造成 ${formatInt(st.dealt)} 伤害`);
-    lines.push(`承伤：累计承受 ${formatInt(st.taken)} 伤害`);
-    if (st.lastHit) lines.push(`败因：${st.lastHit} 给予致命一击`);
-    if (remainFoes.length) lines.push(`残敌：尚有 ${remainFoes.length} 敌未灭（余血 ${formatInt(totalEnemyHp)}）`);
-    const box = document.createElement("div");
-    box.className = "defeat-summary";
-    box.innerHTML = `<div class="defeat-title">此战小记</div>` + lines.map((l) => `<div class="defeat-line">${l}</div>`).join("")
-      + `<div class="defeat-tip">提示：调整斗法栏顺序触发同系共鸣，或为术法设置释放条件以应对强敌。</div>`;
-    logBox.appendChild(box);
-    logBox.scrollTop = logBox.scrollHeight;
+  _conditionLabel(cond) {
+    const c = String(cond || "always");
+    if (c === "always" || c === "") return "每轮释放";
+    const opt = (BattleEngineV2.conditionOptions ? BattleEngineV2.conditionOptions() : []).find((o) => o.value === c);
+    if (opt) return opt.label;
+    const [k, a] = c.split(":");
+    const zh = { every_n: `每${a}轮`, enemy_hp_below: `敌血<${a}%`, self_hp_below: `己血<${a}%`, enemy_charging: "敌蓄势", round_gte: `第${a}轮起` };
+    return zh[k] || c;
   },
 
-  // 跳过结算面板：speed=0 时给出干净战报（胜负/回合/总伤/承伤/共鸣触发），胜负皆显示
-  _renderSettlement(battle, logBox) {
-    const st = battle.stats || {};
-    const win = battle.win === true;
-    const rb = int(st.resoBroken, 0), re = int(st.resoEnhanced, 0), rn = int(st.resoNormal, 0);
-    const box = document.createElement("div");
-    box.className = "battle-settlement" + (win ? " win" : " loss");
-    box.innerHTML =
-      `<div class="settle-title">${win ? "\u6b64\u6218\u544a\u6377" : "\u6b64\u6218\u5931\u5229"}</div>`
-      + `<div class="settle-grid">`
-      + `<div class="settle-cell"><span class="sc-k">\u56de\u5408</span><span class="sc-v">${int(battle.round, 0)}</span></div>`
-      + `<div class="settle-cell"><span class="sc-k">\u603b\u8f93\u51fa</span><span class="sc-v">${formatInt(st.dealt || 0)}</span></div>`
-      + `<div class="settle-cell"><span class="sc-k">\u603b\u627f\u4f24</span><span class="sc-v">${formatInt(st.taken || 0)}</span></div>`
-      + `<div class="settle-cell"><span class="sc-k">\u5171\u9e23</span><span class="sc-v">${rb + re + rn}</span></div>`
-      + `</div>`
-      + `<div class="settle-reso">`
-      + `<span class="sr broken">\u7834 ${rb}</span>`
-      + `<span class="sr enhanced">\u589e ${re}</span>`
-      + `<span class="sr normal">\u5e38 ${rn}</span>`
-      + `</div>`;
-    logBox.appendChild(box);
-    logBox.scrollTop = logBox.scrollHeight;
+  _elementName(el) {
+    const names = { body: "体", thunder: "雷", fire: "火", weapon: "器", soul: "魂", calamity: "劫" };
+    return names[el] || el;
   },
 
-  _renderBattleEnd(battle, logBox, zone, panel) {
-    if (battle._ended) return;
-    battle._ended = true;
-    battle._animating = false;
-
-    // 战报小结：跳过(speed=0)时胜负皆给干净结算面板；非跳过仅败北给复盘小记
-    if (battle.speed === 0) this._renderSettlement(battle, logBox);
-    else if (!battle.win) this._renderDefeatSummary(battle, logBox);
-
-    const endRow = document.createElement("div");
-    endRow.className = "battle-end-row";
-    const btn = document.createElement("button");
-    btn.className = "popup-btn primary";
-    btn.textContent = battle.win ? "收取战果" : "退出战圈";
-    btn.addEventListener("click", () => {
-      closePopup();
-      Game.finishBattle(battle);
-    });
-    endRow.appendChild(btn);
-    panel.appendChild(endRow);
-  },
-
-  _updateHealthBars(zone, battle) {
-    // 敌方（多敌人：逐一显示血条，败者灰显）
-    let enemyBox = zone.querySelector(".enemy-hp-box");
-    if (!enemyBox) {
-      enemyBox = document.createElement("div");
-      enemyBox.className = "enemy-hp-box";
-      zone.prepend(enemyBox);
+  _xiuCallout(el) {
+    if (typeof BattleEngineV2 !== "undefined" && BattleEngineV2.tixiOf) {
+      const t = BattleEngineV2.tixiOf(el);
+      if (t === "ti") return "体";
+      if (t === "hun") return "魂";
+      if (t === "jie") return "劫";
     }
-    enemyBox.innerHTML = battle.enemies.map((e) => {
-      const dead = e.hp <= 0;
-      const pct = Math.max(0, Math.round((e.hp / Math.max(1, e.hpMax)) * 100));
-      const charging = (e.charged || e.intent === "charge") && !dead;
-      return `<div class="enemy-hp-bar${dead ? " dead" : ""}${charging ? " charging" : ""}">`
-        + `<span class="bar-name">${e.name}${charging ? " ·蓄" : ""}</span>`
-        + `<div class="bar-track"><div class="bar-fill enemy" style="width:${pct}%"></div></div>`
-        + `<span class="bar-num">${dead ? "败" : formatInt(e.hp)}</span></div>`;
-    }).join("");
-
-    // 己方
-    let playerBar = zone.querySelector(".player-hp-bar");
-    if (!playerBar) {
-      playerBar = document.createElement("div");
-      playerBar.className = "player-hp-bar";
-      zone.appendChild(playerBar);
-    }
-    const pPct = Math.max(0, Math.round((battle.playerHp / battle.playerHpMax) * 100));
-    playerBar.innerHTML = `<span class="bar-name">你</span><div class="bar-track"><div class="bar-fill player" style="width:${pPct}%"></div></div><span class="bar-num">${formatInt(battle.playerHp)}</span>`;
-
-    // 斗法栏缩略
-    let slotMini = zone.querySelector(".slot-mini-row");
-    if (!slotMini) {
-      slotMini = document.createElement("div");
-      slotMini.className = "slot-mini-row";
-      zone.appendChild(slotMini);
-    }
-    slotMini.innerHTML = battle.slots.map((s, i) =>
-      `<span class="slot-mini element-${s.spell_type}">${s.name.slice(0, 2)}</span>`
-    ).join('<span class="mini-arrow">→</span>');
+    if (el === "weapon" || el === "fire") return "法术";
+    return this._elementName(el);
   },
 
-  _appendLog(logBox, text, cls) {
-    const line = document.createElement("div");
-    line.className = `blog-line ${cls || ""}`;
-    line.innerHTML = text;
-    logBox.appendChild(line);
-    logBox.scrollTop = logBox.scrollHeight;
+  _mountXiuCatalog(root, state, slots, unlocked, maxSlots) {
+    const pool = unlocked.map((id) => BattleEngineV2.getSkillData(id)).filter(Boolean);
+    const pick = (keys) => pool.filter((s) => keys.indexOf(String(s.spell_type)) >= 0);
+    this._appendXiuSection(root, "体", "以身证道 · 法术入格（雷并入体）", [
+      { title: "法术", skills: pick(["body", "thunder"]) },
+      { title: "法术·可入格（不是器）", skills: pick(["weapon", "fire"]), empty: "御器/火意象法术走这里" },
+    ], slots, maxSlots);
+    this._appendXiuSection(root, "器", "以器证道 · 法宝绑格 · 五行是二级", [
+      { title: "二级·五行", treasures: true, empty: "点一格再绑法宝。五行随法宝，不是招式。" },
+    ], slots, maxSlots, state);
+    this._appendXiuSection(root, "魂", "以神证道 · 法术入格", [
+      { title: "法术", skills: pick(["soul"]) },
+    ], slots, maxSlots);
+    this._appendXiuSection(root, "劫", "以劫证道 · 法术入格", [
+      { title: "法术", skills: pick(["calamity"]) },
+    ], slots, maxSlots);
+  },
+
+  _appendXiuSection(root, name, fantasy, branches, slots, maxSlots, state) {
+    const sec = document.createElement("section");
+    sec.className = "form-xiu";
+    const head = document.createElement("div");
+    head.className = "form-xiu-head";
+    head.innerHTML = `<b>${this._esc(name)}</b><span>${this._esc(fantasy)}</span>`;
+    sec.appendChild(head);
+    for (const br of branches) {
+      if (br.treasures) {
+        this._appendTreasureBranch(sec, br.title, br.empty, slots, state);
+        continue;
+      }
+      this._appendFormBranch(sec, br.title, br.skills || [], slots, maxSlots, br.empty || "");
+    }
+    root.appendChild(sec);
+  },
+
+  _appendTreasureBranch(sec, title, emptyHint, slots, state) {
+    const lab = document.createElement("div");
+    lab.className = "form-branch-label";
+    lab.textContent = title;
+    sec.appendChild(lab);
+    const owned = this._ownedTreasures(state || (this._formCtx && this._formCtx.state) || {});
+    if (!owned.length) {
+      const empty = document.createElement("div");
+      empty.className = "form-branch-empty";
+      empty.textContent = emptyHint || "尚无法宝";
+      sec.appendChild(empty);
+      return;
+    }
+    const grid = document.createElement("div");
+    grid.className = "form-grid";
+    for (const tr of owned) {
+      const row = BattleEngineV2.getTreasureData ? BattleEngineV2.getTreasureData(tr.id) : null;
+      const wx = tr.wuxing || (row && row.wuxing) || "";
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "form-skill cat-treasure";
+      const icon = (typeof TREASURE_ICONS !== "undefined" && TREASURE_ICONS[tr.id]) ? TREASURE_ICONS[tr.id] : "";
+      item.innerHTML =
+        `<span class="form-skill-cat">器</span>`
+        + (icon ? `<img alt="" src="${icon}">` : `<span class="form-skill-el">器</span>`)
+        + `<span class="form-skill-name">${this._esc(tr.name)}</span>`
+        + `<span class="form-skill-dmg">${this._esc(wx ? ("五行·" + this._wuxingBadge(wx)) : "五行未挂")}</span>`;
+      item.addEventListener("click", () => {
+        const ctx = this._formCtx;
+        if (!ctx) return;
+        const st = ctx.state;
+        const cur = st.battle_slots || [];
+        let i = this._selIdx;
+        if (i < 0 || !cur[i]) i = cur.findIndex(Boolean);
+        if (i < 0) return;
+        cur[i] = { id: this._slotId(cur[i]), condition: this._slotCond(cur[i]), treasure: tr.id };
+        st.battle_slots = cur;
+        SaveManager.save(st);
+        this._rerenderConfig();
+      });
+      grid.appendChild(item);
+    }
+    sec.appendChild(grid);
+  },
+
+  _appendFormBranch(sec, title, skills, slots, maxSlots, lockedHint) {
+    const lab = document.createElement("div");
+    lab.className = "form-branch-label";
+    lab.textContent = title;
+    sec.appendChild(lab);
+    if (!skills.length) {
+      const empty = document.createElement("div");
+      empty.className = "form-branch-empty";
+      empty.textContent = lockedHint || "此支暂无";
+      sec.appendChild(empty);
+      return;
+    }
+    const grid = document.createElement("div");
+    grid.className = "form-grid";
+    for (const skill of skills) {
+      const inSlot = slots.some((e) => this._slotId(e) === skill.id);
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = `form-skill rarity-${skill.rarity || "common"}${inSlot ? " in-slot" : ""}`;
+      const icon = this._skillIcon(skill);
+      const cat = skill.category === "treasure" ? "宝" : (skill.skill_class === "神通" ? "通" : "术");
+      item.innerHTML =
+        `<span class="form-skill-cat">${cat}</span>`
+        + (icon ? `<img alt="" src="${icon}">` : `<span class="form-skill-el">${this._esc(this._xiuCallout(skill.spell_type))}</span>`)
+        + `<span class="form-skill-name">${this._esc(skill.name)}</span>`
+        + `<span class="form-skill-dmg">${this._esc(this._xiuCallout(skill.spell_type))} ${skill.damage_base}+</span>`;
+      if (!inSlot && slots.filter(Boolean).length < maxSlots) {
+        item.addEventListener("click", () => {
+          const ctx = this._formCtx;
+          if (!ctx) return;
+          const st = ctx.state;
+          const cur = st.battle_slots || [];
+          cur.push({ id: skill.id, condition: "always" });
+          st.battle_slots = cur.filter(Boolean);
+          SaveManager.save(st);
+          this._selIdx = -1;
+          this._rerenderConfig();
+        });
+      }
+      grid.appendChild(item);
+    }
+    sec.appendChild(grid);
+  },
+
+  _categoryName(cat) {
+    const names = { spell: "术", treasure: "宝", ability: "通" };
+    return names[cat] || cat;
   },
 
   _mechanicText(evt) {
@@ -891,54 +1338,5 @@ const BattleUIV2 = {
       luoxuan_fivefire_burn_city: evt.text || "五宝齐祭——焚城！",
     };
     return map[evt.mechanic] || evt.text || `机制触发：${evt.mechanic}`;
-  },
-
-  // ---------- 工具 ----------
-
-  // 斗法栏条目读取（兼容字符串与 {id,condition,treasure} 对象）
-  _slotId(entry) { return (entry && typeof entry === "object") ? String(entry.id) : String(entry); },
-  _slotCond(entry) { return (entry && typeof entry === "object" && entry.condition) ? String(entry.condition) : "always"; },
-  _slotTreasure(entry) { return (entry && typeof entry === "object" && entry.treasure) ? String(entry.treasure) : null; },
-
-  // 方案B：玩家已拥有法宝（level>0），供斗法栏每格绑定
-  _ownedTreasures(state) {
-    const out = [];
-    const t = state.treasures || {};
-    for (const tid of Object.keys(t)) {
-      if (Number(t[tid] && t[tid].level) > 0) {
-        const row = BattleEngineV2.getTreasureData ? BattleEngineV2.getTreasureData(tid) : null;
-        out.push({ id: tid, name: row ? row.treasure_name : tid, wuxing: row && row.wuxing ? String(row.wuxing) : null });
-      }
-    }
-    return out;
-  },
-
-  // 五行短标签（共鸣左元徽章）
-  _wuxingBadge(wx) {
-    if (!wx) return "";
-    if (typeof ResonanceSystem !== "undefined" && ResonanceSystem.wuxingLabel) return ResonanceSystem.wuxingLabel(wx);
-    const names = { wood: "木", fire: "火", earth: "土", metal: "金", water: "水" };
-    return names[wx] || wx;
-  },
-
-  // 条件触发·短标签（用于战报与缩略）
-  _conditionLabel(cond) {
-    const c = String(cond || "always");
-    if (c === "always" || c === "") return "常发";
-    const opt = (BattleEngineV2.conditionOptions ? BattleEngineV2.conditionOptions() : []).find((o) => o.value === c);
-    if (opt) return opt.label;
-    const [k, a] = c.split(":");
-    const zh = { every_n: `每${a}轮`, enemy_hp_below: `敌血<${a}%`, self_hp_below: `己血<${a}%`, enemy_charging: "敌蓄势", round_gte: `第${a}轮起` };
-    return zh[k] || c;
-  },
-
-  _elementName(el) {
-    const names = { body: "体", thunder: "雷", fire: "火", weapon: "器", soul: "魂", calamity: "劫" };
-    return names[el] || el;
-  },
-
-  _categoryName(cat) {
-    const names = { spell: "术", treasure: "宝", ability: "通" };
-    return names[cat] || cat;
   },
 };

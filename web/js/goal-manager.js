@@ -55,6 +55,7 @@ const GoalManager = {
     const res = state.resources;
     switch (c.type) {
       case "action_complete":
+        if (c.require_battle && !state.flags.first_travel_battle_done) return false;
         return int(state.action_counts_total[String(c.action_id)]) >= int(c.count, 1);
       case "realm_reached":
         return DataManager.isRealmAtLeast(state.realm_id, String(c.realm_id));

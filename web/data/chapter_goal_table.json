@@ -1,7 +1,7 @@
 {
   "schema_version": "0.1.0",
   "table": "chapter_goal_table",
-  "description": "MVP 前 30 分钟与前 2 天目标链（依据 design/1.8 §20.3/§21/§22）",
+  "description": "前 30 分钟与前 2 天目标链。v0.2（2026-08-22 O1）：30分钟闭幕=术法+榜文碎光+山野妖首；破真人劫/本命法宝改第1天。依据 design/1.8 v0.2、1.9 v0.3",
   "rows": [
     {
       "goal_id": "goal_001",
@@ -60,7 +60,8 @@
       "complete_condition": {
         "type": "action_complete",
         "action_id": "wild_travel",
-        "count": 1
+        "count": 1,
+        "require_battle": true
       },
       "display_text": "当前目标：完成一次山野游历",
       "reward_preview": "奖励：术法残页 ×5",
@@ -137,7 +138,7 @@
       },
       "display_text": "当前目标：击败山野妖首",
       "reward_preview": "奖励：道行、法器碎片、术法残页",
-      "complete_text": "山中妖首已伏，黑雾暂散。",
+      "complete_text": "山中妖首已伏，黑雾暂散。你第一次在封神将起的山野里，把一只具名的东西打下了。",
       "reward": {},
       "next_goal_id": "goal_009",
       "gate_realm": "rq_05"
@@ -145,7 +146,7 @@
     {
       "goal_id": "goal_009",
       "goal_name": "修至炼气士十重",
-      "stage": "前30分钟",
+      "stage": "第1天",
       "complete_condition": {
         "type": "realm_reached",
         "realm_id": "rq_10"
@@ -160,7 +161,7 @@
     {
       "goal_id": "goal_010",
       "goal_name": "破真人劫",
-      "stage": "前30分钟",
+      "stage": "第1天",
       "complete_condition": {
         "type": "realm_reached",
         "realm_id": "zr_01"
@@ -175,7 +176,7 @@
     {
       "goal_id": "goal_011",
       "goal_name": "选择本命法宝",
-      "stage": "前30分钟",
+      "stage": "第1天",
       "complete_condition": {
         "type": "treasure_equipped_any",
         "count": 1
