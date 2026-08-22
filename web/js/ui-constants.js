@@ -27,6 +27,19 @@ const BACKGROUND_PATHS = {
   hunyuan_daochang: "assets/backgrounds/bg_hunyuan_field.jpg",    // 混元道场
 };
 
+// 单地图驻留背景（design/15.1 §2.8，9.2 风格锁 v2 新美术）：驻留某图时主屏背景优先用该图
+const MAP_BACKGROUNDS = {
+  map_001: "assets/map/backgrounds/bg_map_001.png", // 山野妖患
+  map_002: "assets/map/backgrounds/bg_map_002.png", // 陈塘关外围
+  map_003: "assets/map/backgrounds/bg_map_003.png", // 骷髅山边界
+  map_004: "assets/map/backgrounds/bg_map_004.png", // 西岐战场
+  map_005: "assets/map/backgrounds/bg_map_005.png", // 十绝阵外围
+  map_006: "assets/map/backgrounds/bg_map_006.png", // 九曲黄河残域
+  map_007: "assets/map/backgrounds/bg_map_007.png", // 万仙阵外围
+  map_008: "assets/map/backgrounds/bg_map_008.png", // 封神台
+  map_009: "assets/map/backgrounds/bg_map_009.png", // 混元道场
+};
+
 const CHARACTER_PATHS = {
   炼气士: "assets/characters/char_cultivator.jpg",
   真人: "assets/characters/char_realman.jpg",

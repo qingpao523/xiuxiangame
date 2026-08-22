@@ -21,7 +21,8 @@ function render() {
   if (!state || !state.realm_id) return;
   const realm = RealmManager.getCurrentRealm(state);
   const ui = realm.ui || {};
-  $("bg").style.backgroundImage = `url("${BACKGROUND_PATHS[ui.background_phase] || BACKGROUND_PATHS.mountain_cave}")`;
+  const mapBg = (typeof MAP_BACKGROUNDS !== "undefined" && state.current_map_id) ? MAP_BACKGROUNDS[state.current_map_id] : null;
+  $("bg").style.backgroundImage = `url("${mapBg || BACKGROUND_PATHS[ui.background_phase] || BACKGROUND_PATHS.mountain_cave}")`;
   $("fx-seal").classList.toggle("lit", DataManager.isRealmAtLeast(state.realm_id, "rq_06"));
   $("char-img").src = CHARACTER_PATHS[ui.character_phase] || CHARACTER_PATHS["炼气士"];
   const raceTag = getRaceShortName(state);

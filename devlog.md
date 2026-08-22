@@ -17,7 +17,7 @@
 - reveal 演出：快照对比（state.flags.world_map_snapshot）检测新解封部洲/节点 → fog 碎裂动画 + colorize + 节点 pop 浮现 + 命名弹幕「×× · 解封」+ secret_found 音效；首开地图不播。
 - 兼容回退：图片 onerror → 回退部洲色块 / 文字 glyph（15.1 §3.3）；`MAP_NODE_ICONS` 改 key=map_id（旧 key 永不命中属死配置），新增 `LANDMARK_ICONS`（ui-constants.js）。
 
-**未接线**：`backgrounds/bg_map_001~009` 已入库但暂不接入主屏——主屏主角立绘仍为旧水墨风（P0 未换），按 9.2 §4 原子性铁律不半屏混用，待 P0/F2 单地图屏整屏同波接入。
+**未接线→已接线（用户指令覆盖）**：`backgrounds/bg_map_001~009` 经 `MAP_BACKGROUNDS`（ui-constants.js）接入主屏——驻留某图时 `#bg` 优先用该图新美术背景，未驻留回退境界阶段底图（ui.js render）。已知妥协：主屏主角立绘仍为旧水墨风（P0 未换），新旧同屏混用违反 9.2 §4 原子性，属用户明确要求的预览态；待 P0 主角立绘整屏同波换后消除。
 
 **验证**：Playwright 真机走查（390×844）四场景截图——① 炼气开局只见南赡部洲（其余部洲封印纹覆盖）② 地仙中段（已通 ✓/当前/未达/封印 5 态分明）③ rq→zr 破境 reveal（弹幕「陈塘关外围 · 解封」+ fog 碎裂）④ 太乙全开（五部洲全彩 + 跨部洲路径点亮）。零 JS 报错，无新旧风格混用。
 
