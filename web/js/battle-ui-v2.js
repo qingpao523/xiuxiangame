@@ -364,6 +364,7 @@ const BattleUIV2 = {
     body.appendChild(zone);
 
     // round timeline: action progress bar
+    battle.playerName = this._playerBattleName(state);
     this._buildTimeline(zone, battle);
 
     // 日志区域
@@ -413,7 +414,8 @@ const BattleUIV2 = {
         // === round start (fire domain, boss mechanic) ===
         const startEvents = BattleEngineV2.startPlayerRound(state, battle);
         this._tlPlayer(zone, battle, -1, false);
-        this._tlFoe(zone, battle, "reset");
+        this._tlFoe(zone, battle, -1, false);
+        this._foeTelegraph(zone, battle);
         if (startEvents.length) {
           this._renderEvents(startEvents, logBox, zone, battle);
           if (battle.speed !== 0) await sleep(delay() * 0.5);
@@ -428,7 +430,7 @@ const BattleUIV2 = {
           // player casts slot i (foe gauge charges, telegraphing its next move)
           this._highlightActiveSlot(zone, i);
           this._tlPlayer(zone, battle, i, false);
-          this._tlFoe(zone, battle, "charging");
+          this._foeTelegraph(zone, battle);
           const slotEvents = BattleEngineV2.executeSingleSlot(state, battle, i);
           if (slotEvents.length) this._renderEvents(slotEvents, logBox, zone, battle);
           if (battle.speed !== 0) await sleep(delay());
@@ -436,8 +438,9 @@ const BattleUIV2 = {
           if (battle.done) break;
           if (alive() === 0) break;
 
-          // enemy gap act fires the telegraphed move
-          this._tlFoe(zone, battle, "firing");
+          // enemy gap act fires; reveal its skill on foe node i (capture before intent is nulled)
+          const foeSkill = (battle.enemies[0] && battle.enemies[0].intent && battle.enemies[0].intent.label) ? String(battle.enemies[0].intent.label) : null;
+          this._tlFoe(zone, battle, i, false, foeSkill);
           const gapEvents = BattleEngineV2.enemyGapAct(state, battle);
           if (gapEvents.length) this._renderEvents(gapEvents, logBox, zone, battle);
           if (battle.speed !== 0) await sleep(delay() * 0.7);
@@ -458,7 +461,7 @@ const BattleUIV2 = {
         const bookEvents = BattleEngineV2.endEnemyRoundBookkeeping(state, battle);
         if (bookEvents.length) this._renderEvents(bookEvents, logBox, zone, battle);
         this._tlPlayer(zone, battle, -1, true);
-        this._tlFoe(zone, battle, "done");
+        this._tlFoe(zone, battle, -1, true);
         if (!battle.done && battle.speed !== 0) await sleep(delay() * 0.6);
       }
 
@@ -485,10 +488,23 @@ const BattleUIV2 = {
   },
 
   _getDelay(battle) {
-    const base = 800;
-    if (battle.speed === 2) return 400;
-    if (battle.speed === 4) return 150;
+    // 8.0 原为 800/400/150；实测体感过快，1× 放慢至 1400 便于观看与读预告（🔴可调）
+    const base = 1400;
+    if (battle.speed === 2) return 700;
+    if (battle.speed === 4) return 300;
     return base;
+  },
+
+  // 玩家战斗名：境界称号优先（生产 RealmManager），其次本命修称（harness/降级）
+  _playerBattleName(state) {
+    try {
+      if (typeof RealmManager !== "undefined" && RealmManager.getPhaseRealmName && RealmManager.getCurrentRealm) {
+        const rn = RealmManager.getPhaseRealmName(RealmManager.getCurrentRealm(state));
+        if (rn) return String(rn);
+      }
+    } catch (e) {}
+    const bm = { thunder: "雷修", fire: "火修", body: "体修", weapon: "器修", soul: "魂修", calamity: "劫修" };
+    return bm[String((state && state.benming_school) || "")] || "道友";
   },
 
   // ---------- round timeline: two action bars (you / foe skill frames) ----------
@@ -502,9 +518,16 @@ const BattleUIV2 = {
         + '<div class="tl-track"><div class="tl-fill"></div></div><div class="tl-nodes tl-player-nodes"></div>'
         + '</div></div>'
         + '<div class="tl-bar tl-foe"><span class="tl-bar-label foe">\u654c</span><div class="tl-bar-body">'
-        + '<div class="tl-foe-track"><div class="tl-foe-charge"></div><div class="tl-foe-nodes"></div></div>'
+        + '<div class="tl-track tl-foe-track"><div class="tl-fill tl-foe-fill"></div></div><div class="tl-nodes tl-foe-nodes"></div>'
+        + '<div class="tl-foe-telegraph"></div>'
         + '</div></div>';
       zone.prepend(tl);
+      // 标签换成对应战斗名字：你→玩家境界称号，敌→当前最前之敌
+      const youLabel = tl.querySelector(".tl-bar-label.you");
+      if (youLabel != null) youLabel.textContent = battle.playerName || "你";
+      const foeLabel0 = tl.querySelector(".tl-bar-label.foe");
+      const front0 = (battle.enemies || []).find((e) => e.hp > 0) || (battle.enemies || [])[0];
+      if (foeLabel0 != null) foeLabel0.textContent = front0 ? front0.name : "敌";
     }
     // top bar: player slot nodes
     const nodesBox = tl.querySelector(".tl-player-nodes");
@@ -517,17 +540,17 @@ const BattleUIV2 = {
         + `<span class="tl-label">${s.name.slice(0, 2)}</span></div>`;
     }
     nodesBox.innerHTML = phtml;
-    // bottom bar: enemy skill chips (from intentPool labels, or generic move types)
+    // bottom bar: enemy gap-act nodes (mirror player; one node per player slot, lit in order)
     const foeBox = tl.querySelector(".tl-foe-nodes");
-    const skills = this._enemySkillLabels(battle);
     let ehtml = "";
-    for (let j = 0; j < skills.length; j++) {
-      ehtml += `<div class="tl-eskill" data-label="${skills[j]}">`
-        + `<span class="tl-eskill-dot"></span><span class="tl-eskill-label">${skills[j]}</span></div>`;
+    for (let i = 0; i < battle.slots.length; i++) {
+      ehtml += `<div class="tl-node tl-foe-node" data-idx="${i}">`
+        + `<span class="tl-dot">${circled[i] || (i + 1)}</span>`
+        + `<span class="tl-label"></span></div>`;
     }
     foeBox.innerHTML = ehtml;
     this._tlPlayer(zone, battle, -1, false);
-    this._tlFoe(zone, battle, "reset");
+    this._tlFoe(zone, battle, -1, false);
   },
 
   // enemy skill frame labels: boss intentPool labels, else generic move types
@@ -559,47 +582,52 @@ const BattleUIV2 = {
     }
   },
 
-  // bottom bar (foe): charge gauge + skill chips. mode = reset|charging|firing|done
-  _tlFoe(zone, battle, mode) {
+  // bottom bar (foe): sequential gap-act nodes mirroring the player bar.
+  // activeIndex = which enemy gap act is active (0..N-1); done = round over;
+  // skillLabel = name of the skill fired by the active gap act (reveals that node's label).
+  _tlFoe(zone, battle, activeIndex, done, skillLabel) {
     const tl = zone.querySelector(".round-timeline");
     if (tl == null) return;
-    const charge = tl.querySelector(".tl-foe-charge");
-    const foeTrack = tl.querySelector(".tl-foe-track");
-    const eskills = tl.querySelectorAll(".tl-eskill");
-    if (charge == null) return;
-    const delay = this._getDelay(battle);
-    const skip = battle.speed === 0;
-    const e = (battle.enemies && battle.enemies.length) ? battle.enemies[0] : null;
-    const intentLabel = (e && e.intent && e.intent.label) ? String(e.intent.label) : null;
-    const matchChip = (sk, cls) => {
-      sk.classList.toggle(cls, intentLabel != null && sk.getAttribute("data-label") === intentLabel);
-    };
-
-    if (mode === "charging") {
-      // gauge fills 0->100% over the slot cast; telegraph the move about to fire
-      charge.style.transitionDuration = "0ms";
-      charge.style.width = "0%";
-      void charge.offsetWidth; // force reflow so the fill animation plays
-      charge.style.transitionDuration = skip ? "0ms" : delay + "ms";
-      charge.style.width = "100%";
-      if (foeTrack != null) foeTrack.classList.remove("release");
-      eskills.forEach((sk) => { matchChip(sk, "telegraph"); sk.classList.remove("firing"); });
-    } else if (mode === "firing") {
-      charge.style.transitionDuration = skip ? "0ms" : "180ms";
-      charge.style.width = "100%";
-      if (foeTrack != null) foeTrack.classList.add("release");
-      eskills.forEach((sk) => { matchChip(sk, "firing"); sk.classList.remove("telegraph"); });
-    } else if (mode === "done") {
-      charge.style.transitionDuration = skip ? "0ms" : "200ms";
-      charge.style.width = "0%";
-      if (foeTrack != null) foeTrack.classList.remove("release");
-      eskills.forEach((sk) => sk.classList.remove("telegraph", "firing"));
-    } else { // reset
-      charge.style.transitionDuration = "0ms";
-      charge.style.width = "0%";
-      if (foeTrack != null) foeTrack.classList.remove("release");
-      eskills.forEach((sk) => sk.classList.remove("telegraph", "firing"));
+    const N = battle.slots.length;
+    const nodes = tl.querySelectorAll(".tl-foe-nodes .tl-node");
+    // reset (activeIndex<0, not done): clear revealed labels back to blank
+    if (activeIndex < 0 && done !== true) {
+      nodes.forEach((node) => { const lb = node.querySelector(".tl-label"); if (lb != null) lb.textContent = ""; });
     }
+    nodes.forEach((node, idx) => {
+      node.classList.toggle("active", done !== true && idx === activeIndex);
+      node.classList.toggle("done", done === true || (activeIndex >= 0 && idx < activeIndex));
+      if (skillLabel != null && idx === activeIndex) {
+        const lb = node.querySelector(".tl-label");
+        if (lb != null) lb.textContent = skillLabel;
+      }
+    });
+    const fill = tl.querySelector(".tl-foe-fill");
+    if (fill != null) {
+      let pct = 0;
+      if (done === true) pct = 100;
+      else if (activeIndex >= 0) pct = N > 1 ? (activeIndex / (N - 1)) * 100 : 100;
+      fill.style.width = pct + "%";
+    }
+  },
+
+  // 敌方意图预告：展示最前存活敌方已预roll的下一招（label + 五行色），供玩家预判共鸣克增
+  _foeTelegraph(zone, battle) {
+    const tl = zone.querySelector(".round-timeline");
+    if (tl == null) return;
+    const box = tl.querySelector(".tl-foe-telegraph");
+    if (box == null) return;
+    const front = (battle.enemies || []).find((e) => e.hp > 0);
+    const foeLabel = tl.querySelector(".tl-bar-label.foe");
+    if (foeLabel != null && front) foeLabel.textContent = front.name;
+    const it = front ? front.intent : null;
+    if (it == null || battle.done) { box.innerHTML = ""; return; }
+    const wx = it.wuxing || null;
+    const hasRS = typeof ResonanceSystem !== "undefined";
+    const wxLabel = wx && hasRS ? ResonanceSystem.wuxingLabel(wx) : "";
+    const wxColor = wx && hasRS ? ResonanceSystem.wuxingColor(wx) : "#888";
+    const wxBadge = wx ? `<span class="tg-wx" style="color:${wxColor};border-color:${wxColor}">${wxLabel}</span>` : "";
+    box.innerHTML = `<span class="tg-prefix">\u654c\u5c06\u65bd</span><span class="tg-name">${it.label || it.type}</span>${wxBadge}`;
   },
 
   _renderEvents(events, logBox, zone, battle) {
@@ -740,13 +768,38 @@ const BattleUIV2 = {
     logBox.scrollTop = logBox.scrollHeight;
   },
 
+  // 跳过结算面板：speed=0 时给出干净战报（胜负/回合/总伤/承伤/共鸣触发），胜负皆显示
+  _renderSettlement(battle, logBox) {
+    const st = battle.stats || {};
+    const win = battle.win === true;
+    const rb = int(st.resoBroken, 0), re = int(st.resoEnhanced, 0), rn = int(st.resoNormal, 0);
+    const box = document.createElement("div");
+    box.className = "battle-settlement" + (win ? " win" : " loss");
+    box.innerHTML =
+      `<div class="settle-title">${win ? "\u6b64\u6218\u544a\u6377" : "\u6b64\u6218\u5931\u5229"}</div>`
+      + `<div class="settle-grid">`
+      + `<div class="settle-cell"><span class="sc-k">\u56de\u5408</span><span class="sc-v">${int(battle.round, 0)}</span></div>`
+      + `<div class="settle-cell"><span class="sc-k">\u603b\u8f93\u51fa</span><span class="sc-v">${formatInt(st.dealt || 0)}</span></div>`
+      + `<div class="settle-cell"><span class="sc-k">\u603b\u627f\u4f24</span><span class="sc-v">${formatInt(st.taken || 0)}</span></div>`
+      + `<div class="settle-cell"><span class="sc-k">\u5171\u9e23</span><span class="sc-v">${rb + re + rn}</span></div>`
+      + `</div>`
+      + `<div class="settle-reso">`
+      + `<span class="sr broken">\u7834 ${rb}</span>`
+      + `<span class="sr enhanced">\u589e ${re}</span>`
+      + `<span class="sr normal">\u5e38 ${rn}</span>`
+      + `</div>`;
+    logBox.appendChild(box);
+    logBox.scrollTop = logBox.scrollHeight;
+  },
+
   _renderBattleEnd(battle, logBox, zone, panel) {
     if (battle._ended) return;
     battle._ended = true;
     battle._animating = false;
 
-    // 败因摘要（design/8.0 展示层）：仅败北时给出可复盘的战报小结
-    if (!battle.win) this._renderDefeatSummary(battle, logBox);
+    // 战报小结：跳过(speed=0)时胜负皆给干净结算面板；非跳过仅败北给复盘小记
+    if (battle.speed === 0) this._renderSettlement(battle, logBox);
+    else if (!battle.win) this._renderDefeatSummary(battle, logBox);
 
     const endRow = document.createElement("div");
     endRow.className = "battle-end-row";

@@ -3178,7 +3178,7 @@ body {
 .tl-bar-label.foe { color: #ef9a9a; border: 1px solid rgba(229,57,53,0.5); background: rgba(198,40,40,0.15); }
 .tl-bar-body { position: relative; flex: 1; }
 .tl-you .tl-bar-body { height: 38px; }
-.tl-foe .tl-bar-body { height: 38px; }
+.tl-foe .tl-bar-body { height: 56px; }
 
 /* --- top bar (you): track + fill + slot nodes --- */
 .tl-track { position: absolute; top: 11px; left: 10px; right: 10px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; z-index: 0; }
@@ -3200,6 +3200,12 @@ body {
 .tl-foe-node.active .tl-dot { border-color: #ff5722; color: #ff5722; background: rgba(255,87,34,0.2); box-shadow: 0 0 10px rgba(255,87,34,0.7); animation: tlPulse 0.8s ease-in-out infinite; }
 .tl-foe-node.active .tl-label { color: #ff8a65; font-weight: bold; }
 .tl-foe-node.done .tl-dot { border-color: rgba(255,87,34,0.5); color: #ff8a65; background: rgba(255,87,34,0.12); }
+/* 敌方意图预告（P0）：施法期预示敌下一招 + 五行色 */
+.tl-foe-telegraph { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; line-height: 16px; text-align: center; font-size: 10px; color: #ef9a9a; }
+.tl-foe-telegraph:empty { display: none; }
+.tg-prefix { color: #90a4ae; margin-right: 4px; }
+.tg-name { color: #ffab91; font-weight: bold; }
+.tg-wx { display: inline-block; margin-left: 5px; padding: 0 4px; border: 1px solid; border-radius: 3px; font-size: 9px; line-height: 13px; }
 
 /* element tint on idle player slot dots (anticipate combos e.g. triple-thunder) */
 .tl-node.element-body:not(.active):not(.done) .tl-dot { border-color: rgba(200,160,80,0.6); color: #d4a850; }
@@ -3225,6 +3231,20 @@ body {
 .defeat-title { color: #ef9a9a; font-weight: bold; font-size: 13px; margin-bottom: 4px; }
 .defeat-line { color: #cfd8dc; font-size: 12px; padding: 1px 0; }
 .defeat-tip { color: #90a4ae; font-size: 11px; font-style: italic; margin-top: 5px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px; }
+/* 跳过结算面板（P1）：speed=0 干净战报，胜负皆显示 */
+.battle-settlement { margin: 8px 0; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.35); background: rgba(255,215,0,0.06); }
+.battle-settlement.loss { border-color: rgba(229,57,53,0.4); background: rgba(229,57,53,0.07); }
+.settle-title { text-align: center; font-size: 15px; font-weight: bold; color: #ffd700; margin-bottom: 8px; letter-spacing: 2px; }
+.battle-settlement.loss .settle-title { color: #ef9a9a; }
+.settle-grid { display: flex; justify-content: space-around; gap: 6px; margin-bottom: 8px; }
+.settle-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+.sc-k { font-size: 10px; color: #90a4ae; }
+.sc-v { font-size: 14px; font-weight: bold; color: #eceff1; }
+.settle-reso { display: flex; justify-content: center; gap: 10px; border-top: 1px dashed rgba(255,255,255,0.12); padding-top: 6px; }
+.sr { font-size: 11px; padding: 1px 8px; border-radius: 4px; }
+.sr.broken { color: #ef5350; background: rgba(229,57,53,0.12); }
+.sr.enhanced { color: #66bb6a; background: rgba(102,187,106,0.12); }
+.sr.normal { color: #ffd97a; background: rgba(255,215,0,0.1); }
 .blog-line.burn-line { color: #ff8a65; }
 .blog-line.player-hurt { color: #e57373; }
 .blog-line.heal-line { color: #81c784; }

@@ -2,6 +2,11 @@
 
 // 夹招单次伤害系数：逐格轮流后敌方每回合行动 slots 次，初版缩到 0.4 约等于旧单次强度（🔴待数值验证）
 const ENEMY_GAP_DAMAGE_MULT = 0.4;
+// 敌方血量倍率（P0 拉长回合）：乘上玩家 _powerMult 使回合数随进度稳定（否则玩家越强越秒）。
+// 敌HP = enemy_power × _powerMult × ENEMY_HP_MULT；仅抬血量不抬攻击力(power另传)。目标 5-8 回合（🔴初版待数值验证）
+const ENEMY_HP_MULT = 3;
+// 体修（本命·体）气血倍率：放置游戏"血量加加"轴（🔴初版）。注意 _powerMult 由 playerHpMax 驱动，高血同时高输出，是否另行削伤留待平衡。
+const BODY_HP_MULT = 1.25;
 
 // ===== 战斗引擎 V2：斗法栏连锁制 =====
 // 配招5分钟，斗法全自动。
@@ -41,16 +46,21 @@ const BattleEngineV2 = {
     const slots = this._resolveSlots(state);
     const omen = typeof getTodayOmen === "function" ? getTodayOmen() : {};
     const playerPower = typeof RealmManager !== "undefined" ? RealmManager.getCombatPower(state) : 1000;
+    // 体修气血更厚（🔴初版）：_powerMult 由 playerHpMax 驱动，故体修高血天然高输出，契合"血量+输出"两轴。
+    const playerHpMax = (str(state.benming_school, "") === "body") ? Math.round(playerPower * BODY_HP_MULT) : playerPower;
 
     // 敌方构建
     const enemies = [];
     if (cfg.phases) {
       enemies.push(this._mkEnemy(cfg.phases[0].name, Math.round(playerPower * num(cfg.phases[0].power_ratio, 0.8)), cfg.phases[0].pool));
     } else {
-      const enemyHp = Math.round(num(cfg.enemy_power, playerPower) * num(omen.enemyMult, 1));
-      enemies.push(this._mkEnemy(String(cfg.name || "妖物"), enemyHp));
+      const powerMult = Math.max(1, Math.round(playerHpMax / 200)); // 与玩家伤害同源，保证回合数不随进度失衡
+      const baseHp = Math.round(num(cfg.enemy_power, playerPower) * num(omen.enemyMult, 1));
+      // 车轮战·拉长回合：血量×powerMult×ENEMY_HP_MULT，攻击力(power)保持 baseHp 不膨胀。
+      enemies.push(this._mkEnemy(String(cfg.name || "妖物"), Math.round(baseHp * powerMult * ENEMY_HP_MULT), null, baseHp));
       for (const add of cfg.adds || []) {
-        enemies.push(this._mkEnemy(String(add.name), Math.round(num(add.power) * num(omen.enemyMult, 1))));
+        const addBase = Math.round(num(add.power) * num(omen.enemyMult, 1));
+        enemies.push(this._mkEnemy(String(add.name), Math.round(addBase * powerMult * ENEMY_HP_MULT), null, addBase));
       }
     }
 
@@ -60,8 +70,8 @@ const BattleEngineV2 = {
       source: cfg.source || "normal",
       payload: cfg.payload || {},
       // 玩家
-      playerHp: playerPower,
-      playerHpMax: playerPower,
+      playerHp: playerHpMax,
+      playerHpMax: playerHpMax,
       playerBlock: 0,
       playerStatuses: { burn: 0, weak: 0, shield: 0, invincible: 0, reflect: 0 },
       slots: slots,
@@ -79,7 +89,7 @@ const BattleEngineV2 = {
       mechanicState: { turnCount: 0 },
       spellDmgReduction: 0, // Boss机制：术法伤害减免（0-1）
       // 战报统计（败因摘要用，design/8.0 展示层）
-      stats: { dealt: 0, taken: 0, lastHit: "" },
+      stats: { dealt: 0, taken: 0, lastHit: "", resoBroken: 0, resoEnhanced: 0, resoNormal: 0 },
       // 终极
       ultimateUsed: false,
       // 劫修叠加
@@ -119,6 +129,9 @@ const BattleEngineV2 = {
     // 开局buff（法宝被动、势力、神位等）
     this._applyStartBuffs(state, battle);
     if (typeof BossMechanicsV2 !== "undefined") BossMechanicsV2.init(state, battle); // 九Boss机制铺底（design/8.1）
+
+    // 预掌首轮敌意图：使第1轮夹招也有意图可读（UI 敌行动条需在释放前读到招式名）
+    for (const e of battle.enemies) { if (e.hp > 0 && e.intent == null) e.intent = this._rollIntent(e); }
 
     return battle;
   },
@@ -207,12 +220,12 @@ const BattleEngineV2 = {
     return slots;
   },
 
-  _mkEnemy(name, hp, intentPool) {
+  _mkEnemy(name, hp, intentPool, power) {
     return {
       name,
       hp,
       hpMax: hp,
-      power: hp,
+      power: (power != null ? power : hp),
       block: 0,
       charged: false,
       statuses: { burn: 0, weak: 0, vuln: 0, mark: 0, stun: 0, lock: 0, paralyze: 0, burnMultiplier: 1, burnMultiplierTurns: 0, pctBurn: 0 },
@@ -314,7 +327,8 @@ const BattleEngineV2 = {
       return events;
     }
 
-    const target = aliveEnemies().reduce((a, b) => (a.hp < b.hp ? a : b), aliveEnemies()[0]);
+    // 车轮战：集火最前之敌（存活序列首位，按入场序），逐个轮番；溅射/连锁仍可波及余众。
+    const target = aliveEnemies()[0];
 
     // 基础伤害
     let dmg = this._calcBaseDamage(skill, battle);
@@ -331,7 +345,7 @@ const BattleEngineV2 = {
     if (slotIndex > 0 && battle.slots[slotIndex - 1].spell_type === skill.spell_type) {
       comboTriggered = true;
       // 共鸣系统（多通道）：五行共鸣 / 套装共鸣 / …。夹招取上一格后敌方行动的元素。
-      // 五行通道仅当 left 与夹招都带五行才参与（wuxing 字段待数据接入，当前惰性）。
+      // 五行通道仅当 left(法宝.wuxing) 与夹招(意图.wuxing) 都带五行才参与；数据已接入。
       middleElement = this._enemyResonanceElement(battle);
       const resoCtx = {
         leftSkill: battle.slots[slotIndex - 1],
@@ -344,7 +358,14 @@ const BattleEngineV2 = {
         ? ResonanceSystem.evaluate(resoCtx)
         : { mult: this._getComboMultiplier(battle.benming, skill.spell_type), broken: false, results: [] };
       comboBroken = reso.broken;
-      comboMult = reso.broken ? reso.mult : this._getComboMultiplier(battle.benming, skill.spell_type);
+      // 克环(破->×1.0) 与 增幅(增->×1.6) 皆生效；其余(基础/无五行)回落本命同系加成
+      comboMult = (reso.broken || reso.enhanced) ? reso.mult : this._getComboMultiplier(battle.benming, skill.spell_type);
+      // 共鸣触发统计（跳过结算面板用）
+      if (battle.stats) {
+        if (reso.broken) battle.stats.resoBroken += 1;
+        else if (reso.enhanced) battle.stats.resoEnhanced += 1;
+        else battle.stats.resoNormal += 1;
+      }
     }
     dmg = Math.floor(dmg * comboMult);
 
@@ -520,7 +541,7 @@ const BattleEngineV2 = {
       events.push({ type: "enemy_weak", name: e.name });
     }
     const el = intent.element || null;
-    const wx = intent.wuxing || null; // 五行层：夹招五行（破/增共鸣用，数据待接入）
+    const wx = intent.wuxing || null; // 五行层：夹招五行（破/增共鸣用，数据已接入）
     e.intent = null;
     return { element: el, wuxing: wx };
   },
@@ -531,10 +552,11 @@ const BattleEngineV2 = {
     const events = [];
     let firstEl = null;
     let firstWx = null;
-    for (const e of battle.enemies.filter((x) => x.hp > 0)) {
-      const r = this._enemySingleAct(state, battle, e, events);
-      if (r && firstEl == null && r.element != null) firstEl = r.element;
-      if (r && firstWx == null && r.wuxing != null) firstWx = r.wuxing;
+    // 车轮战：每格夹招仅最前存活敌方行动（第一个打完，第二个顶上，血量不恢复）。
+    const front = battle.enemies.find((x) => x.hp > 0);
+    if (front) {
+      const r = this._enemySingleAct(state, battle, front, events);
+      if (r) { firstEl = r.element; firstWx = r.wuxing; }
     }
     battle._lastEnemyActElement = firstEl;
     battle._lastEnemyActWuxing = firstWx;
@@ -769,6 +791,9 @@ const BattleEngineV2 = {
   },
 
   _dealDamageToEnemy(enemy, dmg, battle) {
+    // 真·车轮战：只有最前存活之敌（在场者）可被伤害；后排侯场者免疫溅射/连锁/追击（一个个轮番上，血量不恢复）
+    const front = battle.enemies.find((e) => e.hp > 0);
+    if (front && enemy !== front) return 0;
     // 罡气吸收
     if (enemy.block > 0) {
       const absorbed = Math.min(enemy.block, dmg);
@@ -1455,23 +1480,23 @@ const BattleEngineV2 = {
       }
     }
     const r = Math.random();
-    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))), label: "扑击", element: "weapon" };
-    if (r < 0.75) return { type: "charge", label: "凶光大盛" };
-    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)), label: "罡气护体", element: "weapon" };
-    if (r < 0.95) return { type: "curse_burn", label: "喷吐邪火", ratio: 0.03, element: "fire" };
-    return { type: "curse_weak", label: "嘶吼震魂", element: "soul" };
+    if (r < 0.6) return { type: "attack", value: Math.max(1, Math.round(enemy.power * (0.18 + Math.random() * 0.06))), label: "扑击", element: "weapon", wuxing: "metal" };
+    if (r < 0.75) return { type: "charge", label: "凶光大盛", wuxing: "wood" };
+    if (r < 0.9) return { type: "block", value: Math.max(1, Math.round(enemy.power * 0.08)), label: "罡气护体", element: "weapon", wuxing: "earth" };
+    if (r < 0.95) return { type: "curse_burn", label: "喷吐邪火", ratio: 0.03, element: "fire", wuxing: "fire" };
+    return { type: "curse_weak", label: "嘶吼震魂", element: "soul", wuxing: "water" };
   },
 
   _mkIntent(enemy, p) {
     if (p.type === "attack") {
       const lo = num(p.ratio?.[0], 0.18);
       const hi = num(p.ratio?.[1], 0.24);
-      return { type: "attack", value: Math.max(1, Math.round(enemy.power * (lo + Math.random() * (hi - lo)))), label: p.label, element: p.element || null };
+      return { type: "attack", value: Math.max(1, Math.round(enemy.power * (lo + Math.random() * (hi - lo)))), label: p.label, element: p.element || null, wuxing: p.wuxing || null };
     }
     if (p.type === "block") {
-      return { type: "block", value: Math.max(1, Math.round(enemy.power * num(p.ratio, 0.08))), label: p.label, element: p.element || null };
+      return { type: "block", value: Math.max(1, Math.round(enemy.power * num(p.ratio, 0.08))), label: p.label, element: p.element || null, wuxing: p.wuxing || null };
     }
-    return { type: p.type, label: p.label, ratio: num(p.ratio, 0.03), element: p.element || null };
+    return { type: p.type, label: p.label, ratio: num(p.ratio, 0.03), element: p.element || null, wuxing: p.wuxing || null };
   },
 
   // ---------- 阶段/胜负 ----------
@@ -1480,7 +1505,7 @@ const BattleEngineV2 = {
     if (battle.phases && battle.phaseIndex < battle.phases.length - 1) {
       battle.phaseIndex += 1;
       const phase = battle.phases[battle.phaseIndex];
-      battle.enemies = [this._mkEnemy(phase.name, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)), phase.pool)];
+      battle.enemies = [this._mkEnemy(phase.name, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)), phase.pool, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)))];
       events.push({ type: "phase_advance", name: phase.name, intro: phase.intro });
     } else {
       battle.done = true;
