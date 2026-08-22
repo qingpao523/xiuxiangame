@@ -4,6 +4,18 @@
   "description": "内容导演日程。开号第几天×境界触发 minigame。design/1.12。day 1–7 预留，本批只交 day0 灵潮。",
   "rows": [
     {
+      "beat_id": "seal_light_d0",
+      "day_min": 0,
+      "day_max": 0,
+      "realm_min": "rq_02",
+      "realm_max": "rq_10",
+      "trigger": "any",
+      "opening_only": true,
+      "event_id": "event_001",
+      "minigame_id": "",
+      "lore_anchor": "封神榜碎光落入山中，开局必见这一眼"
+    },
+    {
       "beat_id": "spirit_tide_d0",
       "day_min": 0,
       "day_max": 0,

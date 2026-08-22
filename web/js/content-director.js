@@ -33,11 +33,38 @@ const ContentDirector = {
       const trig = String(beat.trigger || "any");
       if (trig !== "any" && trig !== String(reason)) continue;
       if (beat.opening_only && !this.isOpening(state)) continue;
-      if (!beat.minigame_id) continue;
+      const eventId = String(beat.event_id || "");
+      const miniId = String(beat.minigame_id || "");
+      if (!eventId && !miniId) continue;
+
+      if (eventId) {
+        if (state.pending_event_id) continue;
+        if (typeof EventManager === "undefined" || !EventManager.canOffer(state, eventId)) {
+          fired[id] = true;
+          hit = true;
+          continue;
+        }
+        fired[id] = true;
+        hit = true;
+        Game._setPendingEvent(eventId);
+        Game._queueEventPopup();
+        continue;
+      }
+
       fired[id] = true;
       hit = true;
-      GameplayEngine.trigger(String(beat.minigame_id));
+      if (miniId && typeof GameplayEngine !== "undefined") GameplayEngine.trigger(miniId);
     }
+
+    // 无 weight 的脚本机缘只在登录/升重吐一条，不跟每一次吐纳抢弹窗。
+    if (!state.pending_event_id && (reason === "login" || reason === "realm") && typeof EventManager !== "undefined") {
+      const scripted = EventManager.nextScripted(state, ["offline"]);
+      if (scripted) {
+        Game._setPendingEvent(scripted);
+        Game._queueEventPopup();
+      }
+    }
+
     if (hit) {
       state.flags.beats_fired = fired;
       SaveManager.save(state);

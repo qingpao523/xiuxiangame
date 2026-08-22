@@ -79,7 +79,7 @@
     {
       "unlock_id": "event_system",
       "unlock_name": "机缘",
-      "unlock_realm": "rq_06",
+      "unlock_realm": "rq_02",
       "feature_type": "core",
       "ui_target": "EventPopup",
       "description": "开启封神机缘事件。"

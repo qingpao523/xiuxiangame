@@ -12,7 +12,7 @@
       "reward_minutes_equivalent": 2,
       "map_id": "",
       "daily_limit": 40,
-      "event_chance": 0,
+      "event_chance": 0.03,
       "force_event": "",
       "description": "运转一轮小周天，获得少量道行与法力。",
       "start_text": "你盘膝而坐，收束心神，开始吐纳周天。",

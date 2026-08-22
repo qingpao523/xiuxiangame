@@ -52,7 +52,8 @@
       "base_mana_per_min": 16,
       "combat_power_base": 180,
       "unlock_ids": [
-        "one_click_claim"
+        "one_click_claim",
+        "event_system"
       ],
       "feature_tips": [
         "第一次离线收益"

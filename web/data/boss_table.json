@@ -192,7 +192,7 @@
         "spell_page": 15,
         "refine_material": 10
       },
-      "first_clear_event": "event_401",
+      "first_clear_event": "event_321",
       "lore_text": "十绝阵的阵眼残影，由十道阵纹凝成的人形。它没有意识，只有一个本能：守住阵心。需先破两个阵眼（小怪），才能攻击主体。",
       "victory_text": "阵纹人形崩散，十道残旗落地。你拾起一面，上面刻着'天绝'二字。",
       "visual_keywords": [
@@ -220,7 +220,7 @@
         "treasure_shard": 15,
         "refine_material": 12
       },
-      "first_clear_event": "event_402",
+      "first_clear_event": "event_322",
       "lore_text": "九曲黄河阵的阵灵，三霄娘娘留下的一缕阵意。它每回合削去你 5% 的战力，越打越弱。除非你能在削境生效前将其击溃，否则道基不保。",
       "victory_text": "阵灵化为一缕浊水散去，留下一片混元金斗的碎片。削境之力消散，你的修为重新稳固。",
       "visual_keywords": [
@@ -248,7 +248,7 @@
         "spell_page": 12,
         "merit": 500
       },
-      "first_clear_event": "event_403",
+      "first_clear_event": "event_323",
       "lore_text": "封神榜上雷部正神的残影，周身雷光不绝。它免疫雷系伤害——用雷打雷，是打不动的。需用火系或剑系破之。",
       "victory_text": "雷部神将残影崩散，一缕雷道感悟落入你的泥丸宫。榜文上，雷部那一栏微微暗了一分。",
       "visual_keywords": [

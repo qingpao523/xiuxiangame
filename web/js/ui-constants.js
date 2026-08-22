@@ -191,7 +191,7 @@ const NAV_UNLOCK = {
   map: { check: (s) => UnlockManager.isUnlocked(s, "travel"), hint: "炼气士三重解锁游历" },
   spell: { check: (s) => UnlockManager.isUnlocked(s, "spell_system"), hint: "炼气士四重解锁术法" },
   treasure: { check: (s) => UnlockManager.isUnlocked(s, "treasure_system") || int(s.treasures?.treasure_009?.level) > 0, hint: "真人一重解锁法宝" },
-  chance: { check: (s) => UnlockManager.isUnlocked(s, "event_system") || !!s.pending_event_id, hint: "炼气士六重解锁机缘" },
+  chance: { check: (s) => UnlockManager.isUnlocked(s, "event_system") || !!s.pending_event_id, hint: "炼气二重起，闭关游历都可能撞上机缘" },
   log: { check: () => true },
 };
 

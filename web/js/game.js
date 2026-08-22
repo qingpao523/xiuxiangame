@@ -22,6 +22,9 @@ function godSeat(state, key) {
   return total;
 }
 
+const FACTION_JOIN_EVENT = { chan: "event_316", jie: "event_317", tianting: "event_318", wuzhuang: "event_319" };
+const ARRAY_WIN_EVENT = { tianjue: "event_321", huanghe: "event_322", zhuxian: "event_323", wanxian: "event_324" };
+
 // (INSIGHT_CHOICES + rollInsights defined in constants.js)
 
 // ---------------- 天象 / 称号 ----------------
@@ -248,11 +251,13 @@ const Game = {
       for (const rid of Object.keys(row.reward_resources)) fixed[rid] = num(row.reward_resources[rid]);
       this._applyResourceDelta(fixed); extraRewardText = this._formatResourceDelta(fixed);
     }
-    let eventTriggered = false;
-    if (!this.state.pending_event_id) {
+    let eventTriggered = !!this.state.pending_event_id;
+    if (!this.state.pending_event_id && typeof ContentDirector !== "undefined") ContentDirector.pulse("action");
+    if (this.state.pending_event_id) eventTriggered = true;
+    else {
       let eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
       if (this.state.flags.insight_event_boost) { eventChance *= 2; delete this.state.flags.insight_event_boost; }
-        if (this.hasDivinationBoost("event_boost")) eventChance *= 1.8; // P1 占卜「明日机缘」
+      if (this.hasDivinationBoost("event_boost")) eventChance *= 1.8; // P1 占卜「明日机缘」
       if (row.force_event && EventManager.canOffer(this.state, String(row.force_event))) {
         this._setPendingEvent(String(row.force_event)); eventTriggered = true;
       } else if (eventChance > 0 && Math.random() <= eventChance) {
@@ -654,9 +659,7 @@ const Game = {
         this.queuePopup({ kind: "text", style: "breakthrough", title: "挑战胜利！",
           body: `${boss.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${lootLines.length ? `\n\n${lootLines.join("\n")}` : ""}`,
           buttons: [{ label: "收取战利" }] });
-        if (firstClear && boss.first_clear_event && !this.state.pending_event_id) {
-          if (EventManager.canOffer(this.state, String(boss.first_clear_event))) { this._setPendingEvent(String(boss.first_clear_event)); this._queueEventPopup(); }
-        }
+        if (firstClear) this._offerEvent(boss.first_clear_event);
         this._queueRestPopup(bossId);
       } else {
         const consolation = Math.floor(num(boss.reward_mana) * 0.1);
@@ -711,6 +714,14 @@ const Game = {
         this.queuePopup({ kind: "text", style: "breakthrough", title: "破阵而出！",
           body: `阵纹消散，杀劫暂退。\n\n获得：\n${this._formatResourceDelta(rewards)}${arrLines.length ? `\n\n${arrLines.join("\n")}` : ""}${firstWin ? "\n\n首通之阵，法宝碎片落入囊中。" : ""}`,
           buttons: [{ label: "收功" }] });
+        if (firstWin) this._offerEvent("event_320");
+        if (!this.state.pending_event_id) {
+          const tied = ARRAY_WIN_EVENT[arrId];
+          if (!this._offerEvent(tied)) {
+            const rolled = EventManager.rollEvent(this.state, "array");
+            if (rolled) this._offerEvent(rolled);
+          }
+        }
       } else {
         const seatText = this.awardGodSeat();
         this._log(`你被${battle.name}击退，阵势余波将你震出。`);
@@ -839,6 +850,9 @@ const Game = {
     const seat = pool[Math.floor(Math.random() * pool.length)];
     owned.push(seat.id);
     this._log(`一缕真灵被榜文照过——得「${seat.name}」护持：${seat.desc}。`);
+    if (owned.length === 1) this._offerEvent("event_328");
+    if (seat.id === "leibu") this._offerEvent("event_329");
+    if (owned.length >= GOD_SEATS.length) this._offerEvent("event_330");
     return `\n一缕真灵被榜文照过——得「${seat.name}」护持：${seat.desc}`;
   },
 
@@ -865,6 +879,7 @@ const Game = {
     if (pillId === "due") { const n = (q === "shang" ? 2 : 1) * outMult; this.state.pills.due = int(this.state.pills.due) + n; this._log(`炉火纯青，炼成${qname}渡厄丹 ${n} 枚${boostNote}（存 ${this.state.pills.due}）。`); }
     else if (pillId === "peiyuan") { const hours = (q === "shang" ? 3 : q === "xia" ? 1.5 : 2) * outMult; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`服下${qname}培元丹，丹田暖意流转——${hours} 时辰内收益 +15%${boostNote}。`); }
     else if (pillId === "ningfa") { const mins = (q === "shang" ? 45 : q === "xia" ? 20 : 30) * outMult; const g = { daoxing: num(RewardManager.calculateRewardForMinutes(this.state, mins, { includeMap: false }).resources.daoxing) }; this._applyResourceDelta(g); this._log(`${qname}凝法丹化开，法力转为道行 +${formatInt(g.daoxing)}${boostNote}。`); }
+    this._offerEvent("event_325");
     this._afterMutated();
     return { ok: true, quality: q };
   },
@@ -1004,6 +1019,7 @@ const Game = {
       }
       this._queueNewUnlockPopups(before);
     if (!this.state.pending_event_id) { const eventId = EventManager.rollEvent(this.state, "level_up"); if (eventId) { this._setPendingEvent(eventId); this._queueEventPopup(); } }
+    if (typeof ContentDirector !== "undefined") ContentDirector.pulse("realm");
     this._afterMutated();
   },
 
@@ -1096,6 +1112,7 @@ const Game = {
     this.state.faction_id = String(factionId);
     this._log(`你投身${row.faction_name}（${row.dojo}），自此入局。`);
     this.queuePopup({ kind: "text", style: "seal", title: `入局：${row.faction_name}`, body: String(row.join_text || ""), buttons: [{ label: "领受护持" }] });
+    this._offerEvent(FACTION_JOIN_EVENT[factionId]);
     this._afterMutated();
   },
 
@@ -1576,10 +1593,7 @@ const Game = {
       this.toast(`发现·${p.name}`, `${p.flavor || ""}${rewardText ? `\n\n（${rewardText}）` : ""}`);
       if (typeof AudioManager !== "undefined") AudioManager.playSfx("secret_found"); // SFX-07 发现秘境提示
       // 探索点接事件（design/6.6）：发现深层秘境触发 tied 事件（seen 去重）
-      if (p.trigger_event && !this.state.seen_events.includes(String(p.trigger_event))) {
-        this._setPendingEvent(String(p.trigger_event));
-        this._queueEventPopup();
-      }
+      this._offerEvent(p.trigger_event);
     }
   },
 
@@ -1619,27 +1633,22 @@ const Game = {
     if (int(this.pendingOfflineReward.minutes) >= 5) {
       return { type: "claim", label: `出关领取\n闭关 ${formatDuration(int(this.pendingOfflineReward.minutes))}` };
     }
-    // 主按钮永远保留一条“继续修行”的默认路；Boss/目标行动只做次级推荐，绝不阻断修行。
+    // 主按钮只走洞府修行（入定/吐纳/师门功课）。游历、巡行、探幽在游历页手动点，绝不占主钮。
     const preferred = this._preferredCultivationAction(state);
     if (preferred) {
       return { type: "action", label: preferred.action_name, actionId: String(preferred.action_id) };
-    }
-    if (RealmManager.isCapped(state)) {
-      return { type: "action", label: "骷髅山探幽", actionId: "kulou_explore" };
     }
     return { type: "idle", label: "继续闭关" };
   },
 
   _preferredCultivationAction(state) {
     const actions = ActionManager.getActions(state);
-    const available = actions.filter((row) => ActionManager.getAvailability(state, row).ok);
-    if (!available.length) return null;
-    const order = ["short_meditation", "breath_cycle", "wild_travel", "chentang_patrol", "kulou_explore"];
+    const order = ["short_meditation", "breath_cycle", "chan_task", "jie_task", "tianting_task", "wuzhuang_task"];
     for (const id of order) {
-      const match = available.find((row) => String(row.action_id) === id);
-      if (match) return match;
+      const row = actions.find((r) => String(r.action_id) === id);
+      if (row && this._isCultivationAction(row) && ActionManager.getAvailability(state, row).ok) return row;
     }
-    return available[0];
+    return actions.find((r) => this._isCultivationAction(r) && ActionManager.getAvailability(state, r).ok) || null;
   },
 
   // 挂机放置准则：修炼类动作 = 无地图、offline_equivalent 产出（吐纳/入定/各势力任务）。
@@ -1653,7 +1662,7 @@ const Game = {
   _getAutoChainAction(currentRow) {
     const state = this.state;
     if (this._isCultivationAction(currentRow) && ActionManager.getAvailability(state, currentRow).ok) return currentRow;
-    return this._getFallbackCultivationAction() || currentRow;
+    return this._getFallbackCultivationAction();
   },
 
   // P0-#2：链式续作失败后，回落到可用的修炼类动作（breath_cycle 优先），避免挂机停摆。
@@ -1726,12 +1735,12 @@ const Game = {
       if (match) return match;
     }
     const factionTask = String(getFactionRow(state).task_action_id || "");
-    const order = [factionTask, "observe_seal", "short_meditation", "breath_cycle", "wild_travel", "chentang_patrol", "kulou_explore"];
+    const order = [factionTask, "observe_seal", "short_meditation", "breath_cycle"];
     for (const id of order) {
-      const match = available.find((row) => String(row.action_id) === id);
+      const match = available.find((row) => String(row.action_id) === id && this._isCultivationAction(row));
       if (match) return match;
     }
-    return available[0];
+    return this._preferredCultivationAction(state);
   },
 
   // ---------- 轮回转生 ----------
@@ -1818,6 +1827,15 @@ const Game = {
 
   _setPendingEvent(eventId) { this.state.pending_event_id = eventId; this.state.pending_event_prelude = true; },
 
+  _offerEvent(eventId) {
+    const id = String(eventId || "");
+    if (!id || this.state.pending_event_id) return false;
+    if (typeof EventManager === "undefined" || !EventManager.canOffer(this.state, id)) return false;
+    this._setPendingEvent(id);
+    this._queueEventPopup();
+    return true;
+  },
+
   _queueEventPopup() {
     if (!this.state.pending_event_id) return;
     if (this.eventPopupActive) return;
@@ -1832,6 +1850,8 @@ const Game = {
       if (beforeSet.has(id)) continue;
       const info = FEATURE_UNLOCK_TEXT[id];
       if (!info || this.state.seen_unlock_popups.includes(id)) continue;
+      // 机缘系统的「开启」就是第一段机缘弹窗，不再叠一块功能说明。
+      if (id === "event_system") { this.state.seen_unlock_popups.push(id); continue; }
       this.state.seen_unlock_popups.push(id);
       // 山野游历首次解锁时，直接展开封神山河图：地图感是这个节点的主菜，不是附注。
       if (id === "travel" && !this.state.flags.world_map_seen) {
@@ -1888,7 +1908,7 @@ const Game = {
     this._checkCompanions();
     this._checkWorldMapReveal();
     this._refreshPendingReward();
-    if (typeof ContentDirector !== "undefined") ContentDirector.pulse("realm");
+    if (typeof ContentDirector !== "undefined") ContentDirector.pulse("action");
     SaveManager.save(this.state);
     this._emit();
   },

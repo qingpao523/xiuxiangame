@@ -1082,7 +1082,7 @@ function renderMapPanel(body, state) {
     const cost = document.createElement("div"); cost.className = "card-cost";
     cost.textContent = `推荐战力 ${formatInt(map.recommended_power)}｜你的战力 ${formatInt(power)}`;
     info.append(name, desc, cost); card.appendChild(info);
-    const btnBox = document.createElement("div"); btnBox.style.display = "flex"; btnBox.style.flexDirection = "column"; btnBox.style.gap = "6px";
+    const btnBox = document.createElement("div"); btnBox.className = "card-btn-col";
     if (state.current_map_id !== id) { const sb = document.createElement("button"); sb.className = "card-btn"; sb.textContent = "驻留此地"; sb.addEventListener("click", () => Game.selectMap(id)); btnBox.appendChild(sb); }
 
     // M3 投放层（design/15.0 §五）：按 boss_table.map_id 聚合渲染本图全部 Boss，
@@ -1153,16 +1153,16 @@ function renderMapPanel(body, state) {
 function renderSpellPanel(body, state) {
   // ===== 斗法栏·配招入口 =====
   const v2box = document.createElement("div"); v2box.className = "card v2-entry";
+  const v2info = document.createElement("div"); v2info.className = "card-info";
   const v2title = document.createElement("div"); v2title.className = "card-name";
   v2title.textContent = "斗法栏·连锁制";
   const v2desc = document.createElement("div"); v2desc.className = "card-desc";
   v2desc.textContent = "配招5分钟，斗法全自动。同系相邻触发共鸣×1.3，三连触发终极神通。";
-  const v2btns = document.createElement("div"); v2btns.className = "v2-btns";
+  v2info.append(v2title, v2desc);
   const cfgBtn = document.createElement("button"); cfgBtn.className = "card-btn";
   cfgBtn.textContent = "配置斗法栏";
   cfgBtn.addEventListener("click", () => { closePanelSheet(); Game.openSlotConfig(); drainPopupQueue(); });
-  v2btns.append(cfgBtn);
-  v2box.append(v2title, v2desc, v2btns);
+  v2box.append(v2info, cfgBtn);
   body.appendChild(v2box);
 
   // ===== 练气术法（V2 skill_table，30术法六系） =====
@@ -1229,7 +1229,9 @@ function renderSkillV2Section(body, state) {
       const nextLevel = level + 1;
       const cost = isUnlocked && nextLevel <= maxLevel ? Game.getSkillUpgradeCost(skill, nextLevel) : null;
       const card = document.createElement("div"); card.className = "card" + (level > 0 ? " selected" : "");
-      const img = document.createElement("img"); img.src = skillIcon(id, str(skill.spell_type, "")); img.alt = "";
+      const src = skillIcon(id, str(skill.spell_type, ""));
+      const img = src ? document.createElement("img") : null;
+      if (img) { img.src = src; img.alt = ""; }
       const info = document.createElement("div"); info.className = "card-info";
       const name = document.createElement("div"); name.className = "card-name";
       name.textContent = skill.name + " " + (RARITY_LABEL[str(skill.rarity, "common")] || "") + " " + (level > 0 ? level + "重" : "未悟");
@@ -1246,7 +1248,8 @@ function renderSkillV2Section(body, state) {
       btn.textContent = "升重";
       btn.disabled = !cost || num(state.resources.spell_page) < num(cost.spell_page_cost) || num(state.resources.mana) < num(cost.mana_cost);
       btn.addEventListener("click", () => { Game.upgradeSkill(id); renderPanelBody("spell"); });
-      card.append(img, info, btn); body.appendChild(card);
+      if (img) card.append(img, info, btn); else card.append(info, btn);
+      body.appendChild(card);
     }
   }
 }
