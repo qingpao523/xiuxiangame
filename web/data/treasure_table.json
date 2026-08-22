@@ -10,6 +10,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_01",
       "related_spell_type": "thunder",
+      "wuxing": "wood",
       "base_power_bonus": 0.8,
       "main_effect": {
         "combat_power_bonus": 0.8,
@@ -70,6 +71,7 @@
       "treasure_type": "cultivation",
       "unlock_realm": "zr_01",
       "related_spell_type": "neutral",
+      "wuxing": "wood",
       "base_power_bonus": 0.2,
       "main_effect": {
         "offline_daoxing_bonus": 0.15,
@@ -129,6 +131,7 @@
       "treasure_type": "protect",
       "unlock_realm": "zr_01",
       "related_spell_type": "merit",
+      "wuxing": "earth",
       "base_power_bonus": 0.25,
       "main_effect": {
         "breakthrough_success_bonus": 0.08,
@@ -188,6 +191,7 @@
       "treasure_type": "control",
       "unlock_realm": "zr_01",
       "related_spell_type": "boss",
+      "wuxing": "metal",
       "base_power_bonus": 0.3,
       "main_effect": {
         "boss_success_bonus": 0.1,
@@ -248,6 +252,7 @@
       "treasure_type": "cultivation",
       "unlock_realm": "zr_01",
       "related_spell_type": "fire",
+      "wuxing": "fire",
       "base_power_bonus": 0.2,
       "main_effect": {
         "offline_daoxing_bonus": 0.1,
@@ -307,6 +312,7 @@
       "treasure_type": "control",
       "unlock_realm": "zr_01",
       "related_spell_type": "soul",
+      "wuxing": "metal",
       "base_power_bonus": 0.35,
       "main_effect": {
         "soul_map_reward_bonus": 0.15,
@@ -366,6 +372,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_01",
       "related_spell_type": "boss",
+      "wuxing": "metal",
       "base_power_bonus": 1.0,
       "main_effect": {
         "combat_power_bonus": 1.0,
@@ -425,6 +432,7 @@
       "treasure_type": "protect_cultivation",
       "unlock_realm": "zr_01",
       "related_spell_type": "merit",
+      "wuxing": "earth",
       "base_power_bonus": 0.15,
       "main_effect": {
         "merit_reward_bonus": 0.1,
@@ -484,6 +492,7 @@
       "treasure_type": "protect_cultivation",
       "unlock_realm": "race_xiantian",
       "related_spell_type": "neutral",
+      "wuxing": null,
       "base_power_bonus": 0.4,
       "main_effect": {
         "combat_power_bonus": 0.4,
@@ -542,6 +551,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_02",
       "related_spell_type": "weapon",
+      "wuxing": "metal",
       "base_power_bonus": 0.9,
       "main_effect": {
         "combat_power_bonus": 0.9,
@@ -601,6 +611,7 @@
       "treasure_type": "control",
       "unlock_realm": "zr_03",
       "related_spell_type": "soul",
+      "wuxing": "fire",
       "base_power_bonus": 0.8,
       "main_effect": {
         "combat_power_bonus": 0.8,
@@ -660,6 +671,7 @@
       "treasure_type": "cultivation",
       "unlock_realm": "zr_04",
       "related_spell_type": "fire",
+      "wuxing": "fire",
       "base_power_bonus": 0.7,
       "main_effect": {
         "combat_power_bonus": 0.7,
@@ -719,6 +731,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_05",
       "related_spell_type": "sword",
+      "wuxing": "metal",
       "base_power_bonus": 1.0,
       "main_effect": {
         "combat_power_bonus": 1.0,
@@ -778,6 +791,7 @@
       "treasure_type": "protect",
       "unlock_realm": "zr_06",
       "related_spell_type": "water",
+      "wuxing": "earth",
       "base_power_bonus": 0.8,
       "main_effect": {
         "combat_power_bonus": 0.8,
@@ -837,6 +851,7 @@
       "treasure_type": "cultivation",
       "unlock_realm": "zr_07",
       "related_spell_type": "weapon",
+      "wuxing": "wood",
       "base_power_bonus": 0.9,
       "main_effect": {
         "combat_power_bonus": 0.9,
@@ -896,6 +911,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_08",
       "related_spell_type": "sword",
+      "wuxing": "metal",
       "base_power_bonus": 1.1,
       "main_effect": {
         "combat_power_bonus": 1.1,
@@ -955,6 +971,7 @@
       "treasure_type": "control",
       "unlock_realm": "zr_09",
       "related_spell_type": "soul",
+      "wuxing": "water",
       "base_power_bonus": 0.9,
       "main_effect": {
         "combat_power_bonus": 0.9,
@@ -1014,6 +1031,7 @@
       "treasure_type": "protect_cultivation",
       "unlock_realm": "dx_01",
       "related_spell_type": "water",
+      "wuxing": "metal",
       "base_power_bonus": 1.0,
       "main_effect": {
         "combat_power_bonus": 1.0,
@@ -1073,6 +1091,7 @@
       "treasure_type": "attack",
       "unlock_realm": "dx_05",
       "related_spell_type": "thunder",
+      "wuxing": "metal",
       "base_power_bonus": 1.2,
       "main_effect": {
         "combat_power_bonus": 1.2,
@@ -1133,6 +1152,7 @@
       "treasure_type": "protect",
       "unlock_realm": "dx_05",
       "related_spell_type": "neutral",
+      "wuxing": "fire",
       "base_power_bonus": 0.4,
       "main_effect": {
         "breakthrough_success_bonus": 0.05,
@@ -1193,6 +1213,7 @@
       "treasure_type": "attack_control",
       "unlock_realm": "dx_08",
       "related_spell_type": "boss",
+      "wuxing": "earth",
       "base_power_bonus": 1.5,
       "main_effect": {
         "combat_power_bonus": 1.5,
@@ -1253,6 +1274,7 @@
       "treasure_type": "control",
       "unlock_realm": "dx_08",
       "related_spell_type": "soul",
+      "wuxing": "water",
       "base_power_bonus": 0.8,
       "main_effect": {
         "soul_damage_bonus": 0.15,
@@ -1313,6 +1335,7 @@
       "treasure_type": "attack",
       "unlock_realm": "dx_05",
       "related_spell_type": "treasure",
+      "wuxing": "water",
       "base_power_bonus": 1.8,
       "main_effect": {
         "combat_power_bonus": 1.8,
@@ -1373,6 +1396,7 @@
       "treasure_type": "control",
       "unlock_realm": "jx_08",
       "related_spell_type": "treasure",
+      "wuxing": "earth",
       "base_power_bonus": 1.5,
       "main_effect": {
         "combat_power_bonus": 1.0,
@@ -1433,6 +1457,7 @@
       "treasure_type": "attack",
       "unlock_realm": "jx_05",
       "related_spell_type": "weapon",
+      "wuxing": "metal",
       "base_power_bonus": 2.0,
       "main_effect": {
         "combat_power_bonus": 2.0,
@@ -1493,6 +1518,7 @@
       "treasure_type": "control",
       "unlock_realm": "jx_08",
       "related_spell_type": "soul",
+      "wuxing": "earth",
       "base_power_bonus": 1.2,
       "main_effect": {
         "combat_power_bonus": 0.8,
@@ -1553,6 +1579,7 @@
       "treasure_type": "attack_control",
       "unlock_realm": "jx_10",
       "related_spell_type": "calamity",
+      "wuxing": "fire",
       "base_power_bonus": 2.2,
       "main_effect": {
         "combat_power_bonus": 2.2,
@@ -1613,6 +1640,7 @@
       "treasure_type": "cultivation",
       "unlock_realm": "ty_05",
       "related_spell_type": "neutral",
+      "wuxing": "earth",
       "base_power_bonus": 1.0,
       "main_effect": {
         "offline_daoxing_bonus": 0.2,
@@ -1673,6 +1701,7 @@
       "treasure_type": "protect",
       "unlock_realm": "ty_08",
       "related_spell_type": "merit",
+      "wuxing": "earth",
       "base_power_bonus": 1.5,
       "main_effect": {
         "breakthrough_success_bonus": 0.1,
@@ -1733,6 +1762,7 @@
       "treasure_type": "attack",
       "unlock_realm": "ty_01",
       "related_spell_type": "boss",
+      "wuxing": "earth",
       "base_power_bonus": 3.0,
       "main_effect": {
         "combat_power_bonus": 3.0,
@@ -1793,6 +1823,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_03",
       "related_spell_type": "weapon",
+      "wuxing": "metal",
       "base_power_bonus": 1.4,
       "main_effect": {
         "combat_power_bonus": 1.4,
@@ -1853,6 +1884,7 @@
       "treasure_type": "attack",
       "unlock_realm": "zr_05",
       "related_spell_type": "thunder",
+      "wuxing": "earth",
       "base_power_bonus": 1.6,
       "main_effect": {
         "combat_power_bonus": 1.6,
@@ -1913,6 +1945,7 @@
       "treasure_type": "defense",
       "unlock_realm": "zr_04",
       "related_spell_type": "soul",
+      "wuxing": "earth",
       "base_power_bonus": 1.3,
       "main_effect": {
         "combat_power_bonus": 1.3,
