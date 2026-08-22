@@ -117,17 +117,32 @@ const NPC_ICONS = {
   tongtian: "assets/characters/npc_tongtian.png",
 };
 
-// 山河图地点图标
+// 山河图地点图标（design/9.2 风格锁 v2 新美术，key=map_id；缺失时 world-map.js 回退文字 glyph）
 const MAP_NODE_ICONS = {
-  fengshen_tai: "assets/map/icons/icon_place_fengshentai.png",
-  chaoge: "assets/map/icons/icon_place_chaoge.png",
-  yuxu: "assets/map/icons/icon_place_yuxugong.png",
-  xiqi: "assets/map/icons/icon_place_xiqi.png",
-  jin_ao: "assets/map/icons/icon_place_jinaodao.png",
-  chentang: "assets/map/icons/icon_place_chentangguan.png",
-  kulou: "assets/map/icons/icon_place_kuloushan.png",
-  wild: "assets/map/icons/icon_place_yaohuan.png",
-  cave: "assets/map/icons/icon_place_dongfu.png",
+  map_001: "assets/map/nodes/icon_map_001.png",
+  map_002: "assets/map/nodes/icon_map_002.png",
+  map_003: "assets/map/nodes/icon_map_003.png",
+  map_004: "assets/map/nodes/icon_map_004.png",
+  map_005: "assets/map/nodes/icon_map_005.png",
+  map_006: "assets/map/nodes/icon_map_006.png",
+  map_007: "assets/map/nodes/icon_map_007.png",
+  map_008: "assets/map/nodes/icon_map_008.png",
+  map_009: "assets/map/nodes/icon_map_009.png",
+};
+
+// 雾中地标剪影图标（key=FLAVOR_LANDMARKS id；lm_cave 为常驻洞府，全彩）
+const LANDMARK_ICONS = {
+  lm_chaoge: "assets/map/landmarks/lm_chaoge.png",
+  lm_qingqiu: "assets/map/landmarks/lm_qingqiu.png",
+  lm_muye: "assets/map/landmarks/lm_muye.png",
+  lm_yuxu: "assets/map/landmarks/lm_yuxu.png",
+  lm_lingshan: "assets/map/landmarks/lm_lingshan.png",
+  lm_yinglong: "assets/map/landmarks/lm_yinglong.png",
+  lm_huaguo: "assets/map/landmarks/lm_huaguo.png",
+  lm_zhulong: "assets/map/landmarks/lm_zhulong.png",
+  lm_jingwei: "assets/map/landmarks/lm_jingwei.png",
+  lm_yaozu: "assets/map/landmarks/lm_yaozu.png",
+  lm_cave: "assets/map/landmarks/lm_cave.png",
 };
 
 const MAP_ACTION = { map_001: "wild_travel", map_002: "chentang_patrol", map_003: "kulou_explore", map_004: "xiqi_patrol", map_005: "shijue_probe", map_006: "huanghe_wade", map_007: "wanxian_walk", map_008: "fengshen_climb", map_009: "hunyuan_contemplate" };

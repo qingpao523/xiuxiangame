@@ -1,18 +1,23 @@
-/* 封神修道录 · WorldMap — 封神山河图（四大部洲底本，design/15.0 v0.2）
- * 无美术素材期：CSS/SVG 示意图。 playable 节点读 map_table（数据驱动），
- * 五大部洲色块 + 伐纣推进链 + 跨部洲虚线 + 部洲扩展地标（雾中，未来投放）。
- * 正式美术替换后，色块/坐标由 design/9.2 风格锁资产接管。 */
+/* 封神山河图 · WorldMap（design/15.0 F1~F3 + design/15.1 渐进解锁体验）
+ * 层 = 境界：部洲底图随境界逐层揭开（封神榜封印 fog → 碎裂 reveal → 全彩）。
+ * 节点 5 态：sealed/locked/available/current/completed（15.1 §1.2）。
+ * 美术：design/9.2 风格锁 v2 素材（assets/map/），缺失自动回退色块+glyph。 */
 
 "use strict";
 
 // 五大部洲底本（坐标归一自 design/设定思考/封神四大部洲融合地理图.html，viewBox 1200×900 → 百分比）
+// reveal_realm：部洲解封境界（15.1 §1.1 层级模型，对齐 map_table 节点解锁节奏）
 const CONTINENT_META = {
-  "北俱芦洲":     { color: "#e6e1f0", text: "#5a4a6a", label: "北俱芦洲 · 北荒妖族", shape: "rect", x: 30.8, y: 5.3, w: 38.3, h: 16.9 },
-  "西牛贺洲":     { color: "#f2e6c2", text: "#6a5a2a", label: "西牛贺洲 · 西方教", shape: "rect", x: 4.2, y: 36.7, w: 24.7, h: 27.8 },
-  "东胜神洲":     { color: "#d8e9de", text: "#3a5a4a", label: "东胜神洲 · 截教龙族", shape: "rect", x: 71.0, y: 36.7, w: 24.8, h: 27.8 },
-  "南赡部洲":     { color: "#efdcbd", text: "#6a4a2a", label: "南赡部洲 · 商周中原（伐纣主舞台）", shape: "rect", x: 25.8, y: 71.1, w: 48.3, h: 22.9 },
-  "须弥昆仑中枢": { color: "#31406b", text: "#dfe6ff", label: "须弥 · 昆仑 · 仙佛中枢", shape: "circle", cx: 50, cy: 45, r: 13 },
+  "北俱芦洲":     { color: "#e6e1f0", text: "#5a4a6a", label: "北俱芦洲", shape: "rect", x: 30.8, y: 5.3, w: 38.3, h: 16.9, reveal_realm: "ty_01", img: "assets/map/continents/continent_beiju.png" },
+  "西牛贺洲":     { color: "#f2e6c2", text: "#6a5a2a", label: "西牛贺洲", shape: "rect", x: 4.2, y: 36.7, w: 24.7, h: 27.8, reveal_realm: "ty_01", img: "assets/map/continents/continent_xiniu.png" },
+  "东胜神洲":     { color: "#d8e9de", text: "#3a5a4a", label: "东胜神洲", shape: "rect", x: 71.0, y: 36.7, w: 24.8, h: 27.8, reveal_realm: "jx_01", img: "assets/map/continents/continent_dongsheng.png" },
+  "南赡部洲":     { color: "#efdcbd", text: "#6a4a2a", label: "南赡部洲", shape: "rect", x: 25.8, y: 71.1, w: 48.3, h: 22.9, reveal_realm: "rq_01", img: "assets/map/continents/continent_nanshan.png" },
+  "须弥昆仑中枢": { color: "#31406b", text: "#dfe6ff", label: "须弥 · 昆仑", shape: "circle", cx: 50, cy: 45, r: 13, reveal_realm: "ty_01", img: "assets/map/continents/continent_xumishan.png" },
 };
+
+const FOG_SEAL_IMG = "assets/map/fog/fog_seal_pattern.png";
+const CLOUD_BASE_IMG = "assets/map/cloud_sea_base.png";
+const PLAYER_MARKER_IMG = "assets/map/path/marker_player.png";
 
 // 部洲扩展地标（雾中节点：未来批次可升格为可玩图，当前仅叙事/世界观纵深）
 const FLAVOR_LANDMARKS = [
@@ -44,6 +49,7 @@ const WorldMap = {
       wy: num(row.wy, 50),
       mapId: String(row.map_id),
       realm: String(row.unlock_realm || ""),
+      bossId: String(row.boss_id || ""),
       landmark: false,
       desc: String(row.narrative_desc || row.entry_text || ""),
     }));
@@ -80,6 +86,26 @@ const WorldMap = {
     return UnlockManager.getAvailableMaps(state).some((m) => String(m.map_id) === node.mapId);
   },
 
+  // ---------- 5 态状态机（15.1 §1.2：sealed/locked/available/current/completed） ----------
+
+  _continentRevealed(state, name) {
+    const meta = CONTINENT_META[name];
+    if (!meta) return true;
+    return UnlockManager.conditionMet(state, meta.reveal_realm);
+  },
+
+  _nodeState(state, node) {
+    if (node.landmark) {
+      if (node.alwaysReach) return "available";
+      return this._continentRevealed(state, node.continent) ? "fog" : "sealed";
+    }
+    if (node.bossId && int(state.boss_clears[node.bossId]) > 0) return "completed";
+    if (node.mapId && state.current_map_id === node.mapId) return "current";
+    if (this._nodeReached(state, node)) return "available";
+    // 部洲未解封 = 封印；部洲已开但前置未通 = 未达
+    return this._continentRevealed(state, node.continent) ? "locked" : "sealed";
+  },
+
   // ---------- 生命周期 ----------
 
   open(onClose) {
@@ -101,10 +127,14 @@ const WorldMap = {
     const pressure = WorldScroll.getSealPressure(state);
     this._el("world-map-sub").textContent = `${getPhaseRealmName(RealmManager.getCurrentRealm(state))} · ${pressure.label} · 榜文在上，山河在下`;
     const nodes = this._allNodes(state);
+    const snapshot = this._takeSnapshot(state, nodes);
     const canvas = this._el("world-map-canvas");
     canvas.innerHTML = "";
+    canvas.appendChild(this._buildContinents(state, snapshot));
     canvas.appendChild(this._buildSvg(state, nodes));
-    for (const node of nodes) canvas.appendChild(this._buildNode(state, node));
+    for (const node of nodes) canvas.appendChild(this._buildNode(state, node, snapshot));
+    canvas.appendChild(this._buildMarker(state, nodes));
+    this._playReveal(state, snapshot);
     const foot = this._el("world-map-foot");
     foot.innerHTML = "";
     const current = this._currentMapRow(state);
@@ -112,7 +142,103 @@ const WorldMap = {
     foot.appendChild(this._node("div", "world-map-foot-tip", "点按已点亮的地点可直接驻留。南赡部洲为伐纣主舞台，余部洲随修行与版本推进逐一显现。"));
   },
 
-  // ---------- SVG：部洲色块 + 推进链 + 装饰 ----------
+  // ---------- 渐进解锁：快照对比 + reveal 演出（15.1 §1.4） ----------
+
+  _takeSnapshot(state, nodes) {
+    if (!state.flags || typeof state.flags !== "object") state.flags = {};
+    const prev = state.flags.world_map_snapshot || null;
+    const cur = {
+      continents: Object.keys(CONTINENT_META).filter((c) => this._continentRevealed(state, c)),
+      nodes: nodes.filter((n) => !n.landmark && this._nodeReached(state, n)).map((n) => n.id),
+    };
+    const isFirst = !prev;
+    const prevC = new Set((prev && prev.continents) || []);
+    const prevN = new Set((prev && prev.nodes) || []);
+    state.flags.world_map_snapshot = cur;
+    return {
+      first: isFirst,
+      newContinents: cur.continents.filter((c) => !prevC.has(c)),
+      newNodes: cur.nodes.filter((n) => !prevN.has(n)),
+    };
+  },
+
+  _playReveal(state, snapshot) {
+    if (snapshot.first) return; // 首次铺开地图不播解封演出
+    const names = snapshot.newContinents.map((c) => (CONTINENT_META[c] || {}).label || c);
+    const nodeNames = snapshot.newNodes
+      .filter((id) => this._continentRevealed(state, (DataManager.getById("map_table", id) || {}).continent || "南赡部洲"))
+      .filter((id) => !snapshot.newContinents.includes(String((DataManager.getById("map_table", id) || {}).continent || "")))
+      .map((id) => { const r = DataManager.getById("map_table", id); return r ? String(r.map_name) : ""; })
+      .filter(Boolean);
+    const lines = names.concat(nodeNames);
+    if (!lines.length) return;
+    if (typeof AudioManager !== "undefined" && AudioManager.playSfx) AudioManager.playSfx("secret_found");
+    lines.forEach((name, i) => {
+      setTimeout(() => {
+        const panel = document.getElementById("world-map-panel");
+        if (!panel || this._el("world-map-layer").classList.contains("hidden")) return;
+        const banner = this._node("div", "world-map-reveal-banner", `${name} · 解封`);
+        panel.appendChild(banner);
+        setTimeout(() => banner.remove(), 2600);
+      }, 450 * i);
+    });
+  },
+
+  // ---------- 部洲层：底图 + 封印 fog（15.1 §3.1） ----------
+
+  _buildContinents(state, snapshot) {
+    const wrap = this._node("div", "world-map-continents");
+    for (const key of Object.keys(CONTINENT_META)) {
+      const c = CONTINENT_META[key];
+      const box = this._node("div", "world-map-continent");
+      const rect = c.shape === "circle"
+        ? { x: c.cx - c.r, y: c.cy - c.r, w: c.r * 2, h: c.r * 2 }
+        : { x: c.x, y: c.y, w: c.w, h: c.h };
+      box.style.left = `${rect.x}%`;
+      box.style.top = `${rect.y}%`;
+      box.style.width = `${rect.w}%`;
+      box.style.height = `${rect.h}%`;
+      if (c.shape === "circle") box.classList.add("is-circle");
+      box.style.background = `${c.color}40`; // 回退色块（25% 透明部洲色，15.1 §3.3）
+      const revealed = this._continentRevealed(state, key);
+      const justRevealed = !snapshot.first && snapshot.newContinents.includes(key);
+      const img = document.createElement("img");
+      img.className = "world-map-continent-img";
+      img.src = c.img;
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.onerror = () => { img.remove(); box.classList.add("no-art"); }; // 回退：色块
+      box.appendChild(img);
+      if (!revealed) {
+        box.classList.add("sealed");
+        const fog = this._node("div", "world-map-fog");
+        const fogImg = document.createElement("img");
+        fogImg.src = FOG_SEAL_IMG;
+        fogImg.alt = "";
+        fogImg.onerror = () => fogImg.remove();
+        fog.appendChild(fogImg);
+        box.appendChild(fog);
+      } else if (justRevealed) {
+        // 解封演出：封印碎裂揭开 + 区域上色（15.1 §1.4）
+        box.classList.add("revealing");
+        const fog = this._node("div", "world-map-fog shatter");
+        const fogImg = document.createElement("img");
+        fogImg.src = FOG_SEAL_IMG;
+        fogImg.alt = "";
+        fogImg.onerror = () => fogImg.remove();
+        fog.appendChild(fogImg);
+        box.appendChild(fog);
+        setTimeout(() => { box.classList.remove("revealing"); fog.remove(); }, 2100);
+      }
+      const name = this._node("div", `world-map-continent-name${revealed ? "" : " sealed"}`, c.label);
+      box.appendChild(name);
+      wrap.appendChild(box);
+    }
+    return wrap;
+  },
+
+  // ---------- SVG：伐纣古道（旅程路径，15.1 §1.5） ----------
 
   _buildSvg(state, nodes) {
     const NS = "http://www.w3.org/2000/svg";
@@ -121,39 +247,7 @@ const WorldMap = {
     svg.setAttribute("preserveAspectRatio", "none");
     svg.classList.add("world-map-svg");
 
-    // 五大部洲色块（背景层，正式美术替换后删除）
-    for (const key of Object.keys(CONTINENT_META)) {
-      const c = CONTINENT_META[key];
-      let shape;
-      if (c.shape === "circle") {
-        shape = document.createElementNS(NS, "circle");
-        shape.setAttribute("cx", c.cx); shape.setAttribute("cy", c.cy); shape.setAttribute("r", c.r);
-      } else {
-        shape = document.createElementNS(NS, "rect");
-        shape.setAttribute("x", c.x); shape.setAttribute("y", c.y);
-        shape.setAttribute("width", c.w); shape.setAttribute("height", c.h);
-        shape.setAttribute("rx", 2.5);
-      }
-      shape.setAttribute("fill", c.color);
-      shape.setAttribute("fill-opacity", "0.38");
-      shape.setAttribute("stroke", c.color);
-      shape.setAttribute("stroke-opacity", "0.9");
-      shape.setAttribute("stroke-width", "0.3");
-      svg.appendChild(shape);
-      // 部洲名标签
-      const lx = c.shape === "circle" ? c.cx : c.x + c.w / 2;
-      const ly = c.shape === "circle" ? c.cy - c.r + 3 : c.y + 3.5;
-      const label = document.createElementNS(NS, "text");
-      label.setAttribute("x", lx); label.setAttribute("y", ly);
-      label.setAttribute("text-anchor", "middle");
-      label.setAttribute("font-size", "2.6");
-      label.setAttribute("fill", c.text);
-      label.setAttribute("fill-opacity", "0.85");
-      label.textContent = c.label;
-      svg.appendChild(label);
-    }
-
-    // 伐纣推进链：按 prev_map 连线；同部洲实线，跨部洲虚线；两端皆达则点亮
+    // 伐纣推进链：已通=实体古道（暖金流光），可进方向=虚线延伸，未通=雾中若隐若现
     const byId = {};
     for (const n of nodes) byId[n.id] = n;
     for (const row of DataManager.getRows("map_table")) {
@@ -164,32 +258,77 @@ const WorldMap = {
       const line = document.createElementNS(NS, "line");
       line.setAttribute("x1", a.wx); line.setAttribute("y1", a.wy);
       line.setAttribute("x2", b.wx); line.setAttribute("y2", b.wy);
+      line.setAttribute("vector-effect", "non-scaling-stroke");
       line.classList.add("world-map-path");
+      const aDone = this._nodeState(state, a) === "completed";
+      const bDone = this._nodeState(state, b) === "completed";
+      const aLive = ["completed", "current", "available"].includes(this._nodeState(state, a));
+      const bLive = ["completed", "current", "available"].includes(this._nodeState(state, b));
       if (a.continent !== b.continent) line.classList.add("cross"); // 跨部洲虚线（CSS）
-      if (this._nodeReached(state, a) && this._nodeReached(state, b)) line.classList.add("lit");
+      if (aDone && bDone) line.classList.add("lit");        // 已通段：实体古道
+      else if (aLive && bLive) line.classList.add("active"); // 行进方向：流光虚线
       svg.appendChild(line);
     }
     return svg;
   },
 
-  // ---------- 节点 ----------
+  // ---------- 行进标记：主角乘云小像，定位在当前节点（15.1 §1.5/§2.5） ----------
 
-  _buildNode(state, node) {
+  _buildMarker(state, nodes) {
+    const marker = this._node("div", "world-map-player-marker");
+    const cur = nodes.find((n) => !n.landmark && n.mapId === state.current_map_id);
+    const anchor = cur || nodes.find((n) => n.id === "lm_cave");
+    if (!anchor) { marker.classList.add("hidden"); return marker; }
+    marker.style.left = `${anchor.wx}%`;
+    marker.style.top = `${anchor.wy}%`;
+    const img = document.createElement("img");
+    img.src = PLAYER_MARKER_IMG;
+    img.alt = "";
+    img.onerror = () => { marker.remove(); };
+    marker.appendChild(img);
+    return marker;
+  },
+
+  // ---------- 节点（图标 + 5 态视觉） ----------
+
+  _buildNode(state, node, snapshot) {
+    const nState = this._nodeState(state, node);
     const reached = this._nodeReached(state, node);
-    const isCurrent = node.mapId && state.current_map_id === node.mapId;
-    const el = this._node("button", `world-map-node${reached ? " reached" : " locked"}${isCurrent ? " current" : ""}${node.kind ? ` kind-${node.kind}` : ""}${node.landmark ? " landmark" : ""}`);
+    const el = this._node("button", `world-map-node state-${nState}${node.kind ? ` kind-${node.kind}` : ""}${node.landmark ? " landmark" : ""}`);
     el.type = "button";
     el.style.left = `${node.wx}%`;
     el.style.top = `${node.wy}%`;
     el.title = node.desc;
+    const justUnlocked = !snapshot.first && !node.landmark && snapshot.newNodes.includes(node.id);
+    if (justUnlocked) el.classList.add("just-unlocked");
+
+    const iconSrc = node.landmark
+      ? (typeof LANDMARK_ICONS !== "undefined" ? LANDMARK_ICONS[node.id] : null)
+      : (typeof MAP_NODE_ICONS !== "undefined" ? MAP_NODE_ICONS[node.id] : null);
     let glyph;
-    if (!node.landmark && typeof MAP_NODE_ICONS !== "undefined" && MAP_NODE_ICONS[node.id]) {
-      glyph = document.createElement("img"); glyph.className = "world-map-node-icon"; glyph.src = MAP_NODE_ICONS[node.id]; glyph.alt = "";
+    if (iconSrc) {
+      glyph = document.createElement("img");
+      glyph.className = "world-map-node-icon";
+      glyph.src = iconSrc;
+      glyph.alt = "";
+      glyph.loading = "lazy";
+      glyph.decoding = "async";
+      glyph.onerror = () => { // 回退：文字 glyph（15.1 §3.3 占位兼容）
+        const span = this._node("span", "world-map-node-glyph", this._glyph(node.kind));
+        glyph.replaceWith(span);
+      };
     } else {
       glyph = this._node("span", "world-map-node-glyph", this._glyph(node.kind));
     }
+    el.appendChild(glyph);
+
+    // completed：功德暖金 ✓ 圈（9.2 §2.3 符号色）
+    if (nState === "completed") el.appendChild(this._node("span", "world-map-node-done", "✓"));
+    // sealed：锁形（CSS 绘制，非文字）
+    if (nState === "sealed") el.appendChild(this._node("span", "world-map-node-lock"));
+
     const label = this._node("span", "world-map-node-label", node.name);
-    el.append(glyph, label);
+    el.appendChild(label);
     el.addEventListener("click", () => this._onNodeClick(state, node));
     return el;
   },

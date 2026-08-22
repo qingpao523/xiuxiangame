@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-08-22 — 山河图新美术整屏替换 + 渐进解锁落地（design/15.1 实现批次）
+
+**背景**：用户指令——「进入地图美术的开发，图片使用 done-image2 生成，完成整个地图设计（9.x 新版美术风格）」。实现 design/15.1 规划全量。
+
+**素材生产**（doneai gpt_image_2，全部带 9.2 风格锁 v2 + 负面清单 + 封神锚点，37 张全过 9.3 三道门，评分档案见 9.3 附录）：
+- `web/assets/map/cloud_sea_base.png`（云海虚空画布底）+ `continents/` 5 部洲底图 + `nodes/` 9 节点圆形徽章图标 + `landmarks/` 11 地标剪影（lm_cave 常驻洞府为全彩）+ `fog/fog_seal_pattern.png`（金色云雷卷草封印纹）+ `path/marker_player.png`（乘云小仙行进标记）+ `backgrounds/` 9 张竖屏单地图背景。
+- 返修记录：continent_nanshan v1 榜文卷面伪字迹触 9.3 红线 4 → 判废重出 v2（无字发光卷轴）通过；节点图标统一改圆形徽章构图（圆盘底托+描金环），规避无 alpha 输出限制，CSS `border-radius:50%` 收角；marker 黑底发光图离线 screen-unblend 转真 RGBA（替代运行时 mix-blend-mode 在隔离层失效的问题）。
+
+**world-map.js 重写**（渐进解锁体验，15.1 §1/§3）：
+- 部洲底图层 `_buildContinents`：底图+边缘羽化 mask 拼合云海底；`reveal_realm` 门控（南赡 rq_01 / 东胜 jx_01 / 西牛·北俱·须弥 ty_01，对齐 map_table 节点节奏）；未解封 = 灰化模糊 + 封印纹 fog 覆盖（screen 混合 + 漂移动画）。
+- 节点 5 态状态机 `_nodeState`：sealed（部洲未开）/locked（prev_map 未通）/available（呼吸光晕）/current（强光晕+行进标记）/completed（功德暖金 ✓ 圈，boss_clears 判定）；landmark 专属 fog 剪影态。
+- 伐纣古道：已通段实体暖金流光 / 可进方向流动虚线（dash 动画）/ 未通雾中若隐，跨部洲虚线（补齐美术需求 §12.7 欠账）。
+- reveal 演出：快照对比（state.flags.world_map_snapshot）检测新解封部洲/节点 → fog 碎裂动画 + colorize + 节点 pop 浮现 + 命名弹幕「×× · 解封」+ secret_found 音效；首开地图不播。
+- 兼容回退：图片 onerror → 回退部洲色块 / 文字 glyph（15.1 §3.3）；`MAP_NODE_ICONS` 改 key=map_id（旧 key 永不命中属死配置），新增 `LANDMARK_ICONS`（ui-constants.js）。
+
+**未接线**：`backgrounds/bg_map_001~009` 已入库但暂不接入主屏——主屏主角立绘仍为旧水墨风（P0 未换），按 9.2 §4 原子性铁律不半屏混用，待 P0/F2 单地图屏整屏同波接入。
+
+**验证**：Playwright 真机走查（390×844）四场景截图——① 炼气开局只见南赡部洲（其余部洲封印纹覆盖）② 地仙中段（已通 ✓/当前/未达/封印 5 态分明）③ rq→zr 破境 reveal（弹幕「陈塘关外围 · 解封」+ fog 碎裂）④ 太乙全开（五部洲全彩 + 跨部洲路径点亮）。零 JS 报错，无新旧风格混用。
+
+---
+
 ## 2026-08-22 — 地图渐进解锁体验与美术素材规划（design/15.1 v0.1）
 
 **背景**：用户指令——「地图做得太垃圾了，地图我需要一层一层的打开，你现在纯摆东西，太垃圾了，你先把地图需要的新的风格美术素材规划出来，按照我们新的美术标准，考虑下怎么放进去更好。」
