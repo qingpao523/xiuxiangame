@@ -2482,14 +2482,13 @@ body {
 
 .world-map-region.sealed { cursor: not-allowed; }
 
-/* 封印轻纱金雾（亮调薄纱，不灰黑块，保持整图色调统一；锁徽沿用，用户点名保留） */
+/* 封印区：轻纱金染 + 锁徽（不模糊——用户反馈模糊感，保持底图高清可见，仅染色示意未解锁） */
 .world-map-region-veil {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   overflow: hidden;
-  backdrop-filter: blur(1.5px) brightness(1.08) saturate(0.75);
-  background: linear-gradient(160deg, rgba(255, 244, 214, 0.40), rgba(214, 180, 110, 0.28));
+  background: linear-gradient(160deg, rgba(248, 242, 224, 0.44), rgba(226, 204, 152, 0.30));
   -webkit-mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 52%, transparent 92%);
   mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 52%, transparent 92%);
 }
@@ -2498,7 +2497,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.35;
+  opacity: 0.16;
   mix-blend-mode: screen;
   animation: worldMapFogDrift 9s ease-in-out infinite;
 }
@@ -2574,7 +2573,7 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill; /* 2:3 底图与画布近等比，fill 让手工摆位坐标 1:1 映射，避免 cover 裁切放大模糊 */
   z-index: 0;
 }
 

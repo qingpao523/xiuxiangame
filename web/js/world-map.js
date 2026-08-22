@@ -26,18 +26,48 @@ const L1_REGIONS = {
   "西牛贺洲":     { x: 0,  y: 27, w: 31, h: 30, labelX: 15, labelY: 33 },
   "东胜神洲":     { x: 64, y: 27, w: 36, h: 36, labelX: 82, labelY: 33 },
   "须弥昆仑中枢": { x: 31, y: 21, w: 32, h: 40, labelX: 47, labelY: 57 },
-  "南赡部洲":     { x: 3,  y: 61, w: 85, h: 38, labelX: 45, labelY: 63 },
+  "南赡部洲":     { x: 3,  y: 61, w: 85, h: 38, labelX: 28, labelY: 71 },
 };
 
-// L1 关键位置标记（用户 2026-08-22 指定：中央只标封神台；各部洲只标重点位置）
+// L1 关键位置标记（用户 2026-08-22 指定：中央只标封神台；各部洲只标代表性重点位置；南赡=陈塘关/西岐/朝歌）
 const L1_SPOTS = [
   { icon: "lm_yaozu",   name: "北荒妖族",     continent: "北俱芦洲",     x: 37, y: 9  },
   { icon: "lm_lingshan", name: "西天灵山",    continent: "西牛贺洲",     x: 14, y: 40 },
   { icon: "lm_huaguo",  name: "傲来国·花果山", continent: "东胜神洲",     x: 80, y: 47 },
-  { icon: "map_008",    name: "封神台",       continent: "须弥昆仑中枢", x: 47, y: 31, seal: true },
-  { icon: "lm_cave",    name: "山野洞府",     continent: "南赡部洲",     x: 19, y: 83, home: true },
-  { icon: "lm_chaoge",  name: "朝歌",         continent: "南赡部洲",     x: 48, y: 67 },
+  { icon: "map_008",    name: "封神台",       continent: "须弥昆仑中枢", x: 47, y: 31 },
+  { icon: "lm_chaoge",  name: "朝歌",         continent: "南赡部洲",     x: 46, y: 66 },
+  { icon: "map_002",    name: "陈塘关",       continent: "南赡部洲",     x: 72, y: 84 },
+  { icon: "map_004",    name: "西岐",         continent: "南赡部洲",     x: 18, y: 78 },
 ];
+
+// L2 节点摆位（按 2:3 部洲底图网格逐张手工对位，坐标=底图百分比；未配置节点回退 bbox 自动布局）
+const L2_NODE_POS = {
+  // 南赡部洲：左上青山（洞府/妖患相邻）· 左中骷髅山（骷髅岩）· 右中陈塘关（海岸城楼）· 左下西岐（城郭）· 中下十绝阵/黄河（九曲金田）· 右上朝歌（王城远景）· 右下青丘
+  lm_cave:  { x: 14, y: 20 },
+  map_001:  { x: 23, y: 29 },
+  map_003:  { x: 13, y: 42 },
+  map_002:  { x: 82, y: 55 },
+  map_004:  { x: 16, y: 76 },
+  map_005:  { x: 44, y: 62 },
+  map_006:  { x: 60, y: 58 },
+  lm_muye:  { x: 36, y: 88 },
+  lm_qingqiu: { x: 80, y: 87 },
+  lm_chaoge: { x: 72, y: 14 },
+  // 东胜神洲：上碧游宫（万仙阵）· 下海中应龙白龙 · 右下花果山桃岛
+  map_007:  { x: 45, y: 30 },
+  lm_yinglong: { x: 40, y: 82 },
+  lm_huaguo: { x: 80, y: 72 },
+  // 须弥昆仑中枢：中金光法阵高台封神台 · 中上玉虚宫 · 底部浮空岛混元道场
+  map_008:  { x: 50, y: 52 },
+  lm_yuxu:  { x: 48, y: 33 },
+  map_009:  { x: 50, y: 84 },
+  // 西牛贺洲：上部灵山金顶佛塔
+  lm_lingshan: { x: 50, y: 18 },
+  // 北俱芦洲：上烛龙衔珠 · 中妖族图腾雪村 · 下精卫冰崖
+  lm_zhulong: { x: 50, y: 13 },
+  lm_yaozu:  { x: 38, y: 48 },
+  lm_jingwei: { x: 64, y: 74 },
+};
 
 const FOG_SEAL_IMG = "assets/map/fog/fog_seal_pattern.png";
 const PLAYER_MARKER_IMG = "assets/map/path/marker_player.png";
@@ -218,9 +248,8 @@ const WorldMap = {
   },
 
   _l1SpotIcon(s) {
-    const map = s.seal ? (typeof MAP_NODE_ICONS !== "undefined" ? MAP_NODE_ICONS : null)
-                       : (typeof LANDMARK_ICONS !== "undefined" ? LANDMARK_ICONS : null);
-    const src = map ? map[s.icon] : null;
+    const src = (typeof MAP_NODE_ICONS !== "undefined" && MAP_NODE_ICONS[s.icon])
+      || (typeof LANDMARK_ICONS !== "undefined" ? LANDMARK_ICONS[s.icon] : null);
     if (!src) return null;
     const el = this._node("div", "world-map-l1-spot");
     el.style.left = `${s.x}%`;
@@ -236,9 +265,8 @@ const WorldMap = {
   _l1MarkerPos(state) {
     const row = state.current_map_id ? DataManager.getById("map_table", state.current_map_id) : null;
     const continent = row && row.continent ? String(row.continent) : "南赡部洲";
-    const spot = L1_SPOTS.find((s) => s.home);
     const r = L1_REGIONS[continent] || null;
-    if (!r) return { x: spot.x, y: spot.y };
+    if (!r) return { x: 19, y: 83 }; // 默认洞府方位
     return { x: r.x + r.w / 2, y: r.y + r.h / 2 };
   },
 
@@ -305,19 +333,27 @@ const WorldMap = {
     foot.appendChild(this._node("div", "world-map-foot-tip", "点按已点亮的地点可直接驻留。通关前置之地，古道自会向前延伸。"));
   },
 
-  // 部洲内子坐标：成员 bbox + 12% padding 归一化（兼容超框坐标如骷髅山）
+  // 部洲内子坐标：优先 L2_NODE_POS 手工摆位（贴合底图内容）；未配置节点回退 bbox 归一
   _l2Layout(members) {
-    const pad = 12;
-    const xs = members.map((n) => n.wx), ys = members.map((n) => n.wy);
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
-    const spanX = Math.max(maxX - minX, 1), spanY = Math.max(maxY - minY, 1);
     const map = new Map();
+    const missing = [];
     for (const n of members) {
-      map.set(n.id, {
-        x: pad + ((n.wx - minX) / spanX) * (100 - pad * 2),
-        y: pad + ((n.wy - minY) / spanY) * (100 - pad * 2),
-      });
+      const p = (typeof L2_NODE_POS !== "undefined" && L2_NODE_POS[n.id]) || null;
+      if (p) map.set(n.id, { x: p.x, y: p.y });
+      else missing.push(n);
+    }
+    if (missing.length) {
+      const pad = 12;
+      const xs = missing.map((n) => n.wx), ys = missing.map((n) => n.wy);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+      const minY = Math.min(...ys), maxY = Math.max(...ys);
+      const spanX = Math.max(maxX - minX, 1), spanY = Math.max(maxY - minY, 1);
+      for (const n of missing) {
+        map.set(n.id, {
+          x: pad + ((n.wx - minX) / spanX) * (100 - pad * 2),
+          y: pad + ((n.wy - minY) / spanY) * (100 - pad * 2),
+        });
+      }
     }
     return map;
   },
