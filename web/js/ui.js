@@ -284,6 +284,7 @@ function showPopup(popup) {
   else if (popup.kind === "treasure_choice") renderTreasureChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "race_choice") renderRaceChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "benming_choice") renderBenmingChoicePopup(panel, title, body, buttons);
+  else if (popup.kind === "liupai_choice") renderLiupaiChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "faction_choice") renderFactionChoicePopup(panel, title, body, buttons);
   else if (popup.kind === "breakthrough_confirm") renderBreakthroughConfirmPopup(panel, title, body, buttons, popup.breakthroughId);
   else if (popup.kind === "rest") renderRestPopup(panel, title, body, buttons, popup.payload || {});
@@ -563,6 +564,24 @@ function renderBenmingChoicePopup(panel, title, body, buttons) {
     const sub = document.createElement("span"); sub.className = "popup-option-sub"; sub.textContent = p.desc;
     info.append(name, sub); btn.append(glyph, info);
     btn.addEventListener("click", () => { closePopup(); Game.chooseBenmingSchool(sc); });
+    buttons.appendChild(btn);
+  }
+}
+
+function renderLiupaiChoicePopup(panel, title, body, buttons) {
+  panel.classList.add("style-breakthrough"); title.textContent = "择派：四修择一，走到黑";
+  body.textContent = "真仙劫后，你的道开始有了形状。\n四修在面前展开——器、体、魂、劫。\n\n择一修，它将与你性命相系，神通可至五阶，威力更增五成。\n其余诸道，自此封顶三阶。\n\n此选择不可逆（唯转世可重定）。";
+  const rows = (typeof LiupaiManager !== "undefined") ? LiupaiManager.getRows() : [];
+  const glyphMap = { qi: "器", ti: "体", hun: "魂", jie: "劫" };
+  for (const row of rows) {
+    const btn = document.createElement("button"); btn.className = "popup-btn treasure-pick choice-pick";
+    const glyph = document.createElement("span"); glyph.className = "choice-glyph"; glyph.textContent = glyphMap[row.liupai_id] || row.name;
+    const info = document.createElement("span"); info.className = "choice-info";
+    const name = document.createElement("span"); name.className = "choice-name"; name.textContent = `${row.name} · ${row.fantasy || ""}`;
+    const sub = document.createElement("span"); sub.className = "popup-option-sub";
+    sub.textContent = (row.lore_anchor ? `锚点：${row.lore_anchor}\n` : "") + Object.entries(row.passive || {}).map(([k, v]) => `${k} +${v}`).join(" / ");
+    info.append(name, sub); btn.append(glyph, info);
+    btn.addEventListener("click", () => { closePopup(); Game.chooseLiupai(row.liupai_id); });
     buttons.appendChild(btn);
   }
 }

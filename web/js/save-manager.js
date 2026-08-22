@@ -46,6 +46,7 @@ const SaveManager = {
       action_counts_today: {},
         map_explores: {},
         benming_school: null,
+        liupai: { chosen: null, chosen_at_realm: null, branch: null, prestige: [] },
         devour_stacks: 0,
         faction_buff: null,
         faction_edict_day: "",
@@ -107,6 +108,7 @@ const SaveManager = {
     state.action_counts_total = state.action_counts_total || {};
     state.map_explores = state.map_explores || {};
     if (!("benming_school" in state)) state.benming_school = null;
+    if (typeof LiupaiManager !== "undefined") LiupaiManager.ensureState(state); else if (!("liupai" in state)) state.liupai = { chosen: null, chosen_at_realm: null, branch: null, prestige: [] };
     state.devour_stacks = int(state.devour_stacks);
     if (!("faction_buff" in state)) state.faction_buff = null;
     state.faction_edict_day = str(state.faction_edict_day, "");

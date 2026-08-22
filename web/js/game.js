@@ -1295,11 +1295,29 @@ const Game = {
     this._afterMutated();
   },
 
+  // 流派择派（D3/C1：四修器体魂劫；C7 本命与流派合一）——真仙破劫后择一修，不可逆（唯转世可重选）
+  chooseLiupai(liupaiId) {
+    if (typeof LiupaiManager === "undefined" || LiupaiManager.isChosen(this.state)) return; // 不可逆
+    const row = LiupaiManager.getById(liupaiId);
+    if (!row) return;
+    const lp = LiupaiManager.ensureState(this.state);
+    lp.chosen = String(liupaiId);
+    lp.chosen_at_realm = str(this.state.realm_id, "");
+    // C7 本命与流派合一：本命系恒=流派主系，复用既有本命门控与×1.5加成
+    this.state.benming_school = str(row.primary_element, "");
+    const sysName = (typeof SCHOOL_NAME !== "undefined" && SCHOOL_NAME[str(row.primary_element, "")]) || row.name;
+    this._log(`你择定道统：${row.name}。${row.fantasy || ""}——自此${sysName}之道，与你性命相系。`);
+    this.queuePopup({ kind: "text", style: "breakthrough", title: "择派",
+      body: `你在四修中，选了「${row.name}」。\n\n${row.fantasy || ""}\n\n自此，${sysName}系神通可精进至五阶，威力更增五成；其余诸道，封顶三阶。\n这条路，走到黑。`,
+      buttons: [{ label: "踏入此道" }] });
+    this._afterMutated();
+  },
+
   // 真仙破劫（bt_003）后触发本命选择
   _maybeTriggerBenming(btId) {
     if (String(btId) !== "bt_003") return;
     if (this.hasBenming()) return;
-    this.queuePopup({ kind: "benming_choice" });
+    this.queuePopup({ kind: "liupai_choice" });
   },
 
   // ---------- 法宝温养 ----------
