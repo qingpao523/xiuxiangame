@@ -36,6 +36,7 @@ const SaveManager = {
       first_treasure_id: "",
       breakthrough_fail_counts: {},
       event_counts_today: {},
+      event_pity: { days_without_rare: 0, got_rare_today: false },
       seen_events: [],
       pending_event_id: "",
       pending_event_prelude: false,
@@ -106,6 +107,9 @@ const SaveManager = {
     state.first_treasure_id = str(state.first_treasure_id, "");
     state.breakthrough_fail_counts = state.breakthrough_fail_counts || {};
     state.event_counts_today = state.event_counts_today || {};
+    state.event_pity = state.event_pity || {};
+    state.event_pity.days_without_rare = int(state.event_pity.days_without_rare);
+    state.event_pity.got_rare_today = !!state.event_pity.got_rare_today;
     state.seen_events = state.seen_events || [];
     state.pending_event_id = str(state.pending_event_id, "");
     state.pending_event_prelude = !!state.pending_event_prelude;

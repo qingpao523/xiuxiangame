@@ -95,7 +95,7 @@ const RealmManager = {
   getCombatPower(state) {
     const realm = this.getCurrentRealm(state);
     let power = num(realm.combat_power_base);
-    for (const id of Object.keys(state.spells)) power += 60 * int(state.spells[id]?.level);
+    for (const id of Object.keys(state.skill_levels || {})) power += 60 * int(state.skill_levels[id]);
     for (const id of Object.keys(state.treasures)) power += 240 * int(state.treasures[id]?.level);
     return Math.round(power);
   },

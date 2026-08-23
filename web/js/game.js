@@ -400,9 +400,9 @@ const Game = {
     if (option.kind === "safe") { this._applyEncounterOutcome(enc, option.success, true); return; }
     let chance = num(option.chance, 0.6) + num(getTodayOmen().checkBonus, 0);
     if (option.bonus_spell_type) {
-      for (const row of DataManager.getRows("spell_table")) {
+      for (const row of DataManager.getRows("skill_table")) {
         if (String(row.spell_type) !== String(option.bonus_spell_type)) continue;
-        chance += int(this.state.spells[String(row.spell_id)]?.level) * num(option.bonus_per_level, 0.05);
+        chance += int(this.state.skill_levels[String(row.id)]) * num(option.bonus_per_level, 0.05);
       }
     }
     const ok = Math.random() <= clamp(chance, 0.05, 0.95);
@@ -797,10 +797,11 @@ const Game = {
       case "action_count": return int(s.action_counts_total[String(cond.action_id)]) >= int(cond.count, 1);
       case "map_explore": return int((s.map_explores || {})[String(cond.map_id)]) >= int(cond.count, 1);
       case "spell_level": {
-        const school = String(cond.spell_school);
-        return Object.entries(s.spells || {}).some(([sid, st]) => {
-          const row = DataManager.getById("spell_table", sid);
-          return String(row.spell_school || "") === school && int(st.level) >= int(cond.level, 1);
+        const school = String(cond.spell_school || cond.spell_type || "");
+        const need = int(cond.level, 1);
+        return DataManager.getRows("skill_table").some((row) => {
+          if (String(row.spell_type || "") !== school && String(row.spell_school || "") !== school) return false;
+          return int((s.skill_levels || {})[row.id]) >= need;
         });
       }
       case "faction": return String(s.faction_id || "") === String(cond.faction_id);
@@ -948,7 +949,7 @@ const Game = {
 
   _restCardPool() {
     const pool = ["charm_strike", "charm_guard"];
-    for (const row of DataManager.getRows("spell_table")) { if (int(this.state.spells[String(row.spell_id)]?.level) > 0) pool.push(String(row.spell_id)); }
+    for (const id of Object.keys(this.state.skill_levels || {})) { if (int(this.state.skill_levels[id]) > 0) pool.push(id); }
     if (this.state.first_treasure_id && int(this.state.treasures[this.state.first_treasure_id]?.level) > 0) pool.push("treasure_skill");
     for (const cid of ["nezha_spear", "yangjian_blade", "ziya_whip"]) {
       const companion = { nezha_spear: "nezha", yangjian_blade: "yangjian", ziya_whip: "ziya" }[cid];
@@ -1020,6 +1021,7 @@ const Game = {
       this._queueNewUnlockPopups(before);
     if (!this.state.pending_event_id) { const eventId = EventManager.rollEvent(this.state, "level_up"); if (eventId) { this._setPendingEvent(eventId); this._queueEventPopup(); } }
     if (typeof ContentDirector !== "undefined") ContentDirector.pulse("realm");
+    if (String(from.major_realm) !== "天仙" && String(to.major_realm) === "天仙") this._awakenShentong(false);
     this._afterMutated();
   },
 
@@ -1052,8 +1054,10 @@ const Game = {
     if (!this.state.pending_event_id) return;
     this.eventPopupActive = false;
     this.popupQueue = (this.popupQueue || []).filter((p) => p.kind !== "event");
+    if (typeof releaseStaleModal === "function") releaseStaleModal();
+    this.state.pending_event_prelude = false;
     this._queueEventPopup();
-    this._emit();
+    if (typeof drainPopupQueue === "function") drainPopupQueue();
   },
 
   chooseEventOption(optionIndex) {
@@ -1392,6 +1396,8 @@ const Game = {
     this.state.treasures[treasureId] = { level: 1, owned: true }; this.state.first_treasure_id = treasureId;
     this._log(`本命法宝「${row.treasure_name}」与你气机相合。`);
     this.queuePopup({ kind: "text", style: "treasure", title: "本命法宝入体！", body: `${row.treasure_name}与你气机相合，化作一道灵光悬于身侧。\n从此你不再只是空手施术的山野小修。\n\n${row.origin_desc || ""}\n\n战力大幅提升\n解锁法宝技：${row.skill_name || ""}`, buttons: [{ label: "护道随身" }] });
+    const pity = (DataManager.tables.event_table || {}).pity_rule || {};
+    if (pity.first_treasure_event_story_guaranteed) this._offerEvent(EventManager.TREASURE_PITY_EVENT);
     this._afterMutated();
   },
 
@@ -1488,8 +1494,30 @@ const Game = {
     this.state.resources.spell_page -= num(cost.spell_page_cost); this.state.resources.mana -= num(cost.mana_cost);
     if (!this.state.skill_levels || typeof this.state.skill_levels !== "object") this.state.skill_levels = {};
     this.state.skill_levels[skillId] = nextLevel;
-    this._log("「" + skillRow.name + "」精进至" + nextLevel + "重。");
+    const shown = (typeof SkillIdentity !== "undefined") ? SkillIdentity.displayName(skillRow, this.state) : skillRow.name;
+    this._log("「" + shown + "」精进至" + nextLevel + "重。");
     this._afterMutated(); return { ok: true };
+  },
+
+  _awakenShentong(silent) {
+    if (this.state.flags.shentong_awoken) return;
+    if (typeof SkillIdentity === "undefined" || !SkillIdentity.isShentong(this.state)) return;
+    this.state.flags.shentong_awoken = true;
+    const lines = [];
+    for (const id of this.state.unlocked_skills || []) {
+      const row = DataManager.getById("skill_table", id);
+      if (!row.name) continue;
+      const neu = SkillIdentity.displayName(row, this.state);
+      if (neu && neu !== row.name) lines.push(`${row.name} → ${neu}`);
+    }
+    this._log("天仙境开，术法觉醒为神通。");
+    if (!silent && lines.length) {
+      this.queuePopup({
+        kind: "text", style: "seal", title: "术法觉醒·神通",
+        body: `榜文垂照，你昔日术法脱去凡胎。\n\n${lines.join("\n")}\n\n此后斗法栏所书，已是神通。先天神通（八九玄功、三头八臂）仍随化身因缘，不在此列。`,
+        buttons: [{ label: "领受" }],
+      });
+    }
   },
 
   // ---------- P0-A 本命流派 ----------
@@ -1641,14 +1669,21 @@ const Game = {
     return { type: "idle", label: "继续闭关" };
   },
 
+  startPreferredCultivation() {
+    const row = this._preferredCultivationAction(this.state) || this._getFallbackCultivationAction();
+    if (!row) return false;
+    this.startAction(String(row.action_id));
+    return true;
+  },
+
   _preferredCultivationAction(state) {
     const actions = ActionManager.getActions(state);
     const order = ["short_meditation", "breath_cycle", "chan_task", "jie_task", "tianting_task", "wuzhuang_task"];
     for (const id of order) {
       const row = actions.find((r) => String(r.action_id) === id);
-      if (row && this._isCultivationAction(row) && ActionManager.getAvailability(state, row).ok) return row;
+      if (row && this._loopAvailable(row)) return row;
     }
-    return actions.find((r) => this._isCultivationAction(r) && ActionManager.getAvailability(state, r).ok) || null;
+    return actions.find((r) => this._loopAvailable(r)) || null;
   },
 
   // 挂机放置准则：修炼类动作 = 无地图、offline_equivalent 产出（吐纳/入定/各势力任务）。
@@ -1657,25 +1692,33 @@ const Game = {
     return !!row && !row.map_id && String(row.reward_type) === "offline_equivalent" && int(row.duration_sec) > 0;
   },
 
+  // 吐纳/入定是洞府主循环，不限每日次数；师门功课仍走表内日限。
+  _loopAvailable(row) {
+    if (!row || !this._isCultivationAction(row)) return false;
+    const id = String(row.action_id);
+    if (id === "breath_cycle" || id === "short_meditation") {
+      if (this.state.current_action) return false;
+      return UnlockManager.conditionMet(this.state, String(row.unlock_realm || ""));
+    }
+    return ActionManager.getAvailability(this.state, row).ok;
+  },
+
   // 连续修行链式续作：只续修炼类动作。当前动作是修炼且可用则续它；否则回落首选修炼动作。
   // 绝不续游历/探幽——主页挂机就是修炼（参考所有挂机放置手游设定）。
   _getAutoChainAction(currentRow) {
-    const state = this.state;
-    if (this._isCultivationAction(currentRow) && ActionManager.getAvailability(state, currentRow).ok) return currentRow;
+    if (this._loopAvailable(currentRow)) return currentRow;
     return this._getFallbackCultivationAction();
   },
 
   // P0-#2：链式续作失败后，回落到可用的修炼类动作（breath_cycle 优先），避免挂机停摆。
   _getFallbackCultivationAction() {
-    const state = this.state;
     const fallbackOrder = ["breath_cycle", "short_meditation", "chan_task", "jie_task", "tianting_task", "wuzhuang_task"];
-    const actions = ActionManager.getActions(state);
+    const actions = ActionManager.getActions(this.state);
     for (const id of fallbackOrder) {
       const row = actions.find((r) => String(r.action_id) === id);
-      if (row && this._isCultivationAction(row) && ActionManager.getAvailability(state, row).ok) return row;
+      if (this._loopAvailable(row)) return row;
     }
-    // 兜底：任意可用的修炼类动作
-    return actions.find((r) => this._isCultivationAction(r) && ActionManager.getAvailability(state, r).ok) || null;
+    return actions.find((r) => this._loopAvailable(r)) || null;
   },
 
   getSecondaryRecommendations(state) {
@@ -1697,12 +1740,15 @@ const Game = {
   },
 
   _hasAffordableSpell(state) {
-    return UnlockManager.getAvailableSpells(state).some((spell) => {
-      const level = int(this.getSpellState(String(spell.spell_id)).level);
+    const unlocked = state.unlocked_skills || [];
+    return UnlockManager.getAvailableSkills(state).some((skill) => {
+      const id = String(skill.id);
+      if (!unlocked.includes(id)) return false;
+      const level = Math.max(1, this.getSkillLevel(id));
       const nextLevel = level + 1;
-      if (nextLevel > this.getSpellMaxLevel(spell)) return false;
-      const cost = this.getSpellUpgradeCost(spell, nextLevel);
-      return (cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost));
+      if (nextLevel > this.getSkillMaxLevel(skill)) return false;
+      const cost = this.getSkillUpgradeCost(skill, nextLevel);
+      return cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost);
     });
   },
 
@@ -1908,6 +1954,7 @@ const Game = {
     this._checkCompanions();
     this._checkWorldMapReveal();
     this._refreshPendingReward();
+    if (typeof SkillIdentity !== "undefined" && SkillIdentity.isShentong(this.state)) this._awakenShentong(true);
     if (typeof ContentDirector !== "undefined") ContentDirector.pulse("action");
     SaveManager.save(this.state);
     this._emit();

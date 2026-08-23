@@ -1,30 +1,122 @@
 "use strict";
 
 const EventManager = {
+  RARITY_ORDER: ["common", "rare", "epic", "fate"],
+  RARITY_CN: { common: "普通", rare: "精良", epic: "稀有", fate: "天命" },
+  ROOT_PITY_EVENT: "event_006",
+  TREASURE_PITY_EVENT: "event_201",
+
   rollEvent(state, source = "manual") {
     if (!this._sourceUnlocked(state, source)) return "";
     if (this._todayCount(state) >= this._dailyCap(state)) return "";
+    this._ensurePity(state);
+    const forced = this._pityForce(state, source);
+    if (forced && forced.eventId && this.canOffer(state, forced.eventId)) {
+      this._notePityRoll(state, this.getEvent(forced.eventId));
+      return forced.eventId;
+    }
     const candidates = this._getCandidates(state, source).filter((row) => this._lotteryWeight(row) > 0);
     if (!candidates.length) return "";
+    let rarity = forced && forced.rarity ? forced.rarity : this._rollRarity(candidates);
+    let pool = candidates.filter((row) => this._rarity(row) === rarity);
+    if (!pool.length) {
+      const idx = this.RARITY_ORDER.indexOf(rarity);
+      for (let i = idx - 1; i >= 0; i--) {
+        pool = candidates.filter((row) => this._rarity(row) === this.RARITY_ORDER[i]);
+        if (pool.length) { rarity = this.RARITY_ORDER[i]; break; }
+      }
+    }
+    if (!pool.length) pool = candidates;
+    const picked = this._weightedPick(pool);
+    if (picked) this._notePityRoll(state, this.getEvent(picked));
+    return picked;
+  },
+
+  _weightedPick(rows) {
     let total = 0;
-    for (const row of candidates) total += this._lotteryWeight(row);
-    if (total <= 0) return "";
+    for (const row of rows) total += this._lotteryWeight(row);
+    if (total <= 0) return String(rows[0].event_id || "");
     let pick = Math.random() * total;
-    for (const row of candidates) {
+    for (const row of rows) {
       pick -= this._lotteryWeight(row);
       if (pick <= 0) return String(row.event_id || "");
     }
-    return String(candidates[0].event_id || "");
+    return String(rows[0].event_id || "");
   },
 
-  // 表内 weight：缺省/0 = 脚本机缘（探索点、入局、首通），不进抽签；
-  // 0~1 = 出现率（新机缘）；>1 = 旧彩票权重。两套标尺混抽会永远抽到旧的。
   _lotteryWeight(row) {
     if (row.weight == null || row.weight === "") return 0;
     const w = num(row.weight, 0);
     if (w <= 0) return 0;
     if (w <= 1) return Math.max(1, Math.round(w * 1000));
     return w;
+  },
+
+  _rarity(row) {
+    const r = String(row.rarity || "common");
+    return this.RARITY_ORDER.includes(r) ? r : "common";
+  },
+
+  rarityLabel(row) {
+    return this.RARITY_CN[this._rarity(row)] || "普通";
+  },
+
+  _rollRarity(candidates) {
+    const cfg = (DataManager.tables.event_table || {}).rarity_config || {};
+    const present = {};
+    for (const row of candidates) present[this._rarity(row)] = true;
+    const parts = [];
+    let total = 0;
+    for (const id of this.RARITY_ORDER) {
+      if (!present[id]) continue;
+      const p = num((cfg[id] || {}).base_rate, id === "common" ? 0.7 : 0);
+      if (p <= 0) continue;
+      parts.push({ id, p });
+      total += p;
+    }
+    if (!parts.length) return "common";
+    let pick = Math.random() * total;
+    for (const x of parts) {
+      pick -= x.p;
+      if (pick <= 0) return x.id;
+    }
+    return parts[parts.length - 1].id;
+  },
+
+  _pityForce(state, source) {
+    const rule = (DataManager.tables.event_table || {}).pity_rule || {};
+    const pity = state.event_pity || {};
+    const day = UnlockManager.currentDay(state);
+    const range = rule.first_root_event_day_range || [3, 5];
+    if (day >= int(range[0], 3) && day <= int(range[1], 5) && !(state.seen_events || []).includes(this.ROOT_PITY_EVENT) && this.canOffer(state, this.ROOT_PITY_EVENT)) {
+      return { eventId: this.ROOT_PITY_EVENT };
+    }
+    if (int(pity.days_without_rare) >= Math.max(1, int(rule.rare_pity_days, 3) - 1) && this._todayCount(state) === 0) {
+      return { rarity: "epic" };
+    }
+    if (rule.first_daily_claim_guaranteed && source === "offline" && this._todayCount(state) === 0) {
+      return { rarity: Math.random() < 0.74 ? "common" : "rare" };
+    }
+    return null;
+  },
+
+  _ensurePity(state) {
+    if (!state.event_pity || typeof state.event_pity !== "object") {
+      state.event_pity = { days_without_rare: 0, got_rare_today: false };
+    }
+  },
+
+  _notePityRoll(state, row) {
+    this._ensurePity(state);
+    const rar = this._rarity(row);
+    if (rar === "epic" || rar === "fate") state.event_pity.got_rare_today = true;
+  },
+
+  onDailyReset(state) {
+    this._ensurePity(state);
+    if (state.event_pity.got_rare_today) state.event_pity.days_without_rare = 0;
+    else state.event_pity.days_without_rare = int(state.event_pity.days_without_rare) + 1;
+    state.event_pity.got_rare_today = false;
   },
 
   _sourceUnlocked(state, source) {
@@ -47,7 +139,6 @@ const EventManager = {
     return n;
   },
 
-  // 无 weight 的脚本机缘：升重/登录每次只吐一条，避免一次弹一串。
   nextScripted(state, sources) {
     const want = Array.isArray(sources) ? sources : [sources];
     for (const row of DataManager.getRows("event_table")) {
@@ -63,6 +154,7 @@ const EventManager = {
   markSeen(state, eventId) {
     state.event_counts_today[eventId] = int(state.event_counts_today[eventId]) + 1;
     if (!state.seen_events.includes(eventId)) state.seen_events.push(eventId);
+    this._notePityRoll(state, this.getEvent(eventId));
   },
 
   getEvent(eventId) {

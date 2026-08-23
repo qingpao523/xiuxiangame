@@ -981,19 +981,29 @@ const BattleUIV2 = {
     while (treasures.length < 2) treasures.push(null);
     let shen = "神通未成";
     const slots = battle.slots || [];
-    let run = 1, runEl = slots[0] && slots[0].spell_type;
-    for (let i = 1; i < slots.length; i++) {
-      if (slots[i] && slots[i].spell_type === runEl) {
-        run++;
-        if (run >= 3) {
-          const ult = BattleEngineV2.getUltimateConfig && BattleEngineV2.getUltimateConfig();
-          const u = ult && ult[runEl];
-          shen = (u && u.name) || (this._elementName(runEl) + "系神通");
-          break;
+    if (typeof SkillIdentity !== "undefined" && SkillIdentity.isShentong(state)) {
+      const names = [];
+      for (const s of slots) {
+        const sk = BattleEngineV2.getSkillData(s && (s.id || s.skill_id));
+        if (!sk || sk.skill_class !== "神通") continue;
+        if (sk.name && !names.includes(sk.name)) names.push(sk.name);
+      }
+      shen = names[0] || "神通";
+    } else {
+      let run = 1, runEl = slots[0] && slots[0].spell_type;
+      for (let i = 1; i < slots.length; i++) {
+        if (slots[i] && slots[i].spell_type === runEl) {
+          run++;
+          if (run >= 3) {
+            const ult = BattleEngineV2.getUltimateConfig && BattleEngineV2.getUltimateConfig();
+            const u = ult && ult[runEl];
+            shen = (u && u.name) || (this._elementName(runEl) + "系神通");
+            break;
+          }
+        } else {
+          run = 1;
+          runEl = slots[i] && slots[i].spell_type;
         }
-      } else {
-        run = 1;
-        runEl = slots[i] && slots[i].spell_type;
       }
     }
     kit.innerHTML =

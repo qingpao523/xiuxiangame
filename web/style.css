@@ -154,7 +154,7 @@ body {
   letter-spacing: 2px;
 }
 
-/* ------- 资源浮层 ------- */
+/* ------- 资源浮层（在立绘之上、不叠脸：走文档流，不盖舞台） ------- */
 
 #resource-strip {
   position: relative;
@@ -162,21 +162,31 @@ body {
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px 5px;
   justify-content: center;
+}
+
+#resource-strip[data-count="5"],
+#resource-strip[data-count="6"],
+#resource-strip[data-count="7"],
+#resource-strip[data-count="8"] {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .res-chip {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 10px 3px 5px;
-  min-height: 26px;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 8px 2px 4px;
+  min-height: 24px;
+  min-width: 0;
   border: 1px solid var(--gold);
   border-radius: 2px;
   background: linear-gradient(180deg, #2f6d5c 0%, #1d4a3e 100%);
   box-shadow: inset 0 0 0 1px rgba(232, 210, 140, 0.22), 0 1px 0 #0e241e;
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
 .res-chip img {
@@ -188,6 +198,10 @@ body {
 .res-chip .res-name {
   color: var(--paper-ink);
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .res-chip .res-value {
@@ -196,16 +210,16 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ------- 主角舞台 ------- */
+/* ------- 主角舞台（夹在资源条与进度条之间，不再铺满整屏去挡脸） ------- */
 
 #stage {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
+  position: relative;
+  flex: 1 1 0;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 110px 8px 268px;
+  padding: 10px 4px 0;
   min-height: 0;
   overflow: hidden;
   pointer-events: none;
@@ -275,11 +289,12 @@ body.dueling #char-img {
   position: relative;
   z-index: 2;
   pointer-events: auto;
-  height: 100%;
+  height: auto;
   width: auto;
-  max-width: 96%;
-  max-height: none;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
+  object-position: center bottom;
   transform-origin: 50% 100%;
   animation: charIdle 3.4s ease-in-out infinite;
   filter:
@@ -298,7 +313,7 @@ body.dueling #char-img {
 
 @keyframes charIdle {
   0%, 100% { transform: translateY(0) rotate(-0.35deg) scale(1, 1); }
-  50% { transform: translateY(-5px) rotate(0.45deg) scale(1.012, 1.03); }
+  50% { transform: translateY(-4px) rotate(0.4deg) scale(1, 1.012); }
 }
 
 #treasure-orb {
@@ -325,24 +340,10 @@ body.dueling #char-img {
   50% { transform: translateY(-6px); }
 }
 
-/* ------- 当前目标 ------- */
+/* ------- 当前目标：主页不显示（卷 / 洞府手札仍可看） ------- */
 
 #goal-panel {
-  position: relative;
-  z-index: 3;
-  flex-shrink: 0;
-  margin-top: auto;
-  padding: 2px 8px;
-  min-height: 0;
-  border-style: solid;
-  border-color: transparent;
-  border-width: 10px 34px;
-  border-image-source: url("assets/ui/hud/hud_goal_scroll.png");
-  border-image-slice: 90 120 fill;
-  border-image-repeat: stretch;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
+  display: none;
 }
 
 #goal-text {
@@ -644,6 +645,14 @@ body.dueling #char-img {
   gap: 8px;
 }
 
+#panel-body .event-story {
+  white-space: pre-line;
+  color: #5a3d12;
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 2px 2px 6px;
+}
+
 #panel-body .popup-btn {
   max-width: 100%;
   letter-spacing: 0.08em;
@@ -905,8 +914,10 @@ body.dueling #char-img {
   font-weight: 700;
   color: #5a3d12;
   text-align: center;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.12em;
   margin-bottom: 14px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 #popup-body {

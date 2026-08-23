@@ -19,7 +19,16 @@ const BattleEngineV2 = {
     const id = String(skillId || "");
     const rows = DataManager.getRows("skill_table");
     const fromSkill = rows.find((r) => r.id === id);
-    if (fromSkill) return fromSkill;
+    if (fromSkill) {
+      const state = (typeof Game !== "undefined") ? Game.state : null;
+      if (state && typeof SkillIdentity !== "undefined") {
+        return Object.assign({}, fromSkill, {
+          name: SkillIdentity.displayName(fromSkill, state),
+          skill_class: SkillIdentity.skillClass(fromSkill, state),
+        });
+      }
+      return fromSkill;
+    }
     if (id.indexOf("treasure_") === 0) return this._treasureAsSkill(id);
     return null;
   },

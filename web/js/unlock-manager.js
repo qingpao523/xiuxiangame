@@ -127,6 +127,7 @@ const UnlockManager = {
     const today = todayString();
     if (state.last_daily_reset_day === today) return;
     state.last_daily_reset_day = today;
+    if (typeof EventManager !== "undefined") EventManager.onDailyReset(state);
     state.event_counts_today = {};
     state.action_counts_today = {};
     state.boss_counts_today = {};

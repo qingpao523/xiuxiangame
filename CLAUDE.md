@@ -22,7 +22,9 @@ This file provides guidance to Claude Code when working with this project.
 
 ## 项目简介
 
-封神·放置修仙（竖屏文字修仙放置游戏）。纯网页版：HTML/CSS/JS，位于 web/，浏览器打开 web/index.html 即玩。已移除 Godot 引擎，统一为单一 Web 技术栈，数据唯一来源为 web/data/。
+封神·放置修仙（竖屏文字修仙放置游戏）。纯网页版位于 web/，打开 web/index.html 即玩。数据唯一来源为 web/data/。
+
+**工程架构（design/14.0 §K，2026-08-23 锁）：数据为体、画面为用。** 离线/机缘/斗法是纯逻辑，可测、可上服务端；画面只订阅状态。P2 继续 vanilla 可玩。面板可迁 Vue（组件合同：上文下钮，禁止再给 `.card` 加全局副作用）。烟雨式 2D 网格可加 Pixi，不拿它画属性面板。不走 Cocos/Godot 场景树。换栈不得让前 30 分钟停摆。
 
 ## 核心规范
 

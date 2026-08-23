@@ -44,14 +44,18 @@ function render() {
     }
   } else { orb.classList.add("hidden"); }
   const threads = GoalManager.getChapterThreads(state);
-  if (threads.chapter) {
-    const openThreads = threads.list.filter((t) => t.status === "open");
-    const first = openThreads[0];
-    $("goal-text").textContent = threads.chapterName;
-    $("goal-reward").textContent = (first ? `可循：${first.goal.goal_name} ｜ ` : "") + `手札共 ${openThreads.length} 线（洞府查看）`;
-  } else {
-    $("goal-text").textContent = "卷三已尽·等待天仙篇";
-    $("goal-reward").textContent = "可继续：骷髅山边界游历，收集祭炼材料";
+  const goalText = $("goal-text");
+  const goalReward = $("goal-reward");
+  if (goalText && goalReward) {
+    if (threads.chapter) {
+      const openThreads = threads.list.filter((t) => t.status === "open");
+      const first = openThreads[0];
+      goalText.textContent = threads.chapterName;
+      goalReward.textContent = (first ? `可循：${first.goal.goal_name} ｜ ` : "") + `手札共 ${openThreads.length} 线（洞府查看）`;
+    } else {
+      goalText.textContent = "卷三已尽·等待天仙篇";
+      goalReward.textContent = "可继续：骷髅山边界游历，收集祭炼材料";
+    }
   }
   const progress = RealmManager.getProgress(state);
   $("progress-fill").style.width = `${Math.round(progress.ratio * 100)}%`;
@@ -90,7 +94,9 @@ function renderToast() {
 
 function renderResources(state) {
   const strip = $("resource-strip"); strip.innerHTML = "";
-  for (const row of UnlockManager.getVisibleResources(state)) {
+  const rows = UnlockManager.getVisibleResources(state);
+  strip.dataset.count = String(rows.length);
+  for (const row of rows) {
     const id = String(row.resource_id);
     const chip = document.createElement("div"); chip.className = "res-chip"; chip.title = row.resource_name || id;
     const img = document.createElement("img"); img.src = ICON_PATHS[id] || ""; img.alt = "";
@@ -223,7 +229,7 @@ function renderNav(state) {
   });
 }
 
-function hasAffordableSpell(state) { return UnlockManager.getAvailableSpells(state).some((spell) => { const level = int(Game.getSpellState(String(spell.spell_id)).level), nextLevel = level + 1; if (nextLevel > Game.getSpellMaxLevel(spell)) return false; const cost = Game.getSpellUpgradeCost(spell, nextLevel); return cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
+function hasAffordableSpell(state) { return hasAffordableSkill(state); }
 function hasAffordableSkill(state) { const unlocked = state.unlocked_skills || []; return UnlockManager.getAvailableSkills(state).some((skill) => { const id = String(skill.id); if (!unlocked.includes(id)) return false; const level = Math.max(1, Game.getSkillLevel(id)), nextLevel = level + 1; if (nextLevel > Game.getSkillMaxLevel(skill)) return false; const cost = Game.getSkillUpgradeCost(skill, nextLevel); return cost && num(state.resources.spell_page) >= num(cost.spell_page_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
 function hasAffordableTreasure(state) { return UnlockManager.getAvailableTreasures(state).some((treasure) => { const level = int(Game.getTreasureState(String(treasure.treasure_id)).level), nextLevel = level + 1; if (nextLevel > int(treasure.max_level_mvp, 5)) return false; const cost = Game.getTreasureUpgradeCost(treasure, nextLevel); return cost && num(state.resources.treasure_shard) >= num(cost.treasure_shard_cost) && num(state.resources.mana) >= num(cost.mana_cost); }); }
 function hasChallengeableBoss(state) { return BossManager.getBosses(state).some((boss) => BossManager.canChallenge(state, String(boss.boss_id)) && BossManager.getWinRate(state, boss) >= 0.5); }
@@ -236,7 +242,11 @@ function onMainButtonClick() {
   switch (type) {
     case "acting": if (Game.registerBeat()) { const f = document.createElement("div"); f.className = "sparkle-float"; f.style.left = "50%"; f.style.top = "80%"; f.textContent = "完美吐纳！"; $("stage").appendChild(f); setTimeout(() => f.remove(), 1300); } break;
     case "event":
-      if (currentPopup && currentPopup.kind === "event") { ensurePopupDismiss(); break; }
+      if (currentPopup && currentPopup.kind === "event") {
+        const layer = $("popup-layer");
+        if (layer && !layer.classList.contains("hidden")) { ensurePopupDismiss(); break; }
+        releaseModal();
+      }
       Game.openPendingEvent();
       drainPopupQueue();
       break;
@@ -249,13 +259,32 @@ function onMainButtonClick() {
     case "boss_fight": openPanelSheet("map"); break;
     case "claim": Game.claimOfflineReward(); break;
     case "action": Game.startAction(btn.dataset.actionId); break;
-    default: Game.queuePopup({ kind: "text", title: "闭关", body: "你继续在洞府中闭关。\n山中灵气会随时间缓缓汇入体内，离开页面也不会中断。\n\n稍后回来「出关领取」即可。", buttons: [{ label: "静心闭关" }] }); drainPopupQueue();
+    default:
+      if (Game.startPreferredCultivation()) break;
+      Game.queuePopup({ kind: "text", title: "闭关", body: "你继续在洞府中闭关。\n山中灵气会随时间缓缓汇入体内，离开页面也不会中断。\n\n稍后回来「出关领取」即可。", buttons: [{ label: "静心闭关" }] });
+      drainPopupQueue();
   }
 }
 
 // ---------------- 弹窗系统 ----------------
 
+function popupLayerHidden() {
+  const layer = $("popup-layer");
+  return !layer || layer.classList.contains("hidden");
+}
+
+function releaseStaleModal() {
+  if (!currentPopup || preludeActive) return;
+  if (currentPopup.kind === "prologue" || currentPopup.kind === "world_map") return;
+  if (currentPopup.kind === "battle_v2" && typeof BattleUIV2 !== "undefined" && BattleUIV2._session) return;
+  if (currentPopup.kind === "slot_config" && typeof BattleUIV2 !== "undefined" && BattleUIV2._formCtx) return;
+  if (!popupLayerHidden()) return;
+  currentPopup = null;
+  if (typeof Game !== "undefined") Game.eventPopupActive = false;
+}
+
 function drainPopupQueue() {
+  releaseStaleModal();
   if (currentPopup || preludeActive) return;
   if (!Game.popupQueue.length) return;
   const popup = Game.popupQueue.shift();
@@ -277,19 +306,36 @@ function drainPopupQueue() {
     });
     return;
   }
-  if (popup.kind === "event" && popup.prelude) { preludeActive = true; $("prelude").classList.remove("hidden"); setTimeout(() => { $("prelude").classList.add("hidden"); preludeActive = false; showPopup(popup); }, 700); return; }
+  if (popup.kind === "event" && popup.prelude) {
+    preludeActive = true;
+    $("prelude").classList.remove("hidden");
+    setTimeout(() => {
+      $("prelude").classList.add("hidden");
+      preludeActive = false;
+      showPopup(popup);
+    }, 700);
+    return;
+  }
   showPopup(popup);
 }
 
 function resetPopupPanel() {
   const panel = $("popup-panel");
   if (!panel) return;
+  const mk = (id, tag) => {
+    let el = $(id);
+    if (!el) { el = document.createElement(tag); el.id = id; }
+    return el;
+  };
+  const title = mk("popup-title", "div");
+  const body = mk("popup-body", "div");
+  const buttons = mk("popup-buttons", "div");
   const keep = new Set(["popup-title", "popup-body", "popup-buttons"]);
   Array.from(panel.children).forEach((el) => { if (!keep.has(el.id)) el.remove(); });
-  const title = $("popup-title"), body = $("popup-body"), buttons = $("popup-buttons");
-  if (title) title.textContent = "";
-  if (body) body.innerHTML = "";
-  if (buttons) buttons.innerHTML = "";
+  panel.append(title, body, buttons);
+  title.textContent = "";
+  body.innerHTML = "";
+  buttons.innerHTML = "";
   panel.className = "";
 }
 
@@ -330,7 +376,16 @@ function showPopup(popup) {
   const panel = $("popup-panel"), title = $("popup-title"), body = $("popup-body"), buttons = $("popup-buttons");
   $("popup-layer").classList.remove("hidden");
   const fn = (typeof GameplayEngine !== "undefined") ? GameplayEngine.getRenderer(popup.kind) : null;
-  if (fn) { fn(panel, title, body, buttons, popup); ensurePopupDismiss(); return; }
+  if (fn) {
+    try { fn(panel, title, body, buttons, popup); }
+    catch (err) {
+      console.error("popup render", popup.kind, err);
+      if (title && !title.textContent) title.textContent = "天机有变";
+      if (body && !body.textContent) body.textContent = "这段机缘未能展开。再点一次即可。";
+    }
+    ensurePopupDismiss();
+    return;
+  }
   panel.classList.add("plaque");
   title.textContent = popup.title || "";
   body.textContent = popup.body || "";
@@ -469,7 +524,7 @@ function renderEncounterPopup(panel, title, body, buttons, encounterId) {
       sub.textContent = `斗法 · 敌方战力约 ${formatInt(Math.max(50, Math.round(num(map.recommended_power, 300) * num(option.enemy_power_ratio, 0.25) * num(getTodayOmen().enemyMult, 1))))}（你 ${formatInt(RealmManager.getCombatPower(state))}）`;
     } else if (option.kind === "check") {
       let chance = num(option.chance, 0.6) + num(getTodayOmen().checkBonus, 0);
-      for (const row of DataManager.getRows("spell_table")) { if (String(row.spell_type) === String(option.bonus_spell_type)) chance += int(state.spells[String(row.spell_id)]?.level) * num(option.bonus_per_level, 0.05); }
+      for (const row of DataManager.getRows("skill_table")) { if (String(row.spell_type) === String(option.bonus_spell_type)) chance += int(state.skill_levels[String(row.id)]) * num(option.bonus_per_level, 0.05); }
       sub.textContent = `成算约 ${Math.round(clamp(chance, 0.05, 0.95) * 100)}%`;
     } else sub.textContent = "稳妥之选";
     btn.append(main, sub);
@@ -521,38 +576,93 @@ function renderNewEncounterPopup(panel, title, body, buttons, enc) {
 
 // ---------------- 机缘事件弹窗 ----------------
 
-function renderEventPopup(panel, title, body, buttons) {
-  const eventRow = Game.getPendingEvent();
-  if (!Object.keys(eventRow).length) { closePopup(); return; }
-  panel.classList.add("style-chance"); title.textContent = `机缘触发：${eventRow.event_name || ""}`;
+function eventHeadline(eventRow) {
+  const rar = (typeof EventManager !== "undefined") ? EventManager.rarityLabel(eventRow) : "";
+  const name = eventRow.event_name || eventRow.title || "机缘";
+  return rar ? `机缘·${rar}：${name}` : `机缘触发：${name}`;
+}
+
+function eventNarrative(eventRow) {
   const tag = eventRow.fengshen_tag ? `封神锚点：${eventRow.fengshen_tag}\n\n` : "";
-  body.textContent = `${tag}${eventRow.narrative_text || eventRow.body || ""}`;
+  return `${tag}${eventRow.narrative_text || eventRow.body || "天机一闪，需你当场抉择。"}`;
+}
+
+function eventOptionTone(option, index, isChoice) {
+  const res = ((option && (option.reward || option.result)) || {}).resources || {};
+  if (num(res.merit) > 0 && num(res.calamity) <= 0) return "merit";
+  if (num(res.calamity) > 0 && num(res.merit) <= 0) return "calamity";
+  if (isChoice) return index === 0 ? "merit" : "calamity";
+  return "";
+}
+
+function eventOptionButton(label, sub, tone, handler) {
+  const btn = document.createElement("button");
+  btn.className = "popup-btn" + (tone ? " " + tone : "");
+  const main = document.createElement("span");
+  main.textContent = label || "选择";
+  btn.appendChild(main);
+  if (sub) {
+    const s = document.createElement("span");
+    s.className = "popup-option-sub";
+    s.textContent = sub;
+    btn.appendChild(s);
+  }
+  btn.addEventListener("click", handler);
+  return btn;
+}
+
+function mountEventChoices(buttonsEl, eventRow, afterPick) {
   const isChoice = eventRow.merit_or_calamity === "choice";
-  const evOptions = eventRow.options || eventRow.choices || [];
+  const evOptions = Array.isArray(eventRow.options) ? eventRow.options
+    : Array.isArray(eventRow.choices) ? eventRow.choices : [];
   if (!evOptions.length) {
-    const sub = describeEventReward({ reward: eventRow.reward || {} });
-    const btn = document.createElement("button"); btn.className = "popup-btn";
-    btn.innerHTML = "<span>记下</span><span class=\"popup-option-sub\">" + sub + "</span>";
-    btn.addEventListener("click", () => { closePopup(); Game.chooseEventOption(-1); });
-    buttons.appendChild(btn);
+    buttonsEl.appendChild(eventOptionButton("记下", describeEventReward({ reward: eventRow.reward || {} }), "", () => {
+      afterPick();
+      Game.chooseEventOption(-1);
+    }));
     return;
   }
   evOptions.forEach((option, index) => {
-    const btn = document.createElement("button"); btn.className = "popup-btn" + (isChoice ? (index === 0 ? " merit" : " calamity") : "");
-    btn.innerHTML = "<span>" + (option.text || option.label || "选择") + '</span><span class="popup-option-sub">' + describeEventReward(option) + "</span>";
-    btn.addEventListener("click", () => { closePopup(); Game.chooseEventOption(index); });
-    buttons.appendChild(btn);
+    const tone = eventOptionTone(option, index, isChoice);
+    buttonsEl.appendChild(eventOptionButton(option.text || option.label || "选择", describeEventReward(option), tone, () => {
+      afterPick();
+      Game.chooseEventOption(index);
+    }));
   });
 }
 
+function renderEventPopup(panel, title, body, buttons) {
+  const eventRow = Game.getPendingEvent();
+  panel.classList.add("style-chance");
+  if (!eventRow || !Object.keys(eventRow).length) {
+    title.textContent = "机缘已散";
+    body.textContent = "这段天机已经消散。若榜文再动，会重新浮现。";
+    buttons.appendChild(popupButton("知道了", false, () => {
+      closePopup();
+      if (Game.state) { Game.state.pending_event_id = ""; Game.eventPopupActive = false; }
+    }));
+    return;
+  }
+  title.textContent = eventHeadline(eventRow);
+  body.textContent = eventNarrative(eventRow);
+  mountEventChoices(buttons, eventRow, () => closePopup());
+}
+
 function describeEventReward(option) {
-  const parts = []; const reward = option.reward || option.result || {};
-  for (const id of Object.keys(reward.resources || {})) { const row = DataManager.getById("resource_table", id); parts.push(`${row.resource_name || id} +${formatInt(reward.resources[id])}`); }
-  if (reward.spell_pages_by_type) { let t = 0; for (const k of Object.keys(reward.spell_pages_by_type)) t += num(reward.spell_pages_by_type[k]); parts.push(`术法残页 +${t}`); }
-  if (reward.treasure_shards_by_id) { let t = 0; for (const k of Object.keys(reward.treasure_shards_by_id)) t += num(reward.treasure_shards_by_id[k]); parts.push(`法宝碎片 +${t}`); }
+  const parts = [];
+  const reward = (option && (option.reward || option.result)) || {};
+  for (const id of Object.keys(reward.resources || {})) {
+    const row = DataManager.getById("resource_table", id);
+    const amt = num(reward.resources[id]);
+    if (!amt) continue;
+    parts.push(`${(row && row.resource_name) || id} ${amt > 0 ? "+" : ""}${formatInt(amt)}`);
+  }
+  if (reward.spell_pages_by_type) { let t = 0; for (const k of Object.keys(reward.spell_pages_by_type)) t += num(reward.spell_pages_by_type[k]); if (t) parts.push(`术法残页 +${t}`); }
+  if (reward.treasure_shards_by_id) { let t = 0; for (const k of Object.keys(reward.treasure_shards_by_id)) t += num(reward.treasure_shards_by_id[k]); if (t) parts.push(`法宝碎片 +${t}`); }
   if (reward.root_progress) parts.push(`道行 +${formatInt(reward.root_progress)}`);
   if (reward.breakthrough_bonus) parts.push("破劫气运上升");
   if (reward.breakthrough_pressure_reduce) parts.push("劫气消散");
+  if (reward.buffs) parts.push("气机长留");
   if (reward.random_bonus) parts.push("或有意外之喜");
   return parts.join("，") || "一缕气机入体";
 }
@@ -1149,78 +1259,64 @@ function renderMapPanel(body, state) {
   }
 }
 
-// 术法面板
+// 术法面板：四修（体/器/魂/劫）。旧 spell_table 已下线。
 function renderSpellPanel(body, state) {
-  // ===== 斗法栏·配招入口 =====
   const v2box = document.createElement("div"); v2box.className = "card v2-entry";
   const v2info = document.createElement("div"); v2info.className = "card-info";
   const v2title = document.createElement("div"); v2title.className = "card-name";
   v2title.textContent = "斗法栏·连锁制";
   const v2desc = document.createElement("div"); v2desc.className = "card-desc";
-  v2desc.textContent = "配招5分钟，斗法全自动。同系相邻触发共鸣×1.3，三连触发终极神通。";
+  const awoken = typeof SkillIdentity !== "undefined" && SkillIdentity.isShentong(state);
+  v2desc.textContent = awoken
+    ? "栏中已是神通。同体系相邻共鸣，三连触发终极。"
+    : "配招后斗法全自动。体系=体/器/魂/劫（无互克）；五行只在器（法宝）上驱动共鸣。天仙后术法觉醒为神通。";
   v2info.append(v2title, v2desc);
   const cfgBtn = document.createElement("button"); cfgBtn.className = "card-btn";
   cfgBtn.textContent = "配置斗法栏";
   cfgBtn.addEventListener("click", () => { closePanelSheet(); Game.openSlotConfig(); drainPopupQueue(); });
   v2box.append(v2info, cfgBtn);
   body.appendChild(v2box);
-
-  // ===== 练气术法（V2 skill_table，30术法六系） =====
-  renderSkillV2Section(body, state);
-
-  const spells = UnlockManager.getAvailableSpells(state);
-  if (!spells.length) { body.appendChild(note("术法尚未开启。炼气士四重可观残符悟法。")); return; }
-  body.appendChild(note("真仙之前，你所修仍是术法，不是神通。"));
-  // P0-A: 本命流派状态
-  const bm = str(state.benming_school, "");
-  if (bm) body.appendChild(note(`本命·${SCHOOL_PASSIVES[bm].name}：${SCHOOL_PASSIVES[bm].desc}。非本命流派封顶三阶。`));
-  else body.appendChild(note("本命未定。真仙破劫后，于雷/火/剑/魂/劫五道中择一，走到黑。"));
-  for (const spell of spells) {
-    const id = String(spell.spell_id); const spellState = Game.getSpellState(id);
-    const level = int(spellState.level), maxLevel = Game.getSpellMaxLevel(spell), nextLevel = level + 1;
-    const cost = nextLevel <= maxLevel ? Game.getSpellUpgradeCost(spell, nextLevel) : null;
-    const card = document.createElement("div"); card.className = "card" + (level > 0 ? " selected" : "");
-    const img = document.createElement("img"); img.src = SPELL_ICONS[id] || ""; img.alt = "";
-    const info = document.createElement("div"); info.className = "card-info";
-    const name = document.createElement("div"); name.className = "card-name"; name.textContent = `${spell.spell_name}　${level > 0 ? `${level}重` : "未习得"}`;
-    const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = spell.lore_text || "";
-    const costLine = document.createElement("div"); costLine.className = "card-cost";
-    costLine.textContent = cost ? (nextLevel === 1 ? (num(cost.spell_page_cost) + num(cost.mana_cost) === 0 ? "参悟：首门术法，无需材料" : `参悟：残页 ${formatInt(cost.spell_page_cost)}｜法力 ${formatInt(cost.mana_cost)}`) : `升至${nextLevel}重：残页 ${formatInt(cost.spell_page_cost)}｜法力 ${formatInt(cost.mana_cost)}`) : "已至当前境界上限";
-      // P0-A: 本命流派封顶
-      const spellSchool = String(spell.spell_school || "");
-      const schoolCapped = int(spell.tier) >= 4 && !!bm && spellSchool !== bm;
-      const schoolLocked = int(spell.tier) >= 4 && !bm;
-      if (schoolCapped) costLine.textContent = `非本命流派，封顶三阶（你的本命：${SCHOOL_NAME[bm]}）`;
-      else if (schoolLocked) costLine.textContent = "四阶神通，需先定本命流派";
-      if (bm && spellSchool === bm) name.textContent += " ★本命";
-    info.append(name, desc, costLine);
-    const btn = document.createElement("button"); btn.className = "card-btn";
-    btn.textContent = level === 0 ? "参悟" : "升重";
-      btn.disabled = schoolCapped || schoolLocked || !cost || num(state.resources.spell_page) < num(cost?.spell_page_cost) || num(state.resources.mana) < num(cost?.mana_cost);
-    btn.addEventListener("click", () => { Game.upgradeSpell(id); renderPanelBody("spell"); });
-    card.append(img, info, btn); body.appendChild(card);
-  }
+  renderSixiuSection(body, state);
 }
 
-// 练气术法V2：30术法六系，按系分组，境界到了即悟得，可升重
-const SKILL_TYPE_LABEL = { body: "体", thunder: "雷", fire: "火", weapon: "器", soul: "魂", calamity: "劫" };
-const SKILL_TYPE_ORDER = ["body", "thunder", "fire", "weapon", "soul", "calamity"];
 const RARITY_LABEL = { common: "凡", uncommon: "灵", rare: "玄" };
 function skillIcon(id, spellType) {
   if (SPELL_ICONS[id]) return SPELL_ICONS[id];
   const legacy = "spell_" + spellType + "_01";
   return SPELL_ICONS[legacy] || "";
 }
-function renderSkillV2Section(body, state) {
+function renderSixiuSection(body, state) {
+  const awoken = typeof SkillIdentity !== "undefined" && SkillIdentity.isShentong(state);
+  body.appendChild(note(awoken
+    ? "天仙境开，斗法栏所书已是神通。器仍是法宝，无招式。"
+    : "四修：体 / 器 / 魂 / 劫。练气至地仙只称术法；天仙后觉醒为神通。器=法宝，御器与火术是法术不是器。"));
   const available = UnlockManager.getAvailableSkills(state);
   const unlocked = state.unlocked_skills || [];
-  body.appendChild(note("练气唯术法，无法宝、无神通、无势力。境界到了即悟得，残页与法力可升重。种族之别，仅在被动加成。"));
-  for (const type of SKILL_TYPE_ORDER) {
-    const rows = available.filter((r) => str(r.spell_type, "") === type);
-    if (!rows.length) continue;
+  const groups = (typeof SkillIdentity !== "undefined") ? SkillIdentity.TIXI : [];
+  for (const g of groups) {
     const header = document.createElement("div"); header.className = "card-name v2-skill-header";
-    header.textContent = "【" + (SKILL_TYPE_LABEL[type] || type) + "系】";
+    header.textContent = "【" + g.title + "修】";
     body.appendChild(header);
+    body.appendChild(note(g.blurb));
+    if (g.treasures) {
+      const owned = UnlockManager.getAvailableTreasures(state).filter((t) => int((state.treasures[String(t.treasure_id)] || {}).level) > 0);
+      if (!owned.length) body.appendChild(note("尚未炼化法宝。器修的五行，在法宝上，不在招式上。"));
+      for (const tr of owned) {
+        const card = document.createElement("div"); card.className = "card selected";
+        const img = document.createElement("img"); img.src = (typeof TREASURE_ICONS !== "undefined" && TREASURE_ICONS[tr.treasure_id]) || ""; img.alt = "";
+        const info = document.createElement("div"); info.className = "card-info";
+        const name = document.createElement("div"); name.className = "card-name";
+        const wx = (typeof SkillIdentity !== "undefined" && SkillIdentity.WUXING[tr.wuxing]) || "";
+        name.textContent = `${tr.treasure_name}　器·法宝${wx ? "｜五行" + wx : ""}`;
+        const desc = document.createElement("div"); desc.className = "card-desc";
+        desc.textContent = tr.origin_desc || tr.skill_desc || "法宝无招式，绑在斗法栏格上以成器势。";
+        info.append(name, desc);
+        if (img.src) card.append(img, info); else card.append(info);
+        body.appendChild(card);
+      }
+    }
+    const rows = available.filter((r) => g.types.includes(str(r.spell_type, "")));
+    if (g.treasures && rows.length) body.appendChild(note("以下是术法（御器、火象），不是器。"));
     for (const skill of rows) {
       const id = String(skill.id);
       const isUnlocked = unlocked.includes(id);
@@ -1233,13 +1329,16 @@ function renderSkillV2Section(body, state) {
       const img = src ? document.createElement("img") : null;
       if (img) { img.src = src; img.alt = ""; }
       const info = document.createElement("div"); info.className = "card-info";
+      const shown = (typeof SkillIdentity !== "undefined") ? SkillIdentity.displayName(skill, state) : skill.name;
+      const klass = (typeof SkillIdentity !== "undefined") ? SkillIdentity.skillClass(skill, state) : "法术";
       const name = document.createElement("div"); name.className = "card-name";
-      name.textContent = skill.name + " " + (RARITY_LABEL[str(skill.rarity, "common")] || "") + " " + (level > 0 ? level + "重" : "未悟");
+      name.textContent = shown + " ·" + klass + " " + (RARITY_LABEL[str(skill.rarity, "common")] || "") + " " + (level > 0 ? level + "重" : "未悟");
       const desc = document.createElement("div"); desc.className = "card-desc";
       desc.textContent = (skill.lore_text || "") + (skill.source_chapter ? "（" + skill.source_chapter + "）" : "");
       const dmgLine = document.createElement("div"); dmgLine.className = "card-cost";
       const lv = Math.max(1, level);
       dmgLine.textContent = "威力 " + (num(skill.damage_base) + num(skill.damage_growth) * (lv - 1)) + "（每重+" + num(skill.damage_growth) + "）";
+      if (!awoken && skill.shentong_name) dmgLine.textContent += "　天仙觉醒：" + skill.shentong_name;
       const costLine = document.createElement("div"); costLine.className = "card-cost";
       if (!isUnlocked) costLine.textContent = "未至参悟境界";
       else costLine.textContent = cost ? "升至" + nextLevel + "重：残页 " + formatInt(cost.spell_page_cost) + "｜法力 " + formatInt(cost.mana_cost) : "已至圆满";
@@ -1327,14 +1426,34 @@ function renderTreasurePanel(body, state) {
 
 // 机缘面板
 function renderChancePanel(body, state) {
-  if (state.pending_event_id) { const ew = Game.getPendingEvent(); body.appendChild(note(`有一段机缘尚未抉择：「${ew.event_name || ""}」`)); body.appendChild(popupButton("查看机缘", false, () => { closePanelSheet(); Game.openPendingEvent(); })); return; }
-  body.appendChild(note("天边榜文碎光初现，天地灵机开始动荡。\n闭关、游历、升重、破劫时，都可能遇到机缘。"));
+  if (state.pending_event_id) {
+    const ew = Game.getPendingEvent();
+    if (!ew || !Object.keys(ew).length) {
+      body.appendChild(note("这段机缘已散。"));
+      state.pending_event_id = "";
+      Game.eventPopupActive = false;
+      return;
+    }
+    body.appendChild(note(eventHeadline(ew)));
+    const story = document.createElement("div");
+    story.className = "card-desc event-story";
+    story.textContent = eventNarrative(ew);
+    body.appendChild(story);
+    mountEventChoices(body, ew, () => closePanelSheet());
+    return;
+  }
+  body.appendChild(note("天边榜文碎光初现，天地灵机开始动荡。\n闭关、游历、升重、破劫时，都可能遇到机缘。\n普通七成、精良二成五、稀有四厘五、天命五毫。每日首次闭关必有普通或精良；连续两日无稀有，第三日首次必升稀有。"));
   const observeRow = DataManager.getById("action_table", "observe_seal");
   if (Object.keys(observeRow).length && UnlockManager.conditionMet(state, String(observeRow.unlock_realm))) {
     const avail = ActionManager.getAvailability(state, observeRow);
     body.appendChild(popupButton(avail.ok ? "观榜悟道" : `观榜悟道（${avail.reason}）`, !avail.ok, () => { if (!avail.ok) return; closePanelSheet(); Game.startAction("observe_seal"); }));
   }
-  body.appendChild(note(`今日已得机缘 ${Object.values(state.event_counts_today).reduce((a, b) => a + int(b), 0)} 次。机缘随天时流转，明日又是新机。`));
+  const used = typeof EventManager !== "undefined" ? EventManager._todayCount(state) : Object.values(state.event_counts_today).reduce((a, b) => a + int(b), 0);
+  const cap = typeof EventManager !== "undefined" ? EventManager._dailyCap(state) : 5;
+  const pity = state.event_pity || {};
+  const need = Math.max(0, 2 - int(pity.days_without_rare));
+  const pityLine = pity.got_rare_today ? "今日已遇稀有或天命。" : (need <= 0 ? "下次机缘必升稀有（保底已满）。" : `再 ${need} 日无稀有，则保底升稀有。`);
+  body.appendChild(note(`今日机缘 ${used} / ${cap}。${pityLine}`));
 }
 
 // 洞府面板

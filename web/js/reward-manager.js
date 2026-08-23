@@ -16,6 +16,10 @@ const RewardManager = {
     const interval = int(config.event_check_interval_minutes, 30);
     if (!state.pending_event_id && effective >= interval) {
       reward.event_id = EventManager.rollEvent(state, "offline");
+      const pity = (DataManager.tables.event_table || {}).pity_rule || {};
+      if (!reward.event_id && pity.first_daily_claim_guaranteed && EventManager._todayCount(state) === 0) {
+        reward.event_id = EventManager.rollEvent(state, "offline");
+      }
     } else {
       reward.event_id = "";
     }
