@@ -1,0 +1,32 @@
+{
+  "name": "xiuxiangame",
+  "version": "1.0.0",
+  "description": "",
+  "main": "audit_completeness.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "npm run test:battle && npm run test:game && npm run test:ui && npm run test:server",
+    "test:battle": "node test/server-battle-test.js",
+    "test:game": "node test/server-game-test.js",
+    "test:ui": "node test/ui-regression.test.js",
+    "test:server": "node server/test/api.test.js && node server/test/ops.test.js && node server/test/step6.test.js",
+    "test:ui:write": "node test/ui-regression.test.js --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qingpao523/xiuxiangame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/qingpao523/xiuxiangame/issues"
+  },
+  "homepage": "https://github.com/qingpao523/xiuxiangame#readme",
+  "devDependencies": {
+    "jsdom": "^30.0.1"
+  }
+}

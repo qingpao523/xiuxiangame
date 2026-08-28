@@ -1,0 +1,494 @@
+{
+  "_meta": {
+    "seed": 20260828,
+    "fixedNow": "2026-08-28T12:00:00Z"
+  },
+  "s1_fresh": {
+    "main": {
+      "label": "吐纳周天",
+      "type": "action",
+      "actionId": "breath_cycle",
+      "cls": ""
+    },
+    "top": {
+      "identityLine": "炼精化气·1重｜无名散修｜战力 280",
+      "weatherLine": "天象：山野清寂，大劫未近",
+      "omenLine": "今日异象：雷雨压山——雷云滚滚，斗法中雷法伤害 +25%，游历道行 +10%",
+      "goalText": "卷一·山野炼气",
+      "goalReward": "可循：吐纳一轮周天 ｜ 手札共 2 线（洞府查看）",
+      "progressLabel": "道行 0 / 10",
+      "progressFillWidth": "0%",
+      "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
+      "autoToggle": {
+        "text": "连续修行：关",
+        "cls": ""
+      },
+      "sealPressure": {
+        "level": "low",
+        "state": "封印稳固",
+        "fillWidth": "0%"
+      },
+      "treasureOrbHidden": true,
+      "fxSealLit": false,
+      "bgImage": "url(\"assets/backgrounds/bg_mountain_cave.jpg\")"
+    },
+    "resources": {
+      "count": "2",
+      "chips": [
+        {
+          "name": "道行",
+          "value": "0"
+        },
+        {
+          "name": "法力",
+          "value": "0"
+        }
+      ]
+    },
+    "nav": [
+      {
+        "key": "realm",
+        "cls": "nav-btn",
+        "text": "境境界"
+      },
+      {
+        "key": "map",
+        "cls": "nav-btn locked",
+        "text": "游游历"
+      },
+      {
+        "key": "spell",
+        "cls": "nav-btn locked",
+        "text": "术术法"
+      },
+      {
+        "key": "treasure",
+        "cls": "nav-btn locked",
+        "text": "宝法宝"
+      },
+      {
+        "key": "chance",
+        "cls": "nav-btn locked",
+        "text": "缘机缘"
+      },
+      {
+        "key": "log",
+        "cls": "nav-btn",
+        "text": "志洞府"
+      }
+    ],
+    "panels": {
+      "realm": {
+        "opened": true,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "炼精化气·1重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 山野洞府，远天隐现金榜碎光。 初窥大道，开始吐纳山中灵气。 道行 0 / 10 战力 280下一境：炼精化气·2重 继续闭关或修行，积累道行。"
+      },
+      "map": {
+        "opened": false,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "炼精化气·1重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 山野洞府，远天隐现金榜碎光。 初窥大道，开始吐纳山中灵气。 道行 0 / 10 战力 280下一境：炼精化气·2重 继续闭关或修行，积累道行。"
+      },
+      "spell": {
+        "opened": false,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "炼精化气·1重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 山野洞府，远天隐现金榜碎光。 初窥大道，开始吐纳山中灵气。 道行 0 / 10 战力 280下一境：炼精化气·2重 继续闭关或修行，积累道行。"
+      },
+      "treasure": {
+        "opened": false,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "炼精化气·1重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 山野洞府，远天隐现金榜碎光。 初窥大道，开始吐纳山中灵气。 道行 0 / 10 战力 280下一境：炼精化气·2重 继续闭关或修行，积累道行。"
+      },
+      "chance": {
+        "opened": false,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "炼精化气·1重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 山野洞府，远天隐现金榜碎光。 初窥大道，开始吐纳山中灵气。 道行 0 / 10 战力 280下一境：炼精化气·2重 继续闭关或修行，积累道行。"
+      },
+      "log": {
+        "opened": true,
+        "title": "洞府",
+        "cards": 8,
+        "buttons": 1,
+        "digest": "入道第 1 天卷一·山野炼气 · 手札：可循 2 线｜已经历 0｜雾中 6可循·吐纳一轮周天奖励：获得第一缕道行可循·升至炼气士二重奖励：解锁入定一轮雾中因果雾中：道行深处，此线自现。雾中因果雾中：此行未启，且待时机。雾中因果雾中：机缘未至。雾中因果雾中：天机未至，静候其变。雾中因果雾中：机缘未至。雾中因果雾中：似有一"
+      }
+    },
+    "popup": {
+      "layerCls": "",
+      "text": "择跟脚：你自何处来灵光将落未落。这一世，你是洞府里醒来的哪一种生灵。人族先天道体天生契合大道，元神清明，修行门槛最低。妖族万灵之体可吞噬异兽精血获取其天赋，养成深度最深。雾中未醒大劫之后，他们才会落到你手里。先点开看看。先天生灵麒麟巫族魔族龙族凤族鸿蒙凶兽点一尊剪影。此刻还轮不到你。",
+      "queueKinds": [
+        "text",
+        "text",
+        "text",
+        "text"
+      ]
+    }
+  },
+  "s2_unlocked": {
+    "main": {
+      "label": "道行已满，可升重",
+      "type": "level_up",
+      "actionId": "",
+      "cls": "ready"
+    },
+    "top": {
+      "identityLine": "炼气化神·6重｜无名散修｜战力 1380",
+      "weatherLine": "天象：榜文碎光，初照山野",
+      "omenLine": "今日异象：雷雨压山——雷云滚滚，斗法中雷法伤害 +25%，游历道行 +10%",
+      "goalText": "卷一·山野炼气",
+      "goalReward": "可循：吐纳一轮周天 ｜ 手札共 8 线（洞府查看）",
+      "progressLabel": "道行 6789 / 270",
+      "progressFillWidth": "100%",
+      "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
+      "autoToggle": {
+        "text": "连续修行：开",
+        "cls": "on"
+      },
+      "sealPressure": {
+        "level": "low",
+        "state": "封印稳固",
+        "fillWidth": "0%"
+      },
+      "treasureOrbHidden": true,
+      "fxSealLit": true,
+      "bgImage": "url(\"assets/map/backgrounds/bg_map_001.png\")"
+    },
+    "resources": {
+      "count": "3",
+      "chips": [
+        {
+          "name": "道行",
+          "value": "6789"
+        },
+        {
+          "name": "法力",
+          "value": "1.23万"
+        },
+        {
+          "name": "术法残页",
+          "value": "0"
+        }
+      ]
+    },
+    "nav": [
+      {
+        "key": "realm",
+        "cls": "nav-btn attention",
+        "text": "境境界"
+      },
+      {
+        "key": "map",
+        "cls": "nav-btn attention",
+        "text": "游游历"
+      },
+      {
+        "key": "spell",
+        "cls": "nav-btn",
+        "text": "术术法"
+      },
+      {
+        "key": "treasure",
+        "cls": "nav-btn locked",
+        "text": "宝法宝"
+      },
+      {
+        "key": "chance",
+        "cls": "nav-btn",
+        "text": "缘机缘"
+      },
+      {
+        "key": "log",
+        "cls": "nav-btn",
+        "text": "志洞府"
+      }
+    ],
+    "panels": {
+      "realm": {
+        "opened": true,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 1,
+        "digest": "炼气化神·6重｜无名散修 寿元：数百年 势力：未入局（立身天仙之境后，须择一方势力） 封神榜碎光。 天边榜文碎光初现，山野机缘开始浮动。 道行 6789 / 270 战力 1380道行已满，升重"
+      },
+      "map": {
+        "opened": true,
+        "title": "游历",
+        "cards": 4,
+        "buttons": 5,
+        "digest": "展开封神山河图挑战：山野妖首受劫气驱使的山野妖首，双目赤红，巢中藏有破损护道法器。推荐战力 900｜胜率 100%｜今日可挑战 3 次斗法挑战：张桂芳一声厉喝从远处传来，你脑中嗡鸣，刚凝聚的法力瞬间溃散——有人在叫你的道号。张桂芳，殷商青龙关总兵，呼名落马术大败周营。推荐战力 600｜胜率 100%｜今日可挑战 3 次"
+      },
+      "spell": {
+        "opened": true,
+        "title": "术法",
+        "cards": 13,
+        "buttons": 13,
+        "digest": "斗法栏·连锁制配招后斗法全自动。体系=体/器/魂/劫（无互克）；五行只在器（法宝）上驱动共鸣。天仙后术法觉醒为神通。配置斗法栏四修：体 / 器 / 魂 / 劫。练气至地仙只称术法；天仙后觉醒为神通。器=法宝，御器与火术是法术不是器。【体修】肉身成道。雷法归体，与体系无互克。炼体拳 ·法术 凡 1重一拳一脚，皆是修行。昆"
+      },
+      "treasure": {
+        "opened": false,
+        "title": "术法",
+        "cards": 13,
+        "buttons": 13,
+        "digest": "斗法栏·连锁制配招后斗法全自动。体系=体/器/魂/劫（无互克）；五行只在器（法宝）上驱动共鸣。天仙后术法觉醒为神通。配置斗法栏四修：体 / 器 / 魂 / 劫。练气至地仙只称术法；天仙后觉醒为神通。器=法宝，御器与火术是法术不是器。【体修】肉身成道。雷法归体，与体系无互克。炼体拳 ·法术 凡 1重一拳一脚，皆是修行。昆"
+      },
+      "chance": {
+        "opened": true,
+        "title": "机缘",
+        "cards": 0,
+        "buttons": 1,
+        "digest": "天边榜文碎光初现，天地灵机开始动荡。 闭关、游历、升重、破劫时，都可能遇到机缘。 普通七成、精良二成五、稀有四厘五、天命五毫。每日首次闭关必有普通或精良；连续两日无稀有，第三日首次必升稀有。观榜悟道今日机缘 0 / 3。再 2 日无稀有，则保底升稀有。"
+      },
+      "log": {
+        "opened": true,
+        "title": "洞府",
+        "cards": 8,
+        "buttons": 1,
+        "digest": "入道第 1 天卷一·山野炼气 · 手札：可循 8 线｜已经历 0｜雾中 0可循·吐纳一轮周天奖励：获得第一缕道行可循·升至炼气士二重奖励：解锁入定一轮可循·升至炼气士三重奖励：解锁山野游历可循·完成一次山野游历奖励：术法残页 ×5可循·解锁第一门术法奖励：术法残页 ×5可循·触发榜文碎光奖励：道行 +50可循·获得法器"
+      }
+    },
+    "popup": {
+      "layerCls": "",
+      "text": "择跟脚：你自何处来灵光将落未落。这一世，你是洞府里醒来的哪一种生灵。人族先天道体天生契合大道，元神清明，修行门槛最低。妖族万灵之体可吞噬异兽精血获取其天赋，养成深度最深。雾中未醒大劫之后，他们才会落到你手里。先点开看看。先天生灵麒麟巫族魔族龙族凤族鸿蒙凶兽点一尊剪影。此刻还轮不到你。",
+      "queueKinds": [
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "world_map",
+        "text"
+      ]
+    }
+  },
+  "s4_breakthrough": {
+    "main": {
+      "label": "榜文垂光，破真人劫",
+      "type": "breakthrough",
+      "actionId": "",
+      "cls": "ready"
+    },
+    "canAttempt": true,
+    "top": {
+      "identityLine": "炼虚合道·凡境圆满｜无名散修｜战力 5680",
+      "weatherLine": "天象：榜文碎光，初照山野",
+      "omenLine": "今日异象：雷雨压山——雷云滚滚，斗法中雷法伤害 +25%，游历道行 +10%",
+      "goalText": "卷一·山野炼气",
+      "goalReward": "可循：吐纳一轮周天 ｜ 手札共 8 线（洞府查看）",
+      "progressLabel": "道行 10.00万 / 2000",
+      "progressFillWidth": "100%",
+      "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
+      "autoToggle": {
+        "text": "连续修行：开",
+        "cls": "on"
+      },
+      "sealPressure": {
+        "level": "low",
+        "state": "封印稳固",
+        "fillWidth": "0%"
+      },
+      "treasureOrbHidden": true,
+      "fxSealLit": true,
+      "bgImage": "url(\"assets/map/backgrounds/bg_map_001.png\")"
+    },
+    "nav": [
+      {
+        "key": "realm",
+        "cls": "nav-btn attention",
+        "text": "境境界"
+      },
+      {
+        "key": "map",
+        "cls": "nav-btn attention",
+        "text": "游游历"
+      },
+      {
+        "key": "spell",
+        "cls": "nav-btn",
+        "text": "术术法"
+      },
+      {
+        "key": "treasure",
+        "cls": "nav-btn locked",
+        "text": "宝法宝"
+      },
+      {
+        "key": "chance",
+        "cls": "nav-btn",
+        "text": "缘机缘"
+      },
+      {
+        "key": "log",
+        "cls": "nav-btn",
+        "text": "志洞府"
+      }
+    ],
+    "popup": {
+      "layerCls": "",
+      "text": "择跟脚：你自何处来灵光将落未落。这一世，你是洞府里醒来的哪一种生灵。人族先天道体天生契合大道，元神清明，修行门槛最低。妖族万灵之体可吞噬异兽精血获取其天赋，养成深度最深。雾中未醒大劫之后，他们才会落到你手里。先点开看看。先天生灵麒麟巫族魔族龙族凤族鸿蒙凶兽点一尊剪影。此刻还轮不到你。",
+      "queueKinds": [
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "world_map",
+        "text",
+        "text"
+      ]
+    }
+  },
+  "s3_zhenren": {
+    "main": {
+      "label": "本命法宝择主",
+      "type": "treasure_choice",
+      "actionId": "",
+      "cls": ""
+    },
+    "top": {
+      "identityLine": "地仙·初期·1重｜初成真人｜战力 9180",
+      "weatherLine": "天象：陈塘风雷，远潮渐起",
+      "omenLine": "今日异象：雷雨压山——雷云滚滚，斗法中雷法伤害 +25%，游历道行 +10%",
+      "goalText": "卷一·山野炼气",
+      "goalReward": "可循：吐纳一轮周天 ｜ 手札共 8 线（洞府查看）",
+      "progressLabel": "道行 0 / 1200",
+      "progressFillWidth": "0%",
+      "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
+      "autoToggle": {
+        "text": "连续修行：开",
+        "cls": "on"
+      },
+      "sealPressure": {
+        "level": "low",
+        "state": "封印稳固",
+        "fillWidth": "0%"
+      },
+      "treasureOrbHidden": true,
+      "fxSealLit": true,
+      "bgImage": "url(\"assets/map/backgrounds/bg_map_001.png\")"
+    },
+    "resources": {
+      "count": "5",
+      "chips": [
+        {
+          "name": "道行",
+          "value": "0"
+        },
+        {
+          "name": "法力",
+          "value": "5000"
+        },
+        {
+          "name": "术法残页",
+          "value": "0"
+        },
+        {
+          "name": "法器碎片",
+          "value": "0"
+        },
+        {
+          "name": "法宝碎片",
+          "value": "0"
+        }
+      ]
+    },
+    "nav": [
+      {
+        "key": "realm",
+        "cls": "nav-btn",
+        "text": "境境界"
+      },
+      {
+        "key": "map",
+        "cls": "nav-btn attention",
+        "text": "游游历"
+      },
+      {
+        "key": "spell",
+        "cls": "nav-btn",
+        "text": "术术法"
+      },
+      {
+        "key": "treasure",
+        "cls": "nav-btn attention",
+        "text": "宝法宝"
+      },
+      {
+        "key": "chance",
+        "cls": "nav-btn",
+        "text": "缘机缘"
+      },
+      {
+        "key": "log",
+        "cls": "nav-btn",
+        "text": "志洞府"
+      }
+    ],
+    "panels": {
+      "realm": {
+        "opened": true,
+        "title": "境界",
+        "cards": 0,
+        "buttons": 0,
+        "digest": "地仙·初期·1重｜初成真人 寿元：一万载 势力：未入局（立身天仙之境后，须择一方势力） 陈塘关远影初现。 炼成道体，可称真人。本命法宝开始与气机相合。 道行 0 / 1200 战力 9180下一境：地仙·初期·2重 继续闭关或修行，积累道行。"
+      },
+      "map": {
+        "opened": true,
+        "title": "游历",
+        "cards": 7,
+        "buttons": 8,
+        "digest": "展开封神山河图今日杀劫：九曲黄河阵三段阵势，今日可闯 2 次｜败北亦有真灵上榜之机缘闯阵挑战：山野妖首受劫气驱使的山野妖首，双目赤红，巢中藏有破损护道法器。推荐战力 900｜胜率 100%｜今日可挑战 3 次斗法挑战：张桂芳一声厉喝从远处传来，你脑中嗡鸣，刚凝聚的法力瞬间溃散——有人在叫你的道号。张桂芳，殷商青龙关总兵"
+      },
+      "spell": {
+        "opened": true,
+        "title": "术法",
+        "cards": 31,
+        "buttons": 31,
+        "digest": "斗法栏·连锁制配招后斗法全自动。体系=体/器/魂/劫（无互克）；五行只在器（法宝）上驱动共鸣。天仙后术法觉醒为神通。配置斗法栏四修：体 / 器 / 魂 / 劫。练气至地仙只称术法；天仙后觉醒为神通。器=法宝，御器与火术是法术不是器。【体修】肉身成道。雷法归体，与体系无互克。金刚体 ·法术 凡 1重一拳一脚，皆是修行。昆"
+      },
+      "treasure": {
+        "opened": true,
+        "title": "本命法宝",
+        "cards": 0,
+        "buttons": 1,
+        "digest": "破劫成真人后，你的气机引动三件残宝，静待择主。本命法宝择主"
+      },
+      "chance": {
+        "opened": true,
+        "title": "机缘",
+        "cards": 0,
+        "buttons": 1,
+        "digest": "天边榜文碎光初现，天地灵机开始动荡。 闭关、游历、升重、破劫时，都可能遇到机缘。 普通七成、精良二成五、稀有四厘五、天命五毫。每日首次闭关必有普通或精良；连续两日无稀有，第三日首次必升稀有。观榜悟道今日机缘 0 / 3。再 2 日无稀有，则保底升稀有。"
+      },
+      "log": {
+        "opened": true,
+        "title": "洞府",
+        "cards": 15,
+        "buttons": 8,
+        "digest": "入道第 1 天卷一·山野炼气 · 手札：可循 8 线｜已经历 0｜雾中 0可循·吐纳一轮周天奖励：获得第一缕道行可循·升至炼气士二重奖励：解锁入定一轮可循·升至炼气士三重奖励：解锁山野游历可循·完成一次山野游历奖励：术法残页 ×5可循·解锁第一门术法奖励：术法残页 ×5可循·触发榜文碎光奖励：道行 +50可循·获得法器"
+      }
+    },
+    "popup": {
+      "layerCls": "",
+      "text": "择跟脚：你自何处来灵光将落未落。这一世，你是洞府里醒来的哪一种生灵。人族先天道体天生契合大道，元神清明，修行门槛最低。妖族万灵之体可吞噬异兽精血获取其天赋，养成深度最深。雾中未醒大劫之后，他们才会落到你手里。先点开看看。先天生灵麒麟巫族魔族龙族凤族鸿蒙凶兽点一尊剪影。此刻还轮不到你。",
+      "queueKinds": [
+        "text",
+        "text",
+        "text",
+        "text",
+        "text",
+        "world_map",
+        "text",
+        "text",
+        "text"
+      ]
+    }
+  }
+}
