@@ -66,9 +66,11 @@ const Game = {
   eventPopupActive: false,
   toastMessage: null,
 
-  init() {
-    this.debug = new URLSearchParams(location.search).get("debug") === "1";
-    const fresh = !localStorage.getItem(SAVE_KEY);
+  init(opts = {}) {
+    opts = opts || {};
+    this.debug = opts.debug != null ? !!opts.debug
+      : (typeof location !== "undefined" && new URLSearchParams(location.search).get("debug") === "1");
+    const fresh = opts.fresh != null ? !!opts.fresh : !SaveManager.hasSave();
     this.state = SaveManager.loadOrCreate();
     UnlockManager.refresh(this.state);
     this._refreshPendingReward();

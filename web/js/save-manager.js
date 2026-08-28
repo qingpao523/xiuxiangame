@@ -2,10 +2,21 @@
 
 const SAVE_KEY = "fengshen_web_save_v2";
 
+// 存储后端抽象（design/20.0 Step2 同构化）：{ read()->string|null, write(text), clear() }。
+// 客户端默认 LocalSaveManager（localStorage）；服务端 Step3 经 SaveManager.useBackend 注入 DbSaveManager（MongoDB）。
+const LocalSaveManager = {
+  read() { return localStorage.getItem(SAVE_KEY); },
+  write(text) { localStorage.setItem(SAVE_KEY, text); },
+  clear() { localStorage.removeItem(SAVE_KEY); },
+};
+
 const SaveManager = {
+  _backend: LocalSaveManager,
+  useBackend(b) { if (b) this._backend = b; return this; },
+  hasSave() { return !!this._backend.read(); },
   loadOrCreate() {
     try {
-      const text = localStorage.getItem(SAVE_KEY);
+      const text = this._backend.read();
       if (text) {
         const state = JSON.parse(text);
         if (state && typeof state === "object") return this.normalize(state);
@@ -242,10 +253,13 @@ const SaveManager = {
   },
 
   save(state) {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    this._backend.write(JSON.stringify(state));
   },
 
   wipe() {
-    localStorage.removeItem(SAVE_KEY);
+    this._backend.clear();
   },
 };
+
+// UMD 守卫：Node 侧可 require（同构，参照 resonance-system.js:127 模板）
+if (typeof module !== "undefined" && module.exports) module.exports = { SaveManager, LocalSaveManager, SAVE_KEY };

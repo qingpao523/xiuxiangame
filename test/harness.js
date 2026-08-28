@@ -150,4 +150,55 @@ async function bootEngine(opts = {}) {
   };
 }
 
-module.exports = { bootEngine, buildSandbox, makeSeededRandom, WEB, BATTLE_LOAD_ORDER, FULL_LOGIC_LOAD_ORDER };
+// 表现层 no-op 桩工厂：服务端无 DOM/动画，任意方法调用返回 undefined、任意属性访问返回新桩。
+// 供 Step3+ 给纯表现全局打桩用（Step2 仅需 Atmosphere 显式桩）。
+function makeNoopStub() {
+  return new Proxy(function () {}, {
+    get(t, prop) {
+      if (prop === Symbol.toPrimitive) return () => "";
+      if (prop === "then") return undefined; // 避免被当成 thenable
+      return makeNoopStub();
+    },
+    apply() { return undefined; },
+    set() { return true; },
+  });
+}
+
+// Step2 起：game.js 及其依赖的逻辑层加载序（镜像 index.html 相对顺序）。
+// 剔除 DOM/UI/表现层；ContentDirector、GameplayEngine 在 game.js 中均带 typeof 守卫，CraftMinigame 仅注释，故可省略。
+const GAME_LOAD_ORDER = [
+  "utils.js", "constants.js", "data-manager.js", "realm-manager.js", "save-manager.js",
+  "unlock-manager.js", "event-manager.js", "reward-manager.js", "action-manager.js",
+  "goal-manager.js", "boss-manager.js", "breakthrough-manager.js", "resonance-system.js",
+  "skill-identity.js", "battle-engine-v2.js", "boss-mechanics-v2.js", "liupai-manager.js",
+  "game.js",
+];
+
+// 表现层桩：Atmosphere 在 game.js 有 6 处裸引用（无 typeof 守卫，L304/617/618/1060/1061/1062），
+// 服务端必须提供；返回值全部 falsy/no-op，使仪式/动画分支安全跳过。AudioManager 全部带守卫，留 undefined 即可。
+const PRESENTATION_STUBS = {
+  Atmosphere: {
+    actionLine: () => "", breakthroughScene: () => false, playBreakthrough: () => {},
+    phaseRitual: () => "", isPhaseTransition: () => false, playRitual: () => {},
+  },
+};
+
+async function bootGame(opts = {}) {
+  const seed = opts.seed != null ? opts.seed : 20260828;
+  const sandbox = buildSandbox(seed);
+  for (const [k, v] of Object.entries(PRESENTATION_STUBS)) sandbox[k] = v;
+  const loadList = opts.files || GAME_LOAD_ORDER;
+  for (const f of loadList) {
+    const code = fs.readFileSync(path.join(WEB, "js", f), "utf8");
+    vm.runInContext(code, sandbox, { filename: f });
+  }
+  await vm.runInContext("DataManager.loadAll()", sandbox);
+  const bridge = vm.runInContext(
+    "({ Game, DataManager, SaveManager, RealmManager, UnlockManager, EventManager, RewardManager, " +
+    "GoalManager, BossManager, BreakthroughManager, BattleEngineV2, BossMechanicsV2, ResonanceSystem, SkillIdentity })",
+    sandbox
+  );
+  return { sandbox, seed, ...bridge, runInSandbox: (c) => vm.runInContext(c, sandbox) };
+}
+
+module.exports = { bootEngine, bootGame, buildSandbox, makeSeededRandom, makeNoopStub, WEB, BATTLE_LOAD_ORDER, FULL_LOGIC_LOAD_ORDER, GAME_LOAD_ORDER, PRESENTATION_STUBS };
