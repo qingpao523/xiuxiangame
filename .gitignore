@@ -8,3 +8,7 @@ Thumbs.db
 
 # Backups
 *.bak
+
+# Node
+node_modules/
+npm-debug.log*
