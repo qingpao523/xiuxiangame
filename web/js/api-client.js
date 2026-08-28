@@ -14,7 +14,8 @@
 // ============================================================================
 
 const ApiClient = (() => {
-  // API 基址：默认本地 :3000；生产经 Nginx 同源反代时可设 "" 或覆盖。
+  // API 基址优先级：localStorage 覆盖 > 运行时配置(window.XXG_CONFIG.apiBase) > 默认本地 :3000。
+  // 生产经 Nginx 同源反代时，deploy/config.js 设 window.XXG_CONFIG = { apiBase: "" }（同源）。
   const DEFAULT_BASE = "http://localhost:3000";
   function base() {
     try {
@@ -22,6 +23,9 @@ const ApiClient = (() => {
         return localStorage.getItem("xxg_api_base");
       }
     } catch (e) { /* ignore */ }
+    if (typeof window !== "undefined" && window.XXG_CONFIG && typeof window.XXG_CONFIG.apiBase === "string") {
+      return window.XXG_CONFIG.apiBase;
+    }
     return DEFAULT_BASE;
   }
 
