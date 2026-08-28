@@ -14,6 +14,8 @@ const { ObjectId } = require("mongodb");
 const { players } = require("../db");
 const { authMiddleware } = require("../auth");
 const { opTick, opLevelUp, opBreakthrough, opBossBattle } = require("../game-runtime");
+const { rateLimit } = require("../middleware/rate-limit");
+const { deriveProfile } = require("./leaderboard");
 
 const router = express.Router();
 // 注意：不用 router.use(authMiddleware) —— 本 router 挂载在 /api 下，
@@ -25,11 +27,13 @@ async function loadPlayer(req) {
   return players().findOne({ _id: new ObjectId(req.player.sub) });
 }
 
-// 写回 state（仅当操作产生了新 state）
-async function persistState(req, state) {
+// 写回 state，并同步维护服务端可信摘要 profile（排行榜用）。
+// combatPower 优先取本次 op 算出的真值（result.combat_power）。
+async function persistState(req, state, combatPower) {
+  const profile = deriveProfile(state, combatPower != null ? { combatPower } : {});
   await players().updateOne(
     { _id: new ObjectId(req.player.sub) },
-    { $set: { state, updatedAt: Date.now() } }
+    { $set: { state, profile, updatedAt: Date.now() } }
   );
 }
 
@@ -39,17 +43,23 @@ function wrap(opFn) {
     const doc = await loadPlayer(req);
     if (!doc) return res.status(404).json({ error: "player not found" });
     const { state, result } = await opFn(doc.state || null, req.body || {});
-    if (state) await persistState(req, state);
+    if (state) await persistState(req, state, result && result.combat_power);
     res.json({ ok: true, result, state });
   };
 }
 
-router.post("/action/tick", authMiddleware, wrap((state, body) => opTick(state, body)));
+// 频率限制（Step6 反作弊）：正常游玩远低于上限，拦截脚本刷接口。
+const tickLimiter = rateLimit({ windowMs: 60000, max: 240 });
+const levelLimiter = rateLimit({ windowMs: 60000, max: 120 });
+const breakLimiter = rateLimit({ windowMs: 60000, max: 30 });
+const bossLimiter = rateLimit({ windowMs: 60000, max: 30 });
 
-router.post("/progress/levelup", authMiddleware, wrap((state, body) => opLevelUp(state, body)));
+router.post("/action/tick", authMiddleware, tickLimiter, wrap((state, body) => opTick(state, body)));
 
-router.post("/progress/breakthrough", authMiddleware, wrap((state, body) => opBreakthrough(state, body)));
+router.post("/progress/levelup", authMiddleware, levelLimiter, wrap((state, body) => opLevelUp(state, body)));
 
-router.post("/battle/boss", authMiddleware, wrap((state, body) => opBossBattle(state, String(body.bossId || ""), body)));
+router.post("/progress/breakthrough", authMiddleware, breakLimiter, wrap((state, body) => opBreakthrough(state, body)));
+
+router.post("/battle/boss", authMiddleware, bossLimiter, wrap((state, body) => opBossBattle(state, String(body.bossId || ""), body)));
 
 module.exports = { router };

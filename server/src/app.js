@@ -14,6 +14,9 @@ const express = require("express");
 const { players } = require("./db");
 const { signToken, hashPassword, verifyPassword, authMiddleware } = require("./auth");
 const { router: opsRouter } = require("./routes/ops");
+const { router: leaderboardRouter, deriveProfile } = require("./routes/leaderboard");
+const { authLimiter } = require("./middleware/rate-limit");
+const { sanitizeState } = require("./middleware/sanitize-state");
 const { createInitialState } = require("./game-runtime");
 
 const app = express();
@@ -30,6 +33,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", opsRouter); // Step4 核心操作：/api/action/tick、/api/progress/*、/api/battle/boss
+app.use("/api", leaderboardRouter); // Step6 排行榜：/api/leaderboard
 
 function publicPlayer(doc) {
   return { id: String(doc._id), phone: doc.phone || null, email: doc.email || null };
@@ -40,7 +44,7 @@ app.get("/api/health", (req, res) => {
 });
 
 // —— 注册 ——
-app.post("/api/auth/register", async (req, res) => {
+app.post("/api/auth/register", authLimiter, async (req, res) => {
   const phone = req.body.phone ? String(req.body.phone).trim() : null;
   const email = req.body.email ? String(req.body.email).trim().toLowerCase() : null;
   const password = req.body.password ? String(req.body.password) : "";
@@ -57,7 +61,10 @@ app.post("/api/auth/register", async (req, res) => {
   const now = Date.now();
   // 服务端权威生成初始 state（默认新号），存为 JSON 文档；注册即开局。
   const initialState = await createInitialState();
-  const doc = { phone, email, passwordHash: hashPassword(password), state: initialState, createdAt: now, updatedAt: now };
+  // 缺省的 phone/email 不入库（partial 唯一索引只对真实字符串建索引，避免多个 null 冲突）。
+  const doc = { passwordHash: hashPassword(password), state: initialState, profile: deriveProfile(initialState), createdAt: now, updatedAt: now };
+  if (phone) doc.phone = phone;
+  if (email) doc.email = email;
   const r = await col.insertOne(doc);
   doc._id = r.insertedId;
   const token = signToken({ sub: String(doc._id), phone, email });
@@ -65,7 +72,7 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 // —— 登录 ——
-app.post("/api/auth/login", async (req, res) => {
+app.post("/api/auth/login", authLimiter, async (req, res) => {
   const phone = req.body.phone ? String(req.body.phone).trim() : null;
   const email = req.body.email ? String(req.body.email).trim().toLowerCase() : null;
   const password = req.body.password ? String(req.body.password) : "";
@@ -96,10 +103,13 @@ app.put("/api/state", authMiddleware, async (req, res) => {
   const { ObjectId } = require("mongodb");
   const state = req.body.state;
   if (state === undefined) return res.status(400).json({ error: "state required" });
+  // Step6 反作弊：结构卫生校验（资源有限非负、realm_id 合法），拦截篡改/脏数据。
+  const clean = sanitizeState(state);
+  if (!clean.ok) return res.status(400).json({ error: clean.error });
   const now = Date.now();
   await players().updateOne(
     { _id: new ObjectId(req.player.sub) },
-    { $set: { state, updatedAt: now } }
+    { $set: { state: clean.state, profile: deriveProfile(clean.state), updatedAt: now } }
   );
   res.json({ ok: true, updatedAt: now });
 });
