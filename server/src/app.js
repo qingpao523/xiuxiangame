@@ -13,9 +13,12 @@
 const express = require("express");
 const { players } = require("./db");
 const { signToken, hashPassword, verifyPassword, authMiddleware } = require("./auth");
+const { router: opsRouter } = require("./routes/ops");
+const { createInitialState } = require("./game-runtime");
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+app.use("/api", opsRouter); // Step4 核心操作：/api/action/tick、/api/progress/*、/api/battle/boss
 
 function publicPlayer(doc) {
   return { id: String(doc._id), phone: doc.phone || null, email: doc.email || null };
@@ -41,7 +44,9 @@ app.post("/api/auth/register", async (req, res) => {
   if (exists) return res.status(409).json({ error: "account already exists" });
 
   const now = Date.now();
-  const doc = { phone, email, passwordHash: hashPassword(password), state: null, createdAt: now, updatedAt: now };
+  // 服务端权威生成初始 state（默认新号），存为 JSON 文档；注册即开局。
+  const initialState = await createInitialState();
+  const doc = { phone, email, passwordHash: hashPassword(password), state: initialState, createdAt: now, updatedAt: now };
   const r = await col.insertOne(doc);
   doc._id = r.insertedId;
   const token = signToken({ sub: String(doc._id), phone, email });

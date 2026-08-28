@@ -85,10 +85,12 @@ async function main() {
     const noauth = await jfetch(base + "/api/state");
     assert(noauth.status === 401, "GET /api/state 无 token → 401");
 
-    // —— GET /api/state 有 token（新号 state=null）——
+    // —— GET /api/state 有 token（新号已服务端初始化 state）——
     const authH = { authorization: "Bearer " + token };
     const s0 = await jfetch(base + "/api/state", { headers: authH });
-    assert(s0.status === 200 && s0.body && s0.body.state === null, "GET /api/state（新号）→ 200 state=null");
+    assert(s0.status === 200 && s0.body && s0.body.state && typeof s0.body.state === "object"
+      && s0.body.state.realm_id === "rq_01" && s0.body.state.resources && typeof s0.body.state.resources === "object",
+      "GET /api/state（新号）→ 200 服务端已初始化 state（realm_id=rq_01 + resources）");
 
     // —— PUT /api/state 写入一个游戏 state JSON 文档 ——
     const fakeState = { realm_id: "rq_03", race_id: "human", resources: { mana: 12345 }, level: 7, _v: "step3-test" };
