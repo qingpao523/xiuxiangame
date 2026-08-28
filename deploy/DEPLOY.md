@@ -48,6 +48,6 @@ sudo certbot --nginx -d your-domain.com    # 申请证书
 - `GET /api/leaderboard` 返回排名，名字打码。
 
 ## 运维要点
-- 频率限制为**进程内 Map**：`ecosystem.config.js` 设 `instances:1`。横向扩容多实例时，需把 `middleware/rate-limit.js` 换成 Redis 后端。
+- 频率限制为**滑动窗口日志**（进程内 Map）：`ecosystem.config.js` 设 `exec_mode:cluster`、`instances:"max"` 利用多核。注意每实例独立计数，N 实例下每 IP/玩家有效上限≈N×max；需严格全局限流时把 `middleware/rate-limit.js` 换成 Redis ZSET 后端。
 - 战斗 / 升重 / 破劫奖励均由服务端 vm 沙箱权威结算（`game-runtime.js`），客户端无法伪造结果。
 - 日志：`pm2 logs xiuxiangame-server`。

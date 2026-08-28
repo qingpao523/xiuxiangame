@@ -11,8 +11,10 @@ module.exports = {
       name: "xiuxiangame-server",
       script: "server/src/index.js",
       cwd: __dirname + "/..",
-      instances: 1,            // 单实例（频率限制为进程内 Map；多实例需 Redis 共享限流）
-      exec_mode: "fork",
+      // 集群模式利用多核。注意：频率限制是进程内 Map，N 个实例 → 每 IP/玩家
+      // 的有效上限约为 N×max（非全局精确）。需严格全局限流时换 Redis 共享后端。
+      instances: "max",
+      exec_mode: "cluster",
       max_memory_restart: "512M",
       env_production: {
         NODE_ENV: "production",

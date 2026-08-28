@@ -37,7 +37,7 @@ const ApiClient = (() => {
   function getPlayer() { try { const s = localStorage.getItem(PLAYER_KEY); return s ? JSON.parse(s) : null; } catch (e) { return null; } }
   function setPlayer(p) { try { p ? localStorage.setItem(PLAYER_KEY, JSON.stringify(p)) : localStorage.removeItem(PLAYER_KEY); } catch (e) { /* ignore */ } }
 
-  async function request(method, path, body, useAuth) {
+  async function request(method, path, body, useAuth, keepalive) {
     const headers = { "content-type": "application/json" };
     if (useAuth) {
       const t = getToken();
@@ -47,6 +47,7 @@ const ApiClient = (() => {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
+      keepalive: !!keepalive, // 页面卸载时的最终刷新需 survive 导航
     });
     let data = null;
     try { data = await res.json(); } catch (e) { /* 非 JSON */ }
@@ -79,7 +80,7 @@ const ApiClient = (() => {
 
     // —— state 读写 ——
     async getState() { return request("GET", "/api/state", undefined, true); },
-    async putState(state) { return request("PUT", "/api/state", { state }, true); },
+    async putState(state, keepalive) { return request("PUT", "/api/state", { state }, true, keepalive); },
 
     // —— 核心操作（Step6 反作弊：UI 改由服务端权威执行时调用）——
     async opTick() { return request("POST", "/api/action/tick", {}, true); },
@@ -89,17 +90,26 @@ const ApiClient = (() => {
   };
 })();
 
-// SaveManager 服务端后端：read 同步（返回预取缓存），write 异步 PUT（防抖）。
+// SaveManager 服务端后端：read 同步（返回预取缓存），write 异步 PUT（防抖 + 限速）。
 const ApiSaveManager = (() => {
   let cache = null;        // state 的 JSON 字符串缓存
-  let timer = null;        // 防抖定时器
+  let timer = null;        // 防抖/限速定时器
+  let lastFlushAt = 0;     // 上次实际 PUT 的时间戳
   const DEBOUNCE_MS = 400; // 批量高频 save（tick/连点），尾随刷新
+  const MIN_INTERVAL_MS = 1000; // 两次 PUT 最小间隔，防止持续写入打爆服务端
 
   function flush() {
     timer = null;
     if (cache == null) return;
+    // 限速：距上次 PUT 不足 MIN_INTERVAL_MS 则顺延到可发时刻（尾随刷新，不丢最终态）
+    const since = Date.now() - lastFlushAt;
+    if (since < MIN_INTERVAL_MS) {
+      if (!timer) timer = setTimeout(flush, MIN_INTERVAL_MS - since);
+      return;
+    }
     let state;
     try { state = JSON.parse(cache); } catch (e) { return; }
+    lastFlushAt = Date.now();
     ApiClient.putState(state).catch((e) => {
       console.warn("[ApiSaveManager] 上传 state 失败：", e && e.message ? e.message : e);
     });
@@ -117,7 +127,16 @@ const ApiSaveManager = (() => {
       timer = setTimeout(flush, DEBOUNCE_MS);
     },
     clear() { cache = null; },
-    // 立即刷新（如关闭页面前）
-    flushNow() { if (timer) { clearTimeout(timer); flush(); } },
+    // 立即刷新（如关闭页面前）：绕过限速，keepalive 确保请求 survive 页面卸载
+    flushNow() {
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (cache == null) return;
+      let state;
+      try { state = JSON.parse(cache); } catch (e) { return; }
+      lastFlushAt = Date.now();
+      ApiClient.putState(state, true).catch((e) => {
+        console.warn("[ApiSaveManager] 上传 state 失败：", e && e.message ? e.message : e);
+      });
+    },
   };
 })();

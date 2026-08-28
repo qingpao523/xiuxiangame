@@ -102,6 +102,42 @@ async function main() {
     const noauth = await jfetch(base + "/api/battle/boss", { method: "POST", headers: H, body: json({ bossId: "boss_001" }) });
     assert(noauth.status === 401, "无 token 打 Boss → 401");
 
+    // —— 反作弊④：滑动窗口（消除固定窗口边界双倍突发）——
+    // 固定窗口缺陷：窗口末尾打满 max，跨边界再打 max，瞬时 2×max 通过。
+    // 滑动窗口：任意 windowMs 内至多 max。用假 req/res 直接驱动中间件验证。
+    const { rateLimit } = require("../src/middleware/rate-limit");
+    const WINDOW = 1000, MAX = 5;
+    const mw = rateLimit({ windowMs: WINDOW, max: MAX, keyFn: () => "unit" });
+    const mkReq = () => ({ player: { sub: "unit" }, ip: "1.2.3.4", baseUrl: "/api", path: "/x" });
+    const mkRes = () => {
+      const r = { statusCode: 200, _h: {}, _json: null };
+      r.setHeader = (k, v) => { r._h[k] = v; };
+      r.status = (c) => { r.statusCode = c; return r; };
+      r.json = (o) => { r._json = o; return r; };
+      return r;
+    };
+    const drive = (now) => {
+      const realNow = Date.now;
+      Date.now = () => now; // 冻结时钟，精确控制滑动
+      const res = mkRes();
+      let passed = false;
+      try { mw(mkReq(), res, () => { passed = true; }); } finally { Date.now = realNow; }
+      return { passed, status: res.statusCode };
+    };
+    const T0 = 1_000_000;
+    let pass1 = 0;
+    for (let i = 0; i < MAX; i++) if (drive(T0).passed) pass1++;
+    assert(pass1 === MAX, `滑动窗口：窗口内恰好放行 max(${MAX}) 次`);
+    const over = drive(T0);
+    assert(over.passed === false && over.status === 429, "窗口内第 max+1 次被拒 429");
+    // 关键反突发：来到「下一固定窗口」中段（T0+WINDOW/2）。
+    // 固定窗口会在 T0+WINDOW 处重置计数、再放行一整批 max（瞬时 2×max 突发）；
+    // 滑动窗口里 T0 的请求仍在回溯窗口 (now-WINDOW, now] 内 → 仍拒。
+    const midEdge = drive(T0 + Math.floor(WINDOW / 2));
+    assert(midEdge.passed === false && midEdge.status === 429, "跨固定窗口边界不再双倍突发（滑动窗口中段仍 429）");
+    // 滑过整个窗口后（T0+WINDOW+1），最早请求已滑出 → 恢复放行
+    assert(drive(T0 + WINDOW + 1).passed === true, "滑出窗口后恢复放行");
+
     console.log("\n========================================================");
     if (failures === 0) { console.log(" ✅ Step6 通过：排行榜 + 反作弊（资源校验/频率限制/服务端权威）全链路 OK。"); process.exit(0); }
     else { console.log(` ❌ Step6 失败：${failures} 项断言未通过。`); process.exit(1); }
