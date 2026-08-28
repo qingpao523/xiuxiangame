@@ -1638,6 +1638,21 @@ function renderLogPanel(body, state) {
 
 async function boot() {
   await DataManager.loadAll();
+  // —— 20.0 Step5：网游化通信层 auth 门 ——
+  // 未登录 → 跳登录页；已登录 → 拉服务端 state 作唯一真相，SaveManager 后端切到 ApiSaveManager。
+  if (typeof ApiClient !== "undefined") {
+    if (!ApiClient.isLoggedIn()) { window.location.href = "login.html"; return; }
+    try {
+      const resp = await ApiClient.getState();
+      ApiSaveManager.setInitial(resp.state);
+      SaveManager.useBackend(ApiSaveManager);
+      window.addEventListener("beforeunload", () => ApiSaveManager.flushNow());
+    } catch (err) {
+      console.error("[boot] 拉取服务端存档失败：", err);
+      window.location.href = "login.html";
+      return;
+    }
+  }
   $("main-btn").addEventListener("click", onMainButtonClick);
   $("auto-toggle").addEventListener("click", () => Game.toggleAutoRepeat());
   document.querySelectorAll(".nav-btn").forEach((btn) => btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel)));

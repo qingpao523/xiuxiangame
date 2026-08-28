@@ -18,6 +18,17 @@ const { createInitialState } = require("./game-runtime");
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
+
+// CORS（Step5 客户端改造）：浏览器客户端（:8090）跨域调用 API（:3000）。
+// 用 Bearer token（非 cookie），故 Allow-Origin 可用 *；生产可收紧为具体域名。
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  if (req.method === "OPTIONS") return res.status(204).end();
+  next();
+});
+
 app.use("/api", opsRouter); // Step4 核心操作：/api/action/tick、/api/progress/*、/api/battle/boss
 
 function publicPlayer(doc) {

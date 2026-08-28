@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>封神修道录 · 登入</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" />
+  <style>
+    :root {
+      --ink: #3d2108; --ink-soft: #5a3d12;
+      --paper: #f4e6c4; --paper-ink: #f7ecd0;
+      --gold: #c99638; --gold-hi: #f0d78a; --gold-deep: #6a4e14;
+      --jade: #2a6b58; --jade-hi: #4a9a80;
+      --font-title: "STLiti", "LiSu", "Noto Serif SC", "Kaiti SC", "STKaiti", serif;
+      --font-ui: "Noto Serif SC", "Kaiti SC", "STKaiti", "KaiTi", serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-ui);
+      color: var(--paper-ink);
+      background:
+        radial-gradient(120% 90% at 50% 0%, #2a1a08 0%, #1a0f04 60%, #0d0702 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%; max-width: 380px;
+      background: linear-gradient(180deg, rgba(58,38,14,.92), rgba(38,24,8,.94));
+      border: 1px solid var(--gold);
+      border-radius: 14px;
+      box-shadow: 0 0 0 1px rgba(201,150,56,.25), 0 18px 50px rgba(0,0,0,.55);
+      padding: 30px 26px 26px;
+    }
+    h1 {
+      font-family: var(--font-title);
+      text-align: center;
+      font-size: 30px; letter-spacing: 6px;
+      color: var(--gold-hi);
+      text-shadow: 0 2px 8px rgba(0,0,0,.6);
+      margin-bottom: 4px;
+    }
+    .sub { text-align: center; color: var(--gold); font-size: 13px; letter-spacing: 3px; margin-bottom: 22px; }
+    label { display: block; font-size: 13px; color: var(--gold); margin: 14px 0 6px; letter-spacing: 1px; }
+    input {
+      width: 100%; padding: 11px 12px;
+      font-family: var(--font-ui); font-size: 15px;
+      color: var(--ink); background: var(--paper);
+      border: 1px solid var(--gold-deep); border-radius: 8px;
+      outline: none;
+    }
+    input:focus { border-color: var(--gold-hi); box-shadow: 0 0 0 2px rgba(240,215,138,.3); }
+    .row { display: flex; gap: 12px; margin-top: 22px; }
+    button {
+      flex: 1; padding: 12px 0; cursor: pointer;
+      font-family: var(--font-title); font-size: 17px; letter-spacing: 3px;
+      border-radius: 8px; border: 1px solid var(--gold);
+      transition: filter .15s, transform .05s;
+    }
+    button:active { transform: translateY(1px); }
+    button.primary { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--ink); }
+    button.ghost { background: transparent; color: var(--gold-hi); }
+    button:hover { filter: brightness(1.08); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .msg { margin-top: 16px; min-height: 20px; text-align: center; font-size: 13px; letter-spacing: 1px; }
+    .msg.err { color: #ff9d7a; }
+    .msg.ok { color: var(--jade-hi); }
+    .hint { margin-top: 14px; text-align: center; font-size: 11px; color: rgba(240,215,138,.5); letter-spacing: 1px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>封神修道录</h1>
+    <div class="sub">登 入 仙 籍</div>
+
+    <label for="account">手机号 / 邮箱</label>
+    <input id="account" type="text" autocomplete="username" placeholder="手机号或邮箱" />
+
+    <label for="password">密码</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="至少 6 位" />
+
+    <div class="row">
+      <button id="btn-login" class="primary">登入</button>
+      <button id="btn-register" class="ghost">注册</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+    <div class="hint">注册即创建新档；存档唯一真相在服务端。</div>
+  </div>
+
+  <script src="js/api-client.js?v=20260828a"></script>
+  <script>
+    (function () {
+      var accountEl = document.getElementById("account");
+      var passEl = document.getElementById("password");
+      var msgEl = document.getElementById("msg");
+      var btnLogin = document.getElementById("btn-login");
+      var btnReg = document.getElementById("btn-register");
+
+      // 已登录则直接进游戏
+      if (ApiClient.isLoggedIn()) { window.location.href = "index.html"; return; }
+
+      function setMsg(text, kind) { msgEl.textContent = text || ""; msgEl.className = "msg" + (kind ? " " + kind : ""); }
+      function setBusy(busy) { btnLogin.disabled = busy; btnReg.disabled = busy; }
+
+      // 账号既可能是手机号也可能是邮箱：含 @ 走 email 字段，否则走 phone 字段。
+      function splitAccount(acc) {
+        acc = (acc || "").trim();
+        if (acc.indexOf("@") >= 0) return { phone: "", email: acc };
+        return { phone: acc, email: "" };
+      }
+
+      async function doAction(kind) {
+        var acc = accountEl.value;
+        var pw = passEl.value;
+        if (!acc.trim()) { setMsg("请填写手机号或邮箱", "err"); return; }
+        if (!pw || pw.length < 6) { setMsg("密码至少 6 位", "err"); return; }
+        var parts = splitAccount(acc);
+        setBusy(true); setMsg(kind === "register" ? "正在注册…" : "正在登入…");
+        try {
+          if (kind === "register") await ApiClient.register(parts.phone, parts.email, pw);
+          else await ApiClient.login(parts.phone, parts.email, pw);
+          setMsg(kind === "register" ? "注册成功，进入修行…" : "登入成功，进入修行…", "ok");
+          setTimeout(function () { window.location.href = "index.html"; }, 300);
+        } catch (err) {
+          setMsg((err && err.message) ? err.message : "操作失败", "err");
+          setBusy(false);
+        }
+      }
+
+      btnLogin.addEventListener("click", function () { doAction("login"); });
+      btnReg.addEventListener("click", function () { doAction("register"); });
+      passEl.addEventListener("keydown", function (e) { if (e.key === "Enter") doAction("login"); });
+    })();
+  </script>
+</body>
+</html>
