@@ -493,6 +493,9 @@ const BattleUIV2 = {
         case "slot_wait":
           this._tick(root, session, `${this._esc(evt.skillName)} 引而不发（${this._conditionLabel(evt.condition)}）。`, "wait");
           break;
+        case "slot_cooling":
+          this._tick(root, session, `${this._esc(evt.skillName)} 灵气回涌，调息 ${evt.remaining} 回合。`, "wait");
+          break;
         case "ultimate":
           this._showUltimateOverlay(evt, root, session);
           const shen = root.querySelector(".duel-kit-slot.shen");

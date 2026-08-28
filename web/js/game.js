@@ -660,8 +660,18 @@ const Game = {
           body: `${boss.victory_text || ""}\n\n获得：\n${this._formatResourceDelta(rewards)}${lootLines.length ? `\n\n${lootLines.join("\n")}` : ""}`,
           buttons: [{ label: "收取战利" }] });
         if (firstClear) this._offerEvent(boss.first_clear_event);
-        this._queueRestPopup(bossId);
+        // 连战 auto-advance（design/16.0 批次0 §1.4）：chain_id 存在且有下一 chain_order → 直接续战，跳过休整
+        const nextChain = this._nextChainBossId(bossId);
+        if (nextChain) {
+          this._pendingChainBossId = bossId; // 供 ui.js chain_next 动作读取（transient，不入存档）
+          this.queuePopup({ kind: "text", style: "breakthrough", title: "连战！",
+            body: `${boss.boss_name}既败，下一阵妖气已起。\n\n（魔家四将·连战 ${int(boss.chain_order)}/4）`,
+            buttons: [{ label: "继续连战", action: "chain_next" }, { label: "就此收手", action: "chain_stop" }] });
+        } else {
+          this._queueRestPopup(bossId);
+        }
       } else {
+        this._pendingChainBossId = null; // 连战中断：斗法失利，清链路游标
         const consolation = Math.floor(num(boss.reward_mana) * 0.1);
         this.state.resources.mana = num(this.state.resources.mana) + consolation;
         const seatText = this.awardGodSeat();
@@ -963,6 +973,42 @@ const Game = {
     const picks = [];
     while (copy.length && picks.length < 3) picks.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
     this.queuePopup({ kind: "rest", payload: { bossId, cardPicks: picks } });
+  },
+
+  // 连战 auto-advance（design/16.0 批次0 §1.4）：同 chain_id 下找 chain_order+1 的下一阵
+  _nextChainBossId(bossId) {
+    const cur = DataManager.getById("boss_table", bossId);
+    const chainId = str(cur.chain_id, "");
+    if (!chainId) return null;
+    const order = int(cur.chain_order);
+    const next = DataManager.getRows("boss_table").find((r) => str(r.chain_id, "") === chainId && int(r.chain_order) === order + 1);
+    return next ? str(next.boss_id, "") : null;
+  },
+
+  // 连战续战：读 _pendingChainBossId → 推进游标 → 绕过每日限次直接开下一阵
+  _nextChainBoss() {
+    const curId = str(this._pendingChainBossId, "");
+    const nextId = this._nextChainBossId(curId);
+    if (!nextId) { this._stopChain(); return; }
+    const boss = DataManager.getById("boss_table", nextId);
+    if (!Object.keys(boss).length) { this._stopChain(); return; }
+    this._pendingChainBossId = nextId;
+    this.state.boss_counts_today[nextId] = int(this.state.boss_counts_today[nextId]) + 1;
+    this._log(`连战：${boss.boss_name}接阵而来！`);
+    const adds = { boss_002: [{ name: "巡海残兵", power: num(boss.recommended_power) * 0.2 }],
+      boss_003: [{ name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }, { name: "白骨阴火", power: num(boss.recommended_power) * 0.12 }],
+      boss_020: [{ name: "碧霄", power: num(boss.recommended_power) * 0.5 }, { name: "琼霄", power: num(boss.recommended_power) * 0.5 }] }[nextId] || [];
+    const mechanic = boss.mechanics ? String(boss.mechanics).split(":")[0].trim() : null;
+    const cfg = { name: String(boss.boss_name), enemy_power: num(boss.recommended_power), adds, source: "boss", mechanic, weakness: boss.weakness || null, payload: { bossId: nextId } };
+    this.startBattleV2(cfg);
+    this._afterMutated();
+  },
+
+  // 连战收手：清游标 → 回到正常休整
+  _stopChain() {
+    const curId = str(this._pendingChainBossId, "");
+    this._pendingChainBossId = null;
+    this._queueRestPopup(curId);
   },
 
   applyRestChoice(choice, cardId) {

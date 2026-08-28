@@ -249,7 +249,7 @@ const BattleEngineV2 = {
         const treasureId = this._slotTreasure(entry);
         const treasure = treasureId ? this.getTreasureData(treasureId) : null;
         const wuxing = (treasure && treasure.wuxing) ? String(treasure.wuxing) : null;
-        slots.push({ ...data, level: lv, condition: this._slotCondition(entry), treasure: treasureId, wuxing });
+        slots.push({ ...data, level: lv, condition: this._slotCondition(entry), treasure: treasureId, wuxing, _cd: 0 });
       }
     }
     // 如果玩家没配（新存档），给默认体系三连
@@ -257,7 +257,7 @@ const BattleEngineV2 = {
       const defaults = ["skill_body_01", "skill_thunder_01", "skill_fire_01"];
       for (const id of defaults) {
         const data = this.getSkillData(id);
-        if (data) slots.push({ ...data, level: 1, condition: "always", treasure: null, wuxing: null });
+        if (data) slots.push({ ...data, level: 1, condition: "always", treasure: null, wuxing: null, _cd: 0 });
       }
     }
     return slots;
@@ -332,6 +332,11 @@ const BattleEngineV2 = {
     battle._lastEnemyActElement = null;
     battle._lastEnemyActWuxing = null;
 
+    // per-slot 冷却递减（design/19.0 批次0 §1.2）
+    for (const s of battle.slots) {
+      if (s._cd > 0) s._cd -= 1;
+    }
+
     // 火域结算（回合开始）
     if (battle.fireDomainTurns > 0) {
       for (const e of battle.enemies.filter((x) => x.hp > 0)) {
@@ -385,6 +390,12 @@ const BattleEngineV2 = {
     // 条件触发系统
     if (!this._conditionPasses(skill.condition, battle, slotIndex)) {
       events.push({ type: "slot_wait", slotIndex, skillName: skill.name, condition: skill.condition || "always" });
+      return events;
+    }
+
+    // per-slot 冷却检查（design/19.0 批次0 §1.2）：冷却中跳过本格
+    if (skill._cd > 0) {
+      events.push({ type: "slot_cooling", slotIndex, skillName: skill.name, remaining: skill._cd });
       return events;
     }
 
@@ -476,6 +487,10 @@ const BattleEngineV2 = {
       targetName: target.name,
       special: specialResult.event || null,
     });
+
+    // per-slot 冷却启动（design/19.0 批次0 §1.2）：释放成功 → 进入冷却
+    const cd = int(skill.cooldown, 0);
+    if (cd > 0) skill._cd = cd;
 
     // 检查击杀
     if (target.hp <= 0) {

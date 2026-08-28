@@ -398,7 +398,7 @@ function registerPopupRenderers() {
     panel.classList.add("plaque");
     if (popup.style) panel.classList.add(`style-${popup.style}`);
     title.textContent = popup.title || ""; body.textContent = popup.body || "";
-    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); }));
+    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); if (cfg.action === "chain_next") Game._nextChainBoss(); if (cfg.action === "chain_stop") Game._stopChain(); }));
   });
   GameplayEngine.registerRenderer("event", (panel, title, body, buttons) => renderEventPopup(panel, title, body, buttons));
   GameplayEngine.registerRenderer("encounter", (panel, title, body, buttons, popup) => renderEncounterPopup(panel, title, body, buttons, popup.encounterId));
