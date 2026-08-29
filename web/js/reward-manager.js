@@ -49,10 +49,13 @@ const RewardManager = {
     mult *= 1 + 0.03 * int(rb.daohen) + 0.01 * (rb.races_seen || []).length;
     // R2-B：五庄观被动——闭关/离线收益 +10%
     if (str(state.faction_id, "") === "wuzhuang") mult *= 1.1;
+    // C 线·燃灯结缘护持：离线收益 +12%（上场道友生效）
+    const randengMult = bondPassiveSum(state, "offline_bonus");
+    if (randengMult > 0) mult *= (1 + randengMult);
     // 五庄观·人参果会：全属性 +10% 持续 1 天（design/7.2）
     if (str(state.faction_id, "") === "wuzhuang" && int(state.faction_feast_until) > nowUnix()) mult *= 1.1;
-    // R1-A：人族天赋——道行类收益 +5%；杨戬结缘讲道 +5%
-    const daoxingRaceMult = (str(state.race_id, "") === "human" ? 1.05 : 1) * (state.companions?.yangjian?.bonded ? 1.05 : 1);
+    // R1-A：人族天赋——道行类收益 +5%；C 线·杨戬结缘护持改为数据驱动（bond_passive daoxing_bonus，需上场）
+    const daoxingRaceMult = (str(state.race_id, "") === "human" ? 1.05 : 1) * (1 + bondPassiveSum(state, "daoxing_bonus"));
     const resources = {
       daoxing: Math.max(1, Math.floor(daoxingPerMin * minutes * mult * daoxingRaceMult)),
       mana: Math.floor(manaPerMin * minutes * mult * num(omen.manaMult, 1)),
@@ -102,8 +105,8 @@ const RewardManager = {
     const interval = int(map.drop_roll_interval_minutes, int(config.drop_roll_interval_minutes_default, 10));
     if (interval <= 0) return {};
     const rolls = Math.min(80, Math.max(1, Math.floor(minutes / interval)));
-    // R2-B：截教被动——地图掉落几率 +15%；哪吒结缘 +5%
-    const factionDropMult = (str(state.faction_id, "") === "jie" ? 1.15 : 1) * (state.companions?.nezha?.bonded ? 1.05 : 1);
+    // R2-B：截教被动——地图掉落几率 +15%；C 线·哪吒结缘护持改为数据驱动（bond_passive drop_bonus，需上场）
+    const factionDropMult = (str(state.faction_id, "") === "jie" ? 1.15 : 1) * (1 + bondPassiveSum(state, "drop_bonus"));
     const result = {};
     for (let i = 0; i < rolls; i++) {
       for (const drop of map.drop_table || []) {

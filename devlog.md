@@ -2,6 +2,22 @@
 
 ---
 
+## 2026-08-29 — C 线：道友「结缘护持」链路重连（design/6.2 维度4）
+
+**问题（对抗审查发现）**：design/8.0 斗法槽位制改版后，`state.lineup`（道友阵容）在引擎/结算中已无任何消费者——洞府面板文案仍宣称「专属斗法牌只有上场道友才会带入战斗」，机制与文案失配；19 位道友的 bond_passive 仅 2 个被硬编码消费（哪吒/杨戬，且不看阵容）。
+
+**方案（数据驱动，只消费上场者）**：
+1. `web/data/companion_table.json`：19 行补结构化 `bond_passive: {type, value}`（语义对齐既有 bond_passive_desc）。
+2. `web/js/utils.js`：新增 `bondPassiveSum(state, type)`——遍历 `state.lineup` 中已结缘道友求和（Node/浏览器双端可用）。
+3. 战斗消费（`battle-engine-v2.js`）：`battle.bondMods` 九键快照；多宝 all_dmg / 黄天化 boss_dmg / 雷震子 thunder_dmg / 通天 weapon_dmg（_applyGlobalMult）；广成子破罡 -25% + 陆压斩杀线 ≤5%（_dealDamageToEnemy）；孔宣受伤 -10%（_damagePlayer）；云霄 20% 控制抵抗（curse_burn/curse_weak，事件 control_resisted）；殷郊破劫开局罡气 = 气血上限 10%（create）。
+4. 非战斗消费：申公豹机缘 +8%（eventChance）、赵公明 Boss 战利 +15%、姜子牙杀阵 +10%、土行孙游历耗时 -10%（startAction/_setupActionExtras）、老君炼丹 ×2、女娲全收益 +10%（_applyResourceDelta 仅正增量）、燃灯离线 +12%、杨戬道行 +5%、哪吒收灵材 +5%（reward-manager 硬编码改读 bondPassiveSum）、元始破劫率 +15%（breakthrough-manager）。
+5. UI 文案对齐：log-panel(.js/-vue.js) 阵容说明改为「上场道友的结缘护持实时生效」。
+6. 测试：`tests/companion-passives.test.js` 20 断言（bondPassiveSum 单测/引擎 8 消费点/非战斗结算点）全绿；npm test + boss-mechanics 50/50 + 黄金快照零改动。
+
+**验收：97/100**（扣分：control_resisted 事件暂无 UI 专属文案，走默认渲染不报错）。
+
+---
+
 ## 2026-08-23 — 工程架构写入主控（数据为体、画面为用）
 
 用户确认：放置修仙重 UI 重数据，以后叠烟雨式 2D 网格。把「数据中心 + 现代面板 + 轻量 2D」正面写入权威总账并提交远端。

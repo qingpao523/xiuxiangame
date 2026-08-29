@@ -175,7 +175,12 @@ const Game = {
     if (!avail.ok) { this.queuePopup({ kind: "text", title: row.action_name, body: avail.reason + "。", buttons: [{ label: "知道了" }] }); return; }
     // P1-#3 修复：行动开始后自动收起面板，避免面板遮挡主按钮区。
     if (typeof closePanelSheet === "function") closePanelSheet();
-    const duration = int(row.duration_sec);
+    let duration = int(row.duration_sec);
+    // C 线·土行孙结缘护持：游历类行动耗时 -10%（上场道友生效）
+    if (str(row.reward_type, "") === "map_equivalent") {
+      const tt = bondPassiveSum(this.state, "travel_time");
+      if (tt > 0) duration = Math.max(1, Math.round(duration * (1 - tt)));
+    }
     if (duration <= 0) { this.state.current_action = { action_id: actionId, end_time_ms: nowMs() }; this._finishAction(); this._afterMutated(); return; }
     this.state.current_action = { action_id: actionId, start_time_ms: nowMs(), end_time_ms: nowMs() + duration * 1000 };
     this._setupActionExtras(row, this.state.current_action);
@@ -185,7 +190,12 @@ const Game = {
   },
 
   _setupActionExtras(row, action) {
-    const duration = int(row.duration_sec);
+    let duration = int(row.duration_sec);
+    // C 线·土行孙结缘护持：游历类行动耗时 -10%（与 startAction 口径一致）
+    if (str(row.reward_type, "") === "map_equivalent") {
+      const tt = bondPassiveSum(this.state, "travel_time");
+      if (tt > 0) duration = Math.max(1, Math.round(duration * (1 - tt)));
+    }
     if (row.map_id) {
       const firstTravel = String(row.action_id) === "wild_travel" && !this.state.flags.first_travel_battle_done;
       const tide = !!this.state.flags.spirit_tide_venture;
@@ -260,6 +270,8 @@ const Game = {
       let eventChance = num(row.event_chance) * (str(this.state.race_id, "") === "qilin" ? 1.3 : 1);
       if (this.state.flags.insight_event_boost) { eventChance *= 2; delete this.state.flags.insight_event_boost; }
       if (this.hasDivinationBoost("event_boost")) eventChance *= 1.8; // P1 占卜「明日机缘」
+      const shengEvent = bondPassiveSum(this.state, "event_chance");
+      if (shengEvent > 0) eventChance *= (1 + shengEvent); // C 线·申公豹结缘护持：机缘 +8%
       if (row.force_event && EventManager.canOffer(this.state, String(row.force_event))) {
         this._setPendingEvent(String(row.force_event)); eventTriggered = true;
       } else if (eventChance > 0 && Math.random() <= eventChance) {
@@ -644,7 +656,8 @@ const Game = {
         const raceLoot = str(this.state.race_id, "") === "yao" ? 1.25 : 1;
         const seatLoot = 1 + godSeat(this.state, "lootBonus");
         const edictLoot = this.consumeEdict("boss"); // 天庭·功德敕令·斩妖 ×2（design/7.2 v0.2）
-        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot * seatLoot * edictLoot);
+        const bondLoot = 1 + bondPassiveSum(this.state, "loot_bonus"); // C 线·赵公明结缘护持：战利 +15%
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * omenLoot * raceLoot * seatLoot * edictLoot * bondLoot);
         this._applyResourceDelta(rewards);
         const firstClear = int(this.state.boss_clears[bossId]) === 0;
         this.state.boss_clears[bossId] = int(this.state.boss_clears[bossId]) + 1;
@@ -717,7 +730,8 @@ const Game = {
         // 截教·万仙阵法：杀阵奖励 ×1.5（design/7.2 v0.2）
         const jieMult = str(this.state.faction_id, "") === "jie" ? 1.5 : 1;
         const edictArray = this.consumeEdict("array"); // 天庭·功德敕令·破阵 ×2
-        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * jieMult * edictArray);
+        const ziyaMult = 1 + bondPassiveSum(this.state, "array_reward"); // C 线·姜子牙结缘护持：杀劫大阵奖励 +10%
+        for (const id of Object.keys(rewards)) rewards[id] = Math.round(num(rewards[id]) * jieMult * edictArray * ziyaMult);
         this._applyResourceDelta(rewards);
         const arrLines = [];
         if (jieMult > 1) arrLines.push(`万仙阵法·杀阵：奖励 ×${jieMult}`);
@@ -887,7 +901,9 @@ const Game = {
     const q = String(quality || "zhong");
     const qname = (typeof CRAFT_QUALITY !== "undefined" && CRAFT_QUALITY[q]) ? CRAFT_QUALITY[q].name : "中品";
     // 炼丹产出倍率：五庄观果会 ×2（pillOutputMult）· 天庭敕令·炼丹 ×2（consumeEdict，消耗库存指定）
-    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy");
+    // C 线·太上老君结缘护持：炼丹产出 ×2（上场道友生效）
+    const laojunMult = bondPassiveSum(this.state, "alchemy_double") > 0 ? 2 : 1;
+    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy") * laojunMult;
     const boostNote = outMult > 1 ? `（产出 ×${outMult}）` : "";
     if (pillId === "due") { const n = (q === "shang" ? 2 : 1) * outMult; this.state.pills.due = int(this.state.pills.due) + n; this._log(`炉火纯青，炼成${qname}渡厄丹 ${n} 枚${boostNote}（存 ${this.state.pills.due}）。`); }
     else if (pillId === "peiyuan") { const hours = (q === "shang" ? 3 : q === "xia" ? 1.5 : 2) * outMult; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`服下${qname}培元丹，丹田暖意流转——${hours} 时辰内收益 +15%${boostNote}。`); }
@@ -949,7 +965,9 @@ const Game = {
     }
     for (const rid of Object.keys(def.cost)) this.state.resources[rid] = num(this.state.resources[rid]) - num(def.cost[rid]);
     // 炼丹产出倍率：五庄观果会 ×2 · 天庭敕令·炼丹 ×2（design/7.2 v0.2）
-    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy");
+    // C 线·太上老君结缘护持：炼丹产出 ×2（上场道友生效）
+    const laojunMult = bondPassiveSum(this.state, "alchemy_double") > 0 ? 2 : 1;
+    const outMult = this.pillOutputMult() * this.consumeEdict("alchemy") * laojunMult;
     const boostNote = outMult > 1 ? `（产出 ×${outMult}）` : "";
     if (pillId === "due") { const n = 1 * outMult; this.state.pills.due = int(this.state.pills.due) + n; this._log(`你炼成渡厄丹 ${n} 枚${boostNote}（存 ${this.state.pills.due} 枚）——破劫斗法开局得护持。`); }
     else if (pillId === "peiyuan") { const hours = 2 * outMult; this.state.pills.peiyuan_until = nowUnix() + Math.round(hours * 3600); this._log(`你服下培元丹，丹田暖意流转——${hours} 时辰内闭关与行动收益 +15%${boostNote}。`); }
@@ -2009,7 +2027,15 @@ const Game = {
   },
 
   _refreshPendingReward() { this.pendingOfflineReward = RewardManager.calculateOfflineReward(this.state); },
-  _applyResourceDelta(delta) { for (const id of Object.keys(delta)) this.state.resources[id] = Math.max(0, num(this.state.resources[id]) + num(delta[id])); },
+  _applyResourceDelta(delta) {
+    // C 线·女娲结缘护持：全收益 +10%（仅正增量，消耗扣减不受影响；上场道友生效）
+    const nuwaGain = bondPassiveSum(this.state, "all_gain");
+    for (const id of Object.keys(delta)) {
+      let v = num(delta[id]);
+      if (v > 0 && nuwaGain > 0) v = Math.round(v * (1 + nuwaGain));
+      this.state.resources[id] = Math.max(0, num(this.state.resources[id]) + v);
+    }
+  },
 
   _applyEventReward(payload) {
     const resources = {};

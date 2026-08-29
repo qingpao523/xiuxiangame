@@ -65,7 +65,7 @@ const LogPanelVue = {
         btnLabel: on ? "撤下" : "上场",
       };
     }).filter(Boolean);
-    const companionNote = bonded.length ? `道友阵容（上场 ${lineup.length}/3）：专属斗法牌只有上场道友才会带入战斗。对着内容选阵容——打火弱点带上哪吒，打榜文残影带上姜子牙。` : "";
+    const companionNote = bonded.length ? `道友阵容（上场 ${lineup.length}/3）：上场道友的「结缘护持」实时生效——收灵材带哪吒，杀阵破阵带姜子牙，闭关修行带杨戬。` : "";
     // 丹房区（rq_07 解锁）—— P1 生活技艺：炼丹控火候 / 画符蓄力 / 占卜
     const alchemyUnlocked = Game.isAlchemyUnlocked();
     const craftBoost = alchemyUnlocked ? Game.hasDivinationBoost("craft_boost") : false;

@@ -76,7 +76,7 @@ function renderLogPanel(body, state) {
   const bonded = Object.keys(companions).filter((id) => companions[id].bonded);
   if (bonded.length) {
     const lineup = Array.isArray(state.lineup) ? state.lineup : [];
-    body.appendChild(note(`道友阵容（上场 ${lineup.length}/3）：专属斗法牌只有上场道友才会带入战斗。对着内容选阵容——打火弱点带上哪吒，打榜文残影带上姜子牙。`));
+    body.appendChild(note(`道友阵容（上场 ${lineup.length}/3）：上场道友的「结缘护持」实时生效——收灵材带哪吒，杀阵破阵带姜子牙，闭关修行带杨戬。`));
     for (const cid of bonded) {
       const row = DataManager.getById("companion_table", cid);
       if (!Object.keys(row).length) continue;

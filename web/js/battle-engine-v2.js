@@ -116,6 +116,18 @@ const BattleEngineV2 = {
       maxRounds: cfg.maxRounds || 20,
       phases: cfg.phases || null,
       phaseIndex: 0,
+      // C 线（design/6.2 维度4）：上场道友（state.lineup）的结缘护持，开战时快照一次
+      bondMods: (typeof bondPassiveSum === "function") ? {
+        all_dmg: bondPassiveSum(state, "all_dmg"),
+        boss_dmg: bondPassiveSum(state, "boss_dmg"),
+        thunder_dmg: bondPassiveSum(state, "thunder_dmg"),
+        weapon_dmg: bondPassiveSum(state, "weapon_dmg"),
+        break_guard: bondPassiveSum(state, "break_guard"),
+        execute: bondPassiveSum(state, "execute"),
+        control_resist: bondPassiveSum(state, "control_resist"),
+        dmg_taken_reduce: bondPassiveSum(state, "dmg_taken_reduce"),
+        trib_shield: bondPassiveSum(state, "trib_shield"),
+      } : {},
       // 机制
       mechanic: cfg.mechanic || null,
       weakness: cfg.weakness || null,
@@ -162,6 +174,10 @@ const BattleEngineV2 = {
     // 开局buff（法宝被动、势力、神位等）
     this._applyStartBuffs(state, battle);
     if (typeof BossMechanicsV2 !== "undefined") BossMechanicsV2.init(state, battle); // 九Boss机制铺底（design/8.1）
+    // C 线·殷郊结缘护持：破劫斗法开局罡气 = 气血上限 ×10%
+    if (battle.source === "breakthrough" && num(battle.bondMods?.trib_shield, 0) > 0) {
+      battle.playerBlock += Math.round(battle.playerHpMax * battle.bondMods.trib_shield);
+    }
 
     // 预掌首轮敌意图：使第1轮夹招也有意图可读（UI 敌行动条需在释放前读到招式名）
     for (const e of battle.enemies) { if (e.hp > 0 && e.intent == null) e.intent = this._rollIntent(e); }
@@ -618,12 +634,23 @@ const BattleEngineV2 = {
       e.block += intent.value || Math.round(e.power * 0.08);
       events.push({ type: "enemy_block", name: e.name, block: e.block });
     } else if (intent.type === "curse_burn") {
-      const burnDmg = Math.max(2, Math.round(e.power * num(intent.ratio, 0.03) * gapMult));
-      battle.playerStatuses.burn += burnDmg;
-      events.push({ type: "enemy_burn", name: e.name, burn: burnDmg });
+      // C 线·云霄结缘护持：控制抵抗——20% 几率免疫敌方施加的负面状态
+      const cr = num(battle.bondMods?.control_resist, 0);
+      if (cr > 0 && Math.random() < cr) {
+        events.push({ type: "control_resisted", name: e.name });
+      } else {
+        const burnDmg = Math.max(2, Math.round(e.power * num(intent.ratio, 0.03) * gapMult));
+        battle.playerStatuses.burn += burnDmg;
+        events.push({ type: "enemy_burn", name: e.name, burn: burnDmg });
+      }
     } else if (intent.type === "curse_weak") {
-      battle.playerStatuses.weak = 2;
-      events.push({ type: "enemy_weak", name: e.name });
+      const crw = num(battle.bondMods?.control_resist, 0);
+      if (crw > 0 && Math.random() < crw) {
+        events.push({ type: "control_resisted", name: e.name });
+      } else {
+        battle.playerStatuses.weak = 2;
+        events.push({ type: "enemy_weak", name: e.name });
+      }
     }
     const el = intent.element || null;
     const wx = intent.wuxing || null; // 五行层：夹招五行（破/增共鸣用，数据已接入）
@@ -878,6 +905,12 @@ const BattleEngineV2 = {
     if (battle._racePassive === "yao" && battle.benming === skill.spell_type) mult *= 1.15;
     // 种族被动·先天：暴击率+10%（暴击=2倍伤害）
     if (battle._racePassive === "xiantian" && Math.random() < 0.10) mult *= 2;
+    // C 线·道友结缘护持（上场生效）：多宝全伤 / 黄天化 Boss 伤害 / 雷震子雷系 / 通天道友武器系
+    const bp = battle.bondMods || {};
+    if (bp.all_dmg) mult *= (1 + bp.all_dmg);
+    if (bp.boss_dmg && battle.source === "boss") mult *= (1 + bp.boss_dmg);
+    if (bp.thunder_dmg && skill.spell_type === "thunder") mult *= (1 + bp.thunder_dmg);
+    if (bp.weapon_dmg && skill.spell_type === "weapon") mult *= (1 + bp.weapon_dmg);
 
     return Math.floor(dmg * mult);
   },
@@ -903,13 +936,18 @@ const BattleEngineV2 = {
     // 真·车轮战：只有最前存活之敌（在场者）可被伤害；后排侯场者免疫溅射/连锁/追击（一个个轮番上，血量不恢复）
     const front = battle.enemies.find((e) => e.hp > 0);
     if (front && enemy !== front) return 0;
-    // 罡气吸收
+    // 罡气吸收（C 线·广成子结缘护持：破罡——敌罡气吸收 -25%）
     if (enemy.block > 0) {
-      const absorbed = Math.min(enemy.block, dmg);
+      let absorbed = Math.min(enemy.block, dmg);
+      const bg = num(battle.bondMods?.break_guard, 0);
+      if (bg > 0) absorbed = Math.round(absorbed * (1 - bg));
       enemy.block -= absorbed;
       dmg -= absorbed;
     }
     enemy.hp = Math.max(0, enemy.hp - dmg);
+    // C 线·陆压道友结缘护持：斩杀线——敌气血 ≤5% 直接斩杀
+    const bpe = num(battle.bondMods?.execute, 0);
+    if (bpe > 0 && enemy.hp > 0 && enemy.hp / Math.max(1, enemy.hpMax) <= bpe) enemy.hp = 0;
     if (battle.stats) battle.stats.dealt += dmg;
     return dmg;
   },
@@ -944,6 +982,9 @@ const BattleEngineV2 = {
     if (battle._racePassive === "qilin" && battle.playerHp / Math.max(1, battle.playerHpMax) < 0.3) {
       dmg = Math.round(dmg * 0.7);
     }
+    // C 线·孔宣结缘护持：全抗——受到伤害 -10%（上场道友生效）
+    const bpd = num(battle.bondMods?.dmg_taken_reduce, 0);
+    if (bpd > 0) dmg = Math.round(dmg * (1 - bpd));
     // 转劫术：反弹（使用可配置比例）
     if (battle.playerStatuses.reflect > 0 && dmg > 0) {
       const reflectDmg = Math.round(dmg * (battle._reflectRatio || 0.5));

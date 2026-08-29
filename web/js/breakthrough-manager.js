@@ -35,8 +35,10 @@ const BreakthroughManager = {
     const raceBonus = str(state.race_id, "") === "human" ? 0.03 : 0;
     // 天庭敕令庇护：破劫成功率 +5%（design/7.0 身份层）
     const factionBonus = str(state.faction_id, "") === "tianting" ? 0.05 : 0;
+    // C 线·元始天尊结缘护持：破劫成功率 +15%（上场道友生效，clamp 上限兜底）
+    const bondTribBonus = bondPassiveSum(state, "trib_rate");
     const rate = clamp(
-      base + storyBonus + meritBonus + treasureBonus + pulseBonus + failBonus + raceBonus + factionBonus - calamityPenalty,
+      base + storyBonus + meritBonus + treasureBonus + pulseBonus + failBonus + raceBonus + factionBonus + bondTribBonus - calamityPenalty,
       num(data.min_success_rate),
       num(data.max_success_rate, 1)
     );

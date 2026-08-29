@@ -37,6 +37,7 @@
       ],
       "bond_card": "nezha_spear",
       "bond_passive_desc": "地图掉落 +5%（哪吒替你搜山检海）",
+      "bond_passive": { "type": "drop_bonus", "value": 0.05 },
       "bond_text": "哪吒把一缕枪意渡入你的掌心：「这是我的枪法，你拿去用！」"
     },
     {
@@ -73,6 +74,7 @@
       ],
       "bond_card": "yangjian_blade",
       "bond_passive_desc": "道行收益 +5%（常听杨戬讲道）",
+      "bond_passive": { "type": "daoxing_bonus", "value": 0.05 },
       "bond_text": "杨戬将三尖两刃刀的刀意借你参悟三日。"
     },
     {
@@ -107,6 +109,7 @@
       ],
       "bond_card": "ziya_whip",
       "bond_passive_desc": "杀劫大阵奖励 +10%（子牙观阵指点）",
+      "bond_passive": { "type": "array_reward", "value": 0.1 },
       "bond_text": "姜子牙将打神鞭的一缕鞭意封入你的袖中。"
     },
     {
@@ -144,6 +147,7 @@
       ],
       "bond_card": "tuxingsun_drill",
       "bond_passive_desc": "游历行动时间 -10%（土行孙替你开路）",
+      "bond_passive": { "type": "travel_time", "value": 0.1 },
       "bond_text": "土行孙把一缕地行术意渡入你的脚底：'踩实地面，地底下的路，我替你趟过了。'"
     },
     {
@@ -181,6 +185,7 @@
       ],
       "bond_card": "huangtianhua_sword",
       "bond_passive_desc": "Boss 伤害 +8%（黄天化传你破将之法）",
+      "bond_passive": { "type": "boss_dmg", "value": 0.08 },
       "bond_text": "黄天化将莫邪宝剑的剑意借你参悟三日，专破敌将护体罡气。"
     },
     {
@@ -217,6 +222,7 @@
       ],
       "bond_card": "leizhenzi_wing",
       "bond_passive_desc": "雷系伤害 +10%（雷震子引天雷助你）",
+      "bond_passive": { "type": "thunder_dmg", "value": 0.1 },
       "bond_text": "雷震子将风雷翅的一缕雷意渡入你的掌心，你的雷法从此带了一丝天威。"
     },
     {
@@ -252,6 +258,7 @@
       ],
       "bond_card": "yinjiao_seal",
       "bond_passive_desc": "破劫开局罡气 +10%（殷郊替你挡雷）",
+      "bond_passive": { "type": "trib_shield", "value": 0.1 },
       "bond_text": "殷郊把番天印残片的一缕镇压之意渡入你的法宝。"
     },
     {
@@ -287,6 +294,7 @@
       ],
       "bond_card": "shengongbao_whip",
       "bond_passive_desc": "机缘概率 +8%（申公豹替你探路）",
+      "bond_passive": { "type": "event_chance", "value": 0.08 },
       "bond_text": "申公豹把黑虎鞭的一缕鞭意封入你的袖中：'遇到好东西，记得分我一杯。'"
     },
     {
@@ -322,6 +330,7 @@
       ],
       "bond_card": "zhaogongming_pearl",
       "bond_passive_desc": "战利 +15%（赵公明替你估价）",
+      "bond_passive": { "type": "loot_bonus", "value": 0.15 },
       "bond_text": "赵公明把定海珠的一缕珠意封入你的袖中。"
     },
     {
@@ -357,6 +366,7 @@
       ],
       "bond_card": "yunxiao_dou",
       "bond_passive_desc": "控制抵抗 +20%（混元金斗护体）",
+      "bond_passive": { "type": "control_resist", "value": 0.2 },
       "bond_text": "云霄把混元金斗的一缕斗意渡入你的丹田。"
     },
     {
@@ -392,6 +402,7 @@
       ],
       "bond_card": "duobao_banner",
       "bond_passive_desc": "全伤害 +8%（多宝道人助威）",
+      "bond_passive": { "type": "all_dmg", "value": 0.08 },
       "bond_text": "多宝道人把六魂幡的一缕幡意封入你的袖中。"
     },
     {
@@ -427,6 +438,7 @@
       ],
       "bond_card": "guangchengzi_seal",
       "bond_passive_desc": "破罡 +25%（广成子传你镇压之法）",
+      "bond_passive": { "type": "break_guard", "value": 0.25 },
       "bond_text": "广成子把番天印的一缕镇压之意渡入你的法宝。"
     },
     {
@@ -462,6 +474,7 @@
       ],
       "bond_card": "randeng_pearls",
       "bond_passive_desc": "离线收益 +12%（燃灯替你守关）",
+      "bond_passive": { "type": "offline_bonus", "value": 0.12 },
       "bond_text": "燃灯把二十四颗定海珠的一缕珠意与一盏灯芯渡入你的丹田：「灯不灭，收益不断。」"
     },
     {
@@ -497,6 +510,7 @@
       ],
       "bond_card": "kongxuan_light",
       "bond_passive_desc": "全抗 +10%（五色神光护体）",
+      "bond_passive": { "type": "dmg_taken_reduce", "value": 0.1 },
       "bond_text": "孔宣将五色神光的一缕光意渡入你的护体罡气：「五行之内，伤你者，先问我。」"
     },
     {
@@ -532,6 +546,7 @@
       ],
       "bond_card": "luya_blade",
       "bond_passive_desc": "斩杀线 +5%（斩仙飞刀意）",
+      "bond_passive": { "type": "execute", "value": 0.05 },
       "bond_text": "陆压把斩仙飞刀的一缕刀意封入你的眉心：「请宝贝转身。记住，只斩该斩的。」"
     },
     {
@@ -568,6 +583,7 @@
       ],
       "bond_card": "tongtian_sword",
       "bond_passive_desc": "剑系伤害 +20%（诛仙剑意）",
+      "bond_passive": { "type": "weapon_dmg", "value": 0.2 },
       "bond_text": "通天教主将诛仙四剑的一缕剑意渡入你的本命法宝：「截教的剑，只护自己人。」"
     },
     {
@@ -604,6 +620,7 @@
       ],
       "bond_card": "yuanshi_banner",
       "bond_passive_desc": "破劫成功率 +15%（盘古幡护持）",
+      "bond_passive": { "type": "trib_rate", "value": 0.15 },
       "bond_text": "元始天尊将盘古幡的一缕幡意悬于你的识海：「劫来之时，此幡先应。」"
     },
     {
@@ -640,6 +657,7 @@
       ],
       "bond_card": "nuwa_picture",
       "bond_passive_desc": "全收益 +10%（山河社稷图加持）",
+      "bond_passive": { "type": "all_gain", "value": 0.1 },
       "bond_text": "女娲将山河社稷图的一缕图意纳入你的丹田：「人间烟火，分你一分。」"
     },
     {
@@ -675,6 +693,7 @@
       ],
       "bond_card": "laojun_chart",
       "bond_passive_desc": "炼丹产出 ×2（老君传你火候）",
+      "bond_passive": { "type": "alchemy_double", "value": 1 },
       "bond_text": "太上老君将八卦炉的一缕炉火意渡入你的丹炉：「火候到了，丹自成。」"
     }
   ]

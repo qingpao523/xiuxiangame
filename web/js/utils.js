@@ -61,3 +61,18 @@ function formatDuration(minutes) {
   }
   return `${minutes}分钟`;
 }
+
+// C 线（design/6.2 维度4）：上场道友（state.lineup）中已结缘者的结缘护持求和。
+// 只消费 state.lineup 里的道友——真实战术选择；type 见 companion_table.bond_passive.type。
+function bondPassiveSum(state, type) {
+  let sum = 0;
+  const lineup = Array.isArray(state.lineup) ? state.lineup : [];
+  const companions = state.companions || {};
+  for (const id of lineup) {
+    if (!companions[id] || !companions[id].bonded) continue;
+    const row = DataManager.getById("companion_table", String(id));
+    const passive = row && row.bond_passive;
+    if (passive && str(passive.type, "") === String(type)) sum += num(passive.value, 0);
+  }
+  return sum;
+}
