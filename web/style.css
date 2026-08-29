@@ -2241,7 +2241,7 @@ body.dueling #char-img {
   border-color: transparent;
   border-width: 6px 16px;
   border-image-source: url("assets/ui/hud/hud_auto_off.png");
-  border-image-slice: 80 140 fill;
+  border-image-slice: 40 70 fill; /* E 线：源图降采样 0.5x，slice 同步减半 */
   border-radius: 0;
   background: none;
   /* 兜底：border-image 不可用或贴图缺失时的按钮底色 */
@@ -2755,7 +2755,7 @@ body.dueling #char-img {
   border-color: transparent;
   border-width: 6px 16px;
   border-image-source: url("assets/ui/hud/hud_auto_off.png");
-  border-image-slice: 80 140 fill;
+  border-image-slice: 40 70 fill; /* E 线：源图降采样 0.5x，slice 同步减半 */
   border-radius: 0;
   background: none;
   /* 兜底：border-image 不可用或贴图缺失时的按钮底色 */
@@ -2778,7 +2778,7 @@ body.dueling #char-img {
   /* G7 纪律：不用 background 斜杠简写，拆独立声明（老内核兼容） */
   background-image:
     linear-gradient(rgba(252, 244, 220, 0.10), rgba(252, 244, 220, 0.04)),
-    url("assets/map/cloud_sea_base.png");
+    url("assets/map/cloud_sea_base.jpg");
   background-position: center;
   background-size: auto, cover;
   overflow: hidden;

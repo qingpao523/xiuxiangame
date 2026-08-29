@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-08-29 — E 线：性能 profiling + 资产减重 2.6MB
+
+**profiling（先测后改）**：Playwright 真实浏览器度量——render() 0.09ms/次、tick() 0.099ms/次、SAVE_REV 变更全量重绘 0.12ms；250ms tick 下主循环 CPU 占比 ≈0.04%，**运行时无热点**（ui.js 的 SAVE_REV 门控已把资源条/面板重绘挡在变更之后）。日志数组有界（30 条截断），存档仅在变更时写入。结论：不改主循环（A4 纪律：不必要性不重写）。
+
+**真热点=首屏资产重量**：首屏+懒加载关键资产 ≈3.2MB，大头为无透明水墨底图误存 PNG。处置（质量优先，主视觉不降尺寸）：
+- cloud_sea_base.png（RGB 无 alpha，1152×2048）→ JPEG q85 progressive：2.51MB→244KB（-90%），style.css:2781 引用同步改 .jpg；
+- hud_auto_off.png（709×361 按钮小图）→ 0.5× LANCZOS 降采样：416KB→120KB，两处 border-image-slice `80 140 fill`→`40 70 fill`（style.css:2244/:2758，源图减半 slice 同步减半）；
+- ui_top_seal_banner.jpg q88 重编码 234→193KB；char_realman/hud_panel_scroll/hud_progress_trough 仅无损 optimize（主视觉不冒险）；
+- 死资产确认：hud_nav_tile.png(943KB)/hud_main_btn*.png(650KB)/hud_res_chip/hud_goal_scroll 全项目零引用——未加载不入首屏，暂不删除（等资产清理专项）。
+
+**验收（97/100）**：css-compat 9/9（含 url 存在性）；Playwright 计算样式验证 close 按钮 slice 40 70 fill + border-image 正常、cloud_sea_base.jpg 加载 1152×2048、progress trough 完好；npm test 全绿。扣分：死资产 2.5MB 留仓库未清（待专项）；WebKit/Gecko 人工抽查清单沿用 G7。
+
+---
 ## 2026-08-29 — D 线：数值曲线定稿「战力比难度模型」（台账 v1.3）
 
 **问题**：v1.1 已记录「回合数极不稳定、无法靠单一倍率稳定」但根因未定案。本次用度量 harness（test/balance-metrics.js，11 采样点按 boss unlock_condition 配对境界）首采基准：3-8 回合目标带命中仅 1/9——低境界 1-2 回合被秒（敌攻击力=recommended_power 原值，boss_001 的 900 对玩家 HP 280 一击 180），高境界打不完（敌HP=rec×powerMult×3，jx_01 达 1.8×10^13，需 5 万回合）。
