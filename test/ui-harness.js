@@ -31,7 +31,9 @@ const PANEL_FILES = [
 ];
 const UI_LOAD_ORDER = [...GAME_LOAD_ORDER, "gameplay-engine.js", "content-director.js", "ui-constants.js", ...PANEL_FILES,
   // design/19.0 G3：Vue 面板路径（vendor global build + 适配器 + 已迁面板；镜像 index.html 顺序）
-  "vendor/vue.global.prod.js", "panels/vue-panel-mount.js", "panels/treasure-panel-vue.js",
+  "vendor/vue.global.prod.js", "panels/vue-panel-mount.js",
+  "panels/treasure-panel-vue.js", "panels/chance-panel-vue.js", "panels/realm-panel-vue.js",
+  "panels/spell-panel-vue.js", "panels/map-panel-vue.js", "panels/log-panel-vue.js",
   "ui.js"];
 
 // 表现层桩：render()/boot() 中裸引用但无 DOM 动画语义的全局。返回值全部确定/falsy/no-op。

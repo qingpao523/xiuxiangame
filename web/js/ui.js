@@ -1087,10 +1087,12 @@ function renderPanelBody(key) {
   const useVue = vunit && typeof VuePanelMount !== "undefined" && VuePanelMount.available();
   const active = useVue ? vunit : unit;
   $("panel-title").textContent = active ? active.title : "";
-  const body = $("panel-body"); body.innerHTML = "";
+  // G3：清屏时机——Vue 路径必须先卸载旧 app（其卸载会移除自己的 DOM），再清屏挂载；
+  // 若在 unmount 前就 innerHTML=""，Vue 卸载会走到脱离文档的节点上抛错。命令式单元自带清屏。
+  const body = $("panel-body");
   const state = Game.state;
   if (useVue) VuePanelMount.mount(vunit.component, body, state);
-  else if (unit) unit.render(body, state);
+  else { body.innerHTML = ""; if (unit) unit.render(body, state); }
 }
 
 function note(text) { const div = document.createElement("div"); div.className = "panel-note"; div.textContent = text; return div; }

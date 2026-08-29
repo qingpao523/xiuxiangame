@@ -19,6 +19,7 @@ const VuePanelMount = (() => {
   // 组件内只读 state（Game 不进组件），事件回调由组件通过 props/handlers 显式声明。
   function mount(component, body, state) {
     unmount(body);
+    body.innerHTML = ""; // 卸载后清屏：既清 Vue 残留，也清命令式路径留下的内容
     const app = Vue.createApp(component, { state });
     app.config.errorHandler = (err) => { console.error("[VuePanelMount]", err); };
     app.mount(body);
@@ -27,7 +28,15 @@ const VuePanelMount = (() => {
 
   function unmount(body) {
     const app = apps.get(body);
-    if (app) { app.unmount(); apps.delete(body); }
+    if (!app) return;
+    apps.delete(body);
+    try {
+      app.unmount();
+    } catch (err) {
+      // 命令式渲染器可能已用 innerHTML 清掉 Vue 的挂载点（如面板在 Vue 挂载期间被别处重绘），
+      // 此时 Vue 卸载会走到脱离文档的节点上抛错；DOM 已被清干净，忽略即可。
+      if (typeof console !== "undefined" && console.warn) console.warn("[VuePanelMount] unmount skipped:", err.message);
+    }
   }
 
   return { available, mount, unmount };
