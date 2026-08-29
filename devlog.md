@@ -2,6 +2,19 @@
 
 ---
 
+## 2026-08-29 — D 线：数值曲线定稿「战力比难度模型」（台账 v1.3）
+
+**问题**：v1.1 已记录「回合数极不稳定、无法靠单一倍率稳定」但根因未定案。本次用度量 harness（test/balance-metrics.js，11 采样点按 boss unlock_condition 配对境界）首采基准：3-8 回合目标带命中仅 1/9——低境界 1-2 回合被秒（敌攻击力=recommended_power 原值，boss_001 的 900 对玩家 HP 280 一击 180），高境界打不完（敌HP=rec×powerMult×3，jx_01 达 1.8×10^13，需 5 万回合）。
+
+**根因**：recommended_power 同一数值既当敌HP基数又当敌攻击力，且保持叙事口径（=解锁境界推荐战力，900~8亿），与引擎「小数值难度指数」的隐含假设完全脱节。
+
+**定案（战力比难度模型）**：battle-engine-v2.js create() 弃用旧式（ENEMY_HP_MULT 删除），改为——diff = 敌推荐战力/玩家战力（主怪钳制 [0.3,2]，小妖下限 0.05）；敌HP = diff×ENEMY_TARGET_ROUNDS(6)×_estimatePlayerDps(slots)×powerMult；敌攻击力 = 玩家气血×ENEMY_ATTACK_RATIO(0.35)×diff。数据侧 boss_table/map_table **零改动**（叙事口径恢复合法，UI「推荐战力｜你的战力」语义复原）。回合数与吃血比例均与境界解耦。
+
+**验收（96/100）**：balance-metrics 目标带命中 1/9→9/11、胜 10/11；两个带外为设计语义（rq_08/boss_004 机制墙逼养成 9 回合负；jx_01 越级碾压 2 回合胜）。回归全绿：npm test exit=0（battle/game/ui/css/server 五套）+ boss-mechanics 50/50 + companion-passives 20/20 + ui 黄金快照零改动。扣分：ENEMY_TARGET_ROUNDS/ATTACK_RATIO/dps系数1.4 为初版校准🟡待构筑多样化后复采；破劫 phases 路径未纳入模型（专项待办）。
+
+**对抗审查**：①曾尝试「数据重标到 500-2800 小带宽」方案并已跑通脚本，但对抗审查发现会破坏 UI「推荐战力」语义（玩家 1.5 亿战力看到推荐 2400）且丢失叙事梯度——推翻，改为引擎侧战力比消化，重标脚本删除、数据 git checkout 还原。②主怪 HP 初版用原始 diff（不钳制）导致 jx_01 越级 1 回合秒杀，改用 diffClamped 后 2 回合（碾压有底线）。③小妖 addDiff 初版吃 0.3 下限，2 只 0.12 比例白骨阴火被顶成主怪级血墙（dx_01 拉长到 9 回合），下限改 0.05 后回 8 回合。
+
+---
 ## 2026-08-29 — C 线：道友「结缘护持」链路重连（design/6.2 维度4）
 
 **问题（对抗审查发现）**：design/8.0 斗法槽位制改版后，`state.lineup`（道友阵容）在引擎/结算中已无任何消费者——洞府面板文案仍宣称「专属斗法牌只有上场道友才会带入战斗」，机制与文案失配；19 位道友的 bond_passive 仅 2 个被硬编码消费（哪吒/杨戬，且不看阵容）。

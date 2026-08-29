@@ -2,9 +2,12 @@
 
 // 夹招单次伤害系数：逐格轮流后敌方每回合行动 slots 次，初版缩到 0.4 约等于旧单次强度（🔴待数值验证）
 const ENEMY_GAP_DAMAGE_MULT = 0.4;
-// 敌方血量倍率（P0 拉长回合）：乘上玩家 _powerMult 使回合数随进度稳定（否则玩家越强越秒）。
-// 敌HP = enemy_power × _powerMult × ENEMY_HP_MULT；仅抬血量不抬攻击力(power另传)。目标 5-8 回合（🔴初版待数值验证）
-const ENEMY_HP_MULT = 3;
+// 敌方血量/攻击力口径（🟢 D 线定稿，台账 v1.3）：recommended_power 保持叙事口径（=解锁境界的推荐战力），
+// 引擎按「战力比」定难度 diff = clamp(敌推荐战力/玩家战力, 0.3, 2)：
+//   敌HP = diff × ENEMY_TARGET_ROUNDS × 玩家实测每回合输出 → 回合数锁进 5-8 带，不随境界/天文数字漂移；
+//   敌攻击力 = 玩家气血 × ENEMY_ATTACK_RATIO × diff → 每回合吃血比例恒定，不再一击必杀。
+const ENEMY_TARGET_ROUNDS = 6;
+const ENEMY_ATTACK_RATIO = 0.35;
 // 体修（本命·体）气血倍率：放置游戏"血量加加"轴（🔴初版）。注意 _powerMult 由 playerHpMax 驱动，高血同时高输出，是否另行削伤留待平衡。
 const BODY_HP_MULT = 1.25;
 
@@ -86,12 +89,25 @@ const BattleEngineV2 = {
       enemies.push(this._mkEnemy(cfg.phases[0].name, Math.round(playerPower * num(cfg.phases[0].power_ratio, 0.8)), cfg.phases[0].pool));
     } else {
       const powerMult = Math.max(1, Math.round(playerHpMax / 200)); // 与玩家伤害同源，保证回合数不随进度失衡
-      const baseHp = Math.round(num(cfg.enemy_power, playerPower) * num(omen.enemyMult, 1));
-      // 车轮战·拉长回合：血量×powerMult×ENEMY_HP_MULT，攻击力(power)保持 baseHp 不膨胀。
-      enemies.push(this._mkEnemy(String(cfg.name || "妖物"), Math.round(baseHp * powerMult * ENEMY_HP_MULT), null, baseHp));
+      // D 线定稿（台账 v1.3）：recommended_power 保持叙事口径（=解锁境界的推荐战力），引擎按「战力比」定难度：
+      //   diff = 敌推荐战力/玩家战力（0.3-2 钳制）；
+      //   敌攻击力 = 玩家气血 × ENEMY_ATTACK_RATIO × diff → 每回合吃血比例恒定，不再一击必杀；
+      //   敌HP = diff × ENEMY_TARGET_ROUNDS × 玩家实测每回合输出 → 回合数锁进目标带，不随境界漂移。
+      const rawPower = Math.max(1, Math.round(num(cfg.enemy_power, playerPower) * num(omen.enemyMult, 1)));
+      const diff = rawPower / Math.max(1, playerPower);
+      const diffClamped = Math.min(2, Math.max(0.3, diff));
+      const atkPower = Math.max(1, Math.round(playerHpMax * ENEMY_ATTACK_RATIO * diffClamped));
+      const dpsEstimate = this._estimatePlayerDps(slots) * powerMult;
+      // HP 同样用 diffClamped：压制者碾压有底线（≥1.8 回合），落后者不面对无限血墙（≤12 回合）
+      const baseHp = Math.max(1, Math.round(diffClamped * ENEMY_TARGET_ROUNDS * dpsEstimate));
+      enemies.push(this._mkEnemy(String(cfg.name || "妖物"), baseHp, null, atkPower));
       for (const add of cfg.adds || []) {
-        const addBase = Math.round(num(add.power) * num(omen.enemyMult, 1));
-        enemies.push(this._mkEnemy(String(add.name), Math.round(addBase * powerMult * ENEMY_HP_MULT), null, addBase));
+        const addBase = Math.max(1, Math.round(num(add.power) * num(omen.enemyMult, 1)));
+        // 小妖不吃 0.3 下限（否则杂兵被顶成主怪级血墙），下限 0.05
+        const addDiff = Math.min(2, Math.max(0.05, addBase / Math.max(1, playerPower)));
+        const addAtk = Math.max(1, Math.round(playerHpMax * ENEMY_ATTACK_RATIO * addDiff * 0.6));
+        const addHp = Math.max(1, Math.round(addDiff * ENEMY_TARGET_ROUNDS * dpsEstimate * 0.5));
+        enemies.push(this._mkEnemy(String(add.name), addHp, null, addAtk));
       }
     }
 
@@ -821,6 +837,15 @@ const BattleEngineV2 = {
   _calcBaseDamage(skill, battle) {
     const lv = int(skill.level, 1);
     return skill.damage_base + skill.damage_growth * (lv - 1);
+  },
+
+  // D 线：估算玩家每回合输出（powerMult 前）。Σ(基础+成长×(等级-1)) × 连锁/终极平均系数 1.4（balance-metrics 实测校准）。
+  _estimatePlayerDps(slots) {
+    let sum = 0;
+    for (const s of slots || []) {
+      sum += num(s.damage_base, 60) + num(s.damage_growth, 8) * (Math.max(1, int(s.level, 1)) - 1);
+    }
+    return Math.max(30, sum) * 1.4;
   },
 
   // 共鸣扩展§〇：体系=体/器/魂/劫。过渡数据 thunder 归体；weapon/fire 是法术不是器。
