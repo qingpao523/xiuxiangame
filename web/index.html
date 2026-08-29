@@ -233,6 +233,10 @@
   <script src="js/panels/treasure-panel.js?v=20260829a"></script>
   <script src="js/panels/chance-panel.js?v=20260829a"></script>
   <script src="js/panels/log-panel.js?v=20260829a"></script>
-  <script src="js/ui.js?v=20260829a"></script>
+  <!-- design/19.0 G3：面板迁 Vue（自托管 global build，无构建；不可用时 ui.js 自动回落 PANEL_UNITS） -->
+  <script src="js/vendor/vue.global.prod.js?v=20260829a"></script>
+  <script src="js/panels/vue-panel-mount.js?v=20260829a"></script>
+  <script src="js/panels/treasure-panel-vue.js?v=20260829a"></script>
+  <script src="js/ui.js?v=20260829b"></script>
 </body>
 </html>

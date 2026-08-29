@@ -1080,11 +1080,17 @@ function closePanelSheet() { openPanel = ""; $("panel-layer").classList.add("hid
 function renderPanelBody(key) {
   // design/19.0 G2：六抽屉拆为独立渲染单元（web/js/panels/*.js），本函数只做标题+分发。
   // 渲染单元逻辑由原 ui.js 逐字迁出（逻辑零改）；各单元注册 window.PANEL_UNITS[key] = { title, render(body, state) }。
+  // design/19.0 G3：已迁 Vue 的单元注册 window.PANEL_VUE_UNITS[key] = { title, component }；
+  // Vue 可用则走 Vue 渲染（VuePanelMount），否则自动回落命令式单元（逻辑零改，口径由黄金快照钉死）。
   const unit = (window.PANEL_UNITS || {})[key];
-  $("panel-title").textContent = unit ? unit.title : "";
+  const vunit = (window.PANEL_VUE_UNITS || {})[key];
+  const useVue = vunit && typeof VuePanelMount !== "undefined" && VuePanelMount.available();
+  const active = useVue ? vunit : unit;
+  $("panel-title").textContent = active ? active.title : "";
   const body = $("panel-body"); body.innerHTML = "";
   const state = Game.state;
-  if (unit) unit.render(body, state);
+  if (useVue) VuePanelMount.mount(vunit.component, body, state);
+  else if (unit) unit.render(body, state);
 }
 
 function note(text) { const div = document.createElement("div"); div.className = "panel-note"; div.textContent = text; return div; }
