@@ -21,7 +21,15 @@ const FIXED_NOW = Date.parse("2026-08-28T12:00:00Z");
 
 // ui.js 在 game.js 之后追加加载（镜像 index.html：game.js→…→ui-constants→ui.js）。
 // gameplay-engine.js（registerPopupRenderers 裸引用）+ content-director.js（保险）+ ui-constants.js（MAP_BACKGROUNDS/getCharacterPath）。
-const UI_LOAD_ORDER = [...GAME_LOAD_ORDER, "gameplay-engine.js", "content-director.js", "ui-constants.js", "ui.js"];
+const PANEL_FILES = [
+  "panels/realm-panel.js",
+  "panels/map-panel.js",
+  "panels/spell-panel.js",
+  "panels/treasure-panel.js",
+  "panels/chance-panel.js",
+  "panels/log-panel.js",
+];
+const UI_LOAD_ORDER = [...GAME_LOAD_ORDER, "gameplay-engine.js", "content-director.js", "ui-constants.js", ...PANEL_FILES, "ui.js"];
 
 // 表现层桩：render()/boot() 中裸引用但无 DOM 动画语义的全局。返回值全部确定/falsy/no-op。
 const UI_PRESENTATION_STUBS = {
