@@ -24,7 +24,9 @@ function render() {
   const mapBg = (typeof MAP_BACKGROUNDS !== "undefined" && state.current_map_id) ? MAP_BACKGROUNDS[state.current_map_id] : null;
   $("bg").style.backgroundImage = `url("${mapBg || BACKGROUND_PATHS[ui.background_phase] || BACKGROUND_PATHS.mountain_cave}")`;
   $("fx-seal").classList.toggle("lit", DataManager.isRealmAtLeast(state.realm_id, "rq_06"));
-  $("char-img").src = getCharacterPath(state);
+  // B-诊断修复：src 未变时不重设（no-store 下每次 render 都会真实重拉图片）
+  const charPath = getCharacterPath(state);
+  if ($("char-img").getAttribute("src") !== charPath) $("char-img").src = charPath;
   const raceTag = getRaceShortName(state);
   $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
   $("weather-line").textContent = `天象：${getWeather(state)}`;
