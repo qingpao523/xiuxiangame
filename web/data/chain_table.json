@@ -1,0 +1,28 @@
+{
+  "table": "chain_table",
+  "schema_version": "0.1.0",
+  "note": "完整锁链框架：一条链 = 一组节点 nodes + 若干关系环 relations。关系是有向环：ring 中每项指向下一项（首尾相接）。'克'只是关系类型之一，五行只是第一条链；新增链/新增关系类型纯改数据（关系类型语义在 resonance-system.js 求值器中登记）。",
+  "relation_types": {
+    "ke": "克环：middle 克 left → 被克（broken，抹平连锁加成）",
+    "sheng": "生环：middle 生 left → 得生（enhanced，增幅）"
+  },
+  "rows": [
+    {
+      "chain_id": "wuxing",
+      "name": "五行链",
+      "enabled": true,
+      "nodes": [
+        { "node_id": "wood", "name": "木", "color": "#66BB6A" },
+        { "node_id": "fire", "name": "火", "color": "#FF5722" },
+        { "node_id": "earth", "name": "土", "color": "#C8A165" },
+        { "node_id": "metal", "name": "金", "color": "#E0E0E0" },
+        { "node_id": "water", "name": "水", "color": "#4FC3F7" }
+      ],
+      "relations": [
+        { "type": "ke", "ring": ["wood", "earth", "water", "fire", "metal"] },
+        { "type": "sheng", "ring": ["wood", "fire", "earth", "metal", "water"] }
+      ],
+      "mults": { "base": 1.3, "broken": 1.0, "enhanced": 1.6 }
+    }
+  ]
+}

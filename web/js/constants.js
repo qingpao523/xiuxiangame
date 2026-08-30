@@ -23,6 +23,7 @@ const ID_FIELDS = {
   array_card_table: "card_id",
   minigame_table: "minigame_id",
   beat_table: "beat_id",
+  chain_table: "chain_id",
 };
 
 const REALM_NAME_TO_ID = {
