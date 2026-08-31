@@ -1,0 +1,1478 @@
+{
+  "schema_version": "0.1.0",
+  "table": "feedback_table",
+  "description": "表现层气韵反馈文案表（21.2 L1，数据为体）。channel: toast_title|toast_body|float|ritual|status_line|scroll_scene|unlock|popup_title；tier: qiyun|dual|number（21.2 §3.0 三问结论落字段）。lines 支持 {realm_name} 等占位插值；merge_ids 声明合池（如 insight 行动池合入 insight_generic）；budget.daily_max>0 时耗尽走 fallback_id（空则静默）；beats 为 scroll_scene 画卷脚本（结构同 scroll-scene.js）。",
+  "rows": [
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_breath_cycle",
+      "lines": [
+        "一轮周天运转完毕。指尖微暖，像握住一缕将散未散的阳光。",
+        "气息沉入丹田。你听见自己的心跳，比平日慢了一拍。",
+        "收功时，你呼出一口浊气——它比从前长了半息。",
+        "灵气顺着经脉走了一圈，回到原处时，已温顺了许多。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_short_meditation",
+      "lines": [
+        "入定醒来，洞外的风声远了。你的神识，比方才清亮一分。",
+        "你睁开眼。石壁上的纹路，你看得比昨日更细了。",
+        "这一坐，不知过了多久。洞口的天光，挪了半寸。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_wild_travel",
+      "lines": [
+        "你从山野归来，衣角沾着露水与草屑。山里的妖气，今日淡了些。",
+        "归途中你回头望了一眼。黑雾还在，但已不敢近你三尺。",
+        "山风灌满衣袖。你走得比来时更远，也更稳。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_chentang_patrol",
+      "lines": [
+        "陈塘关外海风腥咸。你巡行一圈，雷声在潮雾深处滚了又滚。",
+        "归时，你袖中多了几缕风雷残机。还有一身洗不掉的海腥味。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_kulou_explore",
+      "lines": [
+        "骷髅山边界阴云低垂。你采得几簇阴火，指尖凉到心里。",
+        "探幽归来，你总觉得身后有目光。回头时，只有白骨与风。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_observe_seal",
+      "lines": [
+        "你凝望天边那页金光，看了很久。收回目光时，眼眶发酸。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "qiyun_default",
+      "lines": [
+        "修行告一段落。洞中一如往常，只是你已不同。",
+        "你睁开眼。气机在体内静静流转，比方才沉了一分。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_rq_04",
+      "lines": [
+        "你感到气不再是气。它有了形状，在经脉里缓缓流转。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_rq_07",
+      "lines": [
+        "你的神识，第一次探出了洞壁。外面的风，你『看』见了。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_rq_10",
+      "lines": [
+        "虚与实的边界，在你眼里模糊了。你离『真』，只差一劫。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_zr_04",
+      "lines": [
+        "道基渐固。你站在这里，山的风要绕着你走。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_zr_07",
+      "lines": [
+        "你的呼吸，能带动洞里的尘埃了。它们绕着你，缓缓旋转。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_zr_10",
+      "lines": [
+        "真人圆满。你抬头，那页榜文比任何时候都近。它在等你。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_dx_04",
+      "lines": [
+        "你站在云下，第一次觉得，云也可以踩在脚下。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_dx_07",
+      "lines": [
+        "地脉的灵机，主动向你涌来。你已是这片山的主人。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_tx_04",
+      "lines": [
+        "腾云而起。人间兵火，在你脚下成了一幅小小的画。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_tx_07",
+      "lines": [
+        "你在云端打坐。风从四面来，又向四面去，不敢扰你。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_zx_04",
+      "lines": [
+        "顶上三花，有一朵微微颤动。它快开了。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_zx_07",
+      "lines": [
+        "三花已开其二。你的道，开始有了自己的颜色。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_jx_04",
+      "lines": [
+        "五气在五脏里奔流，隐隐要朝头顶汇聚。"
+      ]
+    },
+    {
+      "channel": "ritual",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "ritual_jx_07",
+      "lines": [
+        "五气朝元之兆已显。你周身光华流转，不复凡俗。"
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_001",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "你闭上眼。",
+            "凡尘的浊气，缠了你二十年。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "cave",
+          "fx": "mist",
+          "lines": [
+            "它沉积在经脉里，像一层洗不掉的灰。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "榜文的金光，从九天垂落。",
+            "它照住你的灵台，在找你的名字。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "cave",
+          "prompt": "按住，引清气洗身",
+          "hold": 3000,
+          "lines": [
+            "你引动周天清气，一寸寸，洗过经脉。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "cleanse",
+          "lines": [
+            "浊气褪了。",
+            "像褪去一件穿了二十年的旧衣。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "glow",
+          "lines": [
+            "你睁开眼。",
+            "山还是那座山。",
+            "但你听见了——它的呼吸。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "真人",
+          "sub": "自此，你不再是凡人。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_002",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "这一次，榜文不是路过。",
+            "它停在了你的头顶。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "金光凝成一支笔。",
+            "它要写下你的名字。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "lines": [
+            "你感到真灵被一股大力牵引，往那页金纸上拽。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，守住灵台",
+          "hold": 3500,
+          "lines": [
+            "你咬紧牙关，把真灵死死按在丹田。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "flash",
+          "lines": [
+            "笔尖触到金纸的一瞬——",
+            "你挡了回去。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "lines": [
+            "金光退了。",
+            "那页榜文上，你的名字墨迹未干，却终究没有成形。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "地仙",
+          "sub": "榜外散修。榜文照身，未曾留名。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_003",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "杀劫初临。",
+            "这一劫，不在天上，在你脚下的大地。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "地脉震动，劫气从裂缝里涌出，缠上你的脚踝。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，腾身而起",
+          "hold": 3200,
+          "lines": [
+            "你引清气灌顶，身子一轻。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "vista",
+          "fx": "rise",
+          "lines": [
+            "你升起来了。",
+            "劫气在脚下翻涌，再也够不到你。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "vista",
+          "lines": [
+            "你第一次，站在云的上面。",
+            "人间在山下，很小，很安静。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "真仙",
+          "sub": "腾云入天。大劫的边缘，向你展开。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_004",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "五行冲撞。",
+            "你体内的金木水火土，忽然不再相让。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "fx": "glow",
+          "lines": [
+            "五色之气在经脉里逆走，互相攻伐。",
+            "疼是真疼。但你看见了——它们在争一个主位。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，引五气朝元",
+          "hold": 3200,
+          "lines": [
+            "你心神沉入五脏，一缕一缕，把它们引向顶门。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "converge",
+          "lines": [
+            "五气冲顶的一瞬，最为凶险。",
+            "你稳住道基，看五色在头顶绞成一轮光。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "lines": [
+            "榜文金光趁虚照来，想趁你冲顶时落笔。",
+            "光及身而止——五气已朝元，它慢了半息。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "金仙",
+          "sub": "三花聚顶。术法自此，可称神通。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_005",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "五气既朝元，天地忽然安静。",
+            "然后，有一个问题落进你的识海。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "lines": [
+            "它不借声音，不借文字。",
+            "你只知道自己必须回答：你的道，是什么。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，以道作答",
+          "hold": 3500,
+          "lines": [
+            "你以五气为墨，以道基为简，把这一路写给它看。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "fx": "flash",
+          "lines": [
+            "一答未稳，道基裂出细纹。",
+            "你听见自己的道，在裂纹里作响。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "裂纹合拢的一瞬，太乙玄妙自现。",
+            "榜文远远看着，收起了笔锋。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "太乙",
+          "sub": "五气朝元，大道试问。你答上了第一问。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_006",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "没有雷，没有火。",
+            "只有一个声音。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "lines": [
+            "它问你：",
+            {
+              "text": "『你的道，是什么？』",
+              "cls": "gold"
+            }
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，作答",
+          "hold": 3000,
+          "lines": [
+            "你闭上眼。这一路走来的山、水、人、劫，一一闪过。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "lines": [
+            "你答了。",
+            "声音沉默了很久。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "glow",
+          "lines": [
+            "然后它说：『好。』",
+            "大道无言，但你知道，它听见了。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "大罗",
+          "sub": "因果之线，一根根断裂。你跳出了因果。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_007",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "你跳出因果的那一刻——",
+            "所有被你斩断的因果，同时回来了。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "fx": "flash",
+          "lines": [
+            "过去、现在、未来，三世化为一击，朝你砸来。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，承住三世",
+          "hold": 3500,
+          "lines": [
+            "你没有躲。你站着，承下了。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "lines": [
+            "因果碎尽。",
+            "你走过的路、杀过的妖、救过的人，都成了你。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "准圣",
+          "sub": "万劫不磨。因果不沾，轮回不入。"
+        }
+      ]
+    },
+    {
+      "channel": "scroll_scene",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "bt_scene_bt_008",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "最后一劫。",
+            "封神榜，亲自来了。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "它不再是天边的一页纸。",
+            "它化成一只巨手，要把你按回棋盘里。"
+          ]
+        },
+        {
+          "t": "hold",
+          "bg": "void",
+          "prompt": "按住，站着别动",
+          "hold": 4000,
+          "lines": [
+            "巨手压下来。天都暗了。",
+            "你站着。没有动。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "cleanse",
+          "lines": [
+            "巨手停了。",
+            "它发现，按不动你。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "lines": [
+            "榜文上，你的名字，彻底消失了。",
+            "从今往后，你是三界之外的存在。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "混元",
+          "sub": "不入封神榜，不受天庭缚。自成大道，逍遥不灭。"
+        }
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_generic",
+      "lines": [
+        "灵气如丝，缓缓入体。",
+        "呼吸渐深，心湖无波。",
+        "远处山风掠过洞府，松涛低回。",
+        "丹田微暖，道行又深一分。",
+        "杂念沉底，神识渐渐清明。",
+        "周天流转，气机在经脉中低鸣。"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_short_meditation",
+      "lines": [
+        "你的呼吸渐渐与山息合一。",
+        "识海深处，似有一点微光明灭。",
+        "洞外虫鸣忽远忽近，你充耳不闻。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_wild_travel",
+      "lines": [
+        "黑雾在林间游走，你按剑缓行。",
+        "残符的气息从荒庙方向飘来。",
+        "几声妖啸自山坳传出，又归于寂静。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_chentang_patrol",
+      "lines": [
+        "潮雾深处雷声滚动，海风带着腥咸。",
+        "巡海妖兵的残影在浪尖一闪而没。",
+        "陈塘关的灯火在雨幕中明明灭灭。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_kulou_explore",
+      "lines": [
+        "白骨阴火在山道两侧幽幽而燃。",
+        "地脉深处传来极缓的搏动声。",
+        "阴云低垂，照魂碎玉在土中微光闪烁。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_xiqi_patrol",
+      "lines": [
+        "旌旗蔽日，两军阵脚在远处缓缓移动。",
+        "功德金光与劫气黑雾在战场上空交缠。",
+        "你压低气息，沿战场外围拾取遗落的气机。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_shijue_probe",
+      "lines": [
+        "脚下阵纹忽明忽暗，似在试探你的斤两。",
+        "一缕剑意自虚空斩落，你侧身堪堪避过。",
+        "劫气与阵旗残料散落在残阵眼之间。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_huanghe_wade",
+      "lines": [
+        "浊浪翻涌，体内法力被一丝丝削去。",
+        "水底金光一闪，是混元金斗的残骸。",
+        "削境之力最烈处，反藏着三霄遗落的机缘。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_wanxian_walk",
+      "lines": [
+        "虚空中无数道目光投来，万仙残影未散。",
+        "阵旗如林，海雾里隐隐传来碧游宫的钟声。",
+        "你以神识摄来漂浮的万仙遗宝，抽身而退。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_fengshen_climb",
+      "lines": [
+        "头顶榜文金光大盛，真灵被照得发烫。",
+        "神位碎屑如金粉自九天飘落。",
+        "柏鉴的旧影一闪而没，封神功德暗生。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "status_line",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 240,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "insight_hunyuan_contemplate",
+      "lines": [
+        "无量清光入体，一身尘垢尽洗。",
+        "此处榜文照不到，天庭管不到，唯你与道相对。",
+        "道气氤氲，自成天地，逍遥之意自来。"
+      ],
+      "merge_ids": [
+        "insight_generic"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_travel",
+      "title": "山野游历",
+      "lines": [
+        "封神大劫虽未真正降临，但山中已有黑雾游走。\n部分妖物受劫气驱使，开始伤人。\n\n你现在可以离开洞府，在山野边缘拾取机缘。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_spell_system",
+      "title": "术法",
+      "lines": [
+        "真仙之前，你所修仍是术法，不是神通。\n术法虽浅，却足以护你穿过封神大劫最边缘的余波。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_event_system",
+      "title": "机缘",
+      "lines": [
+        "天边榜文碎光初现，天地灵机开始动荡。\n从此闭关、游历、破劫时，都可能遇到机缘。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_treasure_system",
+      "title": "本命法宝",
+      "lines": [
+        "你已成真人，气机足以承载本命法宝。\n法宝不是普通装备，而是护道根基。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_merit_calamity",
+      "title": "功德 / 劫气",
+      "lines": [
+        "功德可以护住真灵，降低榜文牵引。\n劫气可以让你更快变强，但更容易被封神榜感应。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_boss_001",
+      "title": "山野妖首",
+      "lines": [
+        "山中黑雾凝聚，一头妖首受劫气驱使，盘踞荒庙。\n若能将其击败，你将获得更多道行与法器碎片。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_feature_boss_002",
+      "title": "巡海妖将",
+      "lines": [
+        "东海怨潮中浮现巡海妖将残影，受封神劫气驱使而来。\n前往陈塘关外围，可试与之一战。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_spell_page",
+      "lines": [
+        "残破符纸与前人心得，可用于提升你的护道术法。\n真仙之前，你所修仍为术法，还未成神通。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_artifact_shard",
+      "lines": [
+        "大劫外溢，山野旧器残片被震落。\n收集足够残片后，你将有机会获得第一件本命法宝。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_treasure_shard",
+      "lines": [
+        "你已成真人，普通法器难以承载你的气机。\n此后所得残片，可用于强化本命法宝。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_merit",
+      "lines": [
+        "这不是普通善恶值。\n封神大劫中，功德可以护住真灵，降低榜文牵引。\n破劫时，功德会提高成功率。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_calamity",
+      "lines": [
+        "劫气是封神大劫外溢的杀伐之力。\n炼化劫气可以让你更快变强，但也更容易被封神榜感应。"
+      ]
+    },
+    {
+      "channel": "unlock",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "unlock_resource_refine_material",
+      "lines": [
+        "你已成地仙，可借地脉阴火与白骨残玉继续温养法宝。\n当前版本只开放祭炼入口，完整祭炼将在后续版本开启。"
+      ]
+    },
+    {
+      "channel": "float",
+      "tier": "dual",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "sparkle_daoxing",
+      "lines": [
+        "一缕道行入体。",
+        "道行微增，掌心发热。",
+        "灵光入体，道行添了一线。"
+      ]
+    },
+    {
+      "channel": "float",
+      "tier": "dual",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "sparkle_mana",
+      "lines": [
+        "一缕法力归入气海。",
+        "法力微涨，指尖生光。",
+        "灵光化雨，落入气海。"
+      ]
+    },
+    {
+      "channel": "float",
+      "tier": "dual",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "sparkle_tianji",
+      "lines": [
+        "天机入袖。",
+        "一缕天机，落入识海。",
+        "灵光入体，神识微明。"
+      ]
+    },
+    {
+      "channel": "float",
+      "tier": "dual",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "sparkle_multi",
+      "lines": [
+        "灵光并至。",
+        "数缕灵光，同时入体。",
+        "灵光成串，落入袖中。"
+      ]
+    },
+    {
+      "channel": "toast_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "toast_goal_done",
+      "lines": [
+        "手札又了一线。",
+        "道途更进一步。",
+        "这一笔，落得稳。",
+        "因果线上，又解一结。"
+      ]
+    },
+    {
+      "channel": "popup_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "popup_offline_done",
+      "lines": [
+        "出关"
+      ]
+    },
+    {
+      "channel": "popup_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "popup_breakthrough_win",
+      "lines": [
+        "劫过，榜未留名"
+      ]
+    },
+    {
+      "channel": "popup_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "popup_breakthrough_lose",
+      "lines": [
+        "劫未过，道心仍在"
+      ]
+    },
+    {
+      "channel": "popup_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "popup_boss_win",
+      "lines": [
+        "妖邪已伏"
+      ]
+    },
+    {
+      "channel": "popup_title",
+      "tier": "qiyun",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "feedback_id": "popup_boss_lose",
+      "lines": [
+        "且战且退"
+      ]
+    },
+    {
+      "feedback_id": "ending_scene_fengshen",
+      "channel": "scroll_scene",
+      "tier": "endgame",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "你向前一步。",
+            "天庭的门，缓缓开了。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "gold",
+          "fx": "glow",
+          "lines": [
+            "敕令自九天垂落，榜文垂光。",
+            "三百六十五位正神，虚位一席。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "vista",
+          "fx": "rise",
+          "lines": [
+            "人间香火，如线如缕。",
+            "自此，你于天宫之上，看顾它。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "受封天庭",
+          "sub": "榜上有名，劫气不侵。位分定了，缰绳也握了。"
+        }
+      ]
+    },
+    {
+      "feedback_id": "ending_scene_chengsheng",
+      "channel": "scroll_scene",
+      "tier": "endgame",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "杀劫如潮，滚滚而来。",
+            "你没有退。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "fx": "converge",
+          "lines": [
+            "榜文的光，来寻你的真灵——",
+            "你的道体，比榜文更硬。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "cleanse",
+          "lines": [
+            "劫退了。身渡了。",
+            "榜上不录，天庭不名。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "肉身成圣",
+          "sub": "我命由我，不由劫。"
+        }
+      ]
+    },
+    {
+      "feedback_id": "ending_scene_xiaoyao",
+      "channel": "scroll_scene",
+      "tier": "endgame",
+      "budget": {
+        "min_interval": 0,
+        "daily_max": 0,
+        "first_only": false
+      },
+      "fallback_id": "",
+      "beats": [
+        {
+          "t": "black",
+          "lines": [
+            "天庭、封神榜、大教。",
+            "一时俱静。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "void",
+          "fx": "rise",
+          "lines": [
+            "它们终于明白——",
+            "这盘棋，装不下你了。"
+          ]
+        },
+        {
+          "t": "scene",
+          "bg": "dawn",
+          "fx": "glow",
+          "lines": [
+            "大罗之上，再无他法。",
+            "混元之内，自成一天。"
+          ]
+        },
+        {
+          "t": "end",
+          "word": "混元逍遥",
+          "sub": "三界不缚，十方任行。"
+        }
+      ]
+    }
+  ]
+}

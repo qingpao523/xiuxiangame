@@ -24,7 +24,10 @@ const RealmPanelVue = {
       const seatNames = state.god_seats.map((id) => { const s = GOD_SEATS.find((g) => g.id === id); return s ? s.name + "：" + s.desc : ""; });
       seatText = `\n真灵上榜：\n${seatNames.join("\n")}`;
     }
-    const mainNote = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}${rebirthLine}${seatText}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`;
+    // 21.1 §1.4 榜上留名：有留名才显示（与命令式 renderRealmPanel 同口径）
+    const marksN = int(state.list_marks);
+    const marksText = marksN > 0 ? `\n榜上留名：${marksN} 缕——榜文笔下记过的名字，天庭自会差人来问。` : "";
+    const mainNote = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}${rebirthLine}${seatText}${marksText}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`;
     const breakthrough = BreakthroughManager.getAvailable(state);
     const model = {
       mainNote,

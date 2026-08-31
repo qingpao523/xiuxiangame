@@ -8,8 +8,24 @@ const ENEMY_GAP_DAMAGE_MULT = 0.4;
 //   敌攻击力 = 玩家气血 × ENEMY_ATTACK_RATIO × diff → 每回合吃血比例恒定，不再一击必杀。
 const ENEMY_TARGET_ROUNDS = 6;
 const ENEMY_ATTACK_RATIO = 0.35;
+// phase 敌口径（21.1 §1.1，D 线 phase 分支校准）：多段劫战总回合 ≈ 单 Boss 战的 2-3 倍，
+// 吃血/灼烧随段数叠加，故每段血量和每回合压力都要低于 Boss 战同权重的单段值：
+//   HP ×0.8（回合数仍锁 3-8 带）；攻击 ×0.6（灼烧与 power 同源，同口径回落）。
+const PHASE_HP_MULT = 0.8;
+const PHASE_ATK_MULT = 0.6;
 // 体修（本命·体）气血倍率：放置游戏"血量加加"轴（🔴初版）。注意 _powerMult 由 playerHpMax 驱动，高血同时高输出，是否另行削伤留待平衡。
 const BODY_HP_MULT = 1.25;
+// 21.1 §1.2 显示=现实：破劫 breakdown 净值 → 开局罡气（信用修复）。
+// k 标定依据：殷郊 trib_shield 结缘护持 = 气血上限 10% 的开局罡气，是既有的"一劫护持量级"参照；
+// 典型 breakdown 净值（功德上限 0.2 + 法宝 ≤0.12 + 屡败补偿 0.1×N + 跟脚 0.03 + 阵营 0.05 − 劫气上限 0.15）
+// 约 0.15~0.25，取 k=0.5 → 罡气 ≈ 0.075~0.125 × 气血上限，与 trib_shield 量级相称、可叠加不碾压；
+// 净值上限 0.5（罡气 ≤25% 气血 ≈ 1~2 回合吃血缓冲），负净值不注入罡气（视为无护持、基准难度）。
+// feel_lock 行（bt_001 前 30 分钟黄金快照）豁免注入：新手首劫软保底手感零漂移。
+const TRIB_ADV_K = 0.5;
+const TRIB_ADV_NET_CAP = 0.5;
+// 21.1 §1.3 保底兑现：此劫累计败绩（breakthrough_fail_counts）达到 guarantee_after_fail 时，
+// "榜文钝了"——本劫全部 phase 敌 HP ×0.7（攻击力不变）。只钝血不钝牙，败者得到的是喘息不是碾压。
+const PHASE_GUARANTEE_MULT = 0.7;
 
 // ===== 战斗引擎 V2：斗法栏连锁制 =====
 // 配招5分钟，斗法全自动。
@@ -83,12 +99,23 @@ const BattleEngineV2 = {
     // 体修气血更厚（🔴初版）：_powerMult 由 playerHpMax 驱动，故体修高血天然高输出，契合"血量+输出"两轴。
     const playerHpMax = (str(state.benming_school, "") === "body") ? Math.round(playerPower * BODY_HP_MULT) : playerPower;
 
+    // D 线共享口径（台账 v1.3）：与玩家伤害同源，保证回合数不随进度失衡。
+    // 提升为普通敌/破劫 phase 敌两条构建路径共用（21.1 §1.1 phases 还债）。
+    const powerMult = Math.max(1, Math.round(playerHpMax / 200));
+    const dpsEstimate = this._estimatePlayerDps(slots) * powerMult;
+
+    // 21.1 §1.3 保底兑现：此劫败绩已达 guarantee_after_fail → 榜文钝了，phase 敌 HP×0.7。
+    // 只对破劫战生效（杀阵等共用 phase 路径不受影响）；failCount/guarantee 由 confirmBreakthrough 注入 payload。
+    const guaranteeActive = String(cfg.source || "") === "breakthrough"
+      && int(cfg.payload ? cfg.payload.failCount : 0, 0) >= int(cfg.payload ? cfg.payload.guarantee : 99, 99);
+
     // 敌方构建
     const enemies = [];
     if (cfg.phases) {
-      enemies.push(this._mkEnemy(cfg.phases[0].name, Math.round(playerPower * num(cfg.phases[0].power_ratio, 0.8)), cfg.phases[0].pool));
+      // 破劫 phase 敌：power_ratio = 该 phase 的 diff 权重（走 D 线模型，_mkPhaseEnemy）；
+      // feel_lock 行（bt_001 前 30 分钟黄金快照）保留还债前旧公式，手感零漂移。
+      enemies.push(this._mkPhaseEnemy(cfg.phases[0], { feelLock: !!cfg.feelLock, guarantee: guaranteeActive, basePower: playerPower, playerHpMax, dpsEstimate }));
     } else {
-      const powerMult = Math.max(1, Math.round(playerHpMax / 200)); // 与玩家伤害同源，保证回合数不随进度失衡
       // D 线定稿（台账 v1.3）：recommended_power 保持叙事口径（=解锁境界的推荐战力），引擎按「战力比」定难度：
       //   diff = 敌推荐战力/玩家战力（0.3-2 钳制）；
       //   敌攻击力 = 玩家气血 × ENEMY_ATTACK_RATIO × diff → 每回合吃血比例恒定，不再一击必杀；
@@ -97,7 +124,6 @@ const BattleEngineV2 = {
       const diff = rawPower / Math.max(1, playerPower);
       const diffClamped = Math.min(2, Math.max(0.3, diff));
       const atkPower = Math.max(1, Math.round(playerHpMax * ENEMY_ATTACK_RATIO * diffClamped));
-      const dpsEstimate = this._estimatePlayerDps(slots) * powerMult;
       // HP 同样用 diffClamped：压制者碾压有底线（≥1.8 回合），落后者不面对无限血墙（≤12 回合）
       const baseHp = Math.max(1, Math.round(diffClamped * ENEMY_TARGET_ROUNDS * dpsEstimate));
       enemies.push(this._mkEnemy(String(cfg.name || "妖物"), baseHp, null, atkPower));
@@ -132,6 +158,10 @@ const BattleEngineV2 = {
       maxRounds: cfg.maxRounds || 20,
       phases: cfg.phases || null,
       phaseIndex: 0,
+      guaranteeActive: !!guaranteeActive, // 21.1 §1.3：榜文钝了（换段时继续作用于后续 phase 敌）
+      // 21.1 §1.1：bt_001 手感黄金锁（旧公式）；_phaseDps = create 时的每回合输出口径（phase 推进复用）
+      feelLock: !!cfg.feelLock,
+      _phaseDps: dpsEstimate,
       // C 线（design/6.2 维度4）：上场道友（state.lineup）的结缘护持，开战时快照一次
       bondMods: (typeof bondPassiveSum === "function") ? {
         all_dmg: bondPassiveSum(state, "all_dmg"),
@@ -193,6 +223,13 @@ const BattleEngineV2 = {
     // C 线·殷郊结缘护持：破劫斗法开局罡气 = 气血上限 ×10%
     if (battle.source === "breakthrough" && num(battle.bondMods?.trib_shield, 0) > 0) {
       battle.playerBlock += Math.round(battle.playerHpMax * battle.bondMods.trib_shield);
+    }
+    // 21.1 §1.2 显示=现实：breakdown 净值（功德/法宝/屡败/跟脚/阵营 − 劫气）→ 开局罡气，与 trib_shield 叠加。
+    // 面板承诺的因果护持在此兑现为真实战斗优势；feel_lock 行（bt_001 黄金快照）豁免，系数口径见 TRIB_ADV_K 注释。
+    if (battle.source === "breakthrough" && !battle.feelLock) {
+      const advNet = Math.min(TRIB_ADV_NET_CAP, Math.max(0, num(battle.payload.advantage, 0)));
+      if (advNet > 0) battle._advBlock = Math.round(battle.playerHpMax * advNet * TRIB_ADV_K);
+      if (battle._advBlock > 0) battle.playerBlock += battle._advBlock;
     }
 
     // 预掌首轮敌意图：使第1轮夹招也有意图可读（UI 敌行动条需在释放前读到招式名）
@@ -310,6 +347,27 @@ const BattleEngineV2 = {
       weakness: {},
       isAdd: false,
     };
+  },
+
+  // 破劫/大阵 phase 敌构建（21.1 §1.1 phases 还债，数据源=breakthrough_table.phases）：
+  // - feel_lock 行（bt_001，前 30 分钟黄金快照）：保留还债前旧公式（HP=攻击=basePower×power_ratio），
+  //   basePower 首段取 playerPower、换段取 playerHpMax，与旧实现逐位一致，手感零漂移；
+  // - 其余行走 D 线战力比模型：power_ratio = 该 phase 的 diff 权重（0.3-2 钳制），
+  //   HP = 权重×ENEMY_TARGET_ROUNDS×玩家每回合输出，攻击 = 气血×ENEMY_ATTACK_RATIO×权重，
+  //   回合数与吃血比例同 Boss 战一样与境界解耦。
+  _mkPhaseEnemy(phase, m) {
+    const name = String(phase.name);
+    const pool = phase.pool || null;
+    if (m.feelLock) {
+      let hp = Math.max(1, Math.round(m.basePower * num(phase.power_ratio, 0.8)));
+      if (m.guarantee) hp = Math.max(1, Math.round(hp * PHASE_GUARANTEE_MULT)); // 21.1 §1.3 榜文钝了：HP×0.7
+      return this._mkEnemy(name, hp, pool, hp);
+    }
+    const w = Math.min(2, Math.max(0.3, num(phase.power_ratio, 0.8)));
+    let hp = Math.max(1, Math.round(w * ENEMY_TARGET_ROUNDS * m.dpsEstimate * PHASE_HP_MULT));
+    if (m.guarantee) hp = Math.max(1, Math.round(hp * PHASE_GUARANTEE_MULT)); // 21.1 §1.3 榜文钝了：HP×0.7（攻击不变）
+    const atk = Math.max(1, Math.round(m.playerHpMax * ENEMY_ATTACK_RATIO * w * PHASE_ATK_MULT));
+    return this._mkEnemy(name, hp, pool, atk);
   },
 
   _applyStartBuffs(state, battle) {
@@ -1681,7 +1739,7 @@ const BattleEngineV2 = {
     if (battle.phases && battle.phaseIndex < battle.phases.length - 1) {
       battle.phaseIndex += 1;
       const phase = battle.phases[battle.phaseIndex];
-      battle.enemies = [this._mkEnemy(phase.name, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)), phase.pool, Math.round(battle.playerHpMax * num(phase.power_ratio, 0.8)))];
+      battle.enemies = [this._mkPhaseEnemy(phase, { feelLock: !!battle.feelLock, guarantee: !!battle.guaranteeActive, basePower: battle.playerHpMax, playerHpMax: battle.playerHpMax, dpsEstimate: num(battle._phaseDps, 1) })];
       events.push({ type: "phase_advance", name: phase.name, intro: phase.intro });
     } else {
       battle.done = true;

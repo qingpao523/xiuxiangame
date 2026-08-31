@@ -16,6 +16,7 @@ const { authMiddleware } = require("../auth");
 const { opTick, opLevelUp, opBreakthrough, opBossBattle } = require("../game-runtime");
 const { rateLimit } = require("../middleware/rate-limit");
 const { deriveProfile } = require("./leaderboard");
+const { track } = require("../telemetry"); // 21.6 S1 漏斗埋点（write-only，字段白名单，失败静默）
 
 const router = express.Router();
 // 注意：不用 router.use(authMiddleware) —— 本 router 挂载在 /api 下，
@@ -38,12 +39,14 @@ async function persistState(req, state, combatPower) {
 }
 
 // 统一包装：读 state → 跑 op → 落库 → 返回 { state, result }
-function wrap(opFn) {
+// trackFn（可选，21.6 S1）：落库后记漏斗节点；埋点失败静默，不影响响应。
+function wrap(opFn, trackFn) {
   return async (req, res) => {
     const doc = await loadPlayer(req);
     if (!doc) return res.status(404).json({ error: "player not found" });
     const { state, result } = await opFn(doc.state || null, req.body || {});
     if (state) await persistState(req, state, result && result.combat_power);
+    if (trackFn) { try { trackFn(state, result || {}, req.body || {}); } catch (e) { /* 埋点静默 */ } }
     res.json({ ok: true, result, state });
   };
 }
@@ -56,10 +59,21 @@ const bossLimiter = rateLimit({ windowMs: 60000, max: 30 });
 
 router.post("/action/tick", authMiddleware, tickLimiter, wrap((state, body) => opTick(state, body)));
 
-router.post("/progress/levelup", authMiddleware, levelLimiter, wrap((state, body) => opLevelUp(state, body)));
+router.post("/progress/levelup", authMiddleware, levelLimiter, wrap(
+  (state, body) => opLevelUp(state, body),
+  (state) => track("realm_up", { realm_id: state && state.realm_id })
+));
 
-router.post("/progress/breakthrough", authMiddleware, breakLimiter, wrap((state, body) => opBreakthrough(state, body)));
+router.post("/progress/breakthrough", authMiddleware, breakLimiter, wrap(
+  (state, body) => opBreakthrough(state, body),
+  (state, result) => track(result && result.win ? "breakthrough_win" : "breakthrough_lose",
+    { bt_id: result && result.bt_id, win: !!(result && result.win), realm_id: state && state.realm_id })
+));
 
-router.post("/battle/boss", authMiddleware, bossLimiter, wrap((state, body) => opBossBattle(state, String(body.bossId || ""), body)));
+router.post("/battle/boss", authMiddleware, bossLimiter, wrap(
+  (state, body) => opBossBattle(state, String(body.bossId || ""), body),
+  (state, result, body) => track(result && result.win ? "boss_win" : "boss_lose",
+    { boss_id: String(body.bossId || ""), win: !!(result && result.win), realm_id: state && state.realm_id })
+));
 
 module.exports = { router };

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "table": "breakthrough_table",
   "generated_at": "2026-06-30T00:22:16.000128Z",
-  "description": "MVP 两次破劫数据：炼气士到真人、真人到地仙。",
+  "description": "八关破劫数据（炼气→混元）：phases 为劫战阶段唯一数据源，power_ratio=该阶段 diff 权重（D 线战力比模型），pool 键解析自 constants.TRIBULATION_INTENT_POOLS。bt_001 feel_lock=前30分钟手感黄金锁（引擎保留旧公式）。",
   "rows": [
     {
       "breakthrough_id": "bt_001",
@@ -11,17 +11,31 @@
       "display_name": "破真人劫",
       "base_success_rate": 0.75,
       "min_success_rate": 0.95,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 800,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "榜文微照",
-      "newbie_protection": true,
-      "breakthrough_lore": "天边榜文只是远远闪现。若能稳住灵台，便可洗去凡尘浊气，炼成真人道体。",
-      "success_text": "榜文碎光自天边掠过，未能照出你的真灵。你炼气入骨，终于踏入真人之境。",
-      "fail_text": "榜文碎光一闪，你的道心微震。但这一劫并未毁去道行，反而让你窥见破劫之法。",
+      "feel_lock": true,
+      "breakthrough_lore": "天边榜文只是远远闪现，光未及身。若能稳住灵台，洗去凡尘浊气，便可炼成真人道体。",
+      "success_text": "榜文碎光一掠而过，未能照出你的真名。你炼气入骨，踏入真人之境。",
+      "fail_text": "榜文碎光一闪，道心微震。这一劫未散道行，反让你窥见破劫门径。余光里，它似对你的真灵多看了一眼。",
+      "phases": [
+        {
+          "name": "榜文碎光",
+          "power_ratio": 0.75,
+          "intro": "天边榜文碎光凝聚，化作一轮金影，遥遥照住你的灵台。",
+          "pool": "suiguang"
+        },
+        {
+          "name": "金影照灵",
+          "power_ratio": 0.95,
+          "intro": "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。",
+          "pool": "jinying"
+        }
+      ],
       "success_rewards": {
         "unlock_ids": [
           "treasure_system",
@@ -41,17 +55,36 @@
       "display_name": "破地仙劫",
       "base_success_rate": 0.6,
       "min_success_rate": 0.4,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 22000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "榜文牵引",
-      "newbie_protection": false,
-      "breakthrough_lore": "封神榜文照身，真灵受到牵引。若能以道行、功德与法宝护住灵台，便可破劫成地仙。",
-      "success_text": "榜文照身而过，未能留名。你道体初成，灵台清明，已可称地上之仙。",
-      "fail_text": "榜文金光照入泥丸宫，你的真灵一瞬震荡，幸而本命法宝护住灵台，道行未散。",
+      "breakthrough_lore": "榜文停在你的头顶，牵引真灵。唯有道行、功德与法宝，能护住灵台。挡回那一笔，便是地仙。",
+      "success_text": "榜文照身而过，笔锋终究未能成名。榜外散修，道体初成，已可称地上之仙。",
+      "fail_text": "榜文金光照入泥丸宫，真灵被牵了一瞬。法宝护住灵台，道行未散。那笔锋迟迟未落，似在记你的真灵。",
+      "phases": [
+        {
+          "name": "榜文碎光",
+          "power_ratio": 0.55,
+          "intro": "榜文碎光自九天垂落，劫云在你顶门凝成漩涡。",
+          "pool": "suiguang"
+        },
+        {
+          "name": "金影照灵",
+          "power_ratio": 0.7,
+          "intro": "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。",
+          "pool": "jinying"
+        },
+        {
+          "name": "封神一瞥",
+          "power_ratio": 0.8,
+          "intro": "榜文尽头金光大盛，似有一双眼睛抬起，朝你看来。",
+          "pool": "yipie"
+        }
+      ],
       "success_rewards": {
         "unlock_ids": [
           "earth_pulse",
@@ -72,17 +105,36 @@
       "display_name": "破真仙劫",
       "base_success_rate": 0.58,
       "min_success_rate": 0.38,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 430000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "杀劫初临",
-      "newbie_protection": false,
-      "breakthrough_lore": "天仙圆满，杀劫初临。封神大劫的边缘已不是余波，而是真正的杀机。榜文照身，劫气缠体，唯有用术法、法宝与功德护住真灵，方能破劫成真仙。",
-      "success_text": "杀劫之气被你压入丹田，三花初现之兆已显。从此术法不再是术法，而是神通。",
-      "fail_text": "杀劫反噬，劫气入骨。幸而本命法宝护住灵台，道行未散。再来。",
+      "breakthrough_lore": "天仙圆满，杀劫初临。劫气自地缝渗出，榜文照身欲落笔。唯以功德与法宝护持真灵，方能破劫腾身。",
+      "success_text": "杀劫之气被你压入丹田，腾身云表。大劫的边缘在你脚下展开，再够不到你的衣角。",
+      "fail_text": "杀劫反噬，劫气入骨，你跌回尘中。法宝护住灵台，道行未散。榜文上你的名姓旁，似多添了一笔。",
+      "phases": [
+        {
+          "name": "劫气缠体",
+          "power_ratio": 0.6,
+          "intro": "劫气如丝缠体，越挣越紧。",
+          "pool": "shajie"
+        },
+        {
+          "name": "杀劫初临",
+          "power_ratio": 0.75,
+          "intro": "杀劫初临，锋芒直指真灵。",
+          "pool": "shajie"
+        },
+        {
+          "name": "榜文照身",
+          "power_ratio": 0.85,
+          "intro": "榜文照身，似要在你名下落笔。",
+          "pool": "yipie"
+        }
+      ],
       "success_rewards": {
         "unlock_ids": [
           "spell_tier4"
@@ -101,17 +153,36 @@
       "display_name": "破金仙劫",
       "base_success_rate": 0.55,
       "min_success_rate": 0.35,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 7700000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 3,
-      "pressure_label": "五气朝元",
-      "newbie_protection": false,
-      "breakthrough_lore": "真仙圆满，五气朝元。三花聚顶之际，五行五气在体内冲撞，榜文趁机全力照身。这是封神大劫中第一次真正的考验——撑过去，便是金仙。",
-      "success_text": "三花聚顶，五气朝元。金仙道果初成，封神榜上，你的名字开始发光——但你没有让它写下去。",
-      "fail_text": "五气冲撞太烈，三花未能聚顶。榜文金光趁虚而入，幸而法宝与功德护住真灵。再来。",
+      "pressure_label": "三花聚顶",
+      "breakthrough_lore": "真仙圆满，三花聚顶，五气初朝。五行在体内冲撞，榜文趁虚全力照身。撑过去，便是金仙道果。",
+      "success_text": "三花开于顶门，五气归于朝元。封神榜望见你的名字，却未能写下一笔。",
+      "fail_text": "五气冲撞太烈，三花未能尽开。金光趁虚，功德与法宝强护真灵。榜文多照了你片刻，似在记你的名字。",
+      "phases": [
+        {
+          "name": "五行冲撞",
+          "power_ratio": 0.6,
+          "intro": "五行逆乱，在经脉中互相攻伐。",
+          "pool": "jinying"
+        },
+        {
+          "name": "五气朝元",
+          "power_ratio": 0.75,
+          "intro": "五气朝元，冲顶之际最为凶险。",
+          "pool": "jinying"
+        },
+        {
+          "name": "金光趁虚",
+          "power_ratio": 0.9,
+          "intro": "榜文金光趁虚而入，直取灵台。",
+          "pool": "yipie"
+        }
+      ],
       "success_rewards": {
         "unlock_ids": [
           "map_005",
@@ -133,17 +204,36 @@
       "display_name": "破太乙劫",
       "base_success_rate": 0.52,
       "min_success_rate": 0.32,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 156000000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 3,
-      "pressure_label": "大道试问",
-      "newbie_protection": false,
-      "breakthrough_lore": "金仙圆满，大道试问。不是雷劫，不是杀劫——是大道本身在问你：你的道，是什么？答错了，道基崩碎。答对了，太乙玄妙自现。",
-      "success_text": "你答出了自己的道。大道无言，但你知道，它听见了。太乙玄妙，从此可窥。",
-      "fail_text": "你答错了。或者说，你还没想清楚。道基震裂，但未碎。再来。",
+      "pressure_label": "五气朝元",
+      "breakthrough_lore": "五气已朝元，大道降下一问。不是雷劫，不是杀劫，只问：你的道是什么。答对，太乙玄妙自现；答错，道基震裂。",
+      "success_text": "五气既朝元，那一问你也答上了。大道无言，榜文远远收起了笔锋。太乙玄妙，自此可窥。",
+      "fail_text": "五气归元，可那一问你未能答上。道基震裂，却未碎。问声余处，榜文似又看了你的真灵一眼。",
+      "phases": [
+        {
+          "name": "大道垂问",
+          "power_ratio": 0.65,
+          "intro": "大道无言，却有一问落入心田。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "道基试裂",
+          "power_ratio": 0.8,
+          "intro": "一答未稳，道基裂出细纹。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "玄妙自现",
+          "power_ratio": 0.95,
+          "intro": "答对的一瞬，太乙玄妙自现。",
+          "pool": "shiwen"
+        }
+      ],
       "success_rewards": {
         "unlock_ids": [
           "map_007",
@@ -165,28 +255,48 @@
       "display_name": "大罗劫",
       "base_success_rate": 0.55,
       "min_success_rate": 0.4,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 4160000000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "大道试问",
-      "newbie_protection": false,
-      "breakthrough_lore": "太乙圆满，大道试问。不是雷劫，不是杀劫——是大道本身在问你：你的道，是什么？答错了，道基崩碎。答对了，因果不沾。",
-      "success_text": "你答出了自己的道。大道无言，但你知道，它听见了。因果之线，一根根断裂。你跳出了因果。",
-      "fail_text": "你答错了。或者说，你还没想清楚。道基震裂，但未碎。再来。",
+      "breakthrough_lore": "太乙圆满，大道试问。榜文之下，精气神心四问接踵。答对，因果之线根根断裂；答错，道基当场崩碎。",
+      "success_text": "你答出了自己的道。因果之线一根根断裂，你跳出了因果。榜文远远望着你，终究没有落笔。",
+      "fail_text": "四问未答，道基震裂。但未碎——道还在你心里。静默之中，榜文似又看了你一眼。",
       "phases": [
-        "大道试问·精",
-        "大道试问·气",
-        "大道试问·神",
-        "大道试问·心"
+        {
+          "name": "大道试问·精",
+          "power_ratio": 0.6,
+          "intro": "大道垂问：尔之精，可堪一试。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "大道试问·气",
+          "power_ratio": 0.7,
+          "intro": "再问尔气，周天流转可曾断绝。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "大道试问·神",
+          "power_ratio": 0.8,
+          "intro": "三问尔神，榜文之下可敢自名。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "大道试问·心",
+          "power_ratio": 0.95,
+          "intro": "末问尔心，沾不沾因果。",
+          "pool": "shiwen"
+        }
       ],
       "success_rewards": {
         "unlock_ids": [
           "boss_019",
           "boss_020"
-        ]
+        ],
+        "title": "跳出因果"
       },
       "fail_rewards": {
         "fail_bonus_next": 0.1,
@@ -200,28 +310,53 @@
       "display_name": "准圣劫",
       "base_success_rate": 0.5,
       "min_success_rate": 0.4,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 114000000000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "因果反噬",
-      "newbie_protection": false,
-      "breakthrough_lore": "大罗圆满，因果反噬。你跳出因果的那一刻，所有被你斩断的因果同时反噬。过去、现在、未来，三世因果化为一击，朝你砸来。",
-      "success_text": "三世因果碎尽，你斩却第一尸。准圣道果初成。从此，因果不沾，轮回不入。",
-      "fail_text": "因果反噬太重，你被砸回大罗。但道基未碎——你只是还没准备好。",
+      "breakthrough_lore": "你跳出因果的那一刻，所斩因果同时反噬。过去、现在、未来，三世合为一击。榜文在旁静观，等你力竭。",
+      "success_text": "三世因果碎尽，你斩却第一尸。自此因果不沾，轮回不入。榜文那一笔，钝了几分。",
+      "fail_text": "因果反噬太重，你被砸回因果网中。道基未碎，只是还未准备好。榜文一闪，似将你力竭的名姓记下了一瞬。",
       "phases": [
-        "过去因",
-        "现在果",
-        "未来劫",
-        "三世归一",
-        "斩尸"
+        {
+          "name": "过去因",
+          "power_ratio": 0.55,
+          "intro": "昔日斩断的因果，自过去追索而来。",
+          "pool": "yipie"
+        },
+        {
+          "name": "现在果",
+          "power_ratio": 0.65,
+          "intro": "当下承受的，正是当年种下的果。",
+          "pool": "yipie"
+        },
+        {
+          "name": "未来劫",
+          "power_ratio": 0.75,
+          "intro": "未来之劫提前显形，堵死去路。",
+          "pool": "shajie"
+        },
+        {
+          "name": "三世归一",
+          "power_ratio": 0.85,
+          "intro": "三世因果归于一击，榜文在旁静观。",
+          "pool": "yipie"
+        },
+        {
+          "name": "斩尸",
+          "power_ratio": 1,
+          "intro": "斩却一尸，方能脱出因果罗网。",
+          "pool": "shajie"
+        }
       ],
       "success_rewards": {
         "unlock_ids": [
           "boss_022"
-        ]
+        ],
+        "title": "斩却一尸"
       },
       "fail_rewards": {
         "fail_bonus_next": 0.1,
@@ -235,28 +370,53 @@
       "display_name": "混元劫",
       "base_success_rate": 0.45,
       "min_success_rate": 0.4,
-      "max_success_rate": 1.0,
+      "max_success_rate": 1,
       "required_daoxing": 3100000000000,
       "merit_bonus_cap": 0.2,
       "calamity_penalty_cap": 0.15,
       "fail_bonus": 0.1,
       "guarantee_after_fail": 2,
       "pressure_label": "封神榜全力压制",
-      "newbie_protection": false,
-      "breakthrough_lore": "准圣圆满，封神终试。封神榜全力压制——不是要你上榜，是要试你有没有资格不入榜。榜文化为九天金雷，三尸化为三道心魔，天道化为一只无形的手，要把你按回棋盘里。",
-      "success_text": "你挣脱了。封神榜上，你的名字彻底消失。从此，你是三界之外的存在。混元道果，自成大道。",
-      "fail_text": "榜文把你按了回去。你离混元只差一步——但那一步，是最远的。再来。",
+      "breakthrough_lore": "准圣圆满，封神终试。封神榜全力压制。不是要你上榜，是试你有没有资格不入榜。金雷落九天，三尸噬心，天道之手按顶。",
+      "success_text": "金雷竭，三尸散，你挣脱了。封神榜上，你的名字彻底消失。自此，你是三界之外的存在，混元道果，自成大道。",
+      "fail_text": "榜文把你按回了棋盘。离混元只差一步，可那一步最远。你的真灵，被榜文看了很久。",
       "phases": [
-        "榜文金雷",
-        "执念尸",
-        "欲望尸",
-        "恐惧尸",
-        "天道之手"
+        {
+          "name": "榜文金雷",
+          "power_ratio": 0.6,
+          "intro": "九天金雷自榜文中劈落。",
+          "pool": "yipie"
+        },
+        {
+          "name": "执念尸",
+          "power_ratio": 0.7,
+          "intro": "执念化尸，口诵你放不下的名字。",
+          "pool": "shajie"
+        },
+        {
+          "name": "欲望尸",
+          "power_ratio": 0.8,
+          "intro": "欲望化尸，诱你重回红尘。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "恐惧尸",
+          "power_ratio": 0.9,
+          "intro": "恐惧化尸，照见你最深处的怯。",
+          "pool": "shiwen"
+        },
+        {
+          "name": "天道之手",
+          "power_ratio": 1,
+          "intro": "无形大手按下，要把你按回棋盘。",
+          "pool": "yipie"
+        }
       ],
       "success_rewards": {
         "unlock_ids": [
           "map_009"
-        ]
+        ],
+        "title": "混元道果"
       },
       "fail_rewards": {
         "fail_bonus_next": 0.1,

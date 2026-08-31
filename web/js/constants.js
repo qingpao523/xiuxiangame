@@ -24,6 +24,9 @@ const ID_FIELDS = {
   minigame_table: "minigame_id",
   beat_table: "beat_id",
   chain_table: "chain_id",
+  pill_table: "pill_id",
+  feedback_table: "feedback_id",
+  witness_table: "witness_id", // 21.3 §3.3 E4 见闻录（T-F）
 };
 
 const REALM_NAME_TO_ID = {
@@ -171,19 +174,22 @@ const TRIBULATION_INTENT_POOLS = {
     { type: "curse_burn", w: 25, ratio: 0.04, label: "留名之厄", short: "留名", element: "calamity", wuxing: "fire" },
     { type: "block", w: 10, ratio: 0.12, label: "榜文垂光", short: "垂光", element: "soul", wuxing: "water" },
   ],
+  // 杀劫池（bt_003 起）：杀劫初临/劫气缠体，词与 ratio 均出自各关既有 lore
+  shajie: [
+    { type: "attack", w: 45, ratio: [0.2, 0.28], label: "杀劫锋芒", short: "锋芒", element: "calamity", wuxing: "metal" },
+    { type: "charge", w: 25, label: "杀机大盛，直指真灵", short: "杀机", wuxing: "wood" },
+    { type: "curse_burn", w: 20, ratio: 0.04, label: "劫气灼身", short: "劫气", element: "calamity", wuxing: "fire" },
+    { type: "block", w: 10, ratio: 0.1, label: "劫气护体", short: "护体", element: "soul", wuxing: "earth" },
+  ],
+  // 试问池（bt_005 起）：大道试问/道基试裂，诅咒偏重型
+  shiwen: [
+    { type: "curse_weak", w: 35, label: "道心叩问", short: "叩问", element: "soul", wuxing: "water" },
+    { type: "attack", w: 35, ratio: [0.18, 0.24], label: "道音震灵", short: "道音", element: "soul", wuxing: "metal" },
+    { type: "charge", w: 15, label: "大道沉吟", short: "沉吟", wuxing: "wood" },
+    { type: "block", w: 15, ratio: 0.1, label: "玄光护灵", short: "玄光", element: "soul", wuxing: "earth" },
+  ],
 };
 
-const TRIBULATION_PHASES = {
-  bt_001: [
-    { name: "榜文碎光", power_ratio: 0.75, intro: "天边榜文碎光凝聚，化作一轮金影，遥遥照住你的灵台。", pool: TRIBULATION_INTENT_POOLS.suiguang },
-    { name: "金影照灵", power_ratio: 0.95, intro: "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。", pool: TRIBULATION_INTENT_POOLS.jinying },
-  ],
-  bt_002: [
-    { name: "榜文碎光", power_ratio: 0.6, intro: "榜文碎光自九天垂落，劫云在你顶门凝成漩涡。", pool: TRIBULATION_INTENT_POOLS.suiguang },
-    { name: "金影照灵", power_ratio: 0.75, intro: "碎光重聚，榜文化作金影——一笔一划，皆似要写下你的名字。", pool: TRIBULATION_INTENT_POOLS.jinying },
-    { name: "封神一瞥", power_ratio: 0.9, intro: "榜文尽头金光大盛，似有一双眼睛抬起，朝你看来。", pool: TRIBULATION_INTENT_POOLS.yipie },
-  ],
-};
 
 const OMENS = [
   {
@@ -223,30 +229,17 @@ const OMENS = [
   },
 ];
 
-const RESOURCE_UNLOCK_TEXT = {
-  spell_page: "术法残页出现！\n\n残破符纸与前人心得，可用于提升你的护道术法。\n真仙之前，你所修仍为术法，还未成神通。",
-  artifact_shard: "法器碎片出现！\n\n大劫外溢，山野旧器残片被震落。\n收集足够残片后，你将有机会获得第一件本命法宝。",
-  treasure_shard: "法宝碎片出现！\n\n你已成真人，普通法器难以承载你的气机。\n此后所得残片，可用于强化本命法宝。",
-  merit: "功德出现！\n\n这不是普通善恶值。\n封神大劫中，功德可以护住真灵，降低榜文牵引。\n破劫时，功德会提高成功率。",
-  calamity: "劫气出现！\n\n劫气是封神大劫外溢的杀伐之力。\n炼化劫气可以让你更快变强，但也更容易被封神榜感应。",
-  refine_material: "祭炼材料出现！\n\n你已成地仙，可借地脉阴火与白骨残玉继续温养法宝。\n当前版本只开放祭炼入口，完整祭炼将在后续版本开启。",
-};
-
-const FEATURE_UNLOCK_TEXT = {
-  travel: { name: "山野游历", body: "封神大劫虽未真正降临，但山中已有黑雾游走。\n部分妖物受劫气驱使，开始伤人。\n\n你现在可以离开洞府，在山野边缘拾取机缘。" },
-  spell_system: { name: "术法", body: "真仙之前，你所修仍是术法，不是神通。\n术法虽浅，却足以护你穿过封神大劫最边缘的余波。" },
-  event_system: { name: "机缘", body: "天边榜文碎光初现，天地灵机开始动荡。\n从此闭关、游历、破劫时，都可能遇到机缘。" },
-  treasure_system: { name: "本命法宝", body: "你已成真人，气机足以承载本命法宝。\n法宝不是普通装备，而是护道根基。" },
-  merit_calamity: { name: "功德 / 劫气", body: "功德可以护住真灵，降低榜文牵引。\n劫气可以让你更快变强，但更容易被封神榜感应。" },
-  boss_001: { name: "山野妖首", body: "山中黑雾凝聚，一头妖首受劫气驱使，盘踞荒庙。\n若能将其击败，你将获得更多道行与法器碎片。" },
-  boss_002: { name: "巡海妖将", body: "东海怨潮中浮现巡海妖将残影，受封神劫气驱使而来。\n前往陈塘关外围，可试与之一战。" },
-};
+// 解锁文案已数据化：web/data/feedback_table.json 的 unlock_feature_* / unlock_resource_*
+// 条目（design/21.2 L1-2），经 FeedbackRenderer 读取，此处不再内嵌文案池。
 
 const FIRST_TREASURE_CHOICES = ["treasure_001", "treasure_002", "treasure_003"];
 
 const CAP_NOTICE_TEXT = "你已破开地仙劫，立身天仙·初期，暂时挣脱榜文牵引。\n再往前，便是天仙中境之路。\n\n天仙篇将开启：\n· 真正进入封神大劫\n· 术法进阶为神通\n· 法宝祭炼深化\n· 封神榜残影挑战\n· 骷髅山深处与陈塘因果\n\n当前版本暂时开放至天仙·初期。\n你仍可继续游历骷髅山边界，收集祭炼材料与法宝碎片。";
 
 const BOSS_DAILY_LIMIT = 3;
+
+// 21.6 L2 榜上留书：外部反馈表单 URL（问卷星/钉表单，运营配置后填入；空串=榜未张挂）
+const FEEDBACK_FORM_URL = "";
 
 
 // P0-A: 本命流派战斗风格被动（真仙破劫时五选一，不可逆）

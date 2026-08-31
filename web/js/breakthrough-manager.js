@@ -56,18 +56,24 @@ const BreakthroughManager = {
     return num(state.resources.daoxing) >= num(data.required_daoxing);
   },
 
-  // 破劫斗法胜利：扣道行、入新境、解锁
-  applyVictory(state, data) {
+  // 破劫斗法胜利：扣道行、入新境、解锁、授名位
+  // opts.skipTitle（21.1 §1.6 替身代形）：败转胜者骗过定数、骗不过自己的道——名位不授，其余照授。
+  applyVictory(state, data, opts) {
     const required = num(data.required_daoxing);
     state.resources.daoxing = Math.max(0, num(state.resources.daoxing) - required);
     state.realm_id = String(data.to_realm || state.realm_id);
     state.breakthrough_fail_counts[String(data.breakthrough_id)] = 0;
     UnlockManager.add(state, data.success_rewards?.unlock_ids || []);
+    const title = str(data.success_rewards?.title, "");
+    if (title && !(opts && opts.skipTitle)) UnlockManager.add(state, ["title_" + title]);
   },
 
   // 破劫斗法失利：劫火淬体（失败补偿累计）+ 法力小补，道行不散
+  // 21.1 §1.4 榜上留名：破劫败 = 榜文亲笔记一笔（list_marks +1，只增不减、只给正反馈）。
+  // C2 口径铁律：唯破劫败走此路；Boss/杀阵/遭遇败走 game.js awardGodSeat（真灵化神位），两链路互不污染。
   applyDefeat(state, data) {
     const id = String(data.breakthrough_id || "");
+    state.list_marks = int(state.list_marks) + 1;
     // 五庄观地仙之祖护持：破劫失败补偿翻倍（fail_counts +2，design/7.0 身份层）
     const failInc = str(state.faction_id, "") === "wuzhuang" ? 2 : 1;
     state.breakthrough_fail_counts[id] = int(state.breakthrough_fail_counts[id]) + failInc;

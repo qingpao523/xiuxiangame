@@ -115,7 +115,7 @@ const BATTLE_LOAD_ORDER = [
 // 完整逻辑层（Step 2 起用；仍剔除 DOM/UI：audio-manager/battle-ui-v2/scroll-scene/
 // atmosphere/world-scroll/world-map/ui-constants/ui/game.js）。
 const FULL_LOGIC_LOAD_ORDER = [
-  "utils.js", "constants.js", "data-manager.js", "realm-manager.js", "save-manager.js",
+  "utils.js", "constants.js", "data-manager.js", "feedback-renderer.js", "realm-manager.js", "save-manager.js",
   "unlock-manager.js", "event-manager.js", "reward-manager.js", "action-manager.js",
   "goal-manager.js", "boss-manager.js", "breakthrough-manager.js", "resonance-system.js",
   "skill-identity.js", "battle-engine-v2.js", "boss-mechanics-v2.js", "liupai-manager.js",
@@ -167,7 +167,7 @@ function makeNoopStub() {
 // Step2 起：game.js 及其依赖的逻辑层加载序（镜像 index.html 相对顺序）。
 // 剔除 DOM/UI/表现层；ContentDirector、GameplayEngine 在 game.js 中均带 typeof 守卫，CraftMinigame 仅注释，故可省略。
 const GAME_LOAD_ORDER = [
-  "utils.js", "constants.js", "data-manager.js", "realm-manager.js", "save-manager.js",
+  "utils.js", "constants.js", "data-manager.js", "feedback-renderer.js", "realm-manager.js", "save-manager.js",
   "unlock-manager.js", "event-manager.js", "reward-manager.js", "action-manager.js",
   "goal-manager.js", "boss-manager.js", "breakthrough-manager.js", "resonance-system.js",
   "skill-identity.js", "battle-engine-v2.js", "boss-mechanics-v2.js", "liupai-manager.js",

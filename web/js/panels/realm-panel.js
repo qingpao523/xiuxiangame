@@ -20,7 +20,28 @@ function renderRealmPanel(body, state) {
     const seatNames = state.god_seats.map((id) => { const s = GOD_SEATS.find((g) => g.id === id); return s ? s.name + "：" + s.desc : ""; });
     seatText = `\n真灵上榜：\n${seatNames.join("\n")}`;
   }
-  body.appendChild(note(`${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}${rebirthLine}${seatText}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`));
+  // 21.1 §1.4 榜上留名：有留名才显示（N=0 不显示——榜上无名留白，且黄金快照零漂移）
+  const marksN = int(state.list_marks);
+  const marksText = marksN > 0 ? `\n榜上留名：${marksN} 缕——榜文笔下记过的名字，天庭自会差人来问。` : "";
+  body.appendChild(note(`${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}\n寿元：${getRealmLifespan(realm)}\n${factionLine}${rebirthLine}${seatText}${marksText}\n\n${realm.visual_state || ""}\n\n${realm.lore_text || ""}\n\n道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}　战力 ${formatInt(RealmManager.getCombatPower(state))}`));
+  // 21.3 §3.4 S1 名位档案：多维画像，不是单一可比标量（R1 护栏：档案腔，非进度逼迫）；全空不渲染（新号零负担）
+  const witnessedN = Array.isArray(state.witnessed) ? state.witnessed.length : 0;
+  const seatsSeen = Array.isArray(rb.god_seats_seen) ? rb.god_seats_seen.length : 0;
+  const endingRow = str(state.ending_id, "") ? DataManager.getById("unlock_table", "ending_" + str(state.ending_id, "")) : {};
+  const hasArchive = marksN > 0 || (state.god_seats || []).length > 0 || witnessedN > 0 || int(rb.count) > 0 || Object.keys(endingRow).length > 0 || num(state.resources.merit) > 0;
+  if (hasArchive) {
+    const seatRows = DataManager.getRows("god_seat_table");
+    const totalSeats = seatRows.length || 36;
+    const archiveLines = [
+      `榜上留名：${marksN} 缕——榜文笔下，自有记认`,
+      `功德：${formatInt(num(state.resources.merit))}——顺天护生所得清明之力`,
+      `神位：此生 ${(state.god_seats || []).length}/6 部｜历世档案 ${seatsSeen}/${totalSeats} 位`,
+      `见闻：${witnessedN} 条众生结局入眼`,
+      `历世：${int(rb.count)} 世｜道痕 ${int(rb.daohen)} 点`,
+    ];
+    if (Object.keys(endingRow).length) archiveLines.push(`结局：${endingRow.unlock_name}——名位已定，道果已成`);
+    body.appendChild(note(`名位档案（劫中之我，非数字可量）：\n${archiveLines.join("\n")}`));
+  }
   const breakthrough = BreakthroughManager.getAvailable(state);
   if (Object.keys(breakthrough).length) {
     body.appendChild(note(`${breakthrough.pressure_label || "劫将至"}：${breakthrough.breakthrough_lore || ""}`));

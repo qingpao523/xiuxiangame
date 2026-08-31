@@ -1,0 +1,668 @@
+{
+  "schema_version": "0.1.0",
+  "table": "witness_table",
+  "generated_at": "2026-08-31T00:00:00Z",
+  "description": "见闻录条目表（design/21.3 §3.3 E4）：玩家作为封神大劫见证者收集的众生相。每条挂 lore_anchor（可溯源封神实体）+ witness_text（≤25字）。state.witnessed 只存 witness_id（可序列化标量）；seen 式去重，同一条目一世只触发一次。首批两类：31 Boss 首杀 + 19 同伴结缘；事件类见证留写入结构不留行（不硬凑）。",
+  "rows": [
+    {
+      "witness_id": "boss_boss_001",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_001",
+      "lore_anchor": "山野妖首",
+      "witness_text": "妖首伏诛。它本是山野精怪，被劫气驱疯了。",
+      "source": "boss_table.json#boss_001"
+    },
+    {
+      "witness_id": "boss_boss_002",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_002",
+      "lore_anchor": "巡海妖将",
+      "witness_text": "巡海妖将的残影散入东海。怨潮，又退了一分。",
+      "source": "boss_table.json#boss_002"
+    },
+    {
+      "witness_id": "boss_boss_003",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_003",
+      "lore_anchor": "白骨残影",
+      "witness_text": "石矶的余阴散了，骷髅山多了一堆真正的白骨。",
+      "source": "boss_table.json#boss_003"
+    },
+    {
+      "witness_id": "boss_boss_004",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_004",
+      "lore_anchor": "黑风老妖",
+      "witness_text": "黑风老妖倒下了。它修行百年，只为躲这场劫。",
+      "source": "boss_table.json#boss_004"
+    },
+    {
+      "witness_id": "boss_boss_005",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_005",
+      "lore_anchor": "东海龙兵",
+      "witness_text": "哪吒闹海之后，这是第一个不肯认命的龙兵。",
+      "source": "boss_table.json#boss_005"
+    },
+    {
+      "witness_id": "boss_boss_006",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_006",
+      "lore_anchor": "西岐先锋",
+      "witness_text": "先锋官坠下墨麒麟。殷商的旗，又倒了一面。",
+      "source": "boss_table.json#boss_006"
+    },
+    {
+      "witness_id": "boss_boss_007",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_007",
+      "lore_anchor": "殷商守将",
+      "witness_text": "殷商守将的金鞭坠地，再无回声。",
+      "source": "boss_table.json#boss_007"
+    },
+    {
+      "witness_id": "boss_boss_008",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_008",
+      "lore_anchor": "十绝阵守",
+      "witness_text": "十绝阵的阵眼碎了。十道阵纹，归于寂静。",
+      "source": "boss_table.json#boss_008"
+    },
+    {
+      "witness_id": "boss_boss_009",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_009",
+      "lore_anchor": "黄河阵灵",
+      "witness_text": "三霄留下的一缕阵意，在九曲黄河阵里散尽了。",
+      "source": "boss_table.json#boss_009"
+    },
+    {
+      "witness_id": "boss_boss_010",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_010",
+      "lore_anchor": "雷部神将残影",
+      "witness_text": "雷部正神的残影散去前，朝你郑重一礼。",
+      "source": "boss_table.json#boss_010"
+    },
+    {
+      "witness_id": "boss_boss_011",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_011",
+      "lore_anchor": "火部神将残影",
+      "witness_text": "火部正神的烈焰熄了。榜上之名，微微一闪。",
+      "source": "boss_table.json#boss_011"
+    },
+    {
+      "witness_id": "boss_boss_012",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_012",
+      "lore_anchor": "斗部神将残影",
+      "witness_text": "斗部正神的罡气崩解。神位晃了晃，又稳住了。",
+      "source": "boss_table.json#boss_012"
+    },
+    {
+      "witness_id": "boss_boss_013",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_013",
+      "lore_anchor": "万仙阵灵",
+      "witness_text": "万仙残影齐声一叹：截教，不是没有人。",
+      "source": "boss_table.json#boss_013"
+    },
+    {
+      "witness_id": "boss_boss_014",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_014",
+      "lore_anchor": "封神台守卫",
+      "witness_text": "柏鉴守了三千年，今日，百灵幡为你低了一寸。",
+      "source": "boss_table.json#boss_014"
+    },
+    {
+      "witness_id": "boss_boss_015",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_015",
+      "lore_anchor": "通天教主残影",
+      "witness_text": "诛仙四剑的余威散尽。碧游宫主，遥不可及。",
+      "source": "boss_table.json#boss_015"
+    },
+    {
+      "witness_id": "boss_boss_016",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_016",
+      "lore_anchor": "元始天尊残影",
+      "witness_text": "盘古幡收回云气。玉虚宫的门，为你开过一瞬。",
+      "source": "boss_table.json#boss_016"
+    },
+    {
+      "witness_id": "boss_boss_017",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_017",
+      "lore_anchor": "女娲残影",
+      "witness_text": "山河社稷图缓缓卷起，留下一声极轻的叹息。",
+      "source": "boss_table.json#boss_017"
+    },
+    {
+      "witness_id": "boss_boss_018",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_018",
+      "lore_anchor": "太上老君残影",
+      "witness_text": "太极图阴阳归位。老君没有回头。",
+      "source": "boss_table.json#boss_018"
+    },
+    {
+      "witness_id": "boss_boss_019",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_019",
+      "lore_anchor": "赵公明残影",
+      "witness_text": "二十四颗定海珠沉入云海。世间财气，默了一息。",
+      "source": "boss_table.json#boss_019"
+    },
+    {
+      "witness_id": "boss_boss_020",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_020",
+      "lore_anchor": "三霄残影",
+      "witness_text": "混元金斗空了，金蛟剪阖了。三缕香魂归位。",
+      "source": "boss_table.json#boss_020"
+    },
+    {
+      "witness_id": "boss_boss_021",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_021",
+      "lore_anchor": "孔宣残影",
+      "witness_text": "五色神光掠过你身侧——这一次，它没有收你。",
+      "source": "boss_table.json#boss_021"
+    },
+    {
+      "witness_id": "boss_boss_022",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_022",
+      "lore_anchor": "多宝道人残影",
+      "witness_text": "六魂幡摇而复止。截教大弟子，收幡而去。",
+      "source": "boss_table.json#boss_022"
+    },
+    {
+      "witness_id": "boss_boss_023",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_023",
+      "lore_anchor": "张桂芳",
+      "witness_text": "呼名夺魂之术失效了。张桂芳的喊声，哑了。",
+      "source": "boss_table.json#boss_023"
+    },
+    {
+      "witness_id": "boss_boss_024",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_024",
+      "lore_anchor": "敖丙",
+      "witness_text": "敖丙退回东海波涛。陈塘关的海，自此无波。",
+      "source": "boss_table.json#boss_024"
+    },
+    {
+      "witness_id": "boss_boss_025",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_025",
+      "lore_anchor": "石矶娘娘",
+      "witness_text": "白骨洞的阴火熄了。石矶娘娘，归于骷髅山。",
+      "source": "boss_table.json#boss_025"
+    },
+    {
+      "witness_id": "boss_boss_026",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_026",
+      "lore_anchor": "魔礼青",
+      "witness_text": "青云剑光收敛。汜水关前，第一面旗倒了。",
+      "source": "boss_table.json#boss_026"
+    },
+    {
+      "witness_id": "boss_boss_027",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_027",
+      "lore_anchor": "魔礼海",
+      "witness_text": "琵琶声断了。扭曲的空气，慢慢抚平。",
+      "source": "boss_table.json#boss_027"
+    },
+    {
+      "witness_id": "boss_boss_028",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_028",
+      "lore_anchor": "魔礼寿",
+      "witness_text": "异兽敛了爪牙，退回主人身后。第三面旗倒了。",
+      "source": "boss_table.json#boss_028"
+    },
+    {
+      "witness_id": "boss_boss_029",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_029",
+      "lore_anchor": "魔礼红",
+      "witness_text": "黑伞合拢。日月星辰，重新亮了起来。",
+      "source": "boss_table.json#boss_029"
+    },
+    {
+      "witness_id": "boss_boss_030",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_030",
+      "lore_anchor": "火灵圣母",
+      "witness_text": "不灭之火熄了。金霞战车，坠入南荒。",
+      "source": "boss_table.json#boss_030"
+    },
+    {
+      "witness_id": "boss_boss_031",
+      "kind": "boss_first",
+      "kind_label": "首杀见证",
+      "anchor_kind": "boss",
+      "anchor_id": "boss_031",
+      "lore_anchor": "罗宣",
+      "witness_text": "五件火宝燃尽。红袍道人，散作漫天火星。",
+      "source": "boss_table.json#boss_031"
+    },
+    {
+      "witness_id": "bond_nezha",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "nezha",
+      "lore_anchor": "哪吒",
+      "witness_text": "哪吒把一缕枪意渡入你掌心：拿去用！",
+      "source": "companion_table.json#nezha"
+    },
+    {
+      "witness_id": "bond_yangjian",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "yangjian",
+      "lore_anchor": "杨戬",
+      "witness_text": "杨戬借你三尖两刃刀的刀意，参悟三日。",
+      "source": "companion_table.json#yangjian"
+    },
+    {
+      "witness_id": "bond_ziya",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "ziya",
+      "lore_anchor": "姜子牙",
+      "witness_text": "姜子牙把打神鞭的一缕鞭意，封入你袖中。",
+      "source": "companion_table.json#ziya"
+    },
+    {
+      "witness_id": "bond_tuxingsun",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "tuxingsun",
+      "lore_anchor": "土行孙",
+      "witness_text": "土行孙替你趟过了地底下的路。",
+      "source": "companion_table.json#tuxingsun"
+    },
+    {
+      "witness_id": "bond_huangtianhua",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "huangtianhua",
+      "lore_anchor": "黄天化",
+      "witness_text": "黄天化借你莫邪剑意，专破护体罡气。",
+      "source": "companion_table.json#huangtianhua"
+    },
+    {
+      "witness_id": "bond_leizhenzi",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "leizhenzi",
+      "lore_anchor": "雷震子",
+      "witness_text": "雷震子渡你一缕天威，雷法自此带风。",
+      "source": "companion_table.json#leizhenzi"
+    },
+    {
+      "witness_id": "bond_yinjiao",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "yinjiao",
+      "lore_anchor": "殷郊",
+      "witness_text": "殷郊把番天印的镇压之意，渡入你的法宝。",
+      "source": "companion_table.json#yinjiao"
+    },
+    {
+      "witness_id": "bond_shengongbao",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "shengongbao",
+      "lore_anchor": "申公豹",
+      "witness_text": "申公豹与你结缘，讨了一句：有好东西分我一杯。",
+      "source": "companion_table.json#shengongbao"
+    },
+    {
+      "witness_id": "bond_zhaogongming",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "zhaogongming",
+      "lore_anchor": "赵公明",
+      "witness_text": "赵公明把定海珠的珠意，封入你的袖中。",
+      "source": "companion_table.json#zhaogongming"
+    },
+    {
+      "witness_id": "bond_yunxiao",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "yunxiao",
+      "lore_anchor": "云霄",
+      "witness_text": "云霄把混元金斗的斗意，渡入你的丹田。",
+      "source": "companion_table.json#yunxiao"
+    },
+    {
+      "witness_id": "bond_duobao",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "duobao",
+      "lore_anchor": "多宝道人",
+      "witness_text": "多宝道人把六魂幡的幡意，封入你袖中。",
+      "source": "companion_table.json#duobao"
+    },
+    {
+      "witness_id": "bond_guangchengzi",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "guangchengzi",
+      "lore_anchor": "广成子",
+      "witness_text": "广成子把番天印的镇压之意，渡入你的法宝。",
+      "source": "companion_table.json#guangchengzi"
+    },
+    {
+      "witness_id": "bond_randeng",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "randeng",
+      "lore_anchor": "燃灯道人",
+      "witness_text": "燃灯赠你一盏灯芯：灯不灭，收益不断。",
+      "source": "companion_table.json#randeng"
+    },
+    {
+      "witness_id": "bond_kongxuan",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "kongxuan",
+      "lore_anchor": "孔宣",
+      "witness_text": "孔宣的五色神光护住你：伤你者，先问我。",
+      "source": "companion_table.json#kongxuan"
+    },
+    {
+      "witness_id": "bond_luya",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "luya",
+      "lore_anchor": "陆压道人",
+      "witness_text": "陆压封斩仙飞刀入你眉心：只斩该斩的。",
+      "source": "companion_table.json#luya"
+    },
+    {
+      "witness_id": "bond_tongtian",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "tongtian",
+      "lore_anchor": "通天教主",
+      "witness_text": "通天教主的剑意入你法宝：截教的剑，只护自己人。",
+      "source": "companion_table.json#tongtian"
+    },
+    {
+      "witness_id": "bond_yuanshi",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "yuanshi",
+      "lore_anchor": "元始天尊",
+      "witness_text": "元始天尊悬盘古幡于你识海：劫来之时，此幡先应。",
+      "source": "companion_table.json#yuanshi"
+    },
+    {
+      "witness_id": "bond_nuwa",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "nuwa",
+      "lore_anchor": "女娲",
+      "witness_text": "女娲分你一分人间烟火，纳山河图意入丹田。",
+      "source": "companion_table.json#nuwa"
+    },
+    {
+      "witness_id": "bond_laojun",
+      "kind": "bond",
+      "kind_label": "结缘见证",
+      "anchor_kind": "companion",
+      "anchor_id": "laojun",
+      "lore_anchor": "太上老君",
+      "witness_text": "太上老君渡你一缕炉火：火候到了，丹自成。",
+      "source": "companion_table.json#laojun"
+    },
+    {
+      "witness_id": "bt_001_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_001",
+      "lore_anchor": "真人劫",
+      "witness_text": "榜文微照而过，终究未能照出你的真名。",
+      "source": "breakthrough_table.json#bt_001"
+    },
+    {
+      "witness_id": "bt_001_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_001",
+      "lore_anchor": "真人劫",
+      "witness_text": "榜文多停留了片刻。你的真灵，似被多看了一眼。",
+      "source": "breakthrough_table.json#bt_001"
+    },
+    {
+      "witness_id": "bt_002_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_002",
+      "lore_anchor": "地仙劫",
+      "witness_text": "榜文的牵引退了。榜外，你已证得地上仙体。",
+      "source": "breakthrough_table.json#bt_002"
+    },
+    {
+      "witness_id": "bt_002_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_002",
+      "lore_anchor": "地仙劫",
+      "witness_text": "榜文笔锋已至。这一笔，终究在真灵上记了一痕。",
+      "source": "breakthrough_table.json#bt_002"
+    },
+    {
+      "witness_id": "bt_003_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_003",
+      "lore_anchor": "真仙劫",
+      "witness_text": "杀劫没能埋下你。自此，你与大劫同行。",
+      "source": "breakthrough_table.json#bt_003"
+    },
+    {
+      "witness_id": "bt_003_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_003",
+      "lore_anchor": "真仙劫",
+      "witness_text": "杀劫卷过。榜文之上，你的名姓旁多了一缕。",
+      "source": "breakthrough_table.json#bt_003"
+    },
+    {
+      "witness_id": "bt_004_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_004",
+      "lore_anchor": "金仙劫",
+      "witness_text": "三花开于顶门。榜文望见你，却未能落笔。",
+      "source": "breakthrough_table.json#bt_004"
+    },
+    {
+      "witness_id": "bt_004_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_004",
+      "lore_anchor": "金仙劫",
+      "witness_text": "三花未能尽开。榜文金光趁虚，照见了真灵。",
+      "source": "breakthrough_table.json#bt_004"
+    },
+    {
+      "witness_id": "bt_005_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_005",
+      "lore_anchor": "太乙劫",
+      "witness_text": "五气既朝元，大道那一问，你答上了。",
+      "source": "breakthrough_table.json#bt_005"
+    },
+    {
+      "witness_id": "bt_005_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_005",
+      "lore_anchor": "太乙劫",
+      "witness_text": "那一问未能答上。榜文似趁虚记了一笔。",
+      "source": "breakthrough_table.json#bt_005"
+    },
+    {
+      "witness_id": "bt_006_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_006",
+      "lore_anchor": "大罗劫",
+      "witness_text": "大道沉默了。因果自此，再缚不住你。",
+      "source": "breakthrough_table.json#bt_006"
+    },
+    {
+      "witness_id": "bt_006_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_006",
+      "lore_anchor": "大罗劫",
+      "witness_text": "大道试问，你差了一线。榜文又多看了你片刻。",
+      "source": "breakthrough_table.json#bt_006"
+    },
+    {
+      "witness_id": "bt_007_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_007",
+      "lore_anchor": "准圣劫",
+      "witness_text": "因果反噬承下了。三世业力，尽成于你。",
+      "source": "breakthrough_table.json#bt_007"
+    },
+    {
+      "witness_id": "bt_007_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_007",
+      "lore_anchor": "准圣劫",
+      "witness_text": "斩断的因果回来了。真灵被榜文照得一晃。",
+      "source": "breakthrough_table.json#bt_007"
+    },
+    {
+      "witness_id": "bt_008_win",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_008",
+      "lore_anchor": "混元劫",
+      "witness_text": "封神榜全力压制，终究没能按住你。三界外，逍遥。",
+      "source": "breakthrough_table.json#bt_008"
+    },
+    {
+      "witness_id": "bt_008_lose",
+      "kind": "tribulation",
+      "kind_label": "破劫见证",
+      "anchor_kind": "breakthrough",
+      "anchor_id": "bt_008",
+      "lore_anchor": "混元劫",
+      "witness_text": "封神榜的大手按落。这一次，真灵被照了很久。",
+      "source": "breakthrough_table.json#bt_008"
+    }
+  ]
+}

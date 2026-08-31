@@ -91,6 +91,20 @@ const EventManager = {
     if (day >= int(range[0], 3) && day <= int(range[1], 5) && !(state.seen_events || []).includes(this.ROOT_PITY_EVENT) && this.canOffer(state, this.ROOT_PITY_EVENT)) {
       return { eventId: this.ROOT_PITY_EVENT };
     }
+    // 21.1 §1.5 榜上留名保底（对齐 ROOT_PITY 写法）：留名达机缘门槛后，每添一缕新名重新武装一次保底——
+    // 下一次闭关/游历必出天庭差事（unlock_condition 带 list_marks_min: 的行即差事池，数据自描述，不硬编码 id）。
+    // armed 旗记在 flags.errand_pity_marks（上次保底兑现时的缕数）；日次数封顶时 rollEvent 提前返回、旗不消耗，次日补上。
+    if ((source === "offline" || source === "travel") && int(state.list_marks) > int(state.flags && state.flags.errand_pity_marks)) {
+      for (const row of DataManager.getRows("event_table")) {
+        const cond = String(row.unlock_condition || "");
+        if (!cond.startsWith("list_marks_min:")) continue;
+        if (int(state.list_marks) < parseInt(cond.slice(15), 10)) continue;
+        if (!(row.trigger_source || []).includes(source)) continue;
+        if (!this.canOffer(state, String(row.event_id))) continue;
+        if (state.flags) state.flags.errand_pity_marks = int(state.list_marks);
+        return { eventId: String(row.event_id) };
+      }
+    }
     if (int(pity.days_without_rare) >= Math.max(1, int(rule.rare_pity_days, 3) - 1) && this._todayCount(state) === 0) {
       return { rarity: "epic" };
     }

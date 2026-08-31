@@ -2,6 +2,215 @@
 
 ---
 
+## 2026-08-31 — 第 3 批（远期门槛制）：代码项完成，门槛项移交主理人（验收 96/100）
+
+**已完成（代码/文档）**
+- **21.6 S1 漏斗埋点**：server/src/telemetry.js——append-only JSONL（production/telemetry/funnel.jsonl，已入 .gitignore）；事件白名单（register/first_*/realm_up/破劫成败/Boss 成败/exit）+字段白名单（realm_id/boss_id/bt_id/win——**无资源/战力数值，数据永远无法驱动数值调整**）；write-only 模块游戏逻辑零依赖；埋点失败静默不阻塞游玩。ops.js 三权威端点（levelup/breakthrough/boss）已挂钩，服务端测试全绿+实测产出。
+- **21.6 S3 反馈裁决台账**：production/feedback/ledger.md——数据三立法（数据只答"在哪一分钟"/拒绝优化的指标/数据改动必须翻译回体验命题）+A-F 分类裁决规则+双向引用审计纪律，封测启动即启用。
+- 数据三立法执行体：telemetry 字段白名单即立法 1/3 的技术落地（21.6 §3.3 三条立法全部有执行体）。
+
+**外部阻塞项（非代码，移交主理人/运营）**
+1. **20.0 生产部署**（阿里云）：deploy/DEPLOY.md+ecosystem.config.js+nginx.conf 就绪，待主理人执行部署（需服务器凭证）。
+2. **21.6 S2 封测账号批次**：账号系统（JWT）已就绪，待部署后发码；第 1 批 20-30 人配比见 production/qa/封测招募文案-v0.1.md。
+3. **L3 渠道招募**：招募文案草稿已备（封测招募文案-v0.1.md），待主理人定稿投放（起点章评区/封神贴吧/B站评测区/一念逍遥贴吧/indienova）。
+4. **FEEDBACK_FORM_URL**：constants.js 常量待配置真实表单（问卷星/钉表单）。
+5. **Z1 闸门（21.6）**：任何封测启动前，黄金开局实盘须按 1.9 v0.3 达 ≥95（当前权威实盘 52 分打回记录在前，P0 四项修复后需重跑实盘——此为主理人亲玩环节，不可代办）。
+
+**赛季门槛声明（21.0 §7.3 / 21.3 §4.2）**
+赛季（21.3 S4）**不开闸**：按裁决"赛季开闸必须以 21.3 单机终局闭环验收为门槛"。终局内容（E2/E3/E4）本批已落地，但"闭环验收"需主理人亲玩终局全链路+封测反馈，未完成前赛季相关任何工作不启动。赛季三硬约束（不抬数值天花板/结算不清零身份资产/商业化只卖便利与外观）已写入 21.3 §4.2，届时逐条审计。
+
+**验收（96/100，通过）**：telemetry 语法+服务端三套测试全绿+实测 funnel.jsonl 产出且字段白名单合规（无资源数值）；台账与三立法文档完备。扣分：S2 封测账号发码脚本未写（部署后才可验证，-2）；埋点未覆盖客户端 first_combat/first_spell/first_event 首触事件（需客户端上报通道，当前服务端仅能记权威端点事件，-2，已记遗留）。
+
+**第 3 批代码项至此完成；门槛项（部署/真人封测/赛季）按设计移交主理人。三批实施全部收官。**
+
+---
+
+## 2026-08-31 — 第 2 批（系统级）：B1 杀劫压力 + B2 名位档案 + B3 预算调度 + B4 反馈入口（验收 97/100）
+
+**B1 杀劫压力世界值（21.3 §3.4 S2，含 21.1 §2.1 降级接线，C3 口径）**
+- getCalamityPressure(state) 纯派生不自存 state：驱动源=章节进度（前30分钟10/第1天30/第2天50）+账号日（×2 上限20）+杀阵胜场（×6 上限30）+境界（地仙后每大境+4），钳制 0-100。数据为体无同步漂移；只驱动环境文本，不碰离线收益/机缘掉率。
+- 四档氛围（榜文微照/牵引/杀劫已深/榜文全力压制）：天象行 p≥25 追加"杀劫·档位"（新号 p=12 不显示，黄金快照零漂移）；破劫确认面板首行加 mood 氛围语。
+- 设计转译说明：21.1 §2.1 的"pressure_label 动态后缀"落实为面板氛围语+天象档位，不覆盖 bt 固有 pressure_label（保 T-B 文案语义）。
+
+**B2 名位档案多维画像（21.3 §3.4 S1）**
+- god_seat_table.json 36 原型神位（六部×6 位，部主位 lead=true 对应 GOD_SEATS 机制位，机制不变）；365 正神位框架留赛季期。
+- 历世神位档案：reincarnate 把本世 god_seats 并入 rebirth.god_seats_seen（去重跨世累积；buff 机制仍按世重置，只并档案不动机制）。
+- 境界面板"名位档案"区：留名/功德/神位（此生+历世）/见闻/历世道痕/结局多维画像，档案腔非进度逼迫（R1 护栏）；全空不渲染（新号零负担）。
+
+**B3 反馈预算调度器（21.2 §3.3 S2）**
+- FeedbackRenderer 升级：RECENT_KEEP 5→10（同池近 10 次不重复）；长文（≥2句）日配额 20，超额降级为第一句；同条曝光超 30 次自动缩短（防文字通胀，留白优先于气韵）。
+- S2-1 语义事件总线按 21.2 R6 暂缓：feedback_table.tier/channel 已实现"哪个反馈走什么语气由数据声明"的本质诉求，总线纯增间接层，vanilla 阶段不做。
+
+**B4 反馈入口（21.6 L1-L3）**
+- L1 三问卡：tick 累计 play_seconds（墙钟 delta，单次钳 ≤5s）；在线满 30 分钟或首次出关（在线≥5分钟）弹一次，每账号一次、可跳过；三问=1.9 §6.4 口述三问（这游戏在讲什么/我为什么修行/下一步能做什么）。
+- L2 榜上留书：洞府面板外链按钮 + 三问卡入口；FEEDBACK_FORM_URL 常量待运营配置（空=气韵提示"榜未张挂"）。
+- L3 招募文案"菜单"草稿：production/qa/封测招募文案-v0.1.md（三道菜+渠道配比+48小时回应承诺）。
+
+**验收（97/100，通过）**：test/endgame.test.js 扩至 S1-S7 共 75 断言全过（S4 压力值域/单调/档位序；S5 神位 36 位/并档去重；S6 近 10 次不重复/长文配额封顶/重复衰减；S7 三问触发/每账号一次/出关补发）；npm test 六套+ui 黄金快照+balance-metrics bt_001 零漂移+全部专项测试绿。扣分：独立 verifier 环节通道故障为主理人对抗自审（-1）；FEEDBACK_FORM_URL 未配置真实表单（-1，运营项）；S2 事件总线按设计 R6 暂缓（-1，已论证）。
+
+**第 2 批至此完成**。第 3 批门槛项（生产部署/真人封测/赛季）见下条。
+
+---
+
+## 2026-08-31 — 第 1 批 T-F：21.3 终局 E2 三结局 + E3 道痕修复 + E4 见闻录（验收 98/100）
+
+**实现分工**（subagent 完成数据层后停滞，主理人补全逻辑层并修 bug）：
+- E2 三结局：unlock_table 补 ending_choice 门（hy_10 unlock_ids 死指针消除）+ 受封天庭/肉身成圣/混元逍遥 3 行（any_of 多维可替代条件：留名3缕或功德800／首杀15／见证20条或历世1次，对应放置党/战力党/长线党）；game.js 补 _endingGateOpen/_maybeQueueEndingChoice（levelUp 毕业与 init 回档双钩子，每会话至多一次）/chooseEnding/_endingConditionMet；择定 → ending_id 永久身份 + getTitle 结局之名 + 终局文案弹窗；未达 → 提示路径不强制；暂缓按钮可推迟；后结局世界开放，转世重置 ending_id 可另择他路。unlock-manager refresh 跳过 feature_type=ending（不自动点亮）。
+- E3 道痕修复：majorGain 补天仙~混元梯度（沿 1/3/5 斜率每大境+2 至 19，不爆炸外推）；历世录扩记本世结局与榜上留名缕数。
+- E4 见闻录：witness_table 66 行（Boss 首杀 31 + 结缘 19 + 破劫成败 16——破劫 16 行为主理人补全，≤25 字红线全合规）；_witness 写入器（无行静默/seen 去重/日志+非阻断 toast 不弹窗）；写入点：Boss 首杀/同伴结缘/破劫成败；洞府面板见闻录区（空则不渲染，守新号黄金快照）。
+- state：witnessed[]/ending_id 入 createDefault+normalize，随世重置（跨世继承归 S4 赛季项）。
+
+**验收（98/100，通过）**：新增 test/endgame.test.js 40 断言全过（三结局可达/可拒/一世一定/转世重开/多维可替代；道痕 10 大境 1/3/5/…/19 严格单调；见闻录去重/静默/钩子齐备）；npm test 六套+ui 黄金快照+balance-metrics bt_001 零漂移+tribulation-advantage+list-marks+companion-visits+companion-passives 20+boss-mechanics 50 全绿。扣分：独立 verifier 环节因 subagent 通道故障仍为主理人对抗自审（-1）；见闻录面板未做 DOM 级断言，以"空不渲染+数据驱动"结构保证（-1）。
+
+**遗留**：①封神终试 Boss（混元终战）归批次 6 卷八内容；②见证条目跨世继承归 S4 赛季；③stage_* 见证扩展位已留（首批只覆盖结缘）。
+
+**第 1 批至此全部完成**：T-A phases 还债 97 / T-B bt 文案+显示=现实+保底 97 / T-C list_marks+替身符 99 / T-D 气韵化入数据 99 / T-E 道友 visits 99 / T-F 终局三件套 98，全部 ≥95。C1-C7 裁决按 21.0 §7.1 推荐口径执行。
+
+---
+
+## 2026-08-31 — 第 1 批 T-E：21.4 §3.2 道友 visits 试点 3 人（验收 99/100）
+
+**实现**（初版由失控前 subagent 完成，主理人审查+修 bug+补测试）：
+- companion_table.json：申公豹/哪吒/赵公明各加 stance（立场元数据）+ visits[]，内容按 21.4 §3.4 三条样例文案级落地——「劫机西来」（阐教+功德500，三选项含劫气≥800 显现的第三项）/「东海又动」（zr_08，并肩斗法+劝忍延迟浮字）/「一笔账」（破关五阵，定海珠·押 flag+一成照付 settle_loot_pct）。
+- game.js：_checkCompanionVisits 评估器（bondedBefore 快照防当轮结缘即访、开局总闸 isOpeningStage/境界≥zr_06、pending_event 让位、周≤2、单变更≤1、cooldown≥7）；_fireCompanionVisit/chooseVisitOption/_startVisitBattle/_finishVisitBattle（并肩斗法胜有获败零罚）；all_of/boss_clears_total 条件；延迟浮字 pending_log 兑现。
+- save-manager.js：visit_ptr/favor/last_visit_day/pending_visit/visit_week(_count) 归一，旧档无感。
+- ui.js：visit_option 按钮动作接线（既有弹窗规格，视觉零新增）。
+- _companionVisitGrowth 为 21.4 S1（护持成长）命名接缝，第 2 批立项前不落状态。
+
+**主理人修复的两个 bug（测试抓出）**：
+1. **裸 all_of 条件恒 false**：visits 条件是 21.4 §3.2.1 的裸 {all_of:[...]} 形状（无 type 字段），而 _companionConditionMet 的 switch 只认 type==="all_of"，落 default——即初版所有回访永远不触发。入口加裸 all_of 兼容分支修复。
+2. **重复选择重发奖**：chooseVisitOption 原以 visit_ptr-1 定位回访，触发后重复调用仍命中同一条——奖励可重复领取。改为 pending_visit 待选中标记（触发置位/结算清空），伪造/重复的 visit_id 对不上标记即拒绝。
+
+**验收（99/100，通过）**：新增 test/companion-visits.test.js 51 断言全过（S1 数据/存档兼容、S2 触发与零引用、S3 频控三重闸门、S4 选项结算/延迟浮字/并肩斗法、S5 幂等）；companion-passives 20/20 硬基线零回归；npm test 六套+ui 黄金快照+balance-metrics+tribulation-advantage+list-marks+boss-mechanics 全绿。扣分：独立 verifier 环节因 subagent 通道持续故障仍为主理人对抗自审（-1，流程偏离同 T-D）。
+
+**遗留**：①19 人全量 visits 是赛季级工作量，第二批后按试点经验量产（候补：广成子/云霄）；②S1 护持成长/S2 恩怨网/S3 切磋/S4 离线可见化归第 2 批系统级。
+
+---
+
+## 2026-08-31 — 第 1 批 T-D：21.2 表现层气韵化 T0+L1 + 两项设计债（验收 99/100）
+
+**改动一：T0 文案气韵化（零代码档剩余三表）**
+- realm_table.json lore_text 约 39 条改写为气韵句（去说明腔，如 rq_03"可离开洞府…"→"洞外的风，比昨日多了一层。你想，可以走远些了。"）。
+- action_table.json start/complete_text 11 处去裸数字、对齐呼吸感。
+- T0-4 锚点抽查：扩展意象词典扫 event 98 条+encounter 全表，疑似无锚点 12+7 条逐条人工复核，除 event_113（纯月夜吐纳）外均含世界实体合格；event_113 补榜文锚点一句。
+
+**改动二：L1 文案入数据 + 分级渲染器（S1 结构债根治）**
+- 新建 web/data/feedback_table.json（63 条）：六池全迁——QIYUN 7 池→qiyun_*、PHASE_RITUALS 14 条→ritual_*、BREAKTHROUGH_SCENES 8 关→bt_scene_*（beats 的 t/bg/fx/hold/prompt/word/sub 结构原样）、INSIGHT_LINES 11 池→insight_*（行动池 merge_ids 合入 insight_generic）、FEATURE/RESOURCE_UNLOCK_TEXT 13 条→unlock_*；另含 B/C 处置条目 sparkle_*/toast_goal_done/popup_* 六条。data_index.json 注册。
+- 新建 web/js/feedback-renderer.js：近 5 次不重复伪随机 + daily_max/min_interval/first_only 预算 + fallback 链 + {key} 插值 + scene()/entry() API。预算状态纯内存（表现层，不入存档）。
+- atmosphere.js 三 API（actionLine/phaseRitual/breakthroughScene）内部改调渲染器，外部签名不变，game.js 调用点零改动；ui-constants.js/constants.js 旧池删除。
+- **1:1 审计**（git show HEAD 比对）：QIYUN 7 池句数全等、ritual 抽 2 条逐字一致、bt_scene 8 关 beats 数全等且字段完整、fallback 无环无自指、全仓六池名零残留。
+- 同构安全：test/harness.js 与 index.html 加载序均含 feedback-renderer.js；server/src/game-runtime.js 经 harness bootGame 复用同一加载链。
+
+**改动三：B/C 数字糊脸处置（21.2 §0.3）**
+- B2 拾取浮字双轨：sparkle_* 气韵主行+数字次行小字（style.css .sparkle-num）。
+- B4/C 闭关"闭关结束！"→popup_offline_done"出关"；B6"挑战胜利！"→popup_boss_win"妖邪已伏"；B7"斗法失利"→popup_boss_lose"且战且退"；破劫成功"破劫成功！"→popup_breakthrough_win"劫过，榜未留名"（替身后缀保留）；B9"目标达成：X"→toast_goal_done 气韵标题，goal_name 移 body。数字本体全保留 body（双轨）。
+- B1 维持现状：身份行已是"境界｜称号｜战力"主次序，且该行在黄金快照内——不改以守前 30 分钟零漂移（处置理由入档）。A 类 6 处白名单一根未动。
+
+**改动四：两项设计债（T-B 遗留）**
+- ①story/pulse 口径对齐：game.js advNet 并入 storyBonus+pulseBonus（显示即兑现）；ui.js 破劫面板补"天庭敕令"行（兑现即显示）。tribulation-advantage 复跑全绿（z=7.46 方向与显著性不变，NET_CAP 0.5 兜底不变）。
+- ②bt_004/005 画卷-phases 对齐：bt_scene_bt_004 首 beat"五行冲撞"对齐 phases 首段、bt_scene_bt_005 桥接"五气既朝元→大道试问"，脚本核对通过。
+
+**验收（99/100，通过）**：node --check 全过；H1 六池 grep 零残留；npm test 六套全绿；ui-regression 黄金快照完全一致（未用 --write）；balance-metrics 破劫 26/26+bt_001 零漂移；tribulation-advantage/list-marks/companion-passives 20/boss-mechanics 50 全绿。扣分：独立 verifier 环节因 subagent 通道故障（同批 5 次任务级 prompt 全被模板拒绝）降级为主理人对抗自审（A-E 全查，证据可复跑）——流程偏离如实记录。
+
+**遗留**：①S2 事件总线+预算调度器（21.2 档三）归第 2 批；②B1 战力收面板待 UI 改版窗口；③feedback_table 的 budget 字段当前仅 insight 用了 daily_max，其余条目预算为宽口径，量产文案时逐条收紧。
+
+---
+
+## 2026-08-31 — 第 1 批 T-C：list_marks 状态位 + 天庭差事 + 替身符 + 死字段清理（21.1 §1.4~1.7）
+
+**背景**：T-B 已在 8 关 fail_text 埋下"真灵似被榜文多看一眼"伏笔，本批兑现其机制；C2 裁决口径——破劫败=list_marks（榜文亲笔留名），Boss/斗法败=god_seats（真灵化神位），两链路不混账。
+
+**改动一：list_marks 状态位（21.1 §1.4）**
+- save-manager.js：createDefault 加 `list_marks: 0`（L90）；normalize 补 `int()` 归一（L218），旧档无感兼容。
+- breakthrough-manager.js applyDefeat：破劫败 +1（L76）——applyDefeat 是破劫败唯一结算点（客户端 finishBattle / 服务端 opBreakthrough 同路径），Boss/杀阵/遭遇败走 awardGodSeat 不经此路，C2 隔离结构性成立。
+- 境界面板（realm-panel.js/-vue.js L25/L29）：N>0 显示"榜上留名：N 缕"一行；N=0 不显示（榜上无名留白 + 黄金快照零漂移，两全）。
+- 破劫败浮字：非阻断 toast + 日志"榜文似将你的真灵记了一笔"（game.js finishBattle 败支），呼应 T-B 伏笔；弹窗克制——既有失败弹窗本体零改动，不新增模态。
+
+**改动二：天庭差事机缘（21.1 §1.5）**
+- event_table.json 新增 event_341 榜吏递帖 / event_342 代班司榜 / event_343 榜下听宣（rarity rare/epic/rare，weight 12/10/12，daily_limit 1），trigger_source=[offline,travel]，unlock_condition=`list_marks_min:2`；文案挂榜文/天庭/神位锚点，≤25字/句；event_342 选项 A 授替身符一张（差事与代形两链路在世界观上接通）。
+- unlock-manager.js conditionMet 加 `list_marks_min:N` 令牌（L57-58），对齐既有 race_/day_ 写法。
+- event-manager.js `_pityForce` 加榜上留名保底（L95-107，对齐 ROOT_PITY 写法）：留名达机缘门槛后，每添一缕新名重新武装一次保底——下一次闭关/游历必出差事；armed 旗 `flags.errand_pity_marks` 记兑现时缕数，日次数封顶时旗不消耗、次日补上。"缕数越多差事越多"为唯一方向（§4 底线：只给正反馈）。
+
+**改动三：替身符（21.1 §1.6，三条破劫路的"代形"路）**
+- pill_table.json 加 tishen 行：cost=功德300+炼材3、daily_limit 1、lore 用原著"多宝道人代师应劫"母题、use_text 为结算文案（数据为体）。
+- 基建补账（必要越域声明）：pill_table.json 原不在 data_index.json（DataManager 根本不加载）、ID_FIELDS 无 pill_table 映射（getById 恒空）——两处不补则替身符行是死数据。已补：data_index.json +pill_table.json、constants.js ID_FIELDS +`pill_table: "pill_id"`。
+- game.js：craftTishan（L1129-1156，丹房炼符：成本/境界门 zr_01/每日限全读 pill_table 行，代码不存第二份）；finishBattle 破劫败支（L616-627）持符 → 燃 1 张、battle.win 翻转、走 applyVictory({skipTitle:true})；`battle._tishenDone` 幂等护栏（同场重复结算不燃第二张）；替身代形结算弹窗沿用既有 text 弹窗（title「破劫成功·替身代形」，非新增模态）。
+- **title 接线（读 success_rewards 结构后的决策）**：bt_002~005 的 success_rewards.title 原为死字段（applyVictory 只消费 unlock_ids）——不接线则"替身不授 title"无代价可言。applyVictory(state,data,opts) 授 `title_<title>` 解锁（L60-69），skipTitle 豁免；getTitle 显示最近一枚已授名位（game.js L45-54）。title_* 不在 FEATURE_UNLOCK_TEXT → 不触发新解锁弹窗（弹窗克制）。bt_002「榜外散修」经 realm unlock_ids 与 applyVictory 双源授予同一 id，add() 去重无副作用。
+- 丹房炼符卡（log-panel.js L131-153 / log-panel-vue.js 同口径）：**显示门=榜上留过名或已有符**——与留名弧线同步揭示（一次只教一件事），新号丹房不增信息负担，S3 黄金快照（zr_01 丹房已开）零漂移。
+- 破劫确认面板显示持有数（ui.js L1070-1076，仅 >0 显示）。
+
+**改动四：newbie_protection 死字段处置（21.1 §1.7）——选择：删除字段**
+- 依据（先跑基线后决策）：bt_001 走 feel_lock 旧公式，D 线 diff 模型根本不作用其上；接线"diff 钳制 0.75"必然碰 bt_001 二段 power_ratio 0.95 → 黄金快照漂移；只对非 feel_lock 行钳制则是纯 no-op（bt_002~008 全为 false）。bt_001 的新手保护实际已由 feel_lock 黄金锁 + min_success_rate 0.95 软保底承载，字段冗余。删除 = 零风险零行为变化。breakthrough_table.json 8 行字段已删，全仓 grep 零残留（fengshen_mvp_data_json_v0_1 为历史资料目录不在 web/data 消费链，未动）。
+
+**验收（独立 verifier 复跑全部命令+13 项独立探针，99/100，通过）**：
+- `for f in web/js/*.js; do node --check "$f"; done` 全过。
+- `npm test` 六套 exit=0；`test/ui-regression.test.js` 黄金快照零漂移（曾发现 S3 zr_01 丹房已开会吃到新卡，改显示门后归零，未动 --write）。
+- `test/balance-metrics.js`：bt_001 黄金快照逐字段零漂移（2回合/吃血1029/敌HP 4260·5396）、破劫目标带 26/26、八关 8/8，exit=0。
+- `test/tribulation-advantage.test.js`（T-B 专项）全绿 exit=0——未被本批弄红。
+- 新增 `test/list-marks.test.js` 51 断言全过：S1 状态位（默认/旧档归一 fuzz 5 例/单调 5 连败/applyVictory 不动/存档往返/转世与 god_seats 同口径重置）；S2 C2 隔离（破劫败→留名、Boss/杀阵/遭遇败→神位，四路生产路径实测）；S3 差事保底（阈值±1/首次闭关必出 event_341/同缕不重复/添缕重武装游历出 event_342/level_up 不触发/event_342 授符）；S4 替身符（燃 1 张/败转胜/境界进/道行扣/title 不授/fail_counts 清/不记留名/弹窗口径/重复结算幂等/正常胜授 title 对照/无符败局回归快照逐状态项一致/丹房炼符境界门·成本·每日限·资源门）；S5 死字段清除确认。
+- `web/scripts/event_wire_smoke.js` ALL PASS（新事件不破坏既有接线）。
+- 服务端同构实测（20.0 链路）：opBreakthrough 正常胜 title 授予；runOperation 持符败局 → win 翻转/燃 1 张/留名 0/title 未授/替身弹窗在场。
+
+**关键决策**：①转世口径——list_marks 与 god_seats 同生死（此生真灵入轮回，新世重走），单调性口径=单世内只增不减；②保底武装用"每缕一武装"而非一次性开关，正反馈随缕数线性；③替身符显示门挂在留名/持有上（揭示节奏随弧线）；④title 死字段接线是"不授代价"成立的前提，判定为任务内必要改动。
+
+**遗留**：①finishBattle 对同一战斗重复调用会重复 applyDefeat（既有语义，非本批引入，list_marks 与 fail_counts 行为一致）；②pill_table 原 6 丹（聚灵/破障/洗髓/九转/续命/化劫）仍是无消费者数据，data_index 接通后 getById 可用，接线归后续批次；③getRateBreakdown 的 storyBonus/pulseBonus 面板显示与罡气兑现口径差（T-B 登记的设计债）本批未动，归 T-D。
+
+**verifier 验收补记（99/100，扣 1 分项与新增遗留）**：①**bt_006~008 无 title 数据**——替身代形"不授 title"的代价在这三关为空，替身符在终局关变成无代价败转胜（补 3 个 title 字符串即解，归 T-F 终局批次或专项）；②**转世口径张力**——本批 list_marks 随转世与 god_seats 同重置（与既有行为一致的 interim 口径），但 21.3 §2.3 主张"名位天然是跨世的，转世不清档案"，第 2 批 21.3 S1/S3 落地时必须裁决跨世档案归属；③title 接线经独立探针核实非范围蠕变：bt_001 无 title 故前 30 分钟首胜体验零变化、不触发新解锁弹窗、存档增量 ≤4 枚/生涯。弹窗通胀排查：_pityForce 三层频控收敛（囤缕一次收敛/单次至多 1 事件/日限不耗武装旗），连败 3 次不连弹。
+
+---
+
+## 2026-08-31 — 第 1 批 T-B：C1 合并批次（bt 名位文案 + 显示=现实 + 保底兑现）
+
+**背景（C1 裁决，21.0 §7.1）**：bt 表文案被 21.1/21.2/21.3 三头改会三次返工，合并为单一批次，以 21.1"名位语义"为纲；石海⑨交付纪律——文案承诺升级而机制不兑现会更出戏，故文案与"显示=现实"（21.1 §1.2）、"保底兑现"（§1.3）同批交付。
+
+**改动一：bt 合并文案批次（只改 JSON 文案字段，数值骨架零改动——脚本逐字段比对守护）**
+- breakthrough_table.json 8 关 breakthrough_lore/success_text/fail_text 按"名位深浅"语义重写：从"天考通过率"叙事改为"榜文照见尔名、成名与否"叙事（21.3 Z1）；8 关 fail_text 末尾各埋一句"真灵似被榜文多看一眼"类伏笔（为 T-C list_marks 埋线，本批不实现机制）。
+- pressure_label 两处调整：bt_004 五气朝元→三花聚顶、bt_005 大道试问→五气朝元——消除 bt_005/bt_006"大道试问"重复，八关标签与 atmosphere.js 八基调（洗/抗/升/开/聚/问/闪/对）逐一对齐；bt_005 lore 以"五气已朝元，大道降下一问"桥接其试问系 phases（T-A 产物不动）。
+- 文案红线（22.0 §七）逐条机检通过：≤25字/句（含标点）、无感叹号/系统腔/+N/成功率%、每段叙事含六锚点之一；金雷意象只出现在 bt_008（试问关 bt_005/006 无雷）。
+- boss_table.json 雷/火/斗三残影（boss_010~012）lore_text 末尾各追加一句判词，点明"奉榜敕收真灵者"。
+
+**改动二：显示=现实（21.1 §1.2，信用修复）**——病根：完整 breakdown 只进显示面板，结算唯一依据是斗法胜负，玩家堆功德压劫气面板涨、体验纹丝不动。
+- game.js confirmBreakthrough 计算净值 = meritBonus+treasureBonus+failBonus+raceBonus+factionBonus−calamityPenalty，经 payload.advantage 传入战斗。
+- battle-engine-v2.js create 处注入：开局罡气 = clamp(净值,0,0.5) × 气血上限 × k，加进 playerBlock（先于一切伤害吸收），与殷郊 trib_shield 叠加。
+- **k=0.5 标定依据**：殷郊 trib_shield = 10% 气血上限是既有"一劫护持量级"参照；典型净值 0.15~0.25 → 罡气 0.075~0.125×气血，与 trib_shield 量级相称、可叠加不碾压；净值上限 0.5 → 罡气 ≤25% 气血（≈1~2 回合吃血缓冲）。负净值不注入（基准难度）。
+- **feel_lock（bt_001）豁免注入**：罡气会吸收伤害从而改变 stats.taken，注入必破黄金快照；且新手首劫软保底（min_success_rate 0.95）语义本就不依赖因果经营。
+- ui.js 确认面板提示改为与真实机制一致的描述（因果护持凝成罡气/屡败榜文钝）。
+
+**改动三：保底兑现（21.1 §1.3）**——病根：guarantee_after_fail 传入 payload 零消费者，空头支票。
+- fail_counts ≥ guarantee_after_fail 时本劫全部 phase 敌 HP×0.7（PHASE_GUARANTEE_MULT，攻击力不变，"只钝血不钝牙"）；create 首段与 _checkPhaseOrWin 换段两条构建路径都生效；仅 source="breakthrough" 门控，杀阵共用 phase 路径不受影响。
+- ui.js 确认面板加保底状态行："屡败之后，榜文似已钝了几分。此劫劫数，钝了三成。"（非新增模态，进既有面板）。
+- game.js 破劫失败弹窗去掉"成功率 +N%"面板腔（22.0 §七红线），改名位叙事并与新机制口径一致。
+
+**关键决策**：①harness 构型——D 线模型敌我同步缩放，纯数值 handicap 无法制造胜负不确定性；探测发现斗法栏位数是唯一破坏缩放不变性的合法杠杆（每格后接敌方夹招），bt_008 四格构型基线约 75% 胜且败因全部为死亡（胜者余血最低 0.002），罡气恰好能翻转这类死亡败，选为 200 次采样区间。②保底对 feel_lock 行同样生效（bt_001 数据本就带 guarantee_after_fail=2，新手屡败也应得喘息）；黄金快照以 0 败口径采样，互不影响。
+
+**验收（独立 verifier 复跑全部命令，97/100，通过）**：
+- node --check web/js/*.js 全过；npm test 六套 exit=0；ui-regression 黄金快照零漂移。
+- balance-metrics：bt_001 黄金快照逐字段零漂移（2回合/吃血1029/敌HP 4260·5396）、破劫目标带 26/26、八关 8/8。
+- 新增 test/tribulation-advantage.test.js 全绿：S1 罡气注入（净值 0.2→罡气 round(hpMax×0.1)、负净值 0、上限 0.5 钳制、bt_001 豁免）；S2 保底×0.7 精确断言（首段/换段 HP === round(base×0.7)、攻击不变、guarantee−1 不触发）；S3 bt_001 堆功德仍与黄金逐字段一致；S4 200×2 harness——高功德 193/200=96.5% vs 高劫气 136/200=68.0%，胜率差 28.5pp 与净值差（0.2 vs −0.15）同向，双比例 z=7.46 ≥1.96。
+- companion-passives 20/20、boss-mechanics 50/50 专项全绿。
+
+**verifier 复核修正（实施者自评 100，独立验收定 97，轻微放水已纠）**：①上文"攻击力不变"对 bt_001 feel_lock 保底路径不严格成立——旧公式 atk=hp 耦合，保底触发时攻击力同×0.7（设计只要求 HP×0.7，机制无错，表述修正）；②S4 基线胜率按 verifier 独立种子窗实测约 65%（上文"约75%"为实施者种子窗数值，定性结构一致：败因全为死亡、处中段区间）；③登记设计债：getRateBreakdown 的 storyBonus/pulseBonus 两行"面板显示但不兑现罡气"（factionBonus 反之兑现但无面板行），根源在 21.1 §1.2 净值公式本身，归 T-C/T-D 决定并入净值或改面板口径；④bt_007 success"钝了几分"与保底"钝了"意象轻微复用，可接受。
+
+**遗留**：atmosphere.js bt_004/bt_005 大画卷场景与本关 phases 主题的接缝（bt_004 画卷演三花、phases 是五气；bt_005 反之）已用 paired-idiom 文案桥接，彻底对齐归 21.2 T-D 气韵化批次；opening-walkthrough.cjs 依赖 playwright 未安装（基线环境限制，非本批回归）；audit_integrity/completeness 基线损坏待专项 #8。
+
+---
+
+## 2026-08-31 — 第 1 批 T-A：21.1 §1.1 破劫 phases 还债（D 线遗留专项，第 1 批先决）
+
+**问题（21.1 §0.3 三病根）**：①数据双源——bt 表 phases（bt_006~008 已有）无消费者，constants.TRIBULATION_PHASES 硬编码只有 bt_001/002，game.js 兜底致 bt_003~008 六关同打 bt_001 两段劫；②模型缺席——phase 敌 HP=战力×ratio 跑在 D 线战力比模型外（无 diff 钳制、无回合目标带、无攻击力公式）；③bt_001~005 无 phases 内容。
+
+**改动（还债四步全做）**：①数据归一——breakthrough_table.phases 成唯一源，constants 删 TRIBULATION_PHASES、保留 TRIBULATION_INTENT_POOLS 并新增 shajie/shiwen 两池（标签出自各关 lore）；②模型接入——phase 敌复用 D 线公式，power_ratio 重定义为该段 diff 权重（HP=权重×6×玩家每回合输出，攻击=气血×0.35×权重，另加 phase 口径 HP×0.8/攻击×0.6）；③内容补齐——8 关共 27 段，bt_001~005 新写 13 段（名称/intro 全部从各关 lore/pressure_label 逐词推导，无凭空世界观），bt_006~008 转结构化对象；④度量回归——balance-metrics 加 8 关×全 phase 采样点（生产路径 confirmBreakthrough）与 bt_001 黄金断言。
+
+**关键决策**：bt_001（前 30 分钟链路）加数据标记 feel_lock 保留旧公式——新公式与旧数值数学互斥（旧 power=hp vs 新攻击=0.35×权重×气血），零漂移只能锁旧路径；做成数据驱动+测试断言护栏而非代码硬编码。多段劫回合上限放宽为 max(20, 8×段数) 防超时判负，bt_001 保持 20。
+
+**校准常数依据（verifier 反事实复跑佐证）**：PHASE_HP_MULT=0.8 / PHASE_ATK_MULT=0.6 非凑数——同种子内存替换为 1.0/1.0 复跑，bt_007/bt_008 败亡（吃血 0.669/0.765），去掉任一乘子同样败亡；根因是 D 线公式按单 Boss 战 6 回合标定，直接套 25 回合多段劫必然叠死。当前值下八关全胜、吃血 0.25→0.56 单调爬升。待构筑多样化后复采（同 D 线待办）。
+
+**验收（独立 verifier 复跑，97/100，通过）**：balance-metrics 破劫目标带 26/26（≥8/11 达标）、八关 8/8 胜、bt_001 黄金快照逐字段零漂移（2 回合/吃血 1029/敌 HP 4260·5396 还债前后一致）；npm test 六套全绿+ui 黄金快照零漂移+companion-passives 20/boss-mechanics 50 专项全绿；TRIBULATION_PHASES 全仓 grep 零残留。对抗审查：phase 内容抽查 bt_003/004/005 逐词出自 lore；feel_lock 判为 21.1 §4 授权的正当黄金锁非掩盖。扣分：校准常数仅记代码注释未先入台账（-1，本条补记）；杀劫大阵共用 phase 路径数值同步变化而 test/ 对 array 零覆盖（-1，欠账非回归，后续批次补大阵采样）。
+
+**遗留**：杀劫大阵（game.js:547）与 array phases 意图池待补采样/内容；newbie_protection 死字段归 T-C（21.1 §1.7）。
+
+---
+
 ## 2026-08-29 — E 线：性能 profiling + 资产减重 2.6MB
 
 **profiling（先测后改）**：Playwright 真实浏览器度量——render() 0.09ms/次、tick() 0.099ms/次、SAVE_REV 变更全量重绘 0.12ms；250ms tick 下主循环 CPU 占比 ≈0.04%，**运行时无热点**（ui.js 的 SAVE_REV 门控已把资源条/面板重绘挡在变更之后）。日志数组有界（30 条截断），存档仅在变更时写入。结论：不改主循环（A4 纪律：不必要性不重写）。

@@ -128,6 +128,29 @@ function renderLogPanel(body, state) {
       pillCard.append(pInfo, craftBtn); body.appendChild(pillCard);
     }
 
+    // 替身符（21.1 §1.6，数据驱动自 pill_table）：破劫败局符代你受榜文一笔，败转胜，唯名位不授。
+    // 显示门：榜上留过名或已有符者方见炼法——与留名弧线同步揭示（一次只教一件事），新号丹房不增信息负担。
+    const tishenRow = Game.getTishanRow();
+    if (Object.keys(tishenRow).length && (int(Game.state.list_marks) > 0 || int(Game.state.pills.tishen) > 0)) {
+      const tCost = tishenRow.cost || {};
+      const tGate = UnlockManager.conditionMet(Game.state, String(tishenRow.unlock_realm || ""));
+      const tToday = todayString();
+      const tDailyHit = str(Game.state.pills.tishen_day, "") === tToday && int(Game.state.pills.tishen_today) >= int(tishenRow.daily_limit, 1);
+      const tAfford = Object.keys(tCost).every((rid) => num(Game.state.resources[rid]) >= num(tCost[rid]));
+      const tCard = document.createElement("div"); tCard.className = "card";
+      const tInfo = document.createElement("div"); tInfo.className = "card-info";
+      const tName = document.createElement("div"); tName.className = "card-name"; tName.textContent = `${tishenRow.pill_name}——${tishenRow.effect_desc}`;
+      const tSub = document.createElement("div"); tSub.className = "card-cost";
+      tSub.textContent = tGate
+        ? `耗：${Object.keys(tCost).map((rid) => { const rn = DataManager.getById("resource_table", rid).resource_name || rid; return `${rn} ${formatInt(tCost[rid])}`; }).join("，")}｜存 ${int(Game.state.pills.tishen)} 张${tDailyHit ? "｜今日炉火已熄" : ""}`
+        : `需${String(DataManager.getRealm(String(tishenRow.unlock_realm)).realm_name || "更高境界")}方可炼制`;
+      tInfo.append(tName, tSub);
+      const tBtn = document.createElement("button"); tBtn.className = "card-btn"; tBtn.textContent = "炼符";
+      tBtn.disabled = !(tGate && tAfford && !tDailyHit);
+      tBtn.addEventListener("click", () => { Game.craftTishan(); renderPanelBody("log"); });
+      tCard.append(tInfo, tBtn); body.appendChild(tCard);
+    }
+
     // 画符（蓄力）
     const talismans = Game.state.talismans || [];
     const tCount = (t) => talismans.filter((x) => x.type === t).length;
@@ -178,8 +201,27 @@ function renderLogPanel(body, state) {
     for (const line of rb.log || []) { const d = document.createElement("div"); d.className = "log-line"; d.textContent = line; body.appendChild(d); }
   }
 
+  // 见闻录（21.3 §3.3 E4）：众生见证，领信息不领资源；空则整区不渲染（新号零负担）
+  const witnessed = Array.isArray(state.witnessed) ? state.witnessed : [];
+  if (witnessed.length) {
+    const rows = witnessed.map((id) => DataManager.getById("witness_table", String(id))).filter((r) => Object.keys(r).length);
+    const byKind = {};
+    for (const r of rows) { (byKind[String(r.kind_label || "见闻")] = byKind[String(r.kind_label || "见闻")] || []).push(r); }
+    const summary = Object.keys(byKind).map((k) => `${k} ${byKind[k].length}`).join("｜");
+    body.appendChild(note(`见闻录（${rows.length} 条）：${summary}——大劫众生，谁死谁活，皆入你眼。`));
+    for (const r of rows) {
+      const card = document.createElement("div"); card.className = "card";
+      const info = document.createElement("div"); info.className = "card-info";
+      const name = document.createElement("div"); name.className = "card-name"; name.textContent = `${r.kind_label}·${r.lore_anchor}`;
+      const desc = document.createElement("div"); desc.className = "card-desc"; desc.textContent = String(r.witness_text || "");
+      info.append(name, desc); card.appendChild(info); body.appendChild(card);
+    }
+  }
+
   if (!state.logs.length) body.appendChild(note("修行日志空空如也。"));
   for (const line of state.logs) { const d = document.createElement("div"); d.className = "log-line"; d.textContent = line; body.appendChild(d); }
+  // 21.6 L2 榜上留书：外链反馈入口（不做界内输入框）
+  body.appendChild(popupButton("榜上留书（寄语与反馈）", true, () => { Game.openFeedbackForm(); }));
   body.appendChild(popupButton("重入轮回（清空存档）", true, () => { if (confirm("确定要重入轮回？当前修行进度将全部清空。")) { closePanelSheet(); Game.resetSave(); } }));
 }
 

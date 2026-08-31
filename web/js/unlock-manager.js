@@ -9,6 +9,7 @@ const UnlockManager = {
     const unlocked = state.unlocked_ids;
     for (const row of DataManager.getRows("unlock_table")) {
       const id = String(row.unlock_id || "");
+      if (row.feature_type === "ending") continue; // 21.3 §3.3 E2：结局解锁由 Game.chooseEnding 授予，不自动点亮
       if (this.conditionMet(state, String(row.unlock_realm || "")) && !unlocked.includes(id)) {
         unlocked.push(id);
       }
@@ -53,8 +54,34 @@ const UnlockManager = {
     if (condition.startsWith("day_")) {
       return this.currentDay(state) >= parseInt(condition.slice(4), 10);
     }
+    // 21.1 §1.5 榜上留名条件令牌：list_marks_min:N（天庭差事机缘的门），对齐既有 race_/day_ 写法
+    if (condition.startsWith("list_marks_min:")) {
+      return int(state.list_marks) >= parseInt(condition.slice(15), 10);
+    }
     if (state.unlocked_ids.includes(condition)) return true;
     if (state.current_map_id === condition) return true;
+    return false;
+  },
+
+  // 21.3 §3.3 E2 结局条件评估器（守则 5：多维可替代，any_of 为并列选项而非必走路径）。
+  // 条件数据住在 unlock_table 结局行的 ending_condition 字段，代码不存第二份（数据为体）。
+  endingConditionMet(state, cond) {
+    if (!cond || typeof cond !== "object") return true;
+    if (Array.isArray(cond.any_of)) return cond.any_of.length > 0 && cond.any_of.some((c) => this.endingConditionMet(state, c));
+    if (Array.isArray(cond.all_of)) return cond.all_of.length > 0 && cond.all_of.every((c) => this.endingConditionMet(state, c));
+    if ("list_marks_min" in cond) return int(state.list_marks) >= int(cond.list_marks_min); // 放置党：榜上留名（天庭差事弧）
+    if ("merit_min" in cond) return num(state.resources && state.resources.merit) >= num(cond.merit_min); // 放置党：功德深耕
+    if ("boss_first_kills_min" in cond) { // 战力党：具名 Boss 首杀数
+      const n = Object.values(state.boss_clears || {}).filter((v) => int(v) > 0).length;
+      return n >= int(cond.boss_first_kills_min);
+    }
+    if ("array_wins_min" in cond) { // 战力党：杀阵累计破阵次数
+      const total = Object.values(state.array_wins || {}).reduce((sum, v) => sum + int(v), 0);
+      return total >= int(cond.array_wins_min);
+    }
+    if ("witnessed_min" in cond) return (state.witnessed || []).length >= int(cond.witnessed_min); // 长线党：见闻录条目数
+    if ("rebirth_count_min" in cond) return int(state.rebirth && state.rebirth.count) >= int(cond.rebirth_count_min); // 长线党：历世次数
+    if ("daohen_min" in cond) return int(state.rebirth && state.rebirth.daohen) >= int(cond.daohen_min); // 长线党：道痕
     return false;
   },
 

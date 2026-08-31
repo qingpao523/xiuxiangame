@@ -75,6 +75,26 @@ const LogPanelVue = {
       cost: `耗：${Object.keys(def.cost).map((rid) => { const rn = DataManager.getById("resource_table", rid).resource_name || rid; return `${rn} ${formatInt(def.cost[rid])}`; }).join("，")}｜${def.effectText(Game.state)}`,
       disabled: !Object.keys(def.cost).every((rid) => num(Game.state.resources[rid]) >= num(def.cost[rid])),
     })) : [];
+    // 替身符（21.1 §1.6，数据驱动自 pill_table，与命令式版本同口径）。
+    // 显示门：榜上留过名或已有符者方见炼法（一次只教一件事），新号丹房不增信息负担。
+    const tishen = { show: false, name: "", cost: "", disabled: true };
+    if (alchemyUnlocked) {
+      const tishenRow = Game.getTishanRow();
+      if (Object.keys(tishenRow).length && (int(state.list_marks) > 0 || int(state.pills.tishen) > 0)) {
+        const tCost = tishenRow.cost || {};
+        const tGate = UnlockManager.conditionMet(state, String(tishenRow.unlock_realm || ""));
+        const tToday = todayString();
+        const tDailyHit = str(state.pills.tishen_day, "") === tToday && int(state.pills.tishen_today) >= int(tishenRow.daily_limit, 1);
+        const tAfford = Object.keys(tCost).every((rid) => num(state.resources[rid]) >= num(tCost[rid]));
+        tishen.show = true;
+        tishen.name = `${tishenRow.pill_name}——${tishenRow.effect_desc}`;
+        tishen.cost = tGate
+          ? `耗：${Object.keys(tCost).map((rid) => { const rn = DataManager.getById("resource_table", rid).resource_name || rid; return `${rn} ${formatInt(tCost[rid])}`; }).join("，")}｜存 ${int(state.pills.tishen)} 张${tDailyHit ? "｜今日炉火已熄" : ""}`
+          : `需${String(DataManager.getRealm(String(tishenRow.unlock_realm)).realm_name || "更高境界")}方可炼制`;
+        tishen.disabled = !(tGate && tAfford && !tDailyHit);
+      }
+    }
+    const craftTishen = () => { Game.craftTishan(); renderPanelBody("log"); };
     const talismans = alchemyUnlocked ? (Game.state.talismans || []) : [];
     const tCount = (t) => talismans.filter((x) => x.type === t).length;
     const talismanNote = alchemyUnlocked ? `画符（朱砂 3｜法力 2000）：符成可带入斗法，打出即焚。现有 火符 ${tCount("fire")}｜雷符 ${tCount("thunder")}｜护身符 ${tCount("guard")}。` : "";
@@ -111,9 +131,9 @@ const LogPanelVue = {
     const resetSave = () => { if (confirm("确定要重入轮回？当前修行进度将全部清空。")) { closePanelSheet(); Game.resetSave(); } };
     return {
       dayLine, jm, hasFaction, factionCard, task, cappedNoFaction, showFactionSystem,
-      companionNote, companionCards, alchemyUnlocked, alchemyNote, pillCards, talismanNote, talismanCards, divCard,
+      companionNote, companionCards, alchemyUnlocked, alchemyNote, pillCards, tishen, talismanNote, talismanCards, divCard,
       rebirth, logsEmpty, logs: state.logs,
-      pickFaction, startTask, toggleLineup, brewPill, drawTalisman, divine, resetSave,
+      pickFaction, startTask, toggleLineup, brewPill, craftTishen, drawTalisman, divine, resetSave,
     };
   },
   template: `
@@ -153,6 +173,10 @@ const LogPanelVue = {
   <div v-for="p in pillCards" :key="p.id" class="card">
     <div class="card-info"><div class="card-name">{{ p.name }}</div><div class="card-cost">{{ p.cost }}</div></div>
     <button class="card-btn" :disabled="p.disabled" @click="brewPill(p.id)">开炉</button>
+  </div>
+  <div v-if="tishen.show" class="card">
+    <div class="card-info"><div class="card-name">{{ tishen.name }}</div><div class="card-cost">{{ tishen.cost }}</div></div>
+    <button class="card-btn" :disabled="tishen.disabled" @click="craftTishen">炼符</button>
   </div>
   <div class="panel-note">{{ talismanNote }}</div>
   <div v-for="t in talismanCards" :key="t.type" class="card">

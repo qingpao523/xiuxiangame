@@ -29,7 +29,8 @@ function render() {
   if ($("char-img").getAttribute("src") !== charPath) $("char-img").src = charPath;
   const raceTag = getRaceShortName(state);
   $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
-  $("weather-line").textContent = `天象：${getWeather(state)}`;
+  const _calTier = getCalamityPressureTier(state);
+  $("weather-line").textContent = `天象：${getWeather(state)}${_calTier.level >= 25 ? `｜杀劫·${_calTier.label}` : ""}`;
   const omen = getTodayOmen();
   $("omen-line").textContent = `今日异象：${omen.name}——${omen.desc}`;
   const pressure = WorldScroll.getSealPressure(state);
@@ -185,9 +186,18 @@ function tickSparkle(actionId) {
     if (gain) {
       const float = document.createElement("div"); float.className = "sparkle-float";
       float.style.left = orb.style.left; float.style.top = orb.style.top;
+      const ids = Object.keys(gain);
       const parts = [];
-      for (const id of Object.keys(gain)) { const row = DataManager.getById("resource_table", id); parts.push(`${row.resource_name || id} +${formatInt(gain[id])}`); }
-      float.textContent = `${parts.join("　")}${sparkleCombo > 1 ? `　连拾×${sparkleCombo}` : ""}`;
+      for (const id of ids) { const row = DataManager.getById("resource_table", id); parts.push(`${row.resource_name || id} +${formatInt(gain[id])}`); }
+      const numText = `${parts.join("　")}${sparkleCombo > 1 ? `　连拾×${sparkleCombo}` : ""}`;
+      const qLine = FeedbackRenderer.line(ids.length > 1 ? "sparkle_multi" : "sparkle_" + ids[0]);
+      if (qLine) {
+        const q = document.createElement("span"); q.className = "sparkle-qi"; q.textContent = qLine;
+        const n = document.createElement("span"); n.className = "sparkle-num"; n.textContent = numText;
+        float.appendChild(q); float.appendChild(n);
+      } else {
+        float.textContent = numText;
+      }
       stage.appendChild(float); setTimeout(() => float.remove(), 1300);
     }
     orb.remove(); clearSparkle(); nextSparkleAt = nowMs() + sparkleDelay();
@@ -203,8 +213,8 @@ function clearSparkle() { document.querySelectorAll("#stage .sparkle").forEach((
 
 function tickInsight(actionId) {
   if (nowMs() < nextInsightAt) return;
-  const pool = [...(INSIGHT_LINES[actionId] || []), ...INSIGHT_LINES.generic];
-  const line = pool[randInt(0, pool.length - 1)];
+  const line = FeedbackRenderer.line("insight_" + actionId) || FeedbackRenderer.line("insight_generic");
+  if (!line) return;
   const el = $("status-line"); el.classList.remove("insight"); void el.offsetWidth;
   el.classList.add("insight"); el.textContent = line;
   insightShowing = true; nextInsightAt = nowMs() + randInt(4500, 6500);
@@ -400,7 +410,7 @@ function registerPopupRenderers() {
     panel.classList.add("plaque");
     if (popup.style) panel.classList.add(`style-${popup.style}`);
     title.textContent = popup.title || ""; body.textContent = popup.body || "";
-    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); if (cfg.action === "chain_next") Game._nextChainBoss(); if (cfg.action === "chain_stop") Game._stopChain(); }));
+    for (const cfg of popup.buttons || [{ label: "确定" }]) buttons.appendChild(popupButton(cfg.label, cfg.secondary, () => { closePopup(); if (cfg.action === "claim_offline") Game.claimOfflineReward(); if (cfg.action === "reincarnate") Game.reincarnate(); if (cfg.action === "open_scroll") WorldScroll.open(); if (cfg.action === "tower_next") Game._nextTowerFloor(); if (cfg.action === "tower_stop") Game._endTowerRun(false); if (cfg.action === "chain_next") Game._nextChainBoss(); if (cfg.action === "chain_stop") Game._stopChain(); if (cfg.action === "visit_option") Game.chooseVisitOption(cfg.visit); if (cfg.action === "ending_choice") Game.chooseEnding(cfg.endingId); if (cfg.action === "feedback_form") Game.openFeedbackForm(); /* ending_defer：仅关闭（暂缓，下次会话/毕业再议） */ }));
   });
   GameplayEngine.registerRenderer("event", (panel, title, body, buttons) => renderEventPopup(panel, title, body, buttons));
   GameplayEngine.registerRenderer("encounter", (panel, title, body, buttons, popup) => renderEncounterPopup(panel, title, body, buttons, popup.encounterId));
@@ -1035,7 +1045,7 @@ function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroug
   const fromRealm = DataManager.getRealm(data.from_realm), toRealm = DataManager.getRealm(data.to_realm);
   title.textContent = `破劫：${getPhaseRealmName(fromRealm)} → ${getPhaseRealmName(toRealm)}`;
   const b = BreakthroughManager.getRateBreakdown(Game.state, data); const pct = (v) => `${Math.round(v * 100)}%`;
-  const lore = document.createElement("div"); lore.textContent = data.breakthrough_lore || ""; body.appendChild(lore);
+  const lore = document.createElement("div"); lore.textContent = `${getCalamityPressureTier(Game.state).mood}\n${data.breakthrough_lore || ""}`; body.appendChild(lore);
   const failCount = int(Game.state.breakthrough_fail_counts[String(data.breakthrough_id)]);
   const rows = [
     { label: "基础成功率", value: b.base, base: true, hint: "劫数本身的成色" },
@@ -1045,6 +1055,7 @@ function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroug
     { label: "地脉之力", value: b.pulseBonus, hint: "地仙劫且历榜外地脉者 +10%" },
     { label: "失败补偿", value: b.failBonus, hint: `劫火淬体，此劫已败 ${failCount} 次` },
     { label: "先天道体", value: b.raceBonus, hint: "人族跟脚，破劫底子 +3%" },
+    { label: "天庭敕令", value: b.factionBonus, hint: "天庭阵营庇护 +5%" },
     { label: "榜文牵引", value: -b.calamityPenalty, sign: "-", hint: "劫气每满百 -0.3%，有上限" },
   ];
   const table = document.createElement("div"); table.className = "rate-table";
@@ -1060,8 +1071,22 @@ function renderBreakthroughConfirmPopup(panel, title, body, buttons, breakthroug
   const total = document.createElement("div"); total.className = "rate-total";
   total.textContent = `总成功率：${pct(b.rate)}（钳制于 ${pct(num(data.min_success_rate))} ~ ${pct(num(data.max_success_rate, 1))}）\n消耗道行：${formatInt(data.required_daoxing)}\n${data.pressure_label || ""}`;
   body.appendChild(total);
+  // 21.1 §1.3 保底兑现状态行：败绩已达 guarantee_after_fail → 榜文钝了（phase 敌 HP×0.7，battle-engine-v2.js PHASE_GUARANTEE_MULT）
+  const guarantee = int(num(data.guarantee_after_fail, 99));
+  if (guarantee < 99 && failCount >= guarantee) {
+    const dull = document.createElement("div"); dull.className = "rate-total";
+    dull.textContent = "屡败之后，榜文似已钝了几分。此劫劫数，钝了三成。";
+    body.appendChild(dull);
+  }
+  // 21.1 §1.6 替身符持有行：仅持有时显示（弹窗克制；无符不提示，避免开局期信息负担）
+  const tishenN = int(Game.state.pills && Game.state.pills.tishen);
+  if (tishenN > 0) {
+    const ts = document.createElement("div"); ts.className = "rate-total";
+    ts.textContent = `袖中有替身符 ${tishenN} 张：此劫若败，符燃代受一笔，败可转胜——唯新境名位不授。`;
+    body.appendChild(ts);
+  }
   const hint = document.createElement("div"); hint.className = "rate-hint-block";
-  hint.textContent = "此劫以斗法论胜负：榜文将显化劫数与你相持。\n以上因果护持会化为你开局的气机罡气；若屡败于此劫，劫火淬体，榜文再难拿你。";
+  hint.textContent = "此劫以斗法论胜负：榜文将显化劫数与你相持。\n以上因果护持会凝成你开局的罡气：功德愈深，罡气愈厚；劫气愈重，护持愈薄。\n若屡败于此劫，榜文钝了，劫数也随之而钝。";
   body.appendChild(hint);
   buttons.appendChild(popupButton("应战劫数", false, () => { closePopup(); playTribulation(() => Game.confirmBreakthrough()); }));
   buttons.appendChild(popupButton("暂缓闭关", true, () => closePopup()));

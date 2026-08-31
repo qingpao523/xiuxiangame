@@ -87,9 +87,16 @@ const SaveManager = {
       rebirth: { count: 0, daohen: 0, races_seen: [], log: [] },
       pills: {},
       god_seats: [],
+      list_marks: 0, // 21.1 §1.4 榜上留名：破劫败累计（榜文亲笔），与 god_seats（Boss/斗法败化神位）两链路不混账（C2）
+      witnessed: [], // 21.3 §3.3 E4 见闻录：已见证条目 id（witness_table），随世重置（跨世继承归 S4 赛季项）
+      play_seconds: 0, // 21.6 L1 三问卡：在线时长累计（秒），满 30 分钟触发一次三问
+      ending_id: "", // 21.3 §3.3 E2 终局身份：fengshen/chengsheng/xiaoyao，一世一定，转世重开（后结局世界开放）
       array_counts_today: {},
       array_wins: {},
       companions: {},
+      // 21.4 §3.2 结缘后回访频控：周序号（floor(账号日/7)，-1=未起算）与本周已触发回访数（全局 ≤2/周）
+      visit_week: -1,
+      visit_week_count: 0,
         lineup: [],
         talismans: [],
         divination: {},
@@ -204,23 +211,48 @@ const SaveManager = {
       }
       if (state.battle_slots.length === 0) state.battle_slots = starter.map((id) => ({ id, condition: "always" }));
     }
-    // 丹房：渡厄丹存货 / 培元丹药效截止时间
+    // 丹房：渡厄丹存货 / 培元丹药效截止时间 / 替身符存货与当日炼制数（21.1 §1.6）
     state.pills = state.pills || {};
     state.pills.due = int(state.pills.due);
     state.pills.peiyuan_until = int(state.pills.peiyuan_until);
+    state.pills.tishen = int(state.pills.tishen);
+    state.pills.tishen_today = int(state.pills.tishen_today);
+    state.pills.tishen_day = str(state.pills.tishen_day, "");
     // 真灵上榜：已得神位
     state.god_seats = state.god_seats || [];
+    // 21.1 §1.4 榜上留名（破劫败累计，只增不减；转世随真灵重走，与 god_seats 同口径）
+    state.list_marks = int(state.list_marks);
+    state.play_seconds = int(state.play_seconds); // 21.6 L1 三问卡在线时长
+    state.flags.three_q_shown = !!state.flags.three_q_shown;
+    // 21.3 §3.3 E4 见闻录（witnessed 只存 witness_id 标量，条目文案在 witness_table）；E2 终局身份 ending_id
+    state.witnessed = Array.isArray(state.witnessed) ? state.witnessed.map(String) : [];
+    state.ending_id = str(state.ending_id, "");
     // 轮回转生：历世记录（账号级，不随转世重置）
     state.rebirth = state.rebirth || {};
     state.rebirth.count = int(state.rebirth.count);
     state.rebirth.daohen = int(state.rebirth.daohen);
     state.rebirth.races_seen = state.rebirth.races_seen || [];
     state.rebirth.log = state.rebirth.log || [];
+    state.rebirth.god_seats_seen = Array.isArray(state.rebirth.god_seats_seen) ? state.rebirth.god_seats_seen.map(String) : []; // 21.3 S1 历世神位档案
     // 杀劫大阵：今日闯阵次数 / 各阵累计破阵次数
     state.array_counts_today = state.array_counts_today || {};
     state.array_wins = state.array_wins || {};
     // 封神人物因缘
     state.companions = state.companions || {};
+    // 21.4 §3.2 结缘后回访：每位道友补 visit_ptr/favor/last_visit_day 默认值（旧档无感）；
+    // last_visit_day=0 表示"从未回访"（不受冷却约束），回访后记账号日（≥1）。
+    for (const cid of Object.keys(state.companions)) {
+      const c = state.companions[cid];
+      if (!c || typeof c !== "object") { state.companions[cid] = { stage: 0, bonded: false, visit_ptr: 0, favor: 0, last_visit_day: 0, pending_visit: "" }; continue; }
+      c.stage = int(c.stage);
+      c.bonded = !!c.bonded;
+      c.visit_ptr = int(c.visit_ptr);
+      c.favor = int(c.favor);
+      c.last_visit_day = int(c.last_visit_day);
+      c.pending_visit = String(c.pending_visit || "");
+    }
+    state.visit_week = int(state.visit_week, -1);
+    state.visit_week_count = int(state.visit_week_count);
     // P1 生活技艺：符咒存货（[{type,lv}]）/ 占卜记录
     if (!Array.isArray(state.talismans)) state.talismans = [];
     state.divination = state.divination || {};

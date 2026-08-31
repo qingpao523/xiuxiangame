@@ -38,7 +38,66 @@
       "bond_card": "nezha_spear",
       "bond_passive_desc": "地图掉落 +5%（哪吒替你搜山检海）",
       "bond_passive": { "type": "drop_bonus", "value": 0.05 },
-      "bond_text": "哪吒把一缕枪意渡入你的掌心：「这是我的枪法，你拿去用！」"
+      "bond_text": "哪吒把一缕枪意渡入你的掌心：「这是我的枪法，你拿去用！」",
+      "stance": {
+        "faction": "chan",
+        "wants": [
+          "battle",
+          "kept_promise"
+        ],
+        "dislikes": [
+          "oppression"
+        ],
+        "quote": "等哪天东海再来闹事，你可得来帮我。"
+      },
+      "visits": [
+        {
+          "visit_id": "nz_visit_01",
+          "title": "东海又动",
+          "condition": {
+            "all_of": [
+              {
+                "type": "realm",
+                "realm_id": "zr_08"
+              }
+            ]
+          },
+          "text": "一道红绫破空而来，钉在你洞前的石壁上。是哪吒的混天绫，上面缠着半缕未散的海腥气。\n片刻后他本人到了，风火轮还没停稳：「东海又有东西在磨刀了。巡海的夜叉换了三轮，全都盯着陈塘关。」\n他挠了挠头，语气忽然低下去：「我爹让我闭门思过，说再惹事就把我绑了去请罪。」他哼了一声。「他绑过一次了。」\n「这次我不一个人扛。」他把火尖枪往地上一顿。「你来不来？」",
+          "options": [
+            {
+              "text": "去，并肩",
+              "effect": {
+                "battle": {
+                  "name": "巡海妖将残部",
+                  "power_ratio": 0.25,
+                  "win_log": "收枪时他冲你咧嘴一笑：「痛快！」",
+                  "win_effect": {
+                    "favor": 1
+                  },
+                  "fail_log": "哪吒断后，火尖枪一扫：「走！这账记在东海头上。」"
+                }
+              }
+            },
+            {
+              "text": "劝他先忍",
+              "reward": {
+                "resources": {
+                  "merit": 80
+                }
+              },
+              "log": "他沉默半晌：「……行。听你的。但要是它们上岸，忍字就换成枪字。」",
+              "effect": {
+                "delayed_log": {
+                  "delay_days": 7,
+                  "text": "陈塘关方向风雷渐息。哪吒到底还是听了劝——或者说，他在等一个不用忍的时机。"
+                }
+              }
+            }
+          ],
+          "cooldown_days": 7,
+          "once": true
+        }
+      ]
     },
     {
       "companion_id": "yangjian",
@@ -295,7 +354,78 @@
       "bond_card": "shengongbao_whip",
       "bond_passive_desc": "机缘概率 +8%（申公豹替你探路）",
       "bond_passive": { "type": "event_chance", "value": 0.08 },
-      "bond_text": "申公豹把黑虎鞭的一缕鞭意封入你的袖中：'遇到好东西，记得分我一杯。'"
+      "bond_text": "申公豹把黑虎鞭的一缕鞭意封入你的袖中：'遇到好东西，记得分我一杯。'",
+      "stance": {
+        "faction": "jie",
+        "wants": [
+          "calamity",
+          "chaos"
+        ],
+        "dislikes": [
+          "merit_purity"
+        ],
+        "quote": "我只是……喜欢看别人选。"
+      },
+      "visits": [
+        {
+          "visit_id": "sgb_visit_01",
+          "title": "劫机西来",
+          "condition": {
+            "all_of": [
+              {
+                "type": "faction",
+                "faction_id": "chan"
+              },
+              {
+                "type": "merit_min",
+                "value": 500
+              }
+            ]
+          },
+          "text": "夜半，洞府外黑虎低吼。申公豹盘坐在你的护山符阵之外。他进不来，也不打算硬闯。\n'道友，留步。'他隔着阵拱手，礼数周全得过分。'打听到一桩事。西岐以西，有一批灵材。本该运往姜子牙大营，半道被截教的散人扣下了。'\n他笑得像只狐狸：'他们认得我。我一句话，这批灵材可以改道——进你的洞府。'\n'我知道你入了阐教。'他补上一句。'可功德攒到今天，你替天庭办过几件事？天庭又替你办过几件？'",
+          "options": [
+            {
+              "text": "收下这份『不合时宜』",
+              "reward": {
+                "resources": {
+                  "calamity": 120
+                }
+              },
+              "effect": {
+                "favor": 1
+              },
+              "log": "申公豹大笑三声，骑虎而去。你手札暗记：此事若被玉虚知晓，恐有后话。"
+            },
+            {
+              "text": "婉拒：各为其主",
+              "reward": {
+                "resources": {
+                  "merit": 60
+                }
+              },
+              "log": "他拱手的礼数依旧周全：'好，好。来日方长——我最不缺的就是来日。'"
+            },
+            {
+              "text": "问他：你到底图什么",
+              "condition": {
+                "type": "calamity_min",
+                "value": 800
+              },
+              "reward": {
+                "resources": {
+                  "calamity": 60
+                }
+              },
+              "effect": {
+                "favor": 2
+              },
+              "log": "他第一次没有笑：'图姜子牙那页榜上，写不下我的名字，也写不下你的。'"
+            }
+          ],
+          "cooldown_days": 7,
+          "once": true
+        }
+      ]
     },
     {
       "companion_id": "zhaogongming",
@@ -331,7 +461,54 @@
       "bond_card": "zhaogongming_pearl",
       "bond_passive_desc": "战利 +15%（赵公明替你估价）",
       "bond_passive": { "type": "loot_bonus", "value": 0.15 },
-      "bond_text": "赵公明把定海珠的一缕珠意封入你的袖中。"
+      "bond_text": "赵公明把定海珠的一缕珠意封入你的袖中。",
+      "stance": {
+        "faction": "jie",
+        "wants": [
+          "trade",
+          "valuation"
+        ],
+        "dislikes": [
+          "bad_debt"
+        ],
+        "quote": "战利品，我抽一成。不过分吧？"
+      },
+      "visits": [
+        {
+          "visit_id": "zgm_visit_01",
+          "title": "一笔账",
+          "condition": {
+            "all_of": [
+              {
+                "type": "boss_clears_total",
+                "value": 5
+              }
+            ]
+          },
+          "text": "赵公明骑着黑虎落在你洞顶，手里捏着一张不知从哪变出来的账单。\n'盘点一下。'他清了清嗓子。'近来你破关五阵，战利折珠二十三斛。按咱们说好的——一成。'\n他看你一眼，忽然把账单揉了：'算了。这次免了。'\n'别急着谢。生意人不做亏本买卖。'他抛出二十四颗定海珠里最小的一颗。'这颗珠子押在你这儿。往后你打到叫不准价的东西，珠子会烫——烫了，来找我。'\n'记住。'他压低声音。'我抽的不是成，是你往后每场大战的「先知情」。'",
+          "options": [
+            {
+              "text": "成交",
+              "effect": {
+                "favor": 1,
+                "flag": "zhgm_pearl_pledge"
+              },
+              "log": "他收起账单，翻身上虎：'成交。珠子烫了，别瞒我。'"
+            },
+            {
+              "text": "一成照付，珠子退回",
+              "effect": {
+                "favor": 2,
+                "flag": "zhgm_pearl_pledge",
+                "settle_loot_pct": 0.1
+              },
+              "log": "他大笑收钱：'敞亮！那这颗珠子算我送你的彩头。'"
+            }
+          ],
+          "cooldown_days": 7,
+          "once": true
+        }
+      ]
     },
     {
       "companion_id": "yunxiao",

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "table": "unlock_table",
   "generated_at": "2026-06-30T00:22:16.000128Z",
-  "description": "MVP 解锁表，驱动 UI 功能显隐和叙事节点。",
+  "description": "MVP 解锁表，驱动 UI 功能显隐和叙事节点。feature_type=ending 的行为结局解锁（design/21.3 §3.3 E2），不走 refresh 自动授予，仅在玩家择定结局时由 Game.chooseEnding 授予；ending_condition 为结局达成条件（any_of 多维可替代，守则 5）。",
   "rows": [
     {
       "unlock_id": "closed_cultivation",
@@ -267,6 +267,89 @@
       "feature_type": "title",
       "ui_target": "HomePage",
       "description": "破地仙劫后获得称号。"
+    },
+    {
+      "unlock_id": "ending_choice",
+      "unlock_name": "终局三选",
+      "unlock_realm": "hy_10",
+      "feature_type": "ending_gate",
+      "ui_target": "EndingScene",
+      "description": "混元圆满后开启终局抉择：受封天庭、肉身成圣、混元逍遥三条路（design/21.3 §3.3 E2）。此行即 realm_table hy_10 unlock_ids 的指向目标，结局抉择弹窗凭此解锁。"
+    },
+    {
+      "unlock_id": "ending_fengshen",
+      "unlock_name": "受封天庭",
+      "unlock_realm": "hy_10",
+      "feature_type": "ending",
+      "ui_target": "EndingScene",
+      "sort_order": 1,
+      "ending_key": "fengshen",
+      "player_type": "放置党",
+      "ending_condition": {
+        "any_of": [
+          {
+            "list_marks_min": 3
+          },
+          {
+            "merit_min": 800
+          }
+        ]
+      },
+      "cond_desc": "榜上留名满三缕，或功德积至八百",
+      "choice_desc": "受天庭敕封，入正神之列。香火安稳，也受敕命所缚。",
+      "ending_text": "天庭敕令降下，你的真灵入正神之列。\n于天宫俯瞰人间香火，劫气再难近身。\n榜上有名，位分已定——缰绳，也握在了手里。",
+      "description": "终局之一（放置党）：接受天庭敕封获得神位，放置收益稳定、香火增长，受神位约束。条件多维可替代：榜上留名（天庭差事弧线）或功德深耕，任一即达。"
+    },
+    {
+      "unlock_id": "ending_chengsheng",
+      "unlock_name": "肉身成圣",
+      "unlock_realm": "hy_10",
+      "feature_type": "ending",
+      "ui_target": "EndingScene",
+      "sort_order": 2,
+      "ending_key": "chengsheng",
+      "player_type": "战力党",
+      "ending_condition": {
+        "any_of": [
+          {
+            "boss_first_kills_min": 15
+          },
+          {
+            "array_wins_min": 6
+          }
+        ]
+      },
+      "cond_desc": "首斩具名妖邪十五尊，或累计破阵六次",
+      "choice_desc": "不入封神榜，以道体硬渡杀劫。战力极峰，路也更险。",
+      "ending_text": "杀劫未能收走你的名字，你的肉身强行渡了过去。\n不入封神榜，不受天庭录，唯有己身道体。\n我命由我——是为成圣。",
+      "description": "终局之一（战力党）：不入封神榜，以自身道行强行渡过杀劫，战力极高不受神位束缚。条件多维可替代：具名 Boss 首杀数或杀阵破阵数，任一即达。"
+    },
+    {
+      "unlock_id": "ending_xiaoyao",
+      "unlock_name": "混元逍遥",
+      "unlock_realm": "hy_10",
+      "feature_type": "ending",
+      "ui_target": "EndingScene",
+      "sort_order": 3,
+      "ending_key": "xiaoyao",
+      "player_type": "长线党",
+      "ending_condition": {
+        "any_of": [
+          {
+            "witnessed_min": 20
+          },
+          {
+            "rebirth_count_min": 1
+          },
+          {
+            "daohen_min": 8
+          }
+        ]
+      },
+      "cond_desc": "见证众生二十缕，或历世一世，或凝道痕八点",
+      "choice_desc": "不沾大教因果，自成混元。上限最高，路也最长。",
+      "ending_text": "你看遍了劫气，众生相皆入胸怀。\n封神榜能录名，却装不下你的道。\n混元自成，逍遥天地——三界，再也缚你不住。",
+      "description": "终局之一（长线党）：不受天庭、不入神榜、不沾大教因果，以自身大道成就混元，最终上限最高、完全自由。条件多维可替代：见闻录条目数/转世次数/道痕数，任一即达。"
     }
   ]
 }

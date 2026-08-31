@@ -13,7 +13,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 10,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 1.0,
+      "base_daoxing_per_min": 1,
       "base_mana_per_min": 13,
       "combat_power_base": 100,
       "unlock_ids": [
@@ -58,7 +58,7 @@
       "feature_tips": [
         "第一次离线收益"
       ],
-      "lore_text": "炼气入体，周天初转，已能主动归纳灵气。",
+      "lore_text": "呼吸之间，灵气开始听你的话。周天初转，如溪入渠。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "山野洞府灵气微亮。",
       "ui": {
@@ -91,7 +91,7 @@
       "feature_tips": [
         "开启山野妖患"
       ],
-      "lore_text": "可离开洞府，在山野边缘游历。",
+      "lore_text": "洞外的风，比昨日多了一层。你想，可以走远些了。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "山野黑雾初现。",
       "ui": {
@@ -124,7 +124,7 @@
       "feature_tips": [
         "选择第一门术法"
       ],
-      "lore_text": "观残符而悟小术，开始拥有护道之法。",
+      "lore_text": "一枚残符在手，你读出半句真意。手里从此有了护道的依凭。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "符纸与微光。",
       "ui": {
@@ -147,7 +147,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 120,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 2.0,
+      "base_daoxing_per_min": 2,
       "base_mana_per_min": 37,
       "combat_power_base": 800,
       "unlock_ids": [
@@ -158,7 +158,7 @@
         "升级术法",
         "山野妖首"
       ],
-      "lore_text": "术法渐熟，斩妖已不再全靠蛮力。",
+      "lore_text": "术法运转渐熟。再遇山中妖氛，你多了几分从容。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "术法光效增强。",
       "ui": {
@@ -253,7 +253,7 @@
       "feature_tips": [
         "山野更深"
       ],
-      "lore_text": "山野妖患渐重，可试斩妖首。",
+      "lore_text": "山中妖患一日重过一日。那具名的妖首，在黑雾深处等你。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "山妖黑雾。",
       "ui": {
@@ -308,7 +308,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 800,
       "breakthrough_id_to_next": "bt_001",
-      "base_daoxing_per_min": 4.0,
+      "base_daoxing_per_min": 4,
       "base_mana_per_min": 150,
       "combat_power_base": 5500,
       "unlock_ids": [
@@ -317,7 +317,7 @@
       "feature_tips": [
         "真人破劫入口"
       ],
-      "lore_text": "炼气圆满，只差破开第一重劫数，便可称真人。",
+      "lore_text": "炼气圆满。天边榜文微微一亮，像在核对什么。你的第一劫，近了。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "破劫金光压顶。",
       "ui": {
@@ -340,7 +340,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 1200,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 5.0,
+      "base_daoxing_per_min": 5,
       "base_mana_per_min": 200,
       "combat_power_base": 9000,
       "unlock_ids": [
@@ -415,7 +415,7 @@
       "feature_tips": [
         "进入陈塘关外围"
       ],
-      "lore_text": "可至陈塘关外围，拾取风雷与东海余机。",
+      "lore_text": "东南风起，带着潮腥与雷意。陈塘关的轮廓，第一次进入你的脚程。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "陈塘雷云。",
       "ui": {
@@ -447,7 +447,7 @@
       "feature_tips": [
         "自动施法强化"
       ],
-      "lore_text": "术法运转渐稳，可在结算中自动循环。",
+      "lore_text": "术法运转已稳。不必刻意催动，气机自会接续，如呼吸不断。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "术法环绕。",
       "ui": {
@@ -470,7 +470,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 5000,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 8.0,
+      "base_daoxing_per_min": 8,
       "base_mana_per_min": 417,
       "combat_power_base": 38000,
       "unlock_ids": [
@@ -503,7 +503,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 6800,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 9.0,
+      "base_daoxing_per_min": 9,
       "base_mana_per_min": 517,
       "combat_power_base": 52000,
       "unlock_ids": [
@@ -535,7 +535,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 9000,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 10.0,
+      "base_daoxing_per_min": 10,
       "base_mana_per_min": 633,
       "combat_power_base": 70000,
       "unlock_ids": [
@@ -544,7 +544,7 @@
       "feature_tips": [
         "陈塘Boss挑战"
       ],
-      "lore_text": "可挑战陈塘外围巡海妖将残影。",
+      "lore_text": "潮雾深处，巡海妖将的残影时隐时现。它在等你，你也在等它。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "东海妖影。",
       "ui": {
@@ -567,7 +567,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 12000,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 11.0,
+      "base_daoxing_per_min": 11,
       "base_mana_per_min": 767,
       "combat_power_base": 95000,
       "unlock_ids": [
@@ -577,7 +577,7 @@
       "feature_tips": [
         "榜文第一次感应"
       ],
-      "lore_text": "封神榜第一次隐隐感应，你需准备护劫之物。",
+      "lore_text": "封神榜第一次隐隐照来。你开始默默积攒护劫之物——功德与法宝，皆是。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "榜文照身。",
       "ui": {
@@ -600,7 +600,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 16000,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 12.0,
+      "base_daoxing_per_min": 12,
       "base_mana_per_min": 933,
       "combat_power_base": 130000,
       "unlock_ids": [
@@ -632,7 +632,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 22000,
       "breakthrough_id_to_next": "bt_002",
-      "base_daoxing_per_min": 14.0,
+      "base_daoxing_per_min": 14,
       "base_mana_per_min": 1167,
       "combat_power_base": 180000,
       "unlock_ids": [
@@ -641,7 +641,7 @@
       "feature_tips": [
         "地仙破劫入口"
       ],
-      "lore_text": "真人圆满，若能避过榜文牵引，便可称地上之仙。",
+      "lore_text": "真人道行已全。那页榜文停在头顶的高度，像在丈量你的真灵。",
       "settlement_flavor": "封神榜碎光远悬天际，山中灵气受其牵引，渐渐汇入周身。",
       "visual_state": "榜文金光压顶。",
       "ui": {
@@ -664,7 +664,7 @@
       "stage": "凡修成道",
       "required_daoxing_to_next": 30000,
       "breakthrough_id_to_next": null,
-      "base_daoxing_per_min": 25.0,
+      "base_daoxing_per_min": 25,
       "base_mana_per_min": 2500,
       "combat_power_base": 450000,
       "unlock_ids": [
@@ -706,7 +706,7 @@
       "combat_power_base": 600000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙2重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "道基第一块砖落定。你走过的山路，都开始认得你的脚步。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -734,7 +734,7 @@
       "combat_power_base": 800000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙3重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "洞府外，黑雾见你会绕开三尺。山精野怪传开了你的名字。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -762,7 +762,7 @@
       "combat_power_base": 1100000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙4重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "地脉的跳动，隔着石壁也能听见。道基日固，如山生根。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -790,7 +790,7 @@
       "combat_power_base": 1500000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙5重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "陈塘方向的雷声更重了。大劫的边缘在涨，你的道基也在涨。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -818,7 +818,7 @@
       "combat_power_base": 2000000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙6重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "有妖物夜半窥你洞府，看了半晌，又悄悄退走。它认得你。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -846,7 +846,7 @@
       "combat_power_base": 2700000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙7重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "山野的风水开始向你聚拢。你站着的地方，便是洞府的气眼。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -874,7 +874,7 @@
       "combat_power_base": 3600000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙8重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "榜文偶尔远远一闪，还没打算动笔。你在它眼里，尚不算名字。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -902,7 +902,7 @@
       "combat_power_base": 4800000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙9重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "道基将成。你甚至听得见自己气血运行的声音，如江河行地。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -930,7 +930,7 @@
       "combat_power_base": 6500000,
       "unlock_ids": [],
       "feature_tips": [],
-      "lore_text": "地仙10重，道基渐固。封神大劫的边缘，你已能从容应对。",
+      "lore_text": "地仙道行将满。再往上，便是腾云见海、直面大劫的路了。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "地脉灵光稳固",
       "ui": {
@@ -962,7 +962,7 @@
       "feature_tips": [
         "西岐战场预告"
       ],
-      "lore_text": "破地仙劫后，你已可腾云入天，俯瞰人间兵火。封神大劫的边缘，终于向你展开。",
+      "lore_text": "脚下生云的那一瞬，人间忽然变小了。从此，你在天上行路。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "腾云入天",
       "ui": {
@@ -1227,7 +1227,7 @@
       "feature_tips": [
         "真仙破劫入口"
       ],
-      "lore_text": "天仙圆满，三花初现之兆已显。破真仙劫，便可称真人。",
+      "lore_text": "天仙圆满。地缝里渗出的劫气，一日浓过一日。它在等你落地。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "腾云入天",
       "ui": {
@@ -1525,7 +1525,7 @@
       "feature_tips": [
         "金仙破劫入口"
       ],
-      "lore_text": "真仙圆满，三花将聚。破金仙劫，五气朝元，便可称金仙。",
+      "lore_text": "真仙圆满。顶上三花含苞，五行在你体内跃跃欲试。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "三花初现",
       "ui": {
@@ -1823,7 +1823,7 @@
       "feature_tips": [
         "太乙破劫入口"
       ],
-      "lore_text": "金仙圆满，大道在望。破太乙劫，便可窥见太乙玄妙。",
+      "lore_text": "金仙圆满。五气既朝元，虚空中那一问，已在路上。",
       "settlement_flavor": "封神榜悬于九天，你的道行越深，榜文看你的目光越重。",
       "visual_state": "五气朝元",
       "ui": {
@@ -1858,7 +1858,7 @@
       "feature_tips": [
         "万仙阵外围·教主残影"
       ],
-      "lore_text": "金仙圆满，大道初成。太乙玄妙，你已可窥见一角。万仙阵中，教主残影在等你。",
+      "lore_text": "太乙入门。大道玄妙如雾，你窥见一角。万仙阵中，教主残影在等你。",
       "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
       "visual_state": "大道符文环绕",
       "ui": {
@@ -2124,7 +2124,7 @@
       "feature_tips": [
         "大罗破劫入口"
       ],
-      "lore_text": "太乙圆满，因果将断。破大罗劫，便可跳出因果。",
+      "lore_text": "太乙圆满。你开始看见因果的线——它们还缠着你，但已不如从前紧。",
       "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
       "visual_state": "大道符文环绕",
       "ui": {
@@ -2417,7 +2417,7 @@
       "feature_tips": [
         "准圣破劫入口"
       ],
-      "lore_text": "大罗圆满，斩尸在即。破准圣劫，便可斩却一尸。",
+      "lore_text": "大罗圆满。识海边缘，你自己的影子站了三重。斩尸在即。",
       "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
       "visual_state": "身后显化道域",
       "ui": {
@@ -2709,7 +2709,7 @@
       "feature_tips": [
         "混元破劫入口"
       ],
-      "lore_text": "准圣圆满，三尸将尽。破混元劫，便可超脱。",
+      "lore_text": "准圣圆满，三尸将尽。封神榜合上了笔，亲自来见你。",
       "settlement_flavor": "封神榜悬于九天，但你的道行越深，榜文越拿不住你。",
       "visual_state": "三尸虚影",
       "ui": {

@@ -1165,7 +1165,7 @@
         "月华",
         "经脉"
       ],
-      "narrative_text": "十五月圆，你盘坐在洞顶吐纳。月华如水银泻地，顺着百会穴灌入体内，周身经脉像被温水洗过一遍。这一轮吐纳，抵得上平日三轮。",
+      "narrative_text": "十五月圆，你盘坐在洞顶吐纳。月华如水银泻地，顺着百会穴灌入体内，周身经脉像被温水洗过一遍。榜文碎光退在云海之外，这一夜，山中难得安静。这一轮吐纳，抵得上平日三轮。",
       "options": [],
       "trigger_source": [
         "offline"
@@ -3637,6 +3637,127 @@
       ],
       "merit_or_calamity": "neutral",
       "rarity": "fate"
+    },
+    {
+      "event_id": "event_341",
+      "event_name": "榜吏递帖",
+      "rarity": "rare",
+      "unlock_condition": "list_marks_min:2",
+      "trigger_source": [
+        "offline",
+        "travel"
+      ],
+      "fengshen_tag": "天庭差事",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "你的名字在榜上留了几日未消。一名榜吏自封神台下而来，递上一帖：'台下缺个看香火的人。若应差，可领功德。'",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "应差看香火",
+          "reward": {
+            "resources": {
+              "merit": 120
+            },
+            "log": "你在封神台下看了一夜香火。榜上名字明明灭灭，每一个都有故事。"
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "婉拒，只问台下规矩",
+          "reward": {
+            "resources": {
+              "daoxing": 300
+            },
+            "log": "榜吏说起台下规矩，你才知这'招揽'本身，也是一场考验。"
+          }
+        }
+      ],
+      "weight": 12,
+      "daily_limit": 1,
+      "pity_rule": "榜上留名达 2 缕后，首趟闭关/游历保底差事上门（EventManager._pityForce）"
+    },
+    {
+      "event_id": "event_342",
+      "event_name": "代班司榜",
+      "rarity": "epic",
+      "unlock_condition": "list_marks_min:2",
+      "trigger_source": [
+        "offline",
+        "travel"
+      ],
+      "fengshen_tag": "天庭差事",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "司榜的正神下界应劫去了，名册缺了个当值的人。榜吏请你代班三日。差事毕，他塞来一只纸人：'收着，总有用上的一日。'",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "代班，收下纸人",
+          "reward": {
+            "pills": {
+              "tishen": 1
+            },
+            "resources": {
+              "merit": 60
+            },
+            "log": "三日司榜，你见过太多真灵被押上台。那只纸人，在你手里微微发热。"
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "代班，不受纸人",
+          "reward": {
+            "resources": {
+              "merit": 160
+            },
+            "log": "你把纸人推了回去。榜吏看了你一眼，在册上记了一笔'善缘'。"
+          }
+        }
+      ],
+      "weight": 10,
+      "daily_limit": 1,
+      "pity_rule": "榜上留名达 2 缕后，首趟闭关/游历保底差事上门（EventManager._pityForce）"
+    },
+    {
+      "event_id": "event_343",
+      "event_name": "榜下听宣",
+      "rarity": "rare",
+      "unlock_condition": "list_marks_min:2",
+      "trigger_source": [
+        "offline",
+        "travel"
+      ],
+      "fengshen_tag": "天庭差事",
+      "pressure_type": "none",
+      "merit_or_calamity": "merit",
+      "narrative_text": "天庭在封神台下宣读榜文。你的名字，被台边执事念了好几回。听宣时你忽然明白：榜上留名，就是天庭眼里'有了去向'的人。",
+      "options": [
+        {
+          "option_id": "A",
+          "text": "静听到底",
+          "reward": {
+            "resources": {
+              "daoxing": 400
+            },
+            "log": "听宣到末了，你听见一个陌生的名字。紧接着是四个字：'敕入雷部'。你默默记下了。"
+          }
+        },
+        {
+          "option_id": "B",
+          "text": "上前问差事",
+          "reward": {
+            "resources": {
+              "merit": 80,
+              "mana": 2000
+            },
+            "log": "榜吏翻了翻差事册：'差事常有，就看你敢不敢接。'"
+          }
+        }
+      ],
+      "weight": 12,
+      "daily_limit": 1,
+      "pity_rule": "榜上留名达 2 缕后，首趟闭关/游历保底差事上门（EventManager._pityForce）"
     },
     {
       "event_id": "event_401",

@@ -1515,6 +1515,9 @@ body.dueling #char-img {
   white-space: nowrap;
   animation: floatUp 1.2s ease forwards;
 }
+/* design/21.2 B2 双轨：气韵为主行，数字降为次行小字 */
+.sparkle-float .sparkle-qi { display: block; }
+.sparkle-float .sparkle-num { display: block; font-size: 11px; opacity: 0.75; }
 
 @keyframes floatUp {
   from { opacity: 1; transform: translateY(0); }
