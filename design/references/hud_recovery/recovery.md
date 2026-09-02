@@ -80,3 +80,21 @@
 - npm test 六套全绿 EXIT=0。
 - Playwright 截图（拦截 api-client.js 跳 auth 门走本地存档；#ss-skip 跳过卷首）：7件主屏素材全加载、无 404、无 console 错误（除故意拦截的 api-client）。
 - DOM 核验：七 ID（top-banner/game-title/resource-strip/goal-panel/progress-bar/main-btn/seal-pressure）+#char-ground 全在，index.html 零改动。
+
+## 六、步骤④（面板/弹窗 kit）完成记录（2026-09-03）
+
+### 勘察结论
+- 面板系唯一活资产 = hud_panel_scroll.png（web/style.css:619 #panel-sheet border-image，720×1210 RGBA，slice 160 110 175 110 fill）。
+- 弹窗已 v3 纯 CSS（移植段 L4717+：石青#3d7a8c 框+月白#fffdf6→#f7edd4 渐变底+墨青#2e5d6b 题字），无弹窗图片素材依赖。
+
+### P1 执行（面板卷轴 v3 重出，commit 3593e56）
+- 生图三轮禁金收敛（r1 违金 2.78%/4.03% 废弃→r3 平面底图无卷杆禁 bronze）；v1 云纹带 gpt-20025606910bdb48 独立评分 88 PASS 胜出（A83/B82/C100/D100/E85）；v2 卷草带 gpt-2569d8fd49572346 84.1（A65 欧式藏书票纹样稀释风格锁）。
+- 安装：v1 中心裁宽 1219→LANCZOS resize 720×1210 原位替换（slice 不变消费代码零改动）；旧图备份 design/references/hud_regen/p1/old_hud_panel_scroll.png。
+- CSS 补丁（style.css 步骤④段）：#panel-title/.card-name/.log-line/#popup-body/.rate-table 旧金褐→墨青#2e5d6b/墨绿#33332e；#panel-sheet 兜底→月白#f7edd4；收起钮月白字+暗投影修对比 2.5:1。破劫弹窗金辉保留（金只属天命）。
+- 验收：三屏 Playwright 截图独立视觉验收 PASS 8/8（题字冷青 avg≈#47707c 0 暖像素、面板与主屏逐像素差<5 零漂移、九宫格无断裂）；npm test 六套全绿。
+
+### 死资产揭露（登记不重出，零引用）
+- ui/popups/*.jpg ×3（ui_breakthrough_popup_bg/ui_chance_popup_bg/ui_treasure_popup_bg）——弹窗已纯 CSS v3，图片零引用。
+- 旧 ui kit：ui/bars ×3（ui_daoxing_progress_bar/ui_realm_progress_bar/ui_resource_bar_bg）、ui/borders ×2（ui_map_card_border/ui_seal_border）、ui/buttons ×2（ui_calamity_button_border/ui_merit_button_border）、ui/icons ×3（ui_lock_icon/ui_red_dot/ui_unlock_flash）——全部零引用。
+- style.css:387 hud_progress_trough.png / style.css:126 ui_top_seal_banner.jpg 旧引用已被移植段（L4384+）覆盖 = 死代码，不重出。
+- 处置：仅揭露登记，删除待用户拍板（旧资产保留在 git 历史）。
