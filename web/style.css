@@ -5570,4 +5570,16 @@ body.dueling #char-img {
   pointer-events: none;
   font-family: monospace;
 }
+/* ---- 步骤④ 面板/弹窗 v3 文字色补丁（2026-09-02）：旧金褐文字→v3 墨青/墨绿 ---- */
+/* 破劫弹窗金辉保留（金只属天命，破劫=天命语境）；其余金褐文字全部转 v3 色板 */
+#panel-title { color: #2e5d6b; }
+.card .card-name { color: #2e5d6b; }
+.card.faction-sys-header .card-name { color: #2e5d6b; }
+.log-line { color: #33332e; }
+#popup-body { color: #33332e; }
+#popup-body .rate-table { color: #2e5d6b; }
+/* 面板卷轴兜底色转月白（border-image 缺失时不再露旧 parchment） */
+#panel-sheet { background-color: #f7edd4; }
+/* 收起钮对比修正（视觉验收建议）：青绿条底上墨字对比≈2.5:1 → 月白字+暗投影 */
+#panel-close { color: #f7edd4; text-shadow: 0 1px 1px rgba(30, 50, 56, 0.55); }
 /* ==== HUD v3 皮肤段结束 ==== */
