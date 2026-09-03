@@ -1,0 +1,485 @@
+/* ============================================================
+   HUD v3 移动端皮肤 · 单一权威样式表（2026-09-03 重做）
+   方法论：盒子尺寸由素材天然比例反推；整图素材 100% 100% 零拉伸；
+   仅「框」类素材（面板卷轴）用正规九宫格；文字落素材预留空地。
+   只做移动端（414×896 靶），无桌面断点。
+   色板锁 v3：月白#fffdf6 / 暖纸#f7edd4 / 墨青#2e5d6b(深#1e4450)
+             / 墨绿#33332e / 石青#3d7a8c / 石绿#4a8c6a；金只属天命。
+   覆盖策略：本表加载于 style.css 之后，是主屏皮肤唯一真相。
+   ============================================================ */
+
+/* ---------- 全局字体：去 STLiti 隶书发毛，统一粗宋楷 ---------- */
+:root {
+  --font-title: "Noto Serif SC", "Kaiti SC", "STKaiti", serif;
+  --font-ui: "Noto Serif SC", "Kaiti SC", "STKaiti", "KaiTi", serif;
+  --ink-title: #2e5d6b;
+  --ink-title-deep: #1e4450;
+  --ink-body: #33332e;
+  --stone-blue: #3d7a8c;
+  --stone-green: #4a8c6a;
+  --moon-white: #fffdf6;
+  --paper-warm: #f7edd4;
+}
+#game-title, #main-btn, #panel-title, #popup-title, #panel-close, #auto-toggle,
+.popup-btn, .nav-name, .nav-glyph, .card .card-name, .card .card-btn {
+  font-family: var(--font-title);
+  -webkit-text-stroke: 0;
+}
+
+/* ---------- #app：移动单列，手机宽 ---------- */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* ---------- 暗场遮罩适配：base #dim 底部压暗 82% 使底区透明带成黑洞，
+   移动端减轻顶/底压暗（保留中央亮场聚焦立绘），暗带不再空洞 ---------- */
+#dim {
+  background: linear-gradient(180deg,
+    rgba(6, 8, 12, 0.38) 0%,
+    rgba(8, 14, 18, 0.06) 38%,
+    rgba(18, 10, 4, 0.12) 58%,
+    rgba(4, 6, 10, 0.45) 100%);
+}
+
+/* ============================================================
+   Z1 顶部天象条 —— 题字匾额(4:1) + 三圆钮 + 细字行
+   ============================================================ */
+#top-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 2px 3px;
+  background: transparent;
+  border: none;
+}
+.banner-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+}
+#game-title {
+  width: 160px;
+  height: 40px;
+  background-image: url("assets/ui/hud/ui_title_plaque.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--ink-title-deep);
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  text-shadow: none;
+  cursor: pointer;
+}
+.banner-tools {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6px;
+}
+.banner-tools .scroll-open {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 253, 246, 0.92);
+  border: 1px solid var(--stone-blue);
+  color: var(--ink-title);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(30, 50, 56, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+#identity-line {
+  font-size: 11px;
+  color: #dce8e2;
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.banner-sub {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 10.5px;
+  color: #c4d4cc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+#seal-pressure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: #dce8e2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+#seal-pressure-track {
+  width: 110px;
+  height: 5px;
+  background: rgba(61, 122, 140, 0.18);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+}
+#seal-pressure-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--stone-blue);
+}
+
+/* ============================================================
+   Z2 资源牌匾(4:1) + 每资源玉璧(1:1)
+   ============================================================ */
+#resource-strip {
+  width: 100%;
+  max-width: 344px;
+  min-height: 86px;
+  margin: 0 auto;
+  background-image: url("assets/ui/hud/ui_resbar_plaque.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--paper-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+}
+.res-chip {
+  width: 60px;
+  height: 60px;
+  flex: 0 0 60px;
+  background-image: url("assets/ui/hud/ui_res_disc.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+.res-chip img {
+  width: 22px;
+  height: 22px;
+  margin-top: 7px;
+}
+.res-chip .res-value {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-title-deep);
+  line-height: 1;
+  margin-top: 2px;
+}
+/* 资源名视觉隐藏但保留可读/title（小玉璧容纳不下三行） */
+.res-chip .res-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Z4 主角舞台 —— 立绘踏云台(2:1)
+   ============================================================ */
+#stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 200px;
+  overflow: hidden;
+}
+#char-ground {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 140px;
+  background-image: url("assets/ui/hud/ui_cloud_stand.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+#char-img {
+  position: absolute;
+  bottom: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 220px;
+  max-height: 250px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  z-index: 2;
+}
+#char-aura { z-index: 1; }
+
+/* ============================================================
+   Z3 目标卡 —— goal_card 九宫格框（保角拉边，内容撑高）
+   ============================================================ */
+#goal-panel {
+  width: 100%;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 18px 22px;
+  border-image-source: url("assets/ui/hud/ui_goal_card.png");
+  border-image-slice: 90 120 90 120 fill;
+  border-image-repeat: round;
+  background-color: var(--moon-white);
+  padding: 4px 10px;
+}
+#goal-text {
+  font-size: 13px;
+  color: var(--ink-body);
+  line-height: 1.5;
+}
+#goal-reward {
+  font-size: 11.5px;
+  color: var(--ink-title);
+  margin-top: 3px;
+}
+
+/* ============================================================
+   Z5 道行槽(4.8:1)
+   ============================================================ */
+#progress-zone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+#progress-label {
+  font-size: 11px;
+  color: var(--ink-title);
+  letter-spacing: 0.1em;
+}
+#progress-bar {
+  width: 240px;
+  height: 50px;
+  background-image: url("assets/ui/hud/ui_dao_trough.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--paper-warm);
+  position: relative;
+  overflow: hidden;
+}
+#progress-fill {
+  position: absolute;
+  left: 13%;
+  top: 32%;
+  height: 36%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(74, 140, 106, 0.85), rgba(61, 122, 140, 0.85));
+  border-radius: 4px;
+}
+
+/* ---------- 修行日志最新一条（透明区叠暗场 → 月白字+投影才可读） ---------- */
+#status-line {
+  font-size: 11.5px;
+  color: #e8f0ea;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 16px;
+  padding: 0 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================
+   Z6 主按钮(3:1) 三态 —— ready / acting / breakthrough
+   ============================================================ */
+#main-btn {
+  width: 216px;
+  height: 72px;
+  margin: 0 auto;
+  background-image: url("assets/ui/hud/ui_main_btn_ready.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+#main-btn.acting { background-image: url("assets/ui/hud/ui_main_btn_acting.png"); }
+#main-btn[data-type="breakthrough"] { background-image: url("assets/ui/hud/ui_main_btn_break.png"); }
+#main-btn-label {
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--ink-title-deep);
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  text-shadow: none;
+  position: relative;
+  z-index: 2;
+}
+#main-btn-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 0%;
+  background: rgba(61, 122, 140, 0.7);
+  z-index: 1;
+}
+
+/* ---------- 连续修行：降级为文字链，消双按钮叠罗汉 ---------- */
+#auto-row { display: flex; justify-content: center; }
+#auto-toggle {
+  background: rgba(12, 24, 28, 0.38);
+  border: 1px solid rgba(216, 230, 223, 0.28);
+  border-radius: 11px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: #d8e6df;
+  letter-spacing: 0.1em;
+  padding: 3px 12px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   Z7 底栏导航牌(3:4) ×6 —— 字上图下名 / 锁定灰阶+CSS锁 / attention换图
+   ============================================================ */
+#bottom-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 0 0;
+}
+.nav-btn {
+  width: 51px;
+  height: 68px;
+  flex: 0 0 51px;
+  background-image: url("assets/ui/hud/ui_nav_tile.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+.nav-btn.attention { background-image: url("assets/ui/hud/ui_nav_attention.png"); }
+.nav-btn.locked { filter: grayscale(0.6) brightness(0.92); opacity: 0.72; }
+.nav-glyph {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink-title-deep);
+  line-height: 1;
+  text-shadow: none;
+}
+.nav-name {
+  display: block;
+  font-size: 9.5px;
+  color: var(--ink-body);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-shadow: none;
+}
+.nav-btn.locked .nav-glyph { color: #5a6b66; }
+.nav-btn.locked .nav-name { color: #6b7a75; }
+/* 锁定角标：CSS 画的小锁形（不用 emoji，headless 可渲染） */
+.nav-btn.locked::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 7px;
+  background: #6b7a75;
+  border-radius: 1.5px;
+}
+.nav-btn.locked::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: 9px;
+  width: 4px;
+  height: 4px;
+  border: 1.5px solid #6b7a75;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+}
+.nav-btn .red-dot {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c0392b;
+}
+
+/* ============================================================
+   面板 / 弹窗 —— 回落 base 九宫格卷轴(hud_panel_scroll v3)，仅补文字色与钮
+   ============================================================ */
+#panel-title, #popup-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  text-shadow: none;
+}
+#panel-body, #popup-body { color: var(--ink-body); }
+#panel-sheet { background-color: var(--paper-warm); }
+#panel-close {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+  text-shadow: none;
+}
+.popup-btn {
+  background: linear-gradient(180deg, #cfe4e8, #4a8c6a 55%, #3d7a8c);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--moon-white);
+  font-weight: 900;
+  text-shadow: none;
+}
+.popup-btn.secondary {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  color: var(--ink-title);
+}
+/* 功德/劫气钮(.merit/.calamity)由 base 更高特异性保留金，属天命语境，不覆盖 */
