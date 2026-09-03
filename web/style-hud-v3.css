@@ -483,3 +483,54 @@
   color: var(--ink-title);
 }
 /* 功德/劫气钮(.merit/.calamity)由 base 更高特异性保留金，属天命语境，不覆盖 */
+
+/* ============================================================
+   阶段2：面板内容卡片 / 弹窗 / 按钮 / 日志 —— v3 统一（整套UI重构）
+   旧金褐风格 → 青绿重彩，与主屏 HUD 同源色板
+   ============================================================ */
+
+/* ---- 面板内容卡片（六抽屉里的 .card）---- */
+.card {
+  background: linear-gradient(180deg, #fffdf6, #f7edd4);
+  border: 1px solid rgba(61, 122, 140, 0.45);
+  border-radius: 6px;
+}
+.card .card-name {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.card .card-btn {
+  background: linear-gradient(180deg, #cfe4e8, #4a8c6a 55%, #3d7a8c);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--moon-white);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.card.faction-sys-header .card-name { color: var(--ink-title); }
+
+/* ---- 弹窗（月白底+石青框，去旧金褐/旧border-image）---- */
+#popup-panel {
+  background-color: var(--moon-white);
+  border: 1.5px solid var(--stone-blue);
+  border-image: none;
+  border-radius: 8px;
+}
+#popup-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#popup-body { color: var(--ink-body); }
+
+/* ---- 日志行 / 事件叙述 / 概率表 ---- */
+.log-line { color: var(--ink-body); }
+.event-story { color: var(--ink-body); }
+.rate-table { color: var(--ink-title); }
+
+/* ---- 面板正文通用文字 ---- */
+#panel-body { color: var(--ink-body); }
