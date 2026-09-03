@@ -605,3 +605,42 @@
   font-weight: 700;
 }
 #world-map-foot { color: var(--ink-body); }
+
+/* ============================================================
+   阶段4：斗法场 / 配招阵面 —— v3 统一
+   招式卡/日志/队列 → 青绿重彩；功德/劫气卡(.element-merit/.calamity)保留金(天命)
+   ============================================================ */
+.battle-card {
+  background: linear-gradient(180deg, #fffdf6, #f7edd4);
+  border: 1px solid rgba(61, 122, 140, 0.45);
+  border-radius: 6px;
+}
+.battle-card .bc-name {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.battle-card .bc-lv { color: var(--ink-body); }
+.battle-card .bc-text { color: var(--ink-body); }
+.battle-card.playable {
+  border-color: var(--stone-green);
+  box-shadow: 0 0 0 1px rgba(74, 140, 106, 0.45);
+}
+.battle-card.targeting { border-color: var(--stone-blue); }
+.battle-card.used { opacity: 0.55; }
+.battle-card.locked { filter: grayscale(0.5); opacity: 0.7; }
+/* .battle-card.element-merit / .element-calamity 由 base 保留金，不覆盖 */
+.battle-log { color: var(--ink-body); }
+.battle-line { color: var(--ink-body); }
+.battle-queue-head { color: var(--ink-title); }
+.battle-flow-hint { color: var(--ink-body); }
+
+/* ---- 卷首演出 / 大画卷 文字 v3 ---- */
+#prologue-hint, #ss-hint { color: #dce8e2; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+#prologue-skip, #ss-skip {
+  background: rgba(12, 24, 28, 0.4);
+  border: 1px solid rgba(216, 230, 223, 0.3);
+  border-radius: 11px;
+  color: #d8e6df;
+}
