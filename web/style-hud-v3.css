@@ -534,3 +534,74 @@
 
 /* ---- 面板正文通用文字 ---- */
 #panel-body { color: var(--ink-body); }
+
+/* ============================================================
+   阶段3：世界卷轴(封神图卷) / 封神山河图 —— v3 统一
+   旧金褐暗底(#ffe3a1金字/rgba(214,170,80)金边) → 青绿重彩
+   ============================================================ */
+
+/* ---- 封神图卷 ---- */
+#world-scroll-panel {
+  background-color: var(--paper-warm);
+  border: 1px solid rgba(61, 122, 140, 0.5);
+  border-radius: 12px;
+}
+#world-scroll-head { border-bottom: 1px solid rgba(61, 122, 140, 0.3); }
+#world-scroll-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#world-scroll-sub { color: var(--ink-body); }
+#world-scroll-close {
+  border-image: none;
+  border: 1px solid var(--stone-blue);
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  background-color: #f0e6c8;
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+}
+#world-scroll-body { color: var(--ink-body); }
+#world-scroll-foot {
+  border-top: 1px solid rgba(61, 122, 140, 0.3);
+  background: rgba(247, 237, 212, 0.92);
+}
+.scroll-foot-label { color: var(--ink-title); }
+.scroll-foot-tip { color: var(--ink-body); }
+.scroll-horizon {
+  border: 1px solid rgba(61, 122, 140, 0.4);
+  background-color: var(--moon-white);
+}
+.scroll-horizon-caption { color: var(--ink-title); }
+.scroll-horizon-spot {
+  color: var(--ink-body);
+  border-top: 1px solid rgba(61, 122, 140, 0.3);
+}
+.scroll-horizon-spot.reached { color: var(--ink-title); }
+
+/* ---- 封神山河图 ---- */
+#world-map-panel {
+  background-color: var(--paper-warm);
+  border: 1px solid rgba(61, 122, 140, 0.5);
+  border-radius: 12px;
+}
+#world-map-head { border-bottom: 1px solid rgba(61, 122, 140, 0.3); }
+#world-map-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#world-map-sub { color: var(--ink-body); }
+#world-map-close {
+  border-image: none;
+  border: 1px solid var(--stone-blue);
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  background-color: #f0e6c8;
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+}
+#world-map-foot { color: var(--ink-body); }
