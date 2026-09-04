@@ -25,6 +25,7 @@
   height: 100%;
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
   display: grid;
+  grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto auto;
   gap: 6px;
 }
@@ -123,7 +124,9 @@
 /* ===== 人：立绘主视觉 ===== */
 .mav-hero {
   position: relative;
-  min-height: 0;
+  width: 414px;
+  max-width: 100%;
+  min-height: 320px;
   overflow: hidden;
 }
 /* 玉璧串浮于立绘区顶部卷面 */
@@ -220,6 +223,7 @@
   width: auto;
   object-fit: contain;
   z-index: 2;
+  visibility: visible !important;
 }
 #char-aura { z-index: 1; }
 

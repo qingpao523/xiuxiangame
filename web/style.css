@@ -285,9 +285,7 @@ body {
   100% { background-position: 18% 4%, 62% 40%, 48% 62%; }
 }
 
-body.dueling #char-img {
-  visibility: hidden !important;
-}
+body.dueling 
 #char-img {
   position: relative;
   z-index: 2;
