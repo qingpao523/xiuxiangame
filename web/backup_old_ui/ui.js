@@ -28,16 +28,16 @@ function render() {
   const charPath = getCharacterPath(state);
   if ($("char-img").getAttribute("src") !== charPath) $("char-img").src = charPath;
   const raceTag = getRaceShortName(state);
-  $(".ui-identity").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
+  $("identity-line").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
   const _calTier = getCalamityPressureTier(state);
-  $(".ui-weather").textContent = `天象：${getWeather(state)}${_calTier.level >= 25 ? `｜杀劫·${_calTier.label}` : ""}`;
+  $("weather-line").textContent = `天象：${getWeather(state)}${_calTier.level >= 25 ? `｜杀劫·${_calTier.label}` : ""}`;
   const omen = getTodayOmen();
-  $(".ui-omen").textContent = `今日异象：${omen.name}——${omen.desc}`;
+  $("omen-line").textContent = `今日异象：${omen.name}——${omen.desc}`;
   const pressure = WorldScroll.getSealPressure(state);
-  $(".ui-seal-fill").style.width = `${pressure.value}%`;
-  $(".ui-seal-state").textContent = pressure.label;
-  $(".ui-seal").title = pressure.tip;
-  $(".ui-seal").dataset.level = pressure.value >= 75 ? "high" : pressure.value >= 55 ? "mid" : "low";
+  $("seal-pressure-fill").style.width = `${pressure.value}%`;
+  $("seal-pressure-state").textContent = pressure.label;
+  $("seal-pressure").title = pressure.tip;
+  $("seal-pressure").dataset.level = pressure.value >= 75 ? "high" : pressure.value >= 55 ? "mid" : "low";
   const orb = $("treasure-orb");
   if (state.first_treasure_id) {
     orb.classList.remove("hidden");
@@ -47,8 +47,8 @@ function render() {
     }
   } else { orb.classList.add("hidden"); }
   const threads = GoalManager.getChapterThreads(state);
-  const goalText = $(".ui-goal-text");
-  const goalReward = $(".ui-goal-reward");
+  const goalText = $("goal-text");
+  const goalReward = $("goal-reward");
   if (goalText && goalReward) {
     if (threads.chapter) {
       const openThreads = threads.list.filter((t) => t.status === "open");
@@ -61,12 +61,12 @@ function render() {
     }
   }
   const progress = RealmManager.getProgress(state);
-  $(".ui-dao-fill").style.width = `${Math.round(progress.ratio * 100)}%`;
-  $(".ui-dao-label").textContent = `道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}`;
-  if (!insightShowing) { $(".ui-status").classList.remove("insight"); $(".ui-status").textContent = state.logs[0] ? state.logs[0].replace(/^\[\d+:\d+\]\s*/, "") : ""; }
+  $("progress-fill").style.width = `${Math.round(progress.ratio * 100)}%`;
+  $("progress-label").textContent = `道行 ${formatInt(progress.current)} / ${formatInt(progress.required)}`;
+  if (!insightShowing) { $("status-line").classList.remove("insight"); $("status-line").textContent = state.logs[0] ? state.logs[0].replace(/^\[\d+:\d+\]\s*/, "") : ""; }
   renderToast();
   renderMainButton(state); renderNav(state);
-  const autoBtn = $(".ui-autotoggle"); const autoOn = !!state.flags.auto_repeat;
+  const autoBtn = $("auto-toggle"); const autoOn = !!state.flags.auto_repeat;
   autoBtn.textContent = `连续修行：${autoOn ? "开" : "关"}`; autoBtn.classList.toggle("on", autoOn);
   if (window.SAVE_REV !== lastRev) { lastRev = window.SAVE_REV; renderResources(state); if (openPanel) renderPanelBody(openPanel); }
   drainPopupQueue();
@@ -74,7 +74,7 @@ function render() {
 
 function renderToast() {
   const msg = Game.toastMessage;
-  const el = $(".ui-action-toast");
+  const el = $("action-toast");
   if (!el || !msg || msg.id === toastShownId) return;
   toastShownId = msg.id;
   el.innerHTML = "";
@@ -96,7 +96,7 @@ function renderToast() {
 }
 
 function renderResources(state) {
-  const strip = $(".ui-resources"); strip.innerHTML = "";
+  const strip = $("resource-strip"); strip.innerHTML = "";
   const rows = UnlockManager.getVisibleResources(state);
   strip.dataset.count = String(rows.length);
   for (const row of rows) {
@@ -111,7 +111,7 @@ function renderResources(state) {
 
 function renderMainButton(state) {
   const main = Game.getMainAction();
-  const btn = $(".ui-mainbtn"), label = $(".ui-mainbtn-label"), bar = $(".ui-mainbtn-progress"), stage = $(".ui-stage");
+  const btn = $("main-btn"), label = $("main-btn-label"), bar = $("main-btn-progress"), stage = $("stage");
   if (main.type === "acting") {
     const action = state.current_action, row = main.row || {};
     const total = num(action.end_time_ms) - num(action.start_time_ms || action.end_time_ms - 1000);
@@ -128,7 +128,7 @@ function renderMainButton(state) {
     btn.classList.remove("acting");
     btn.classList.toggle("ready", main.type === "level_up" || main.type === "breakthrough");
     stage.classList.remove("acting"); clearSparkle();
-    if (insightShowing) { insightShowing = false; $(".ui-status").classList.remove("insight"); }
+    if (insightShowing) { insightShowing = false; $("status-line").classList.remove("insight"); }
     nextSparkleAt = nowMs() + 2500; nextInsightAt = nowMs() + 2000;
   }
   btn.dataset.type = main.type; btn.dataset.actionId = main.actionId || "";
@@ -136,7 +136,7 @@ function renderMainButton(state) {
 }
 
 function renderActionHints(state, main) {
-  const box = $(".ui-hints");
+  const box = $("action-hints");
   if (!box) return;
   if (main.type !== "action" && main.type !== "claim" && main.type !== "idle") { box.classList.add("hidden"); box.innerHTML = ""; return; }
   const recs = Game.getSecondaryRecommendations(state);
@@ -174,7 +174,7 @@ function tickSparkle(actionId) {
   if (sparkleEl || nowMs() < nextSparkleAt) return;
   document.querySelectorAll("#stage .sparkle").forEach((el) => el.remove());
   const firstTime = !Game.state.flags.sparkle_guide_seen;
-  const stage = $(".ui-stage");
+  const stage = $("stage");
   const t = firstTime ? SPARKLE_TYPES[0] : rollSparkleType();
   const orb = document.createElement("div");
   orb.className = `sparkle${t.cls ? " " + t.cls : ""}`;
@@ -215,7 +215,7 @@ function tickInsight(actionId) {
   if (nowMs() < nextInsightAt) return;
   const line = FeedbackRenderer.line("insight_" + actionId) || FeedbackRenderer.line("insight_generic");
   if (!line) return;
-  const el = $(".ui-status"); el.classList.remove("insight"); void el.offsetWidth;
+  const el = $("status-line"); el.classList.remove("insight"); void el.offsetWidth;
   el.classList.add("insight"); el.textContent = line;
   insightShowing = true; nextInsightAt = nowMs() + randInt(4500, 6500);
 }
@@ -223,10 +223,10 @@ function tickInsight(actionId) {
 // ---------------- 底部导航 ----------------
 
 function renderNav(state) {
-  document.querySelectorAll(".ui-navbtn").forEach((btn) => {
+  document.querySelectorAll(".nav-btn").forEach((btn) => {
     const key = btn.dataset.panel, cfg = NAV_UNLOCK[key], unlocked = cfg.check(state);
     btn.classList.toggle("locked", !unlocked);
-    let dot = btn.querySelector(".ui-red-dot");
+    let dot = btn.querySelector(".red-dot");
     let need = false;
     if (unlocked) {
       if (key === "chance" && state.pending_event_id) need = true;
@@ -250,9 +250,9 @@ function hasChallengeableBoss(state) { return BossManager.getBosses(state).some(
 
 function onMainButtonClick() {
   if (preludeActive) return;
-  const btn = $(".ui-mainbtn"), type = btn.dataset.type;
+  const btn = $("main-btn"), type = btn.dataset.type;
   switch (type) {
-    case "acting": if (Game.registerBeat()) { const f = document.createElement("div"); f.className = "sparkle-float"; f.style.left = "50%"; f.style.top = "80%"; f.textContent = "完美吐纳！"; $(".ui-stage").appendChild(f); setTimeout(() => f.remove(), 1300); } break;
+    case "acting": if (Game.registerBeat()) { const f = document.createElement("div"); f.className = "sparkle-float"; f.style.left = "50%"; f.style.top = "80%"; f.textContent = "完美吐纳！"; $("stage").appendChild(f); setTimeout(() => f.remove(), 1300); } break;
     case "event":
       if (currentPopup && currentPopup.kind === "event") {
         const layer = $("popup-layer");
@@ -1186,13 +1186,13 @@ async function boot() {
       return;
     }
   }
-  $(".ui-mainbtn").addEventListener("click", onMainButtonClick);
-  $(".ui-autotoggle").addEventListener("click", () => Game.toggleAutoRepeat());
-  document.querySelectorAll(".ui-navbtn").forEach((btn) => btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel)));
+  $("main-btn").addEventListener("click", onMainButtonClick);
+  $("auto-toggle").addEventListener("click", () => Game.toggleAutoRepeat());
+  document.querySelectorAll(".nav-btn").forEach((btn) => btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel)));
   $("panel-close").addEventListener("click", closePanelSheet);
   $("panel-layer").addEventListener("click", (e) => { if (e.target === $("panel-layer")) closePanelSheet(); });
   $("world-scroll-btn").addEventListener("click", () => WorldScroll.open());
-  $(".ui-title").addEventListener("click", () => WorldScroll.open());
+  $("game-title").addEventListener("click", () => WorldScroll.open());
   $("world-scroll-close").addEventListener("click", () => WorldScroll.close());
   $("world-scroll-layer").addEventListener("click", (e) => { if (e.target === $("world-scroll-layer")) WorldScroll.close(); });
   $("world-map-btn").addEventListener("click", () => WorldMap.open());

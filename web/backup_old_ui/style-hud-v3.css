@@ -1,0 +1,650 @@
+/* ============================================================
+   HUD v3 移动端皮肤 · 单一权威样式表（2026-09-03 重做）
+   方法论：盒子尺寸由素材天然比例反推；整图素材 100% 100% 零拉伸；
+   仅「框」类素材（面板卷轴）用正规九宫格；文字落素材预留空地。
+   只做移动端（414×896 靶），无桌面断点。
+   色板锁 v3：月白#fffdf6 / 暖纸#f7edd4 / 墨青#2e5d6b(深#1e4450)
+             / 墨绿#33332e / 石青#3d7a8c / 石绿#4a8c6a；金只属天命。
+   覆盖策略：本表加载于 style.css 之后，是主屏皮肤唯一真相。
+   ============================================================ */
+
+/* ---------- 全局字体：去 STLiti 隶书发毛，统一粗宋楷 ---------- */
+:root {
+  --font-title: "Noto Serif SC", "Kaiti SC", "STKaiti", serif;
+  --font-ui: "Noto Serif SC", "Kaiti SC", "STKaiti", "KaiTi", serif;
+  --ink-title: #2e5d6b;
+  --ink-title-deep: #1e4450;
+  --ink-body: #33332e;
+  --stone-blue: #3d7a8c;
+  --stone-green: #4a8c6a;
+  --moon-white: #fffdf6;
+  --paper-warm: #f7edd4;
+}
+#game-title, #main-btn, #panel-title, #popup-title, #panel-close, #auto-toggle,
+.popup-btn, .nav-name, .nav-glyph, .card .card-name, .card .card-btn {
+  font-family: var(--font-title);
+  -webkit-text-stroke: 0;
+}
+
+/* ============================================================
+   主屏 v3 重构 · 青绿长卷「天·人·事·路」四段式（23.5 设计）
+   立绘主导占屏~42%，玉璧浮卷面，构件浮于长卷非盒子堆叠
+   ============================================================ */
+
+/* ---- #app：四段纵向，立绘区弹性撑高 ---- */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ===== 天：匾额 + 天象 ===== */
+#top-banner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 2px 3px;
+  background: transparent;
+  border: none;
+  flex: 0 0 auto;
+}
+.banner-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+}
+#game-title {
+  width: 168px;
+  height: 42px;
+  background-image: url("assets/ui/hud/ui_title_plaque.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--ink-title-deep);
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  text-shadow: none;
+  cursor: pointer;
+}
+.banner-tools {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6px;
+}
+.banner-tools .scroll-open {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: rgba(255, 253, 246, 0.92);
+  border: 1px solid var(--stone-blue);
+  color: var(--ink-title);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(30, 50, 56, 0.25);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+/* 选中态：石青石绿高亮，方角轮廓区别于玉璧圆钮 */
+.banner-tools .scroll-open:hover,
+.banner-tools .scroll-open.active {
+  background: var(--stone-blue);
+  border-color: var(--stone-green);
+  color: var(--moon-white);
+}
+/* 天段减负：身份/天象/榜文感应合并成一行细字（最多两行信息） */
+.banner-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  font-size: 10px;
+  color: #c4d4cc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+#identity-line {
+  font-size: 10px;
+  color: #dce8e2;
+  letter-spacing: 0.05em;
+}
+.banner-sub {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 10px;
+  color: #c4d4cc;
+}
+#seal-pressure {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #dce8e2;
+}
+#seal-pressure-track {
+  width: 110px;
+  height: 5px;
+  background: rgba(61, 122, 140, 0.18);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+}
+#seal-pressure-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--stone-blue);
+}
+
+/* ===== 人：立绘舞台（玉璧浮卷面，立绘主导）===== */
+#stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* 玉璧串浮于立绘区顶部卷面 */
+#resource-strip {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px;
+  pointer-events: auto;
+  z-index: 3;
+  background: transparent;
+  border: none;
+}
+.res-chip {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  background-image: url("assets/ui/hud/ui_res_disc.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+#resource-strip[data-count="7"] .res-chip,
+#resource-strip[data-count="8"] .res-chip {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+}
+.res-chip img {
+  width: 18px;
+  height: 18px;
+  margin-top: 5px;
+  position: relative;
+  z-index: 2;
+}
+/* 玉璧开片纹质感：叠细开片纹（瓷器冰裂纹），去数码平涂感 */
+.res-chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(120, 140, 130, 0.12) 0px, rgba(120, 140, 130, 0.12) 1px, transparent 1px, transparent 6px), repeating-linear-gradient(-45deg, rgba(120, 140, 130, 0.10) 0px, rgba(120, 140, 130, 0.10) 1px, transparent 1px, transparent 7px);
+  border-radius: 50%;
+  z-index: 1;
+}
+.res-chip .res-value {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-title-deep);
+  line-height: 1;
+  margin-top: 1px;
+}
+.res-chip .res-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* 云台 + 立绘 */
+#char-ground {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 140px;
+  background-image: url("assets/ui/hud/ui_cloud_stand.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+#char-img {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 42%;
+  max-height: 320px;
+  width: auto;
+  object-fit: contain;
+  z-index: 2;
+}
+#char-aura { z-index: 1; }
+
+/* ===== 事：目标·道行·日志·主行动 ===== */
+#sec-affair {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+#goal-panel {
+  width: 100%;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 14px 18px;
+  border-image-source: url("assets/ui/hud/ui_goal_card.png");
+  border-image-slice: 90 120 90 120 fill;
+  border-image-repeat: round;
+  background-color: var(--moon-white);
+  padding: 2px 8px;
+}
+#goal-text {
+  font-size: 12.5px;
+  color: var(--ink-body);
+  line-height: 1.45;
+}
+#goal-reward {
+  font-size: 11px;
+  color: var(--ink-title);
+  margin-top: 2px;
+}
+#progress-zone {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+#progress-label {
+  font-size: 10.5px;
+  color: #dce8e2;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+#progress-bar {
+  width: 240px;
+  height: 50px;
+  background-image: url("assets/ui/hud/ui_dao_trough.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--paper-warm);
+  position: relative;
+  overflow: hidden;
+}
+#progress-fill {
+  position: absolute;
+  left: 13%;
+  top: 32%;
+  height: 36%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(74, 140, 106, 0.85), rgba(61, 122, 140, 0.85));
+  border-radius: 4px;
+}
+#status-line {
+  font-size: 11px;
+  color: #e8f0ea;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 15px;
+  padding: 0 8px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+#main-btn {
+  width: 216px;
+  height: 72px;
+  margin: 0 auto;
+  background-image: url("assets/ui/hud/ui_main_btn_ready.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+#main-btn.acting { background-image: url("assets/ui/hud/ui_main_btn_acting.png"); }
+#main-btn[data-type="breakthrough"] { background-image: url("assets/ui/hud/ui_main_btn_break.png"); }
+#main-btn-label {
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--ink-title-deep);
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  text-shadow: none;
+  position: relative;
+  z-index: 2;
+}
+#main-btn-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 0%;
+  background: rgba(61, 122, 140, 0.7);
+  z-index: 1;
+}
+#auto-row { display: flex; justify-content: center; }
+#auto-toggle {
+  background: rgba(12, 24, 28, 0.38);
+  border: 1px solid rgba(216, 230, 223, 0.28);
+  border-radius: 11px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: #d8e6df;
+  letter-spacing: 0.1em;
+  padding: 3px 12px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+/* 次级推荐 hint 按钮 v3（去 base 金边） */
+#action-hints .hint-btn {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--ink-title);
+}
+/* action-toast 金字 → 墨青 */
+#action-toast { color: var(--ink-title); }
+
+/* ===== 路：底栏六玉牌 ===== */
+#bottom-nav {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 2px 0 0;
+  max-width: 100%;
+}
+.nav-btn {
+  width: 48px;
+  height: 64px;
+  flex: 0 0 48px;
+  background-image: url("assets/ui/hud/ui_nav_tile.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+.nav-btn.attention {
+  background-image: url("assets/ui/hud/ui_nav_attention.png");
+  /* 去金：叠石青石绿罩染压住 attention 素材的金调，金只留标题金标与天命语境 */
+  filter: saturate(0.85) hue-rotate(-8deg);
+  box-shadow: 0 0 0 2px rgba(74, 140, 106, 0.6);
+}
+.nav-btn.locked { filter: grayscale(0.6) brightness(0.92); opacity: 0.72; }
+.nav-glyph {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink-title-deep);
+  line-height: 1;
+  text-shadow: none;
+}
+.nav-name {
+  display: block;
+  font-size: 9.5px;
+  color: var(--ink-body);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-shadow: none;
+}
+.nav-btn.locked .nav-glyph { color: #5a6b66; }
+.nav-btn.locked .nav-name { color: #6b7a75; }
+.nav-btn.locked::after { content: none; }
+.nav-btn .red-dot {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c0392b;
+}
+/* ============================================================
+   面板 / 弹窗 —— 回落 base 九宫格卷轴(hud_panel_scroll v3)，仅补文字色与钮
+   ============================================================ */
+#panel-title, #popup-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  text-shadow: none;
+}
+#panel-body, #popup-body { color: var(--ink-body); }
+#panel-sheet { background-color: var(--paper-warm); }
+#panel-close {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+  text-shadow: none;
+}
+.popup-btn {
+  background: linear-gradient(180deg, #cfe4e8, #4a8c6a 55%, #3d7a8c);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--moon-white);
+  font-weight: 900;
+  text-shadow: none;
+}
+.popup-btn.secondary {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  color: var(--ink-title);
+}
+/* 功德/劫气钮(.merit/.calamity)由 base 更高特异性保留金，属天命语境，不覆盖 */
+
+/* ============================================================
+   阶段2：面板内容卡片 / 弹窗 / 按钮 / 日志 —— v3 统一（整套UI重构）
+   旧金褐风格 → 青绿重彩，与主屏 HUD 同源色板
+   ============================================================ */
+
+/* ---- 面板内容卡片（六抽屉里的 .card）---- */
+.card {
+  background: linear-gradient(180deg, #fffdf6, #f7edd4);
+  border: 1px solid rgba(61, 122, 140, 0.45);
+  border-radius: 6px;
+}
+.card .card-name {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.card .card-btn {
+  background: linear-gradient(180deg, #cfe4e8, #4a8c6a 55%, #3d7a8c);
+  border: 1px solid var(--stone-blue);
+  border-radius: 4px;
+  color: var(--moon-white);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.card.faction-sys-header .card-name { color: var(--ink-title); }
+
+/* ---- 弹窗（月白底+石青框，去旧金褐/旧border-image）---- */
+#popup-panel {
+  background-color: var(--moon-white);
+  border: 1.5px solid var(--stone-blue);
+  border-image: none;
+  border-radius: 8px;
+}
+#popup-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#popup-body { color: var(--ink-body); }
+
+/* ---- 日志行 / 事件叙述 / 概率表 ---- */
+.log-line { color: var(--ink-body); }
+.event-story { color: var(--ink-body); }
+.rate-table { color: var(--ink-title); }
+
+/* ---- 面板正文通用文字 ---- */
+#panel-body { color: var(--ink-body); }
+
+/* ============================================================
+   阶段3：世界卷轴(封神图卷) / 封神山河图 —— v3 统一
+   旧金褐暗底(#ffe3a1金字/rgba(214,170,80)金边) → 青绿重彩
+   ============================================================ */
+
+/* ---- 封神图卷 ---- */
+#world-scroll-panel {
+  background-color: var(--paper-warm);
+  border: 1px solid rgba(61, 122, 140, 0.5);
+  border-radius: 12px;
+}
+#world-scroll-head { border-bottom: 1px solid rgba(61, 122, 140, 0.3); }
+#world-scroll-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#world-scroll-sub { color: var(--ink-body); }
+#world-scroll-close {
+  border-image: none;
+  border: 1px solid var(--stone-blue);
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  background-color: #f0e6c8;
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+}
+#world-scroll-body { color: var(--ink-body); }
+#world-scroll-foot {
+  border-top: 1px solid rgba(61, 122, 140, 0.3);
+  background: rgba(247, 237, 212, 0.92);
+}
+.scroll-foot-label { color: var(--ink-title); }
+.scroll-foot-tip { color: var(--ink-body); }
+.scroll-horizon {
+  border: 1px solid rgba(61, 122, 140, 0.4);
+  background-color: var(--moon-white);
+}
+.scroll-horizon-caption { color: var(--ink-title); }
+.scroll-horizon-spot {
+  color: var(--ink-body);
+  border-top: 1px solid rgba(61, 122, 140, 0.3);
+}
+.scroll-horizon-spot.reached { color: var(--ink-title); }
+
+/* ---- 封神山河图 ---- */
+#world-map-panel {
+  background-color: var(--paper-warm);
+  border: 1px solid rgba(61, 122, 140, 0.5);
+  border-radius: 12px;
+}
+#world-map-head { border-bottom: 1px solid rgba(61, 122, 140, 0.3); }
+#world-map-title {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+#world-map-sub { color: var(--ink-body); }
+#world-map-close {
+  border-image: none;
+  border: 1px solid var(--stone-blue);
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  background-color: #f0e6c8;
+  border-radius: 4px;
+  color: var(--ink-title);
+  font-weight: 700;
+}
+#world-map-foot { color: var(--ink-body); }
+
+/* ============================================================
+   阶段4：斗法场 / 配招阵面 —— v3 统一
+   招式卡/日志/队列 → 青绿重彩；功德/劫气卡(.element-merit/.calamity)保留金(天命)
+   ============================================================ */
+.battle-card {
+  background: linear-gradient(180deg, #fffdf6, #f7edd4);
+  border: 1px solid rgba(61, 122, 140, 0.45);
+  border-radius: 6px;
+}
+.battle-card .bc-name {
+  color: var(--ink-title);
+  font-weight: 900;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.battle-card .bc-lv { color: var(--ink-body); }
+.battle-card .bc-text { color: var(--ink-body); }
+.battle-card.playable {
+  border-color: var(--stone-green);
+  box-shadow: 0 0 0 1px rgba(74, 140, 106, 0.45);
+}
+.battle-card.targeting { border-color: var(--stone-blue); }
+.battle-card.used { opacity: 0.55; }
+.battle-card.locked { filter: grayscale(0.5); opacity: 0.7; }
+/* .battle-card.element-merit / .element-calamity 由 base 保留金，不覆盖 */
+.battle-log { color: var(--ink-body); }
+.battle-line { color: var(--ink-body); }
+.battle-queue-head { color: var(--ink-title); }
+.battle-flow-hint { color: var(--ink-body); }
+
+/* ---- 卷首演出 / 大画卷 文字 v3 ---- */
+#prologue-hint, #ss-hint { color: #dce8e2; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+#prologue-skip, #ss-skip {
+  background: rgba(12, 24, 28, 0.4);
+  border: 1px solid rgba(216, 230, 223, 0.3);
+  border-radius: 11px;
+  color: #d8e6df;
+}

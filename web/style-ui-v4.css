@@ -1,0 +1,433 @@
+/* ============================================================
+   style-ui-v4.css —— 主屏 UI 真正从 0 重写（23.7 彻底放弃旧架构）
+   全新 CSS，从0写，不继承任何旧样式。
+   风格锁 v3：青绿重彩×工笔，月白/暖纸/墨青/墨绿/石青/石绿，金只属天命。
+   ============================================================ */
+
+:root {
+  --v4-ink-title: #2e5d6b;
+  --v4-ink-deep: #1e4450;
+  --v4-ink-body: #33332e;
+  --v4-stone-blue: #3d7a8c;
+  --v4-stone-green: #4a8c6a;
+  --v4-moon: #fffdf6;
+  --v4-paper: #f7edd4;
+  --v4-font-title: "Noto Serif SC", "Kaiti SC", "STKaiti", serif;
+  --v4-font-ui: "Noto Serif SC", "Kaiti SC", "STKaiti", "KaiTi", serif;
+}
+
+/* ===== #app：天·人·事·路 Grid 布局 ===== */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 6px;
+}
+
+/* ===== 天：卷首题头 ===== */
+.ui-topbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.ui-title {
+  width: 168px;
+  height: 42px;
+  background-image: url("assets/ui/hud/ui_title_plaque.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--v4-font-title);
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--v4-ink-deep);
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  cursor: pointer;
+}
+.ui-sysbtns {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  display: flex;
+  gap: 6px;
+}
+.ui-sysbtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: rgba(255, 253, 246, 0.92);
+  border: 1px solid var(--v4-stone-blue);
+  color: var(--v4-ink-title);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.ui-sysbtn:hover,
+.ui-sysbtn.active {
+  background: var(--v4-stone-blue);
+  border-color: var(--v4-stone-green);
+  color: var(--v4-moon);
+}
+.ui-edict {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  font-size: 10px;
+  color: #c4d4cc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+.ui-identity { font-size: 10px; color: #dce8e2; }
+.ui-weather, .ui-omen { font-size: 10px; color: #c4d4cc; }
+.ui-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #dce8e2;
+}
+.ui-seal-track {
+  width: 80px;
+  height: 4px;
+  background: rgba(61, 122, 140, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  display: inline-block;
+}
+.ui-seal-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--v4-stone-blue);
+}
+
+/* ===== 人：立绘主视觉 ===== */
+.ui-hero {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-height: 320px;
+  overflow: hidden;
+}
+.ui-resources {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 8px;
+  z-index: 3;
+  background: transparent;
+  border: none;
+}
+.ui-res-chip {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  background-image: url("assets/ui/hud/ui_res_disc.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+.ui-res-chip img {
+  width: 18px;
+  height: 18px;
+  margin-top: 5px;
+  position: relative;
+  z-index: 2;
+}
+.ui-res-chip .ui-res-value {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--v4-ink-deep);
+  line-height: 1;
+  margin-top: 1px;
+  position: relative;
+  z-index: 2;
+}
+.ui-res-chip .ui-res-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+.ui-res-chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, rgba(120, 140, 130, 0.12) 0px, rgba(120, 140, 130, 0.12) 1px, transparent 1px, transparent 6px), repeating-linear-gradient(-45deg, rgba(120, 140, 130, 0.10) 0px, rgba(120, 140, 130, 0.10) 1px, transparent 1px, transparent 7px);
+  border-radius: 50%;
+  z-index: 1;
+}
+.ui-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ui-char-ground {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 140px;
+  background-image: url("assets/ui/hud/ui_cloud_stand.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 1;
+}
+.ui-char-img {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 42%;
+  max-height: 320px;
+  width: auto;
+  object-fit: contain;
+  z-index: 2;
+  visibility: visible !important;
+}
+.ui-char-aura { z-index: 1; }
+
+/* ===== 事：目标·道行·日志·主行动 ===== */
+.ui-affair {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ui-goal {
+  width: 100%;
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 14px 18px;
+  border-image-source: url("assets/ui/hud/ui_goal_card.png");
+  border-image-slice: 90 120 90 120 fill;
+  border-image-repeat: round;
+  background-color: var(--v4-moon);
+  padding: 2px 8px;
+}
+.ui-goal-text {
+  font-size: 12.5px;
+  color: var(--v4-ink-body);
+  line-height: 1.45;
+  margin: 0;
+}
+.ui-goal-reward {
+  font-size: 11px;
+  color: var(--v4-ink-title);
+  margin: 2px 0 0;
+}
+.ui-dao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.ui-dao-label {
+  font-size: 10.5px;
+  color: #dce8e2;
+  letter-spacing: 0.1em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.ui-dao-bar {
+  width: 240px;
+  height: 50px;
+  background-image: url("assets/ui/hud/ui_dao_trough.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-color: var(--v4-paper);
+  position: relative;
+  overflow: hidden;
+}
+.ui-dao-fill {
+  position: absolute;
+  left: 13%;
+  top: 32%;
+  height: 36%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(74, 140, 106, 0.85), rgba(61, 122, 140, 0.85));
+  border-radius: 4px;
+}
+.ui-status {
+  font-size: 11px;
+  color: #e8f0ea;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 15px;
+  padding: 0 8px;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.ui-hints .ui-hint-btn {
+  background: linear-gradient(180deg, #fffef8, #f0e6c8);
+  border: 1px solid var(--v4-stone-blue);
+  border-radius: 4px;
+  color: var(--v4-ink-title);
+}
+.ui-mainbtn {
+  width: 216px;
+  height: 72px;
+  margin: 0 auto;
+  background-image: url("assets/ui/hud/ui_main_btn_ready.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+.ui-mainbtn.acting { background-image: url("assets/ui/hud/ui_main_btn_acting.png"); }
+.ui-mainbtn[data-type="breakthrough"] { background-image: url("assets/ui/hud/ui_main_btn_break.png"); }
+.ui-mainbtn-label {
+  font-family: var(--v4-font-title);
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--v4-ink-deep);
+  letter-spacing: 0.2em;
+  text-indent: 0.2em;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+  position: relative;
+  z-index: 2;
+}
+.ui-mainbtn-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  width: 0%;
+  background: rgba(61, 122, 140, 0.7);
+  z-index: 1;
+}
+.ui-autorow { display: flex; justify-content: center; }
+.ui-autotoggle {
+  background: rgba(12, 24, 28, 0.38);
+  border: 1px solid rgba(216, 230, 223, 0.28);
+  border-radius: 11px;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: var(--v4-font-ui);
+  font-size: 11px;
+  color: #d8e6df;
+  letter-spacing: 0.1em;
+  padding: 3px 12px;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== 路：底栏六玉牌 ===== */
+.ui-nav {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding: 2px 0 0;
+  max-width: 100%;
+}
+.ui-navbtn {
+  width: 48px;
+  height: 64px;
+  flex: 0 0 48px;
+  background-image: url("assets/ui/hud/ui_nav_tile.png");
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 0;
+}
+.ui-navbtn.attention { background-image: url("assets/ui/hud/ui_nav_attention.png"); }
+.ui-navbtn.locked { filter: grayscale(0.6) brightness(0.92); opacity: 0.72; }
+.ui-nav-glyph {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--v4-ink-deep);
+  line-height: 1;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+.ui-nav-name {
+  display: block;
+  font-size: 9.5px;
+  color: var(--v4-ink-body);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-shadow: none;
+}
+.ui-navbtn.locked .ui-nav-glyph { color: #5a6b66; }
+.ui-navbtn.locked .ui-nav-name { color: #6b7a75; }
+.ui-navbtn .ui-red-dot {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c0392b;
+}
+
+/* ===== 调试条 ===== */
+.ui-debug {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #c4d4cc;
+}
+.ui-debug-btn {
+  background: rgba(255, 253, 246, 0.92);
+  border: 1px solid var(--v4-stone-blue);
+  border-radius: 4px;
+  color: var(--v4-ink-title);
+  font-size: 10px;
+  padding: 4px 8px;
+  cursor: pointer;
+}

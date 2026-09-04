@@ -7,7 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" />
-  <link rel="stylesheet" href="style-ui-v4.css?v=20260904a" />
+  <link rel="stylesheet" href="style.css?v=20260903a" />
+  <link rel="stylesheet" href="style-hud-v3.css?v=20260903a" />
+  <link rel="stylesheet" href="style-main-v3.css?v=20260904b" />
 </head>
 <body>
   <div id="bg"></div>
@@ -15,76 +17,77 @@
   <div id="dim"></div>
 
   <main id="app">
-    <!-- ===== 天：卷首题头 ===== -->
-    <header class="ui-topbar">
-      <div class="ui-title">封神修道录</div>
-      <div class="ui-sysbtns">
-        <button class="ui-sysbtn" data-action="scroll">卷</button>
-        <button class="ui-sysbtn" data-action="map">图</button>
-        <button class="ui-sysbtn" data-action="audio">音</button>
-      </div>
-      <div class="ui-edict">
-        <span class="ui-identity"></span>
-        <span class="ui-weather"></span>
-        <span class="ui-omen"></span>
-        <span class="ui-seal">
-          <span class="ui-seal-label">榜文感应</span>
-          <span class="ui-seal-track"><i class="ui-seal-fill"></i></span>
-          <span class="ui-seal-state">未显</span>
-        </span>
-      </div>
-    </header>
-
-    <!-- ===== 人：立绘主视觉 ===== -->
-    <section class="ui-hero">
-      <div class="ui-resources"></div>
-      <div class="ui-stage">
-        <div class="ui-char-aura"></div>
-        <div class="ui-char-ground"></div>
-        <img class="ui-char-img" src="assets/characters/char_cultivator.png" alt="修行者" />
-        <div class="ui-treasure-orb hidden"></div>
-        <div class="ui-action-toast hidden"></div>
-      </div>
-    </section>
-
-    <!-- ===== 事：目标·道行·日志·主行动 ===== -->
-    <section class="ui-affair">
-      <div class="ui-goal">
-        <p class="ui-goal-text"></p>
-        <p class="ui-goal-reward"></p>
-      </div>
-      <div class="ui-dao">
-        <span class="ui-dao-label"></span>
-        <div class="ui-dao-bar"><i class="ui-dao-fill"></i></div>
-      </div>
-      <p class="ui-status"></p>
-      <div class="ui-hints hidden"></div>
-      <button class="ui-mainbtn">
-        <i class="ui-mainbtn-progress"></i>
-        <span class="ui-mainbtn-label">吐纳周天</span>
-      </button>
-      <div class="ui-autorow">
-        <button class="ui-autotoggle">连续修行：关</button>
-      </div>
-    </section>
-
-    <!-- ===== 路：底栏六玉牌 ===== -->
-    <nav class="ui-nav">
-      <button class="ui-navbtn" data-panel="realm"><span class="ui-nav-glyph">境</span><span class="ui-nav-name">境界</span></button>
-      <button class="ui-navbtn" data-panel="map"><span class="ui-nav-glyph">游</span><span class="ui-nav-name">游历</span></button>
-      <button class="ui-navbtn" data-panel="spell"><span class="ui-nav-glyph">术</span><span class="ui-nav-name">术法</span></button>
-      <button class="ui-navbtn" data-panel="treasure"><span class="ui-nav-glyph">宝</span><span class="ui-nav-name">法宝</span></button>
-      <button class="ui-navbtn" data-panel="chance"><span class="ui-nav-glyph">缘</span><span class="ui-nav-name">机缘</span></button>
-      <button class="ui-navbtn" data-panel="log"><span class="ui-nav-glyph">志</span><span class="ui-nav-name">洞府</span></button>
+  <!-- ===== 天：卷首题头 ===== -->
+  <header class="mav-topbar">
+    <div id="game-title" title="点击展开封神图卷">封神修道录</div>
+    <nav class="mav-sysbtns">
+      <button id="world-scroll-btn" class="mav-sysbtn" title="展开封神图卷">卷</button>
+      <button id="world-map-btn" class="mav-sysbtn" title="展开封神山河图">图</button>
+      <button id="audio-settings-btn" class="mav-sysbtn" title="声音设置">音</button>
     </nav>
-
-    <div class="ui-debug hidden">
-      <span>调试模式：当前节奏不代表正式体验</span>
-      <button class="ui-debug-btn" data-action="ff">快进6时辰</button>
-      <button class="ui-debug-btn" data-action="res">资源+5000</button>
-      <button class="ui-debug-btn" data-action="battle">试斗一场</button>
+    <div class="mav-edict">
+      <span id="identity-line"></span>
+      <span id="weather-line"></span>
+      <span id="omen-line"></span>
+      <span id="seal-pressure" title="封神榜对你的感应">
+        <span id="seal-pressure-label">榜文感应</span>
+        <span id="seal-pressure-track"><i id="seal-pressure-fill"></i></span>
+        <span id="seal-pressure-state">未显</span>
+      </span>
     </div>
-  </main>
+  </header>
+
+  <!-- ===== 人：立绘主视觉（玉璧浮于其上）===== -->
+  <section class="mav-hero">
+    <div id="resource-strip"></div>
+    <div id="stage">
+      <div id="char-aura"></div>
+      <div id="char-ground"></div>
+      <div id="cave-motes" aria-hidden="true"></div>
+      <img id="char-img" src="assets/characters/char_cultivator.png" alt="修行者" />
+      <div id="treasure-orb" class="hidden"></div>
+      <div id="action-toast" class="hidden"></div>
+    </div>
+  </section>
+
+  <!-- ===== 事：目标·道行·日志·主行动 ===== -->
+  <section class="mav-affair">
+    <div id="goal-panel">
+      <p id="goal-text"></p>
+      <p id="goal-reward"></p>
+    </div>
+    <div class="mav-dao">
+      <span id="progress-label"></span>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+    </div>
+    <p id="status-line"></p>
+    <div id="action-hints" class="hidden"></div>
+    <button id="main-btn">
+      <div id="main-btn-progress"></div>
+      <span id="main-btn-label">吐纳周天</span>
+    </button>
+    <div class="mav-autorow">
+      <button id="auto-toggle">连续修行：关</button>
+    </div>
+  </section>
+
+  <!-- ===== 路：底栏六玉牌 ===== -->
+  <nav id="bottom-nav" class="mav-nav">
+    <button class="nav-btn" data-panel="realm"><span class="nav-glyph">境</span><span class="nav-name">境界</span></button>
+    <button class="nav-btn" data-panel="map"><span class="nav-glyph">游</span><span class="nav-name">游历</span></button>
+    <button class="nav-btn" data-panel="spell"><span class="nav-glyph">术</span><span class="nav-name">术法</span></button>
+    <button class="nav-btn" data-panel="treasure"><span class="nav-glyph">宝</span><span class="nav-name">法宝</span></button>
+    <button class="nav-btn" data-panel="chance"><span class="nav-glyph">缘</span><span class="nav-name">机缘</span></button>
+    <button class="nav-btn" data-panel="log"><span class="nav-glyph">志</span><span class="nav-name">洞府</span></button>
+  </nav>
+
+  <div id="debug-bar" class="hidden">
+    <span>调试模式：当前节奏不代表正式体验</span>
+    <button id="debug-ff">快进6时辰</button>
+    <button id="debug-res">资源+5000</button>
+    <button id="debug-battle">试斗一场</button>
+  </div>
+</main>
 
   <!-- 功能面板（半屏抽屉） -->
   <div id="panel-layer" class="hidden">
@@ -233,6 +236,6 @@
   <script src="js/panels/spell-panel-vue.js?v=20260829a"></script>
   <script src="js/panels/map-panel-vue.js?v=20260829a"></script>
   <script src="js/panels/log-panel-vue.js?v=20260829a"></script>
-  <script src="js/ui.js?v=20260904a"></script>
+  <script src="js/ui.js?v=20260829b"></script>
 </body>
 </html>
