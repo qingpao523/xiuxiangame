@@ -16,33 +16,33 @@
   <div id="dim"></div>
 
   <main id="app">
-      <!-- 顶部封神天象条 -->
-      <header id="top-banner">
-        <div class="banner-top">
-          <div id="game-title" title="点击展开封神图卷">封神修道录</div>
-          <div class="banner-tools">
-            <button id="world-scroll-btn" class="scroll-open" title="展开封神图卷">卷</button>
-            <button id="world-map-btn" class="scroll-open map-open" title="展开封神山河图">图</button>
-            <button id="audio-settings-btn" class="scroll-open audio-open" title="声音设置">音</button>
-          </div>
+    <!-- ===== 天：匾额 + 天象（长卷题头）===== -->
+    <header id="top-banner">
+      <div class="banner-top">
+        <div id="game-title" title="点击展开封神图卷">封神修道录</div>
+        <div class="banner-tools">
+          <button id="world-scroll-btn" class="scroll-open" title="展开封神图卷">卷</button>
+          <button id="world-map-btn" class="scroll-open map-open" title="展开封神山河图">图</button>
+          <button id="audio-settings-btn" class="scroll-open audio-open" title="声音设置">音</button>
         </div>
-        <div id="identity-line"></div>
-        <div class="banner-sub">
+      </div>
+      <div class="banner-info">
+        <span id="identity-line"></span>
+        <span class="banner-sub">
           <span id="weather-line"></span>
           <span id="omen-line"></span>
-        </div>
-        <div id="seal-pressure" title="封神榜对你的感应">
+        </span>
+        <span id="seal-pressure" title="封神榜对你的感应">
           <span id="seal-pressure-label">榜文感应</span>
           <span id="seal-pressure-track"><i id="seal-pressure-fill"></i></span>
           <span id="seal-pressure-state">未显</span>
-        </div>
-      </header>
+        </span>
+      </div>
+    </header>
 
-    <!-- 资源浮层 -->
-    <div id="resource-strip"></div>
-
-    <!-- 主角舞台 -->
+    <!-- ===== 人：立绘舞台（玉璧串浮于卷面之上，立绘为视觉中心）===== -->
     <section id="stage">
+      <div id="resource-strip"></div>
       <div id="char-aura"></div>
       <div id="char-ground"></div>
       <div id="cave-motes" aria-hidden="true"></div>
@@ -51,35 +51,28 @@
       <div id="action-toast" class="hidden"></div>
     </section>
 
-    <!-- 当前目标 -->
-    <section id="goal-panel">
-      <div id="goal-text"></div>
-      <div id="goal-reward"></div>
+    <!-- ===== 事：目标·道行·日志·主行动 ===== -->
+    <section id="sec-affair">
+      <section id="goal-panel">
+        <div id="goal-text"></div>
+        <div id="goal-reward"></div>
+      </section>
+      <section id="progress-zone">
+        <div id="progress-label"></div>
+        <div id="progress-bar"><div id="progress-fill"></div></div>
+      </section>
+      <div id="status-line"></div>
+      <div id="action-hints" class="hidden"></div>
+      <button id="main-btn">
+        <div id="main-btn-progress"></div>
+        <span id="main-btn-label">吐纳周天</span>
+      </button>
+      <div id="auto-row">
+        <button id="auto-toggle">连续修行：关</button>
+      </div>
     </section>
 
-    <!-- 道行进度 -->
-    <section id="progress-zone">
-      <div id="progress-label"></div>
-      <div id="progress-bar"><div id="progress-fill"></div></div>
-    </section>
-
-    <!-- 修行日志（最新一条） -->
-    <div id="status-line"></div>
-
-    <!-- 唯一主行动按钮 -->
-    <button id="main-btn">
-      <div id="main-btn-progress"></div>
-      <span id="main-btn-label">吐纳周天</span>
-    </button>
-
-    <!-- 次级推荐：不阻断主修行，玩家可自由选择 -->
-    <div id="action-hints" class="hidden"></div>
-
-    <div id="auto-row">
-      <button id="auto-toggle">连续修行：关</button>
-    </div>
-
-    <!-- 底部功能导航 -->
+    <!-- ===== 路：底栏六玉牌 ===== -->
     <nav id="bottom-nav">
       <button class="nav-btn" data-panel="realm"><span class="nav-glyph">境</span><span class="nav-name">境界</span></button>
       <button class="nav-btn" data-panel="map"><span class="nav-glyph">游</span><span class="nav-name">游历</span></button>
