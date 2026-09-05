@@ -66,7 +66,7 @@ function render() {
   if (!insightShowing) { $(".ui-status").classList.remove("insight"); $(".ui-status").textContent = state.logs[0] ? state.logs[0].replace(/^\[\d+:\d+\]\s*/, "") : ""; }
   renderToast();
   renderMainButton(state); renderNav(state);
-  const autoBtn = $(".ui-autotoggle"); const autoOn = !!state.flags.auto_repeat;
+  const autoBtn = document.querySelector(".ui-autotoggle"); const autoOn = !!state.flags.auto_repeat;
   autoBtn.textContent = `连续修行：${autoOn ? "开" : "关"}`; autoBtn.classList.toggle("on", autoOn);
   if (window.SAVE_REV !== lastRev) { lastRev = window.SAVE_REV; renderResources(state); if (openPanel) renderPanelBody(openPanel); }
   drainPopupQueue();
@@ -111,7 +111,7 @@ function renderResources(state) {
 
 function renderMainButton(state) {
   const main = Game.getMainAction();
-  const btn = $(".ui-mainbtn"), label = $(".ui-mainbtn-label"), bar = $(".ui-mainbtn-progress"), stage = $(".ui-stage");
+  const btn = document.querySelector(".ui-mainbtn"), label = $(".ui-mainbtn-label"), bar = $(".ui-mainbtn-progress"), stage = $(".ui-stage");
   if (main.type === "acting") {
     const action = state.current_action, row = main.row || {};
     const total = num(action.end_time_ms) - num(action.start_time_ms || action.end_time_ms - 1000);
@@ -250,7 +250,7 @@ function hasChallengeableBoss(state) { return BossManager.getBosses(state).some(
 
 function onMainButtonClick() {
   if (preludeActive) return;
-  const btn = $(".ui-mainbtn"), type = btn.dataset.type;
+  const btn = document.querySelector(".ui-mainbtn"), type = btn.dataset.type;
   switch (type) {
     case "acting": if (Game.registerBeat()) { const f = document.createElement("div"); f.className = "sparkle-float"; f.style.left = "50%"; f.style.top = "80%"; f.textContent = "完美吐纳！"; $(".ui-stage").appendChild(f); setTimeout(() => f.remove(), 1300); } break;
     case "event":
@@ -1186,13 +1186,13 @@ async function boot() {
       return;
     }
   }
-  $(".ui-mainbtn").addEventListener("click", onMainButtonClick);
-  $(".ui-autotoggle").addEventListener("click", () => Game.toggleAutoRepeat());
+  document.querySelector(".ui-mainbtn").addEventListener("click", onMainButtonClick);
+  document.querySelector(".ui-autotoggle").addEventListener("click", () => Game.toggleAutoRepeat());
   document.querySelectorAll(".ui-navbtn").forEach((btn) => btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel)));
   $("panel-close").addEventListener("click", closePanelSheet);
   $("panel-layer").addEventListener("click", (e) => { if (e.target === $("panel-layer")) closePanelSheet(); });
   $("world-scroll-btn").addEventListener("click", () => WorldScroll.open());
-  $(".ui-title").addEventListener("click", () => WorldScroll.open());
+  document.querySelector(".ui-title").addEventListener("click", () => WorldScroll.open());
   $("world-scroll-close").addEventListener("click", () => WorldScroll.close());
   $("world-scroll-layer").addEventListener("click", (e) => { if (e.target === $("world-scroll-layer")) WorldScroll.close(); });
   $("world-map-btn").addEventListener("click", () => WorldMap.open());
