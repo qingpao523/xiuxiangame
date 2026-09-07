@@ -8,7 +8,7 @@
       "label": "吐纳周天",
       "type": "action",
       "actionId": "breath_cycle",
-      "cls": ""
+      "cls": "ui-mainbtn"
     },
     "top": {
       "identityLine": "炼精化气·1重｜无名散修｜战力 280",
@@ -21,7 +21,7 @@
       "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
       "autoToggle": {
         "text": "连续修行：关",
-        "cls": ""
+        "cls": "ui-autotoggle"
       },
       "sealPressure": {
         "level": "low",
@@ -48,32 +48,32 @@
     "nav": [
       {
         "key": "realm",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "境境界"
       },
       {
         "key": "map",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "游游历"
       },
       {
         "key": "spell",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "术术法"
       },
       {
         "key": "treasure",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "宝法宝"
       },
       {
         "key": "chance",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "缘机缘"
       },
       {
         "key": "log",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "志洞府"
       }
     ],
@@ -137,7 +137,7 @@
       "label": "道行已满，可升重",
       "type": "level_up",
       "actionId": "",
-      "cls": "ready"
+      "cls": "ui-mainbtn ready"
     },
     "top": {
       "identityLine": "炼气化神·6重｜无名散修｜战力 1380",
@@ -150,7 +150,7 @@
       "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
       "autoToggle": {
         "text": "连续修行：开",
-        "cls": "on"
+        "cls": "ui-autotoggle on"
       },
       "sealPressure": {
         "level": "low",
@@ -181,32 +181,32 @@
     "nav": [
       {
         "key": "realm",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "境境界"
       },
       {
         "key": "map",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "游游历"
       },
       {
         "key": "spell",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "术术法"
       },
       {
         "key": "treasure",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "宝法宝"
       },
       {
         "key": "chance",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "缘机缘"
       },
       {
         "key": "log",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "志洞府"
       }
     ],
@@ -273,7 +273,7 @@
       "label": "榜文垂光，破真人劫",
       "type": "breakthrough",
       "actionId": "",
-      "cls": "ready"
+      "cls": "ui-mainbtn ready"
     },
     "canAttempt": true,
     "top": {
@@ -287,7 +287,7 @@
       "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
       "autoToggle": {
         "text": "连续修行：开",
-        "cls": "on"
+        "cls": "ui-autotoggle on"
       },
       "sealPressure": {
         "level": "low",
@@ -301,32 +301,32 @@
     "nav": [
       {
         "key": "realm",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "境境界"
       },
       {
         "key": "map",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "游游历"
       },
       {
         "key": "spell",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "术术法"
       },
       {
         "key": "treasure",
-        "cls": "nav-btn locked",
+        "cls": "ui-navbtn locked",
         "text": "宝法宝"
       },
       {
         "key": "chance",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "缘机缘"
       },
       {
         "key": "log",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "志洞府"
       }
     ],
@@ -350,7 +350,7 @@
       "label": "本命法宝择主",
       "type": "treasure_choice",
       "actionId": "",
-      "cls": ""
+      "cls": "ui-mainbtn"
     },
     "top": {
       "identityLine": "地仙·初期·1重｜初成真人｜战力 9180",
@@ -363,7 +363,7 @@
       "statusLine": "你于山野洞府中睁开眼。先认跟脚，再吐纳。",
       "autoToggle": {
         "text": "连续修行：开",
-        "cls": "on"
+        "cls": "ui-autotoggle on"
       },
       "sealPressure": {
         "level": "low",
@@ -402,32 +402,32 @@
     "nav": [
       {
         "key": "realm",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "境境界"
       },
       {
         "key": "map",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "游游历"
       },
       {
         "key": "spell",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "术术法"
       },
       {
         "key": "treasure",
-        "cls": "nav-btn attention",
+        "cls": "ui-navbtn attention",
         "text": "宝法宝"
       },
       {
         "key": "chance",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "缘机缘"
       },
       {
         "key": "log",
-        "cls": "nav-btn",
+        "cls": "ui-navbtn",
         "text": "志洞府"
       }
     ],

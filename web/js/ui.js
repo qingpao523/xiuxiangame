@@ -26,7 +26,8 @@ function render() {
   $("fx-seal").classList.toggle("lit", DataManager.isRealmAtLeast(state.realm_id, "rq_06"));
   // B-诊断修复：src 未变时不重设（no-store 下每次 render 都会真实重拉图片）
   const charPath = getCharacterPath(state);
-  if ($("char-img").getAttribute("src") !== charPath) $("char-img").src = charPath;
+  const charImg = document.querySelector(".ui-char-img");
+  if (charImg && charImg.getAttribute("src") !== charPath) charImg.src = charPath;
   const raceTag = getRaceShortName(state);
   $(".ui-identity").textContent = `${getPhaseRealmName(realm)}｜${raceTag ? `${raceTag}·` : ""}${getTitle(state)}｜战力 ${formatInt(RealmManager.getCombatPower(state))}`;
   const _calTier = getCalamityPressureTier(state);
@@ -38,7 +39,7 @@ function render() {
   $(".ui-seal-state").textContent = pressure.label;
   $(".ui-seal").title = pressure.tip;
   $(".ui-seal").dataset.level = pressure.value >= 75 ? "high" : pressure.value >= 55 ? "mid" : "low";
-  const orb = $("treasure-orb");
+  const orb = document.querySelector(".ui-treasure-orb");
   if (state.first_treasure_id) {
     orb.classList.remove("hidden");
     if (!orb.dataset.tid || orb.dataset.tid !== state.first_treasure_id) {
@@ -1191,11 +1192,14 @@ async function boot() {
   document.querySelectorAll(".ui-navbtn").forEach((btn) => btn.addEventListener("click", () => openPanelSheet(btn.dataset.panel)));
   $("panel-close").addEventListener("click", closePanelSheet);
   $("panel-layer").addEventListener("click", (e) => { if (e.target === $("panel-layer")) closePanelSheet(); });
-  $("world-scroll-btn").addEventListener("click", () => WorldScroll.open());
+  document.querySelectorAll(".ui-sysbtn").forEach((btn) => btn.addEventListener("click", () => {
+    const a = btn.dataset.action;
+    if (a === "scroll") WorldScroll.open();
+    else if (a === "map") WorldMap.open();
+  }));
   document.querySelector(".ui-title").addEventListener("click", () => WorldScroll.open());
   $("world-scroll-close").addEventListener("click", () => WorldScroll.close());
   $("world-scroll-layer").addEventListener("click", (e) => { if (e.target === $("world-scroll-layer")) WorldScroll.close(); });
-  $("world-map-btn").addEventListener("click", () => WorldMap.open());
   $("world-map-close").addEventListener("click", () => WorldMap.close());
   $("world-map-layer").addEventListener("click", (e) => { if (e.target === $("world-map-layer")) WorldMap.close(); });
     const audioBtn = $("audio-settings-btn");

@@ -22,30 +22,30 @@ const NAV_KEYS = ["realm", "map", "spell", "treasure", "chance", "log"];
 const norm = (s) => String(s == null ? "" : s).replace(/\s+/g, " ").trim();
 
 function captureMain(h) {
-  const btn = h.$("main-btn");
+  const btn = h.$(".ui-mainbtn");
   return { label: norm(btn.textContent), type: btn.dataset.type || "", actionId: btn.dataset.actionId || "", cls: btn.className };
 }
 
 function captureTop(h) {
   return {
-    identityLine: norm(h.$("identity-line").textContent),
-    weatherLine: norm(h.$("weather-line").textContent),
-    omenLine: norm(h.$("omen-line").textContent),
-    goalText: norm(h.$("goal-text").textContent),
-    goalReward: norm(h.$("goal-reward").textContent),
-    progressLabel: norm(h.$("progress-label").textContent),
-    progressFillWidth: h.$("progress-fill").style.width || "",
-    statusLine: norm(h.$("status-line").textContent),
-    autoToggle: { text: norm(h.$("auto-toggle").textContent), cls: h.$("auto-toggle").className },
-    sealPressure: { level: h.$("seal-pressure").dataset.level || "", state: norm(h.$("seal-pressure-state").textContent), fillWidth: h.$("seal-pressure-fill").style.width || "" },
-    treasureOrbHidden: h.$("treasure-orb").classList.contains("hidden"),
+    identityLine: norm(h.$(".ui-identity").textContent),
+    weatherLine: norm(h.$(".ui-weather").textContent),
+    omenLine: norm(h.$(".ui-omen").textContent),
+    goalText: norm(h.$(".ui-goal-text").textContent),
+    goalReward: norm(h.$(".ui-goal-reward").textContent),
+    progressLabel: norm(h.$(".ui-dao-label").textContent),
+    progressFillWidth: h.$(".ui-dao-fill").style.width || "",
+    statusLine: norm(h.$(".ui-status").textContent),
+    autoToggle: { text: norm(h.$(".ui-autotoggle").textContent), cls: h.$(".ui-autotoggle").className },
+    sealPressure: { level: h.$(".ui-seal").dataset.level || "", state: norm(h.$(".ui-seal-state").textContent), fillWidth: h.$(".ui-seal-fill").style.width || "" },
+    treasureOrbHidden: h.$(".ui-treasure-orb").classList.contains("hidden"),
     fxSealLit: h.$("fx-seal").classList.contains("lit"),
     bgImage: h.$("bg").style.backgroundImage || "",
   };
 }
 
 function captureResources(h) {
-  const strip = h.$("resource-strip");
+  const strip = h.$(".ui-resources");
   const chips = [...strip.querySelectorAll(".res-chip")].map((c) => ({
     name: norm(c.querySelector(".res-name")?.textContent),
     value: norm(c.querySelector(".res-value")?.textContent),
@@ -55,7 +55,7 @@ function captureResources(h) {
 
 function captureNav(h) {
   return NAV_KEYS.map((key) => {
-    const btn = h.document.querySelector(`.nav-btn[data-panel="${key}"]`);
+    const btn = h.document.querySelector(`.ui-navbtn[data-panel="${key}"]`);
     return { key, cls: btn.className, text: norm(btn.textContent) };
   });
 }

@@ -112,7 +112,7 @@ async function bootUI(opts = {}) {
       let ok = false;
       try {
         ok = vm.runInContext("!!(typeof Game !== 'undefined' && Game.state && Game.state.realm_id)", context)
-          && win.document.getElementById("identity-line").textContent.length > 0;
+          && win.document.querySelector(".ui-identity").textContent.length > 0;
       } catch (e) { ok = false; }
       if (ok || tries > 200) { global.clearInterval(id); resolve(ok); }
     }, 5);
@@ -131,7 +131,7 @@ async function bootUI(opts = {}) {
     ready,
     intervals,
     run: (code) => vm.runInContext(code, context),
-    $: (id) => win.document.getElementById(id),
+    $: (sel) => (typeof sel === "string" && (sel.charAt(0) === "." || sel.charAt(0) === "#")) ? win.document.querySelector(sel) : win.document.getElementById(sel),
     ...bridge,
   };
 }

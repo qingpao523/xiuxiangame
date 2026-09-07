@@ -1,6 +1,6 @@
 "use strict";
 
-const $ = (id) => document.getElementById(id);
+const $ = (sel) => (typeof sel === "string" && (sel.charAt(0) === "." || sel.charAt(0) === "#")) ? document.querySelector(sel) : document.getElementById(sel);
 
 function nowUnix() {
   return Math.floor(Date.now() / 1000);

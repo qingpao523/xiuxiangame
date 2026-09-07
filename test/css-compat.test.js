@@ -124,25 +124,26 @@ check(refs.size > 0, `style.css 引用 ${refs.size} 个 assets 资产`);
 check(missing.length === 0, "全部资产文件存在", missing.slice(0, 5).join(" | "));
 
 // ---------------------------------------------------------------------------
-// ④ style-hud-v3.css（移动端权威 HUD 表，2026-09-03 重做）同样过三条纪律
+// ④ style-ui-v4.css（主屏 UI 从0重写后的权威 HUD 表，2026-09-04）同样过三条纪律
+//    （旧 style-hud-v3.css 已随主屏重写删除，此处改钉新表）
 // ---------------------------------------------------------------------------
-console.log("④ style-hud-v3.css 三条纪律复查");
-const HUD_CSS = path.join(WEB, "style-hud-v3.css");
+console.log("④ style-ui-v4.css 三条纪律复查");
+const HUD_CSS = path.join(WEB, "style-ui-v4.css");
 const hudCss = stripComments(fs.readFileSync(HUD_CSS, "utf8"));
-const hudSlash = findSlashShorthand(hudCss, "web/style-hud-v3.css");
-check(hudSlash.length === 0, "style-hud-v3.css 无 background 斜杠简写", hudSlash.slice(0, 5).join(" | "));
+const hudSlash = findSlashShorthand(hudCss, "web/style-ui-v4.css");
+check(hudSlash.length === 0, "style-ui-v4.css 无 background 斜杠简写", hudSlash.slice(0, 5).join(" | "));
 const hudBlocks = scanBlocks(hudCss).filter((b) => b.body.includes("border-image-source"));
 for (const b of hudBlocks) {
   const sel = b.selector.replace(/\s+/g, " ").slice(0, 60);
-  check(b.body.includes("background-color"), `style-hud-v3.css 规则「${sel}」有 background-color 兜底`);
+  check(b.body.includes("background-color"), `style-ui-v4.css 规则「${sel}」有 background-color 兜底`);
 }
 const hudRefs = new Set();
 let hm;
 URL_RE.lastIndex = 0;
 while ((hm = URL_RE.exec(hudCss)) !== null) hudRefs.add(hm[1]);
 const hudMissing = [...hudRefs].filter((r) => !fs.existsSync(path.join(WEB, r)));
-check(hudRefs.size > 0, `style-hud-v3.css 引用 ${hudRefs.size} 个 assets 资产`);
-check(hudMissing.length === 0, "style-hud-v3.css 资产文件全存在", hudMissing.slice(0, 5).join(" | "));
+check(hudRefs.size > 0, `style-ui-v4.css 引用 ${hudRefs.size} 个 assets 资产`);
+check(hudMissing.length === 0, "style-ui-v4.css 资产文件全存在", hudMissing.slice(0, 5).join(" | "));
 
 // ---------------------------------------------------------------------------
 console.log(`\nCSS 兼容回归：PASS ${pass} FAIL ${fail}`);
