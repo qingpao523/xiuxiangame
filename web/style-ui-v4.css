@@ -16,8 +16,54 @@
   --v4-font-ui: "Noto Serif SC", "Kaiti SC", "STKaiti", "KaiTi", serif;
 }
 
+/* ===== 通用工具：隐藏（v4 自包含，不依赖旧 style.css）===== */
+.hidden { display: none !important; }
+
+/* ===== 基础层：html/body/#bg/#dim/#fx-seal（v4 自包含，不依赖旧 style.css）===== */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: #04060a;
+  color: #e6ede9;
+  font-family: var(--v4-font-ui);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.55;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+#bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.8s ease;
+  z-index: 0;
+}
+#dim {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(6, 8, 12, 0.50) 0%, rgba(8, 14, 18, 0.08) 38%, rgba(18, 10, 4, 0.18) 58%, rgba(4, 6, 10, 0.82) 100%);
+  z-index: 1;
+}
+#fx-seal {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse 60% 30% at 50% -5%, rgba(255, 214, 120, 0.5), transparent 70%);
+  transition: opacity 1.2s ease;
+}
+#fx-seal.lit { opacity: 1; }
+#fx-seal.burst { opacity: 1; }
+
 /* ===== #app：天·人·事·路 Grid 布局 ===== */
 #app {
+  position: relative;
+  z-index: 2;
   max-width: 480px;
   margin: 0 auto;
   height: 100%;
