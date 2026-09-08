@@ -477,3 +477,710 @@ body {
   padding: 4px 8px;
   cursor: pointer;
 }
+
+/* ============================================================
+   浮层 v4 段（面板/弹窗/卷首/大画卷/斗法/破劫等）
+   青绿重彩×工笔神魔壁画；金只属天命（功德/劫气/破劫/卷首封印）
+   ============================================================ */
+
+/* --- 通用按钮 .popup-btn（面板收起钮 + 弹窗按钮共用）--- */
+.popup-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--v4-stone-blue);
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--v4-moon) 0%, var(--v4-paper) 100%);
+  color: var(--v4-ink-deep);
+  font-family: var(--v4-font-title);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  padding: 11px 12px;
+  min-height: 44px;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 2px 0 rgba(46, 93, 107, 0.35);
+}
+.popup-btn.secondary {
+  background: linear-gradient(180deg, #e8efdc 0%, #d4e0cc 100%);
+  border-color: var(--v4-stone-green);
+  color: var(--v4-ink-title);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 2px 0 rgba(74, 140, 106, 0.35);
+}
+.popup-btn.merit {
+  background: linear-gradient(180deg, #ffe9b0, #e0b34a 50%, #c49228);
+  color: #3d2108;
+  border-color: #7a5a18;
+}
+.popup-btn.calamity {
+  background: linear-gradient(180deg, #e8c4a0, #a45a38 55%, #7a3018);
+  color: #f8ead8;
+  border-color: #6a2810;
+}
+
+/* --- 面板抽屉 #panel-layer --- */
+#panel-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(6, 10, 12, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+#panel-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 78vh;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 58px 44px 66px 44px;
+  border-image-source: url("assets/ui/hud/hud_panel_scroll.png");
+  border-image-slice: 160 110 175 110 fill;
+  border-image-repeat: stretch;
+  background-color: var(--v4-paper);
+  padding: 2px 2px 4px;
+  animation: v4sheetUp 0.22s ease;
+}
+@keyframes v4sheetUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+#panel-title {
+  font-family: var(--v4-font-title);
+  font-size: 20px;
+  color: var(--v4-ink-title);
+  text-align: center;
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  min-width: 0;
+}
+#panel-body {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--v4-ink-body);
+}
+#panel-body .event-story {
+  white-space: pre-line;
+  color: var(--v4-ink-body);
+  font-size: 14px;
+  line-height: 1.65;
+  padding: 2px 2px 6px;
+}
+#panel-body .popup-btn {
+  max-width: 100%;
+  letter-spacing: 0.08em;
+  white-space: normal;
+  line-height: 1.35;
+}
+#panel-close {
+  margin-top: 8px;
+}
+
+/* --- 弹窗 #popup-layer --- */
+#popup-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(6, 10, 12, 0.52);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+#popup-panel {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 2px;
+  border: 1px solid var(--v4-stone-blue);
+  padding: 22px 20px 16px;
+  background: linear-gradient(180deg, var(--v4-moon) 0%, var(--v4-paper) 100%);
+  box-shadow: 0 0 0 1px rgba(30, 68, 80, 0.4), inset 0 0 0 3px rgba(61, 122, 140, 0.28), 0 22px 48px rgba(0, 0, 0, 0.48);
+  animation: v4popupIn 0.22s ease;
+}
+@keyframes v4popupIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+#popup-panel::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  pointer-events: none;
+  border: 1px solid rgba(61, 122, 140, 0.28);
+}
+#popup-title {
+  position: relative;
+  font-family: var(--v4-font-title);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--v4-ink-title);
+  text-align: center;
+  letter-spacing: 0.12em;
+  margin-bottom: 14px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+#popup-body {
+  position: relative;
+  font-family: var(--v4-font-ui);
+  font-size: 15px;
+  color: var(--v4-ink-body);
+  white-space: pre-line;
+  line-height: 1.7;
+  margin-bottom: 16px;
+  text-align: center;
+}
+#popup-body .rate-table {
+  margin: 10px 0 4px;
+  font-size: 13px;
+  color: var(--v4-ink-title);
+  border: 1px dashed rgba(61, 122, 140, 0.35);
+  padding: 8px 10px;
+  background: rgba(61, 122, 140, 0.08);
+}
+#popup-buttons {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* --- 天象前奏 #prelude --- */
+#prelude {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  letter-spacing: 10px;
+  color: var(--v4-moon);
+  text-shadow: 0 0 28px rgba(61, 122, 140, 0.8);
+  background: radial-gradient(ellipse at 50% 30%, rgba(30, 68, 80, 0.85), rgba(5, 7, 10, 0.92));
+  animation: v4preludeIn 0.5s ease;
+}
+@keyframes v4preludeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- 破劫演出 #tribulation-fx（天命语境，金保留）--- */
+#tribulation-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  letter-spacing: 12px;
+  color: #ffd97a;
+  text-shadow: 0 0 30px rgba(255, 210, 100, 0.9);
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255, 214, 120, 0.5), transparent 60%),
+    radial-gradient(ellipse at 50% 110%, rgba(120, 20, 20, 0.55), transparent 55%),
+    rgba(4, 5, 8, 0.94);
+  animation: v4tribShake 0.35s linear infinite;
+}
+@keyframes v4tribShake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* --- 斗法场/配招阵面 #duel-layer/#formation-layer --- */
+#duel-layer, #formation-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: #07080c;
+  isolation: isolate;
+}
+#formation-layer { z-index: 112; background: #0b0d12; }
+#duel-root, #formation-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#duel-root {
+  background-size: cover;
+  background-position: center top;
+  color: var(--v4-moon);
+}
+
+/* --- 小仪式层 #ritual-layer --- */
+#ritual-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  background: rgba(4, 5, 7, 0);
+  transition: background 0.6s ease;
+  pointer-events: none;
+}
+#ritual-layer.on { background: rgba(4, 5, 7, 0.82); }
+#ritual-light {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(61, 122, 140, 0.6), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#ritual-layer.on #ritual-light {
+  opacity: 0.9;
+  transform: translateX(-50%) scale(2.4) translateY(-40px);
+}
+#ritual-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 58%;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 8px;
+  color: var(--v4-moon);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+#ritual-layer.on #ritual-text { opacity: 1; }
+
+/* --- 生活技艺·火候条 #craft-layer --- */
+#craft-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 5, 7, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#craft-layer.on { opacity: 1; pointer-events: auto; }
+#craft-panel {
+  width: 90%;
+  max-width: 360px;
+  padding: 20px;
+  border: 1px solid var(--v4-stone-blue);
+  background: linear-gradient(180deg, var(--v4-moon), var(--v4-paper));
+  text-align: center;
+}
+#craft-title {
+  font-family: var(--v4-font-title);
+  font-size: 18px;
+  color: var(--v4-ink-title);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+#craft-prompt { font-size: 13px; color: var(--v4-ink-body); margin-bottom: 12px; }
+#craft-bar {
+  position: relative;
+  height: 24px;
+  background: rgba(61, 122, 140, 0.15);
+  border: 1px solid var(--v4-stone-blue);
+  margin-bottom: 12px;
+}
+#craft-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(74, 140, 106, 0.4);
+}
+#craft-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--v4-ink-deep);
+}
+#craft-result { font-size: 14px; color: var(--v4-ink-title); margin-bottom: 12px; min-height: 20px; }
+
+/* --- 封神图卷/山河图 #world-scroll-layer/#world-map-layer --- */
+#world-scroll-layer, #world-map-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(6, 10, 12, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#world-scroll-panel, #world-map-panel {
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--v4-stone-blue);
+  background: linear-gradient(180deg, var(--v4-moon), var(--v4-paper));
+  overflow: hidden;
+}
+#world-scroll-head, #world-map-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(61, 122, 140, 0.3);
+}
+#world-scroll-title, #world-map-title {
+  font-family: var(--v4-font-title);
+  font-size: 18px;
+  color: var(--v4-ink-title);
+  letter-spacing: 4px;
+}
+#world-scroll-sub, #world-map-sub { font-size: 12px; color: var(--v4-ink-body); }
+#world-scroll-close, #world-map-close {
+  appearance: none;
+  border: 1px solid var(--v4-stone-blue);
+  background: var(--v4-moon);
+  color: var(--v4-ink-title);
+  font-size: 13px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+#world-scroll-body, #world-map-canvas {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 16px;
+  color: var(--v4-ink-body);
+}
+#world-scroll-foot, #world-map-foot {
+  padding: 10px 16px;
+  border-top: 1px solid rgba(61, 122, 140, 0.3);
+  font-size: 12px;
+  color: var(--v4-ink-body);
+}
+
+/* --- 卷首演出 #prologue-layer（登录第一屏，金=封印天命语境保留）--- */
+#prologue-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  background: #05070a;
+  transition: background 0.9s ease;
+}
+#prologue-layer::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  background-image: var(--pro-bg, url("assets/opening/prologue_wake.jpg"));
+  background-size: cover;
+  background-position: center top;
+  transition: background-image 0.9s ease;
+}
+#prologue-layer.pro-ken::before {
+  animation: v4proKen 8s ease-out forwards;
+}
+@keyframes v4proKen {
+  from { transform: scale(1.14); }
+  to { transform: scale(1); }
+}
+#prologue-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(3, 4, 7, 0.08) 0%, rgba(3, 4, 7, 0.12) 42%, rgba(3, 4, 7, 0.78) 100%);
+  pointer-events: none;
+}
+#prologue-gold {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 4%;
+  height: 38%;
+  z-index: 1;
+  opacity: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 214, 120, 0.5), transparent 70%);
+  transition: opacity 0.9s ease;
+  pointer-events: none;
+}
+#prologue-layer[data-scene="1"] #prologue-gold,
+#prologue-layer[data-scene="2"] #prologue-gold {
+  opacity: 1;
+}
+#prologue-scroll {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  max-width: 480px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, transparent, rgba(6, 8, 12, 0.55) 22%, rgba(6, 8, 12, 0.88) 70%);
+  padding: 36px 22px 92px;
+}
+#prologue-stage {
+  position: relative;
+  height: 260px;
+}
+.prologue-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+.prologue-scene.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.prologue-scene.leaving {
+  opacity: 0;
+  transform: translateY(-18px);
+}
+.prologue-kicker {
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: #b9a878;
+  margin-bottom: 10px;
+}
+.prologue-title {
+  font-family: var(--v4-font-title);
+  font-size: clamp(30px, 8vw, 46px);
+  font-weight: 700;
+  letter-spacing: 6px;
+  color: #ffe3a1;
+  text-shadow: 0 0 24px rgba(255, 200, 90, 0.6);
+  margin-bottom: 12px;
+}
+.prologue-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #ecebda;
+  letter-spacing: 2px;
+  max-width: 18em;
+  text-align: center;
+}
+.prologue-scene.scene-seal .prologue-title {
+  color: #ffd97a;
+  text-shadow: 0 0 32px rgba(255, 210, 100, 0.8);
+}
+#prologue-hint {
+  position: absolute;
+  z-index: 4;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  letter-spacing: 4px;
+  color: #b9a878;
+  font-size: 13px;
+  pointer-events: none;
+}
+#prologue-skip {
+  position: absolute;
+  z-index: 5;
+  left: 14px;
+  top: 14px;
+  border: 1px solid rgba(150, 165, 158, 0.45);
+  background: rgba(12, 15, 17, 0.72);
+  color: #a9b8ae;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* --- 大画卷演出 #ss-layer（破劫/关键叙事，金=天命语境保留）--- */
+#ss-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  pointer-events: none;
+}
+#ss-layer.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+#ss-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.ss-scene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ss-bg-black { background: #000; }
+.ss-bg-void { background: radial-gradient(ellipse 80% 70% at 50% 45%, #16181c 0%, #0a0b0d 60%, #030304 100%); }
+.ss-bg-cave { background: radial-gradient(ellipse 60% 45% at 50% 22%, #2a2c2e 0%, #141517 50%, #050506 100%); }
+.ss-bg-vista { background: linear-gradient(to bottom, #3a444c 0%, #5a6b73 40%, #7d8a8f 62%, #4a545a 100%); }
+.ss-bg-gold { background: radial-gradient(ellipse 70% 60% at 50% 30%, #3a3018 0%, #1c1608 55%, #0a0803 100%); }
+.ss-bg-dawn { background: linear-gradient(to bottom, #4a4a52 0%, #7a6f5e 45%, #b89b6a 75%, #5a4a38 100%); }
+.ss-lines {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  align-items: center;
+  padding: 0 44px;
+  text-align: center;
+}
+.ss-line {
+  font-size: 20px;
+  line-height: 2;
+  letter-spacing: 0.18em;
+  color: #ddd6c8;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1.5s ease, transform 1.5s ease;
+}
+.ss-line.show {
+  opacity: 1;
+  transform: none;
+}
+.ss-line.ss-faint { color: #9a9488; font-size: 16px; letter-spacing: 0.3em; }
+.ss-line.ss-small { color: #8a8478; font-size: 15px; letter-spacing: 0.25em; }
+.ss-line.ss-gold { color: #e8c877; font-size: 23px; text-shadow: 0 0 24px rgba(232, 200, 119, 0.5); }
+.ss-ring {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%) scale(0.4);
+  border-radius: 50%;
+  border: 1px solid rgba(232, 200, 119, 0.45);
+  opacity: 0.5;
+  box-shadow: 0 0 30px rgba(232, 200, 119, 0.15) inset, 0 0 20px rgba(232, 200, 119, 0.1);
+  transition: transform 0.1s linear, opacity 0.3s;
+}
+.ss-core {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #e8c877;
+  box-shadow: 0 0 20px 6px rgba(232, 200, 119, 0.5);
+  opacity: 0.6;
+}
+.ss-hold-word {
+  position: absolute;
+  top: 60%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 0.5em;
+  color: #8a8478;
+  opacity: 0;
+  transition: opacity 1s;
+}
+.ss-hold-word.show { opacity: 0.75; }
+.ss-end { flex-direction: column; }
+.ss-end-word {
+  font-size: 52px;
+  letter-spacing: 0.5em;
+  color: #e8c877;
+  padding-left: 0.5em;
+  text-shadow: 0 0 40px rgba(232, 200, 119, 0.5);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 2s ease, transform 2s ease;
+}
+.ss-end-word.show { opacity: 1; transform: scale(1); }
+.ss-end-sub {
+  margin-top: 34px;
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  color: #9a9488;
+  text-align: center;
+  padding: 0 40px;
+  line-height: 2;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+.ss-end-sub.show { opacity: 1; }
+#ss-hint {
+  position: absolute;
+  bottom: 7%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: #6a6459;
+  opacity: 0;
+  transition: opacity 1s;
+  pointer-events: none;
+}
+#ss-hint.show { opacity: 0.7; }
+#ss-skip {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 10;
+  background: none;
+  border: 1px solid #4a463d;
+  color: #7a7468;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  padding: 6px 14px;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s;
+  font-family: inherit;
+}
+#ss-skip.show { opacity: 0.7; pointer-events: auto; }
+.npc-portrait {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 214, 120, 0.6);
+  box-shadow: 0 0 8px rgba(255, 210, 120, 0.2);
+  margin-top: 2px;
+}
