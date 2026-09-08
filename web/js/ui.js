@@ -102,10 +102,10 @@ function renderResources(state) {
   strip.dataset.count = String(rows.length);
   for (const row of rows) {
     const id = String(row.resource_id);
-    const chip = document.createElement("div"); chip.className = "res-chip"; chip.title = row.resource_name || id;
+    const chip = document.createElement("div"); chip.className = "ui-res-chip"; chip.title = row.resource_name || id;
     const img = document.createElement("img"); img.src = ICON_PATHS[id] || ""; img.alt = "";
-    const name = document.createElement("span"); name.className = "res-name"; name.textContent = row.resource_name || id;
-    const value = document.createElement("span"); value.className = "res-value"; value.textContent = formatInt(state.resources[id] || 0);
+    const name = document.createElement("span"); name.className = "ui-res-name"; name.textContent = row.resource_name || id;
+    const value = document.createElement("span"); value.className = "ui-res-value"; value.textContent = formatInt(state.resources[id] || 0);
     chip.append(img, name, value); strip.appendChild(chip);
   }
 }

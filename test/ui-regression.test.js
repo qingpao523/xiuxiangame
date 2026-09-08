@@ -46,9 +46,9 @@ function captureTop(h) {
 
 function captureResources(h) {
   const strip = h.$(".ui-resources");
-  const chips = [...strip.querySelectorAll(".res-chip")].map((c) => ({
-    name: norm(c.querySelector(".res-name")?.textContent),
-    value: norm(c.querySelector(".res-value")?.textContent),
+  const chips = [...strip.querySelectorAll(".ui-res-chip")].map((c) => ({
+    name: norm(c.querySelector(".ui-res-name")?.textContent),
+    value: norm(c.querySelector(".ui-res-value")?.textContent),
   }));
   return { count: strip.dataset.count || "", chips };
 }
