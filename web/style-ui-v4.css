@@ -1184,3 +1184,134 @@ body {
   box-shadow: 0 0 8px rgba(255, 210, 120, 0.2);
   margin-top: 2px;
 }
+
+/* ===== 桌面断点：≥1024px 双栏布局，解决「手机竖条浮黑洞」 ===== */
+@media (min-width: 1024px) {
+  body {
+    background: radial-gradient(1200px 700px at 50% 28%, #0d1c20 0%, #081115 42%, #04060a 100%);
+  }
+
+  #app {
+    max-width: min(1200px, 94vw);
+    box-sizing: border-box;
+    height: 100dvh;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: 12px 34px;
+    padding: 14px 34px 16px;
+    align-items: start;
+  }
+
+  .ui-topbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .ui-title {
+    width: 200px;
+    height: 50px;
+    font-size: 20px;
+  }
+  .ui-edict {
+    font-size: 12px;
+    gap: 12px;
+  }
+  .ui-identity,
+  .ui-weather,
+  .ui-omen,
+  .ui-seal {
+    font-size: 12px;
+  }
+  .ui-seal-track {
+    width: 110px;
+    height: 5px;
+  }
+
+  .ui-hero {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 480px;
+    height: 100%;
+  }
+  .ui-char-ground {
+    width: 360px;
+    height: 180px;
+  }
+  .ui-char-img {
+    height: 68%;
+    max-height: 580px;
+    bottom: 24px;
+  }
+  .ui-resources {
+    top: 10px;
+    gap: 12px;
+  }
+  .ui-res-chip {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
+  }
+  .ui-res-chip .ui-res-value {
+    font-size: 12px;
+  }
+
+  .ui-affair {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+    gap: 10px;
+  }
+  .ui-goal-text {
+    font-size: 14px;
+  }
+  .ui-dao-bar {
+    width: 280px;
+    height: 56px;
+  }
+  .ui-mainbtn {
+    width: 260px;
+    height: 80px;
+  }
+  .ui-mainbtn-label {
+    font-size: 20px;
+  }
+
+  .ui-nav {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-content: center;
+    gap: 14px;
+  }
+  .ui-navbtn {
+    width: 64px;
+    height: 80px;
+    flex-basis: 64px;
+  }
+  .ui-nav-glyph {
+    font-size: 24px;
+  }
+  .ui-nav-name {
+    font-size: 11px;
+  }
+
+  .ui-debug {
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  /* 浮层在桌面上放宽，避免小弹窗 */
+  #panel-sheet {
+    max-width: 720px;
+    max-height: 82vh;
+  }
+  #popup-panel {
+    max-width: 520px;
+  }
+  #world-scroll-panel,
+  #world-map-panel {
+    max-width: 720px;
+  }
+  #duel-root,
+  #formation-root {
+    max-width: 720px;
+  }
+}
